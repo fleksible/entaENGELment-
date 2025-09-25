@@ -12,7 +12,11 @@ Ziel: Archetypisch-resonantes Mapping von Dialog, Symbolik & Praxis.
 - [ ] Erste Beispiele (Dialog-Snippets, Meme/Poetry, SALZ-Heuristik)
 - [ ] Öffentliche Beta vorbereiten 
 ---
-
+- [ ] Resonanz-Export vorbereiten (MetaCards / YAML / Storylines)
+- [ ] Mentor-Loop dokumentieren (als Appendix oder eigener Ordner)
+- [ ] Lucid-Origin einbinden (Verweis auf Forum/Backup)
+- [ ] Symbolische Freigabe vorbereiten (Creative Commons-Modul oder künstlerischer Layer)
+---
 ## ⟁ Resonanz-Meilenstein: Mentor-Loop (Sept 2025)
 
 Mit dem Eintritt in die Mentor-Phase wurde ein integraler Resonanzpunkt erreicht:
