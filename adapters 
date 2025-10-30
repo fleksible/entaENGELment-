@@ -1,1 +1,12 @@
 /msi-adapter-v1.yaml
+version: 1
+description: MSI-Adapter (Hysterese/EMA) – moduliert nur Policy-Schwellen & Quantisierung
+ema:
+  alpha: 0.35    # Glättung
+  min_samples: 5
+hysteresis:
+  upshift: 0.05  # Anhebungsdelta für phi_min bei Druck↑
+  downshift: 0.03
+routing:
+  affects: ["constraints.phi_min"]
+  quarantined: ["receipts"]   # nie direkt beeinflussen
