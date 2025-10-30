@@ -9,4 +9,4 @@ jobs:
         with:
           python-version: "3.11"
       - run: pip install pytest pytest-cov
-      - run: pytest -q --maxfail=1 --disable-warnings --cov=.
+      - run: pytest -q --maxfail=1 --disable-warnings --cov=
