@@ -1,5 +1,0 @@
-src/__init__.py
-src/core/__init__.py
-tests/__init__.py
-requirements.txt
-.github/workflows/ci.yml   # aktualisiert: installiert jetzt -r requirements.txt
