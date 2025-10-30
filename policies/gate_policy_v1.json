@@ -1,0 +1,15 @@
+{
+  "version": "1.0",
+  "description": "Hard-Gate Policy (MZM) for entaENGELment v1.0",
+  "constraints": {
+    "phi_min": 0.8,
+    "rcc_ec_required": true,
+    "non_overlap_required": true,
+    "m_norm_l2": 1.0,
+    "psi_lock_required": true
+  },
+  "receipts": {
+    "require_dual_receipts": true,
+    "proof_types": ["receipt_proof", "context_signature"]
+  }
+}
