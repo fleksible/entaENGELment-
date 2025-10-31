@@ -1,0 +1,6 @@
+{
+  "sample_size": 42,
+  "cri": 0.72,
+  "privacy_budget": 0.8,
+  "notes": "date arithmetic drift"
+}

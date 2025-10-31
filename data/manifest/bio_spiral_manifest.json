@@ -1,0 +1,100 @@
+{
+  "indices": [
+    {
+      "identifier": "Master-Katalog",
+      "description": "EntaENGELment · Indizes & Seeds",
+      "artifacts": [
+        "data/spec_freeze/Gate_and_Leakage.json",
+        "data/seed_checkpoint/Reward-Seed.json"
+      ],
+      "sub_indices": [
+        {
+          "identifier": "Framework-Ring",
+          "description": "13 Kernbereiche inkl. Kybernetik, Quantenphysik, Polykontexturalität",
+          "artifacts": []
+        },
+        {
+          "identifier": "Modules",
+          "description": "M1–M15 inklusive Governance/Telemetrie",
+          "artifacts": []
+        }
+      ]
+    },
+    {
+      "identifier": "Kontextfenster-Analyse",
+      "description": "EntaENGELment::Synthosia (β)",
+      "artifacts": [
+        "data/seed_checkpoint/CP-pi-Cancer-beta+.json"
+      ]
+    },
+    {
+      "identifier": "Quadratur·v4",
+      "description": "GateOpen-Bedingungen, Δ-Guards, Explain-Overlay-Keys",
+      "artifacts": [
+        "overlay/pins/confab_zahlen_date_math.json",
+        "overlay/pins/confab_news_latest_claim_no_cite.json"
+      ]
+    },
+    {
+      "identifier": "Achteck-Spiral-Spinor-Engine",
+      "description": "Torus/Girlanden/720° State-Space",
+      "artifacts": []
+    },
+    {
+      "identifier": "KONFAB·ACM",
+      "description": "Confabulation Monitor",
+      "artifacts": [
+        "aggregates/acm_zahlen_date_math_28d.json",
+        "aggregates/acm_news_latest_citation_lag_28d.json",
+        "dashboard/overview_confab.json"
+      ]
+    },
+    {
+      "identifier": "GateRules",
+      "description": "Telo·Mereo·Topologie",
+      "artifacts": [
+        "data/spec_freeze/Gate_and_Leakage.json"
+      ]
+    },
+    {
+      "identifier": "Ark::CephaloCamouflage",
+      "description": "ΔE-Komposit-Block, Spiral-Deposition, Hopf-Prefield",
+      "artifacts": []
+    }
+  ],
+  "seeds": [
+    {
+      "name": "CP-π-Cancer-β+",
+      "path": "data/seed_checkpoint/CP-pi-Cancer-beta+.json",
+      "summary": "ψ-Lock, RCC checklist, ETHICS predicates"
+    },
+    {
+      "name": "Reward-Seed",
+      "path": "data/seed_checkpoint/Reward-Seed.json",
+      "summary": "Curiosity × Coherence × Ethics"
+    }
+  ],
+  "governance_artifacts": [
+    "data/receipts/verify_summary.json",
+    "data/receipts/rotation_verify.json",
+    "data/receipts/keyring_status.json",
+    "data/receipts/nightly/verify_status.json"
+  ],
+  "konfab_artifacts": [
+    "data/receipts/ledger_konfab_acm_commit_2025-10-22_zahlen.json",
+    "data/receipts/ledger_konfab_acm_commit_2025-10-22_news.json"
+  ],
+  "lyra_artifacts": [
+    "lyra/lyra_T1_1_scan_report_REAL.md",
+    "lyra/lyra_T1_1_explain_snapshot_REAL.json",
+    "lyra/lyra_T1_1_real.csv",
+    "lyra/ledger_T1_1_commit_REAL.json",
+    "runbooks/runbook_R_T1_1_alpha.md",
+    "tickets/tickets_T1_1_bundle.yaml"
+  ],
+  "overlay_artifacts": [
+    "overlay/pins/confab_zahlen_date_math.json",
+    "overlay/pins/confab_news_latest_claim_no_cite.json",
+    "dashboard/overview_confab.json"
+  ]
+}

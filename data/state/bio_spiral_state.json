@@ -1,0 +1,37 @@
+{
+  "body": {
+    "hrv_coherence": 0.82,
+    "plv": 0.76,
+    "leakage": 0.07,
+    "mi_twin_pass": 0.91
+  },
+  "spiral": {
+    "spiral_phase": 2.356,
+    "spinor_state": "4pi",
+    "df_flip_committed": true,
+    "cooldown_remaining": 0.12,
+    "eight_channel_drive": [
+      {"index": 0, "weight": 0.9, "phase_angle": 0.0, "instantaneous_phase": 0.02},
+      {"index": 1, "weight": 0.85, "phase_angle": 0.785, "instantaneous_phase": 0.11},
+      {"index": 2, "weight": 0.88, "phase_angle": 1.571, "instantaneous_phase": 0.23},
+      {"index": 3, "weight": 0.83, "phase_angle": 2.356, "instantaneous_phase": 0.35},
+      {"index": 4, "weight": 0.82, "phase_angle": 3.142, "instantaneous_phase": 0.48},
+      {"index": 5, "weight": 0.86, "phase_angle": 3.927, "instantaneous_phase": 0.59},
+      {"index": 6, "weight": 0.84, "phase_angle": 4.712, "instantaneous_phase": 0.71},
+      {"index": 7, "weight": 0.87, "phase_angle": 5.498, "instantaneous_phase": 0.83}
+    ]
+  },
+  "governance": {
+    "gate_open": true,
+    "gate_reason": "Phi >= Phi* and RCC adjacency maintained",
+    "psi_lock": true,
+    "cri_badge": "green",
+    "ledger_receipt": "data/receipts/ledger_konfab_acm_commit_2025-10-22_news.json",
+    "retro_gauge_active": true,
+    "consent": {
+      "region": "EU",
+      "expires_at": "2025-11-01T00:00:00",
+      "epsilon_budget": 1.0
+    }
+  }
+}
