@@ -1,0 +1,1 @@
+"""Integrationstests für Komponenten-Zusammenspiel."""
