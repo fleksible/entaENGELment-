@@ -102,7 +102,65 @@ Tests = Spezifikation des Vertrauens.
 
 ---
 
-## 🜂 VI. Meta-Codex (Vision)
+## 📁 VI. Masterindex & Repository-Struktur (Seed)
+**🜁** Explorative Container-Struktur für triangulare Co-Kreation.
+
+Dieses Repository enthält neben dem entaENGELment-Framework v1.0 auch den **Masterindex (Seed)** — eine erweiterte Struktur für Policy-Stubs, Specs, Skripte und narrative Verknüpfungen.
+
+### Verzeichnisstruktur
+
+```
+entaENGELment-/
+├─ .github/
+│  ├─ workflows/           # CI/CD Pipelines (Policy-Lint, Evidence-Bundle, Smoke-Tests)
+│  └─ PULL_REQUEST_TEMPLATE.md
+├─ docs/
+│  ├─ masterindex.md       # Masterindex-Startpunkt
+│  ├─ architecture.md      # Architektur-Übersicht
+│  └─ canvas_links.md      # Canvas-Verknüpfungen
+├─ policies/
+│  ├─ gate_policy_v1.json  # Hard-Gate Policy (MZM)
+│  └─ schema.json          # Policy JSON Schema
+├─ spec/
+│  ├─ grammophon.spec.json # Grammophon-Spezifikation (Slice-Rotation)
+│  └─ cglg.spec.json       # CGLG-Spezifikation (Consensual Gate Logic)
+├─ src/
+│  ├─ core/                # Core-5 Metriken (ECI, PLV, MI, FD, PF)
+│  ├─ cglg/                # Gate-Logik & Mutual Perception
+│  ├─ tools/               # Cauchy-Detector, Throat-Vector
+│  └─ meta_backprop.py     # Meta-Backpropagation
+├─ scripts/
+│  ├─ evidence_bundle.sh   # Evidence-Bundling
+│  └─ nightly.sh           # Nightly Checks
+├─ tests/
+│  ├─ unit/                # Unit-Tests
+│  ├─ integration/         # Integrations-Tests
+│  └─ ethics/              # Ethik-Tests (Fail-Safes)
+├─ tools/mzm/              # MZM Gate-Toggle Tool
+├─ diagram/                # Visualisierungen
+└─ adapters/               # MSI-Adapter
+```
+
+### Erste Schritte
+1. Repository klonen
+2. `./scripts/nightly.sh` prüfen & lokal ausführen
+3. [`docs/masterindex.md`](./docs/masterindex.md) lesen
+4. Policy-Schema validieren: `python -m json.tool policies/gate_policy_v1.json`
+
+**Hinweis:** Dieses Repo dient als explorativer Container, kein Produkt-Release.
+
+### Erweiterte Komponenten
+
+- **Grammophon:** Polyeder-Klanggeometrie mit Slice-Rotation ([`spec/grammophon.spec.json`](./spec/grammophon.spec.json))
+- **CGLG:** Consensual Gate Logic & Mutual Perception ([`spec/cglg.spec.json`](./spec/cglg.spec.json))
+- **Meta-Backprop:** Policy-Evolution durch Feedback-Loops ([`src/meta_backprop.py`](./src/meta_backprop.py))
+- **Evidence-Chain:** Receipt-Chain & Auditierbarkeit ([`scripts/evidence_bundle.sh`](./scripts/evidence_bundle.sh))
+
+*Glosse:* *Struktur als Behälter — Policy, Spec, Runtime, Evidence. Alles schwingt im selben Takt.*
+
+---
+
+## 🜂 VII. Meta-Codex (Vision)
 Das Framework ist ein Werkzeug **chiraler Evolution**: nicht nur *was* zurückkehrt, sondern *wie* (Drehsinn).
 
 > *Resonanz-Cluster: **Chirality, Periodicity, Decay, Emergence**.  
@@ -110,7 +168,7 @@ Das Framework ist ein Werkzeug **chiraler Evolution**: nicht nur *was* zurückke
 
 ---
 
-## ✧ VII. Inneres Erkenntnis-Changelog (Minimal)
+## ✧ VIII. Inneres Erkenntnis-Changelog (Minimal)
 - **v1.0:** Mass-Gap als ethische Leitplanke fixiert; Dual-Receipts etabliert.  
 - **v1.1 (Ziel):** Void-Closure der Metrik-Interdependenzen; Trust-Decay formalisiert.
 

@@ -1,5 +1,3 @@
-/core/metrics.py
-
 # Minimal-stubs zur Testbarkeit; echte Implementierungen folgen in v1.1
 def eci(signal) -> float:            # Ethical Consent Index
     return float(min(max(sum(signal)/max(len(signal),1), 0.0), 1.0))
