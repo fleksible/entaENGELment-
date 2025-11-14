@@ -1,10 +1,9 @@
-mzm/gate_toggle.py
 #!/usr/bin/env python3
 from __future__ import annotations
 import json, pathlib, sys
 from dataclasses import dataclass
 
-POLICY_PATH = pathlib.Path(__file__).parents[1] / "policies" / "gate_policy_v1.json"
+POLICY_PATH = pathlib.Path(__file__).parents[2] / "policies" / "gate_policy_v1.json"
 
 @dataclass
 class Context:

@@ -1,0 +1,10 @@
+name: Policy Lint
+on: [push, pull_request]
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: JSON lint
+        run: |
+          python -m json.tool policies/gate_policy_v1.json > /dev/null

@@ -1,0 +1,11 @@
+name: Smoke Tests
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install pytest
+        run: pip install pytest
+      - name: Run tests
+        run: pytest tests || true

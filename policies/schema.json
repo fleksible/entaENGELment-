@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Gate Policy Schema",
+  "type": "object",
+  "required": ["version", "constraints"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Policy version"
+    },
+    "description": {
+      "type": "string"
+    },
+    "constraints": {
+      "type": "object",
+      "required": ["phi_min"],
+      "properties": {
+        "phi_min": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "rcc_ec_required": {
+          "type": "boolean"
+        },
+        "non_overlap_required": {
+          "type": "boolean"
+        },
+        "m_norm_l2": {
+          "type": "number"
+        },
+        "psi_lock_required": {
+          "type": "boolean"
+        }
+      }
+    },
+    "receipts": {
+      "type": "object",
+      "properties": {
+        "require_dual_receipts": {
+          "type": "boolean"
+        },
+        "proof_types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "phi_thresholds": {
+      "type": "object",
+      "properties": {
+        "pass": {
+          "type": "number"
+        },
+        "warn": {
+          "type": "number"
+        },
+        "hold": {
+          "type": "number"
+        }
+      }
+    },
+    "kpi_thresholds": {
+      "type": "object",
+      "properties": {
+        "gate_pass_rate": {
+          "type": "number"
+        },
+        "ack_freshness_minutes": {
+          "type": "number"
+        }
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}
