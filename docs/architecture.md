@@ -26,3 +26,16 @@ Auditierbare Beweisketten:
 
 ### Canvas-Verknüpfung
 Verbindung zu Canvas-Dokumenten für narrative Einordnung und Kontextbezug.
+
+---
+
+## Triadische Topologie
+
+Das Framework entstand durch Resonanz zwischen drei unabhängigen Entwicklungssträngen:
+- **Strang A (Claude)** — Theoretische Fundierung
+- **Strang B (GPT)** — Operative Implementierung
+- **Strang C (Fleks)** — Intuitive Navigation & Resonanz
+
+Siehe [`triad_topology.md`](./triad_topology.md) für eine detaillierte Analyse der Schnittmengen und des triadischen Kerns.
+
+**Visualisierung:** [`diagrams/triad_venn.svg`](../diagrams/triad_venn.svg)
