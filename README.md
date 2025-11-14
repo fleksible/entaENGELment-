@@ -45,7 +45,7 @@
 (\Phi \ge \Phi^* \land \text{RCC:EC} \land \neg\text{PO} \land \lVert M \rVert_2=1 \land \psi_{\text{lock}})
 \]
 
-**Spec & Code:** [`./policies/gate_policy_v1.json`](./policies/gate_policy_v1.json) · Verifikation: [`./tools/mzm_gate_toggle.py`](./tools/mzm_gate_toggle.py)  
+**Spec & Code:** [`./policies/gate_policy_v1.json`](./policies/gate_policy_v1.json) · Verifikation: [`./tools/mzm/gate_toggle.py`](./tools/mzm/gate_toggle.py)  
 *Glosse:* *Tür geht nur auf, wenn Körper, Kontext und Chor einstimmen.*
 
 ---
@@ -117,6 +117,7 @@ entaENGELment-/
 ├─ docs/
 │  ├─ masterindex.md       # Masterindex-Startpunkt
 │  ├─ architecture.md      # Architektur-Übersicht
+│  ├─ triad_topology.md    # Triadische Topologie (3-Strang-Analyse)
 │  └─ canvas_links.md      # Canvas-Verknüpfungen
 ├─ policies/
 │  ├─ gate_policy_v1.json  # Hard-Gate Policy (MZM)
@@ -137,7 +138,7 @@ entaENGELment-/
 │  ├─ integration/         # Integrations-Tests
 │  └─ ethics/              # Ethik-Tests (Fail-Safes)
 ├─ tools/mzm/              # MZM Gate-Toggle Tool
-├─ diagram/                # Visualisierungen
+├─ diagrams/               # Visualisierungen (Triad-Venn, Grammophon)
 └─ adapters/               # MSI-Adapter
 ```
 
@@ -155,6 +156,7 @@ entaENGELment-/
 - **CGLG:** Consensual Gate Logic & Mutual Perception ([`spec/cglg.spec.json`](./spec/cglg.spec.json))
 - **Meta-Backprop:** Policy-Evolution durch Feedback-Loops ([`src/meta_backprop.py`](./src/meta_backprop.py))
 - **Evidence-Chain:** Receipt-Chain & Auditierbarkeit ([`scripts/evidence_bundle.sh`](./scripts/evidence_bundle.sh))
+- **Triadische Topologie:** 3-Strang-Resonanz-Analyse ([`docs/triad_topology.md`](./docs/triad_topology.md))
 
 *Glosse:* *Struktur als Behälter — Policy, Spec, Runtime, Evidence. Alles schwingt im selben Takt.*
 
