@@ -154,6 +154,9 @@ entaENGELment-/
 
 - **Grammophon:** Polyeder-Klanggeometrie mit Slice-Rotation ([`spec/grammophon.spec.json`](./spec/grammophon.spec.json))
 - **CGLG:** Consensual Gate Logic & Mutual Perception ([`spec/cglg.spec.json`](./spec/cglg.spec.json))
+- **ECI (Ethical Consent Index):** Testbare Implementierung mit Bootstrap/Permutation ([`src/core/eci.py`](./src/core/eci.py) · [`spec/eci.spec.json`](./spec/eci.spec.json))
+- **CPT-Test-Harness:** Charge-Parity-Time Invarianz-Validation ([`tests/cpt/test_cpt_harness.py`](./tests/cpt/test_cpt_harness.py))
+- **Triad-Execution-Kit:** Templates & Vergleichsskript ([`docs/triad_fill_template.md`](./docs/triad_fill_template.md) · [`scripts/triad_compare.py`](./scripts/triad_compare.py))
 - **Meta-Backprop:** Policy-Evolution durch Feedback-Loops ([`src/meta_backprop.py`](./src/meta_backprop.py))
 - **Evidence-Chain:** Receipt-Chain & Auditierbarkeit ([`scripts/evidence_bundle.sh`](./scripts/evidence_bundle.sh))
 - **Triadische Topologie:** 3-Strang-Resonanz-Analyse ([`docs/triad_topology.md`](./docs/triad_topology.md))
