@@ -1,0 +1,7 @@
+# Secondary seed values used for drift detection
+version: 1
+audit_scope: deepjump
+controls:
+  - FIX_PATH_DRIFT
+  - FREEZE_SEEDS
+comments: Keep aligned with MOD_6_RECEIPTS_CORE.
