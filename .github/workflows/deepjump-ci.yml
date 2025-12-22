@@ -20,11 +20,18 @@ jobs:
       - name: Install Dependencies
         run: |
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Set CI_SECRET (repo secret or ephemeral)
+        env:
+          REPO_SECRET: ${{ secrets.CI_SECRET }}
+        run: |
+          if [ -n "$REPO_SECRET" ]; then
+            echo "CI_SECRET=$REPO_SECRET" >> "$GITHUB_ENV"
+          else
+            echo "CI_SECRET=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
+          fi
       - name: Verify Logic (P9 Check)
         run: make verify-json
       - name: Emit & Verify Status Integrity
-        env:
-          CI_SECRET: ${{ secrets.CI_SECRET }}
         run: make status-verify STATUS=PASS H=0.85 DMI=4.8 PHI=0.75
       - name: Generate Snapshot Manifest
         run: make snapshot SNAPSHOT_INPUTS='"seeds/*.yaml" "audit/*.yaml"'
