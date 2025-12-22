@@ -53,7 +53,7 @@ Kenogramme (☐) markieren **bekanntes Nichtwissen** — Bereiche wo strukturell
 1. Öffne Issue mit Label `kenogram`
 2. Titel: `☐[TAG↔TAG]_Name`
 3. Inhalt: Frage, Hypothese, Module/Komponenten, Status
-4. Diskussion → Bei Konsens → PR für `docs/kenograms/[name].md` *(Verzeichnis noch anzulegen)*
+4. Diskussion → Bei Konsens → PR für `docs/kenograms/[name].md` *(Stub vorhanden, Inhalte ausstehend)*
 
 ---
 
