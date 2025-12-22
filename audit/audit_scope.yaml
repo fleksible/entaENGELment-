@@ -1,0 +1,10 @@
+# Scope definition for DeepJump audit trail
+service: entaENGELment
+module_refs:
+  - MOD_6_RECEIPTS_CORE
+  - MOD_15_STATS_TESTS
+artifacts:
+  - out/verify.json
+  - out/status/deepjump_status.json
+  - out/snapshot_manifest.json
+notes: Ensure uploads occur only on successful CI runs.

@@ -1,0 +1,17 @@
+version: 3
+description: >
+  Compact index for EntaENGELment DevOps kit (Tier-0/1/2).
+  References hardened controls and their module descriptors.
+modules:
+  - id: MOD_6_RECEIPTS_CORE
+    path: modules/MOD_6_RECEIPTS_CORE.yaml
+    summary: Receipts core, snapshot controls, seed freezing.
+  - id: MOD_15_STATS_TESTS
+    path: modules/MOD_15_STATS_TESTS.yaml
+    summary: Status emission integrity and DeepJump verification.
+integrity:
+  hash_algo: sha256
+  governance: immutable-index
+metadata:
+  maintainer: entaENGELment
+  last_review: 2024-06-30

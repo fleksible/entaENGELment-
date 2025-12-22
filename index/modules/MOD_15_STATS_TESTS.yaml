@@ -1,0 +1,24 @@
+id: MOD_15_STATS_TESTS
+title: DeepJump Status Integrity & Tests
+version: 1
+controls:
+  - id: FIX_STATUS_INTEGRITY
+    description: >
+      Status payloads must be canonicalized and HMAC signed using env-provided
+      secrets; unsigned payloads are marked as untrusted.
+    implemented_by: tools/status_emit.py
+  - id: VERIFY_STATUS_CHAIN
+    description: >
+      HMAC signature verification is required for published status artifacts.
+    implemented_by: tools/status_verify.py
+  - id: P9_RUNBOOK_CHECK
+    description: >
+      DeepJump receipts must validate proofs and metrics before publication.
+    implemented_by: tests/verify_deep_jump.py
+artifacts:
+  status_json: out/status/deepjump_status.json
+  status_badge: out/badges/deepjump.svg
+  verify_report: out/verify.json
+notes: |
+  CI workflow deepjump-ci.yml runs status emission, verification, and snapshot
+  generation. Secrets are read from CI_SECRET or ENTA_HMAC_SECRET.
