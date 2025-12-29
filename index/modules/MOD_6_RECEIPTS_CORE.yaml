@@ -1,0 +1,27 @@
+id: MOD_6_RECEIPTS_CORE
+title: Receipts Core / Snapshot Integrity
+version: 1
+controls:
+  - id: FIX_PATH_DRIFT
+    description: >
+      Snapshot manifest must only include files within repo root using relative
+      paths; outside files are skipped with warnings.
+    implemented_by: tools/snapshot_guard.py
+  - id: FREEZE_SEEDS
+    description: >
+      Seed configurations must always be present in manifests; strict mode fails
+      when missing.
+    implemented_by: tools/snapshot_guard.py --strict
+artifacts:
+  manifest: out/snapshot_manifest.json
+  receipts:
+    sample: receipts/arc_sample.json
+  seeds:
+    - seeds/seed_config.yaml
+    - seeds/seed_extras.yaml
+  audit:
+    - audit/audit_matrix.yaml
+    - audit/audit_scope.yaml
+notes: |
+  The snapshot guard enforces deterministic hashing using SHA-256 with
+  canonical ordering. Relative path anchoring prevents host leakage.

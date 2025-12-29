@@ -1,3 +1,18 @@
+# Minimal-stubs zur Testbarkeit; echte Implementierungen folgen in v1.1
+def eci(signal) -> float:            # Ethical Consent Index
+    return float(min(max(sum(signal)/max(len(signal),1), 0.0), 1.0))
+
+def plv(phases) -> float:            # Phase Locking Value
+    return float(min(max(1.0 - (max(phases)-min(phases))/3.14159, 0.0), 1.0))
+
+def mi(x, y) -> float:               # Mutual Information (Dummy)
+    return float(0.5)
+
+def fd(series) -> float:             # Fractal Dimension (Dummy)
+    return float(1.5)
+
+def pf(series) -> float:             # Power Flux (Dummy)
+    return float(sum(abs(v) for v in series)/max(len(series),1))
 """Core-5 Metriken für entaENGELment Framework.
 
 Dieses Modul implementiert die fünf Kern-Metriken des entaENGELment-Frameworks:

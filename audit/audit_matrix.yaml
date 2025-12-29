@@ -1,0 +1,14 @@
+# Audit matrix for DeepJump controls
+controls:
+  FIX_PATH_DRIFT:
+    owner: devops
+    evidence: out/snapshot_manifest.json
+  FREEZE_SEEDS:
+    owner: reliability
+    evidence: out/snapshot_manifest.json
+  FIX_STATUS_INTEGRITY:
+    owner: security
+    evidence: out/status/deepjump_status.json
+  P9_RUNBOOK_CHECK:
+    owner: governance
+    evidence: out/verify.json

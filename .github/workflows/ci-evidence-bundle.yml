@@ -1,0 +1,10 @@
+name: Evidence Bundle
+on: [push]
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run bundler
+        run: |
+          bash scripts/evidence_bundle.sh

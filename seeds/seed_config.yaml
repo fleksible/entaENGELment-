@@ -1,0 +1,9 @@
+# Seed configuration for EntaENGELment DeepJump
+version: 1
+profile: default
+metrics:
+  H: 0.84
+  dmi_score: 4.7
+  phi_integrity: 0.72
+  refractory_ms: 120
+notes: Anchored seed ensures deterministic baseline for snapshots.
