@@ -1,0 +1,24 @@
+version: 1
+description: MSI-Adapter (Hysterese/EMA) – moduliert nur Policy-Schwellen & Quantisierung
+
+# EMA-Glättung für Market-Signal-Indicator
+ema:
+  alpha: 0.35       # Glättungsfaktor (0-1)
+  min_samples: 5    # Minimale Samples vor Aktivierung
+
+# Hysterese-Parameter für Policy-Schwellen
+hysteresis:
+  upshift: 0.05     # Anhebungsdelta für phi_min bei Druck↑
+  downshift: 0.03   # Absenkungsdelta für phi_min bei Druck↓
+
+# Routing-Regeln: Was darf der MSI beeinflussen?
+routing:
+  affects:
+    - constraints.phi_min    # Nur Policy-Schwellen dürfen moduliert werden
+
+  quarantined:
+    - receipts               # Receipts nie direkt beeinflussen!
+    - context_signature      # Signaturen sind unveränderlich
+
+# Garantie: MSI ist strikt getrennt von receipt_proof
+# Prinzip: Wahrheit zuerst – Markt als Resonanzfeld, nicht als Lenkrad
