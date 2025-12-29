@@ -7,7 +7,7 @@ Dieses Dokument beschreibt das vollständige DevOps‑Kit für das EntaENGELment
 Die folgende Baumstruktur spiegelt den Standardaufbau wider und definiert, wo sich die relevanten Artefakte befinden. Sie dient als Referenz für die Module innerhalb des Kernindex.
 
 ```
-entaengelment-core/
+entaENGELment-/
 ├── index/                       # Kernindex (Tier‑0/1/2) und Modul‑Metadaten
 │   ├── COMPACT_INDEX_v3.yaml
 │   └── modules/

@@ -4,7 +4,7 @@ Startpunkt des Masterindex. Enthält Struktur, narrative Einordnung und Links zu
 
 ## Verzeichnisstruktur
 
-- **policy/** — Gate-Policies und Schema-Definitionen
+- **policies/** — Gate-Policies und Schema-Definitionen
 - **spec/** — Spezifikationen für Grammophon und CGLG
 - **src/** — Source-Code (Core-Metriken, CGLG, Tools)
 - **scripts/** — Automatisierungs-Scripts (Evidence-Bundling, Nightly Checks)
@@ -53,7 +53,7 @@ Kenogramme (☐) markieren **bekanntes Nichtwissen** — Bereiche wo strukturell
 1. Öffne Issue mit Label `kenogram`
 2. Titel: `☐[TAG↔TAG]_Name`
 3. Inhalt: Frage, Hypothese, Module/Komponenten, Status
-4. Diskussion → Bei Konsens → PR für `docs/kenograms/[name].md`
+4. Diskussion → Bei Konsens → PR für `docs/kenograms/[name].md` *(Stub vorhanden, Inhalte ausstehend)*
 
 ---
 

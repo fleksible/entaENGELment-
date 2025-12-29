@@ -60,6 +60,12 @@
 - **Ethics:** `tests/ethics/T3_fail_safe_expired_consent.py`.
 
 *Glosse:* *Vertrauen = wiederholbare Evidenz.*
+**Aktiver Sprint (7 Tage)**  
+1) **T1.1.2 Lyra Linearity-Cal:** Edge-Input-Kalibrierung.  
+2) **MSI-Adapter:** `adapters/msi-adapter-v1.yaml` (geplant) + `context_signature`-Hook.  
+3) **T2.x Zeta-Panel:** Explain-Overlay-Logik (Transparenz).
+
+*Glosse:* *Leere wird Form — gezielt, nicht zufällig.*
 
 ---
 
