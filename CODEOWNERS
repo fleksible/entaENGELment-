@@ -1,4 +1,17 @@
-* @your-handle
-/policies/ @your-handle
-/tools/ @your-handle
-/tests/ @your-handle
+# Code Owners für entaENGELment Framework
+# Diese Personen werden automatisch als Reviewer für PRs hinzugefügt
+
+# Default owner für alle Dateien
+* @fleksible
+
+# Kritische Komponenten
+/policies/ @fleksible
+/tools/mzm/ @fleksible
+/src/core/ @fleksible
+
+# Tests
+/tests/ethics/ @fleksible
+
+# CI/CD und Configuration
+/.github/ @fleksible
+/pyproject.toml @fleksible
