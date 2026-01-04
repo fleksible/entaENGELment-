@@ -7,18 +7,17 @@ import argparse
 import json
 import os
 import sys
-from typing import Dict, List, Tuple
 
 
-def load_receipt(path: str) -> Dict:
+def load_receipt(path: str) -> dict:
     if not os.path.exists(path):
         raise FileNotFoundError(f"Receipt not found: {path}")
-    with open(path, "r") as f:
+    with open(path) as f:
         return json.load(f)
 
 
-def validate_receipt(data: Dict) -> Tuple[str, List[str]]:
-    issues: List[str] = []
+def validate_receipt(data: dict) -> tuple[str, list[str]]:
+    issues: list[str] = []
 
     status_ok = data.get("status") == "valid"
     if not status_ok:
@@ -47,7 +46,7 @@ def validate_receipt(data: Dict) -> Tuple[str, List[str]]:
     return verdict, issues
 
 
-def build_report(data: Dict) -> Dict:
+def build_report(data: dict) -> dict:
     verdict, issues = validate_receipt(data)
     return {
         "receipt_id": data.get("id"),
@@ -55,7 +54,7 @@ def build_report(data: Dict) -> Dict:
         "verdict": verdict,
         "issues": issues,
         "proofs_present": {"receipt_proof", "context_signature"}.issubset(set(data.get("proofs", {}).keys())),
-        "metrics_keys": sorted(list(data.get("metrics", {}).keys())),
+        "metrics_keys": sorted(data.get("metrics", {}).keys()),
         "seed_snapshot": data.get("seed_snapshot"),
     }
 

@@ -7,7 +7,7 @@ __version__ = "1.0.0"
 __author__ = "fleksible"
 
 # Expose wichtige Komponenten auf Package-Ebene
-from src.core.metrics import eci, plv, mi, fd, pf
+from src.core.metrics import eci, fd, mi, pf, plv
 
 __all__ = [
     "eci",

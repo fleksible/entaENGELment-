@@ -4,7 +4,7 @@ Testet, dass das System sicher reagiert, wenn der Consent abgelaufen ist
 oder andere ethische Constraints verletzt werden.
 """
 
-from tools.mzm.gate_toggle import Context, load_policy, gate_open
+from tools.mzm.gate_toggle import Context, gate_open, load_policy
 
 
 def test_gate_closes_when_consent_expired():

@@ -1,4 +1,5 @@
-from src.core.metrics import eci, plv, mi, fd, pf
+from src.core.metrics import eci, fd, mi, pf, plv
+
 
 def test_metrics_exist_and_return_numbers():
     assert 0.0 <= eci([0.4, 0.6]) <= 1.0
@@ -12,7 +13,6 @@ Testet die grundlegende Funktionalität der fünf Kern-Metriken:
 ECI, PLV, MI, FD, PF
 """
 
-from src.core.metrics import eci, plv, mi, fd, pf
 
 
 def test_eci_valid_range():

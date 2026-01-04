@@ -22,7 +22,7 @@ def test_snapshot_guard_includes_seeds_and_rel_paths(tmp_path):
     manifest_path = tmp_path / "snapshot_manifest.json"
     run_guard(manifest_path, "seeds/*.yaml", "audit/*.yaml", str(outside_file))
 
-    with open(manifest_path, "r") as f:
+    with open(manifest_path) as f:
         manifest = json.load(f)
 
     assert any(key.startswith("seeds/") for key in manifest["files"].keys())
