@@ -1,23 +1,4 @@
 #!/usr/bin/env python3
-from __future__ import annotations
-import json, pathlib, sys
-from dataclasses import dataclass
-
-POLICY_PATH = pathlib.Path(__file__).parents[2] / "policies" / "gate_policy_v1.json"
-
-@dataclass
-class Context:
-    phi: float               # Resonanzpotential Φ
-    rcc_ec: bool             # RCC:EC erfüllt?
-    non_overlap: bool        # ¬PO
-    m_norm_l2: float         # ||M||_2
-    psi_lock: bool           # Lock gesetzt?
-
-def load_policy(path=POLICY_PATH):
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
-
-def gate_open(ctx: Context, policy: dict) -> bool:
 """MZM Gate Toggle - Hard-Gate Policy für entaENGELment Framework.
 
 Implementiert die Gate-Logik basierend auf der MZM-Policy (gate_policy_v1.json).
@@ -28,7 +9,6 @@ Das Gate öffnet nur, wenn alle Constraints erfüllt sind:
 - ||M||_2 = 1.0
 - Psi-Lock gesetzt
 """
-
 from __future__ import annotations
 
 import json
@@ -84,18 +64,6 @@ def gate_open(ctx: Context, policy: Dict[str, Any]) -> bool:
         (ctx.psi_lock if c["psi_lock_required"] else True),
     ]
     return all(checks)
-
-def main(argv):
-    # Minimal-CLI: mzm_gate_toggle.py 0.87 true true 1.0 true
-    if len(argv) != 6:
-        print("usage: mzm_gate_toggle.py <phi> <rcc_ec> <non_overlap> <m_norm_l2> <psi_lock>", file=sys.stderr)
-        return 2
-    phi = float(argv[1])
-    parse_bool = lambda s: s.lower() in {"1","true","yes","y","on"}
-    ctx = Context(phi, parse_bool(argv[2]), parse_bool(argv[3]), float(argv[4]), parse_bool(argv[5]))
-    policy = load_policy()
-    print("GateOpen=" + ("true" if gate_open(ctx, policy) else "false"))
-    return 0
 
 
 def main(argv: list[str]) -> int:

@@ -8,34 +8,7 @@ DMI ?= 4.7
 PHI ?= 0.72
 REFRACTORY ?= 120
 
-.PHONY: verify-json status status-verify snapshot clean all
-
-all: verify-json status-verify snapshot
-
-verify-json:
-	@mkdir -p $(OUT)
-	@$(PY) tests/verify_deep_jump.py --receipt $(RECEIPT) --json > $(OUT)/verify.json
-
-status:
-	@mkdir -p $(OUT)
-	@$(PY) tools/status_emit.py \
-		--outdir $(OUT) \
-		--status $(STATUS) \
-		--H $(H) \
-		--dmi $(DMI) \
-		--phi $(PHI) \
-		--refractory $(REFRACTORY)
-
-status-verify: status
-	@$(PY) tools/status_verify.py $(OUT)/status/deepjump_status.json
-
-snapshot:
-	@mkdir -p $(OUT)
-	@$(PY) tools/snapshot_guard.py $(OUT)/snapshot_manifest.json $(SNAPSHOT_INPUTS) --strict
-
-clean:
-	rm -rf $(OUT)
-.PHONY: help install install-dev test test-unit test-integration test-ethics coverage lint format type-check clean gate-test
+.PHONY: help install install-dev test test-unit test-integration test-ethics coverage lint format type-check clean gate-test verify-json status status-verify snapshot all
 
 help:
 	@echo "entaENGELment Framework - Development Commands"
@@ -59,9 +32,16 @@ help:
 	@echo "Gate Policy:"
 	@echo "  make gate-test       Test gate toggle functionality"
 	@echo ""
+	@echo "DeepJump:"
+	@echo "  make all             Run full DeepJump flow"
+	@echo "  make verify-json     Verify JSON receipts"
+	@echo "  make status-verify   Emit and verify status"
+	@echo "  make snapshot        Generate snapshot manifest"
+	@echo ""
 	@echo "Cleanup:"
 	@echo "  make clean           Remove build artifacts and cache"
 
+# === Setup ===
 install:
 	pip install -e .
 
@@ -69,6 +49,7 @@ install-dev:
 	pip install -r requirements-dev.txt
 	pip install -e .
 
+# === Testing ===
 test:
 	pytest -v
 
@@ -86,6 +67,7 @@ coverage:
 	@echo ""
 	@echo "Coverage report generated in htmlcov/index.html"
 
+# === Code Quality ===
 lint:
 	ruff check src/ tools/ tests/
 
@@ -95,6 +77,7 @@ format:
 type-check:
 	mypy src/ tools/
 
+# === Gate Policy ===
 gate-test:
 	@echo "Testing gate with valid context (should open):"
 	python tools/mzm/gate_toggle.py 0.9 true true 1.0 true
@@ -105,7 +88,33 @@ gate-test:
 	@echo "Testing gate without consent (should close):"
 	python tools/mzm/gate_toggle.py 0.9 false true 1.0 true
 
+# === DeepJump Flow ===
+all: verify-json status-verify snapshot
+
+verify-json:
+	@mkdir -p $(OUT)
+	@$(PY) tests/verify_deep_jump.py --receipt $(RECEIPT) --json > $(OUT)/verify.json
+
+status:
+	@mkdir -p $(OUT)
+	@$(PY) tools/status_emit.py \
+		--outdir $(OUT) \
+		--status $(STATUS) \
+		--H $(H) \
+		--dmi $(DMI) \
+		--phi $(PHI) \
+		--refractory $(REFRACTORY)
+
+status-verify: status
+	@$(PY) tools/status_verify.py $(OUT)/status/deepjump_status.json
+
+snapshot:
+	@mkdir -p $(OUT)
+	@$(PY) tools/snapshot_guard.py $(OUT)/snapshot_manifest.json $(SNAPSHOT_INPUTS) --strict
+
+# === Cleanup ===
 clean:
+	rm -rf $(OUT)
 	rm -rf build/
 	rm -rf dist/
 	rm -rf *.egg-info
