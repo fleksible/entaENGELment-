@@ -30,7 +30,7 @@ def test_status_emit_and_verify(tmp_path):
     status_path = out_dir / "status" / "deepjump_status.json"
     assert status_path.exists()
 
-    with open(status_path, "r") as f:
+    with open(status_path) as f:
         payload = json.load(f)
     assert payload["signatures"]["hmac"] != "UNSIGNED"
 

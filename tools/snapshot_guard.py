@@ -13,8 +13,8 @@ import hashlib
 import json
 import os
 import sys
+from collections.abc import Iterable
 from datetime import datetime, timezone
-from typing import Dict, Iterable, List
 
 
 def hash_file(path: str) -> str:
@@ -43,16 +43,16 @@ def is_within_root(abs_path: str, repo_root: str) -> bool:
         return False
 
 
-def build_file_list(repo_root: str, patterns: Iterable[str]) -> List[str]:
-    files_to_process: List[str] = []
+def build_file_list(repo_root: str, patterns: Iterable[str]) -> list[str]:
+    files_to_process: list[str] = []
     for pattern in patterns:
         search_pattern = pattern if os.path.isabs(pattern) else os.path.join(repo_root, pattern)
         files_to_process.extend(glob.glob(search_pattern, recursive=True))
-    return sorted(list(set(files_to_process)))
+    return sorted(set(files_to_process))
 
 
-def create_manifest(repo_root: str, files: Iterable[str]) -> Dict[str, str]:
-    manifest_files: Dict[str, str] = {}
+def create_manifest(repo_root: str, files: Iterable[str]) -> dict[str, str]:
+    manifest_files: dict[str, str] = {}
     for fpath in files:
         if os.path.isfile(fpath):
             abs_path = os.path.abspath(fpath)
