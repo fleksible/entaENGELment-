@@ -14,10 +14,12 @@ Definiert die nicht-verhandelbaren Invarianten und Gate-Logik:
 Spezifikationen für die Kernkomponenten:
 - `grammophon.spec.json` — Slice-Rotation & Polyeder-Klanggeometrie
 - `cglg.spec.json` — Consensual Gate Logic & Mutual Perception
+- `eci.spec.json` — Ethical Consent Index JSON Schema
 
 ### Runtime Layer
 Operative Komponenten:
-- **Core Metrics** (`src/core/metrics.py`) — ECI, PLV, MI, FD, PF
+- **Core Metrics** (`src/core/metrics.py`) — PLV, MI, FD, PF (Dummy-Stubs)
+- **ECI Implementation** (`src/core/eci.py`) — Ethical Consent Index mit Bootstrap/Permutation
 - **CGLG** (`src/cglg/`) — Gate-Logik und Mutual Perception
 - **Source Tools** (`src/tools/`) — Cauchy-Detector, Throat-Vector
 - **Meta-Backpropagation** (`src/meta_backprop.py`) — Policy-Evolution
@@ -50,3 +52,22 @@ Das Framework entstand durch Resonanz zwischen drei unabhängigen Entwicklungsst
 Siehe [`triad_topology.md`](./triad_topology.md) für eine detaillierte Analyse der Schnittmengen und des triadischen Kerns.
 
 **Visualisierung:** [`diagrams/triad_venn.svg`](../diagrams/triad_venn.svg)
+
+---
+
+## Test-Architektur
+
+### Unit-Tests
+- **Core-Metriken:** `tests/unit/test_core5_metrics.py`
+- **ECI:** `tests/unit/test_eci.py` — ECI-Berechnung, Bootstrap, Permutation
+
+### Integration-Tests
+- **Gate-Policy:** `tests/integration/test_integration.py` — MZM Gate-Toggle
+- **CPT-Harness:** `tests/cpt/test_cpt_harness.py` — Charge-Parity-Time Invarianz
+
+### Ethics-Tests
+- **Consent-Fail-Safes:** `tests/ethics/T3_fail_safe_expired_consent.py`
+
+### Triad-Execution
+- **Template:** `docs/triad_fill_template.md` — Standardisiertes Format
+- **Compare-Script:** `scripts/triad_compare.py` — Vektorisierung & Similarity
