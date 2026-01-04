@@ -10,22 +10,18 @@ Startpunkt des Masterindex. Enthält Struktur, narrative Einordnung und Links zu
 
 - **policies/** — Gate-Policies und Schema-Definitionen
 - **spec/** — Spezifikationen für Grammophon, CGLG und ECI
-- **src/** — Source-Code (Core-Metriken inkl. ECI, CGLG, Tools)
-- **scripts/** — Automatisierungs-Scripts (Evidence-Bundling, Nightly Checks, Triad-Compare)
-- **tests/** — Test-Suite (Unit, Integration, Ethics, CPT)
-- **spec/** — Spezifikationen für Grammophon und CGLG
-- **src/** — Source-Code (Core-Metriken, CGLG, Meta-Backprop)
+- **src/** — Source-Code (Core-Metriken inkl. ECI, CGLG, Meta-Backprop)
   - **src/core/** — Core-5 Metriken (ECI, PLV, MI, FD, PF)
   - **src/cglg/** — Consensual Gate Logic und Mutual Perception
   - **src/tools/** — Cauchy-Detector, Throat-Vector
+- **scripts/** — Automatisierungs-Scripts (Evidence-Bundling, Nightly Checks, Triad-Compare)
+- **tests/** — Test-Suite (Unit, Integration, Ethics, CPT)
 - **tools/** — DeepJump DevOps-Tools
   - `status_emit.py` — HMAC-signierte Status-Emission
   - `status_verify.py` — HMAC-Verifikation
   - `snapshot_guard.py` — Manifest-Generator mit SHA-256
   - `verify_pointers.py` — Pointer-Validierung
   - `claim_lint.py` — Claim-Scanning
-- **scripts/** — Automatisierungs-Scripts (Evidence-Bundling, Nightly Checks)
-- **tests/** — Test-Suite (Unit, Integration, Ethics)
 - **docs/** — Dokumentation und Architektur
 - **reports/** — Test-Reports und Templates (CPT, Triad-Similarity)
 - **validation/** — ECI-Validierungs-Artefakte
