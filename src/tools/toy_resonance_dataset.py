@@ -51,7 +51,7 @@ def generate_mycel_signals(n: int = 256, seed: int = 42, coupling: float = 0.35)
     prev_a = 0.0
     prev_b = 0.0
 
-    for i, ti in enumerate(t):
+    for _i, ti in enumerate(t):
         # Phase drift
         phase += drift + (rng.random() - 0.5) * 0.01
         phases.append(phase)
