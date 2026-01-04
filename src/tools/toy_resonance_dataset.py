@@ -17,6 +17,11 @@ from dataclasses import dataclass
 from src.core.metrics import eci, fd, mi, pf, plv
 
 
+def _wrap_pi(x: float) -> float:
+    """Wrap angle to [-pi, pi]."""
+    return ((x + math.pi) % (2.0 * math.pi)) - math.pi
+
+
 @dataclass
 class ToyDataset:
     t: list[float]
@@ -45,25 +50,36 @@ def generate_mycel_signals(n: int = 256, seed: int = 42, coupling: float = 0.35)
     phases: list[float] = []
     consent_signal: list[float] = []
 
-    phase = 0.0
+    # Two drifting oscillators + weak Kuramoto-style coupling
+    phase_a = 0.0
+    phase_b = 0.0
     drift = 0.02
+    mismatch = 2.0  # b runs faster -> without coupling the difference drifts away
+    phase_noise = 0.02
+    coupling_scale = 0.02  # scales the effect of coupling on phase lock
 
     prev_a = 0.0
     prev_b = 0.0
 
     for _i, ti in enumerate(t):
-        # Phase drift
-        phase += drift + (rng.random() - 0.5) * 0.01
-        phases.append(phase)
+        # Phase evolution with Kuramoto-style coupling
+        phase_a += drift + (rng.random() - 0.5) * phase_noise
+        phase_b += (drift * mismatch) + (rng.random() - 0.5) * phase_noise
+        phase_b += coupling * coupling_scale * math.sin(phase_a - phase_b)
 
-        base = math.sin(2.0 * math.pi * (ti * 3.0) + phase)
+        # Store PHASE DIFFERENCE (wrapped) -> PLV now reflects coupling
+        delta = _wrap_pi(phase_a - phase_b)
+        phases.append(delta)
+
+        base_a = math.sin(2.0 * math.pi * (ti * 3.0) + phase_a)
+        base_b = math.sin(2.0 * math.pi * (ti * 3.0) + phase_b)
         noise_a = (rng.random() - 0.5) * 0.2
         noise_b = (rng.random() - 0.5) * 0.2
 
-        # a is base + noise (with mild inertia)
-        cur_a = 0.75 * prev_a + 0.25 * (base + noise_a)
+        # a is base_a + noise (with mild inertia)
+        cur_a = 0.75 * prev_a + 0.25 * (base_a + noise_a)
         # b is partially coupled to a + its own noise
-        cur_b = 0.70 * prev_b + 0.30 * (coupling * cur_a + (1.0 - coupling) * base + noise_b)
+        cur_b = 0.70 * prev_b + 0.30 * (coupling * cur_a + (1.0 - coupling) * base_b + noise_b)
 
         a.append(cur_a)
         b.append(cur_b)

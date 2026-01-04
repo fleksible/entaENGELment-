@@ -20,3 +20,12 @@ def test_compute_demo_metrics_returns_all_keys_and_numbers():
     assert set(m.keys()) == {"ECI", "PLV", "MI", "FD", "PF"}
     for v in m.values():
         assert isinstance(v, float)
+
+
+def test_plv_increases_with_coupling():
+    """PLV should increase with higher coupling (monotonicity check)."""
+    low = compute_demo_metrics(generate_mycel_signals(n=256, seed=7, coupling=0.1))["PLV"]
+    high = compute_demo_metrics(generate_mycel_signals(n=256, seed=7, coupling=0.8))["PLV"]
+
+    # robust monotonicity check (deterministic seed)
+    assert high > low + 0.1
