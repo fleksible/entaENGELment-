@@ -10,14 +10,15 @@ Usage:
   python scripts/triad_compare.py claude.md gpt.md fleks.md out.json
 """
 
-import sys
 import json
-import re
-from collections import Counter
 import math
+import re
+import sys
+from collections import Counter
+
 
 def read_text(path):
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return f.read()
 
 def tokenize(text):
@@ -51,7 +52,7 @@ def cosine_sim(a, b):
     return num / (na*nb)
 
 def top_common_tokens(a_set, b_set, top_n=10):
-    return list(sorted(a_set & b_set))[:top_n]
+    return sorted(a_set & b_set)[:top_n]
 
 def main(a_path, b_path, c_path, out_path="reports/triad_similarity.json"):
     a_text = read_text(a_path)
@@ -83,7 +84,7 @@ def main(a_path, b_path, c_path, out_path="reports/triad_similarity.json"):
             "A_B_common": top_common_tokens(a_set, b_set),
             "A_C_common": top_common_tokens(a_set, c_set),
             "B_C_common": top_common_tokens(b_set, c_set),
-            "A_B_C_common": list(sorted(a_set & b_set & c_set))[:20]
+            "A_B_C_common": sorted(a_set & b_set & c_set)[:20]
         }
     }
     with open(out_path, "w", encoding="utf-8") as f:
