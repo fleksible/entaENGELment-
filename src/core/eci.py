@@ -6,24 +6,30 @@ ECI = w1*likert_norm + w2*behavior_proxy + w3*physio_proxy_norm
 Weights must sum to 1 (function normalizes otherwise).
 """
 
-from typing import Optional, Dict, Tuple, List
-import numpy as np
 import json
 import os
+from typing import Optional
 
-def normalize_weights(w: Dict[str, float]) -> Dict[str, float]:
+import numpy as np
+
+
+def normalize_weights(w: dict[str, float]) -> dict[str, float]:
     s = sum(w.values())
     if s == 0:
         raise ValueError("Sum of weights must be > 0")
     return {k: float(v) / s for k, v in w.items()}
 
+
 def clamp01(x: float) -> float:
     return max(0.0, min(1.0, float(x)))
 
-def compute_eci(likert_norm: float,
-                behavior_proxy: float,
-                physio_proxy: Optional[float],
-                weights: Optional[Dict[str, float]] = None) -> float:
+
+def compute_eci(
+    likert_norm: float,
+    behavior_proxy: float,
+    physio_proxy: Optional[float],
+    weights: Optional[dict[str, float]] = None,
+) -> float:
     """
     Compute ECI in 0..1.
     likert_norm, behavior_proxy, physio_proxy expected in 0..1 (physio may be None).
@@ -51,10 +57,13 @@ def compute_eci(likert_norm: float,
 
     return clamp01(eci)
 
+
 # -----------------------
 # Simple bootstrap & permutation helpers for validation
 # -----------------------
-def bootstrap_ci(values: List[float], n_bootstrap: int = 1000, ci: float = 0.95) -> Tuple[float, float]:
+def bootstrap_ci(
+    values: list[float], n_bootstrap: int = 1000, ci: float = 0.95
+) -> tuple[float, float]:
     arr = np.array(values)
     n = len(arr)
     if n == 0:
@@ -67,7 +76,8 @@ def bootstrap_ci(values: List[float], n_bootstrap: int = 1000, ci: float = 0.95)
     upper = np.percentile(means, (1 + ci) / 2 * 100)
     return float(lower), float(upper)
 
-def permutation_test(observed: float, samples: List[float], n_perm: int = 1000) -> float:
+
+def permutation_test(observed: float, samples: list[float], n_perm: int = 1000) -> float:
     arr = np.array(samples)
     count = 0
     for _ in range(n_perm):
@@ -77,17 +87,20 @@ def permutation_test(observed: float, samples: List[float], n_perm: int = 1000) 
     p = (count + 1) / (n_perm + 1)
     return float(p)
 
+
 # -----------------------
 # CLI helpers (minimal)
 # -----------------------
-def save_specified_eci(path: str, eci_obj: Dict):
+def save_specified_eci(path: str, eci_obj: dict):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(eci_obj, f, indent=2)
 
+
 if __name__ == "__main__":
     # quick smoke
     import argparse
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--likert", type=float, default=6.0, help="Likert 1..7")
     parser.add_argument("--behavior", type=float, default=0.5, help="Behavior proxy 0..1")
@@ -104,8 +117,8 @@ if __name__ == "__main__":
             "behavior_proxy": args.behavior,
             "physio_proxy": args.physio,
             "weights": {"w_likert": 0.5, "w_behavior": 0.4, "w_physio": 0.1},
-            "eci_value": eci_val
-        }
+            "eci_value": eci_val,
+        },
     }
     save_specified_eci(args.out, obj)
     print(f"ECI saved to {args.out} -> {eci_val:.4f}")

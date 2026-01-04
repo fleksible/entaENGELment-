@@ -8,9 +8,7 @@ Maps spectral taxonomy to gate decisions with normalized reason codes.
 from .spectral_void import SpectralVoidClass
 
 
-def map_taxonomy_to_gate(
-    void_class: SpectralVoidClass, has_consent: bool
-) -> tuple[str, str]:
+def map_taxonomy_to_gate(void_class: SpectralVoidClass, has_consent: bool) -> tuple[str, str]:
     """
     MOD_18 -> MOD_14 Integration.
 

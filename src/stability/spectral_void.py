@@ -7,8 +7,9 @@ Classifies local geometry for stability analysis.
 Robust against shape mismatches, NaNs, and edge cases.
 """
 
-import numpy as np
 from enum import Enum
+
+import numpy as np
 
 
 class SpectralVoidClass(Enum):
@@ -67,11 +68,7 @@ def classify_spectral_void(
     if n_neg > 0:
         if n_zero > 0:
             return SpectralVoidClass.DEGENERATE_SADDLE
-        return (
-            SpectralVoidClass.RIDGE_SADDLE
-            if n_neg == 1
-            else SpectralVoidClass.MULTI_SADDLE
-        )
+        return SpectralVoidClass.RIDGE_SADDLE if n_neg == 1 else SpectralVoidClass.MULTI_SADDLE
 
     # Pure Flat
     if n_zero > 0:

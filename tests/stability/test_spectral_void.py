@@ -4,8 +4,8 @@ tests/stability/test_spectral_void.py
 Unit tests for MOD_18 Spectral Taxonomy.
 """
 
-import pytest
 import numpy as np
+
 from src.stability.spectral_void import SpectralVoidClass, classify_spectral_void
 from src.stability.stability_guard import map_taxonomy_to_gate
 
@@ -134,9 +134,7 @@ class TestStabilityGuard:
 
     def test_degenerate_saddle_blocks(self):
         """DEGENERATE_SADDLE -> BLOCK"""
-        decision, reason = map_taxonomy_to_gate(
-            SpectralVoidClass.DEGENERATE_SADDLE, True
-        )
+        decision, reason = map_taxonomy_to_gate(SpectralVoidClass.DEGENERATE_SADDLE, True)
         assert decision == "BLOCK"
         assert reason == "BLOCK_UNSTABLE_DEGENERATE"
 
