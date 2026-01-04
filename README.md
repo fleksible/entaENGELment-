@@ -47,7 +47,7 @@
 ---
 
 ## 🜃 Adaptive Schicht: Markt-als-Signal
-**MSI-Adapter:** siehe `adapters/msi-adapter-v1.yaml`.  
+**MSI-Adapter:** siehe `adapters/msi_adapter_v1.yaml`.  
 **Trennung:** `context_signature` belegt Modulation; `receipt_proof` bleibt unvermischt.
 
 *Glosse:* *Wind im Segel, nicht Hand am Ruder.*

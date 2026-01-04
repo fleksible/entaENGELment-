@@ -18,8 +18,15 @@ Operative Komponenten:
 - **Core Metrics** (`src/core/metrics.py`) — PLV, MI, FD, PF (Dummy-Stubs)
 - **ECI Implementation** (`src/core/eci.py`) — Ethical Consent Index mit Bootstrap/Permutation
 - **CGLG** (`src/cglg/`) — Gate-Logik und Mutual Perception
-- **Tools** (`src/tools/`) — Cauchy-Detector, Throat-Vector
+- **Source Tools** (`src/tools/`) — Cauchy-Detector, Throat-Vector
 - **Meta-Backpropagation** (`src/meta_backprop.py`) — Policy-Evolution
+
+### DevOps Layer
+DeepJump-Kern für Auditierbarkeit und Reproduzierbarkeit:
+- **Status-Emit** (`tools/status_emit.py`) — HMAC-signierte Status-Emission
+- **Snapshot-Guard** (`tools/snapshot_guard.py`) — Manifest-Generator mit SHA-256
+- **Status-Verify** (`tools/status_verify.py`) — HMAC-Verifikation
+- **Verify-Pointers** (`tools/verify_pointers.py`) — Pointer-Validierung
 
 ### Evidence & Receipt Chain
 Auditierbare Beweisketten:

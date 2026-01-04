@@ -11,11 +11,14 @@ Startpunkt des Masterindex. Enthält Struktur, narrative Einordnung und Links zu
 - **tests/** — Test-Suite (Unit, Integration, Ethics, CPT)
 - **spec/** — Spezifikationen für Grammophon und CGLG
 - **src/** — Source-Code (Core-Metriken, CGLG, Tools)
+- **tools/** — DeepJump DevOps-Tools (Status-Emit, Snapshot-Guard, Verify)
 - **scripts/** — Automatisierungs-Scripts (Evidence-Bundling, Nightly Checks)
 - **tests/** — Test-Suite (Unit, Integration, Ethics)
 - **docs/** — Dokumentation und Architektur
 - **reports/** — Test-Reports und Templates (CPT, Triad-Similarity)
 - **validation/** — ECI-Validierungs-Artefakte
+- **index/** — Functorial Index v3 und Modul-Metadaten
+- **diagrams/** — Visualisierungen (Triad-Venn, Grammophon-Hexaliminal)
 
 ## Nächster Schritt
 
