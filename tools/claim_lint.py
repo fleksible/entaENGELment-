@@ -15,11 +15,10 @@ Claim Tags (Epistemische Hygiene):
 from __future__ import annotations
 
 import argparse
-import os
 import re
 import sys
 from pathlib import Path
-from typing import Dict, List, NamedTuple, Set
+from typing import NamedTuple
 
 # Valid claim tags
 VALID_TAGS = {"[FACT]", "[HYP]", "[MET]", "[TODO]", "[RISK]"}
@@ -88,13 +87,13 @@ def has_claim_tag(line: str) -> bool:
     return False
 
 
-def find_claims_in_file(filepath: Path, repo_root: Path) -> List[ClaimResult]:
+def find_claims_in_file(filepath: Path, repo_root: Path) -> list[ClaimResult]:
     """Find potential claims in a file."""
-    results: List[ClaimResult] = []
+    results: list[ClaimResult] = []
     rel_path = str(filepath.relative_to(repo_root))
 
     try:
-        with open(filepath, "r", encoding="utf-8", errors="replace") as f:
+        with open(filepath, encoding="utf-8", errors="replace") as f:
             lines = f.readlines()
     except Exception as e:
         print(f"[WARN] Could not read {rel_path}: {e}")
@@ -125,9 +124,9 @@ def find_claims_in_file(filepath: Path, repo_root: Path) -> List[ClaimResult]:
     return results
 
 
-def scan_directory(dir_path: Path, repo_root: Path) -> List[ClaimResult]:
+def scan_directory(dir_path: Path, repo_root: Path) -> list[ClaimResult]:
     """Scan a directory for claims."""
-    results: List[ClaimResult] = []
+    results: list[ClaimResult] = []
 
     if not dir_path.exists():
         print(f"[INFO] Directory not found: {dir_path.relative_to(repo_root)}")
@@ -144,11 +143,11 @@ def scan_directory(dir_path: Path, repo_root: Path) -> List[ClaimResult]:
     return results
 
 
-def run_claim_lint(repo_root: Path, scope: List[str], strict: bool = False) -> bool:
+def run_claim_lint(repo_root: Path, scope: list[str], strict: bool = False) -> bool:
     """Run claim lint on specified directories."""
-    all_results: List[ClaimResult] = []
+    all_results: list[ClaimResult] = []
 
-    print(f"\n=== CLAIM LINT ===")
+    print("\n=== CLAIM LINT ===")
     print(f"Scope: {', '.join(scope)}")
     print(f"Valid tags: {', '.join(sorted(VALID_TAGS))}")
 
@@ -161,7 +160,7 @@ def run_claim_lint(repo_root: Path, scope: List[str], strict: bool = False) -> b
     untagged = [r for r in all_results if not r.has_tag]
 
     # Group by file
-    by_file: Dict[str, List[ClaimResult]] = {}
+    by_file: dict[str, list[ClaimResult]] = {}
     for r in untagged:
         by_file.setdefault(r.file, []).append(r)
 
@@ -179,10 +178,10 @@ def run_claim_lint(repo_root: Path, scope: List[str], strict: bool = False) -> b
             print(f"\n[FAIL] {len(untagged)} untagged claims (strict mode)")
             return False
         else:
-            print(f"\n[WARN] Consider adding tags to these claims")
+            print("\n[WARN] Consider adding tags to these claims")
             print("       Add [FACT], [HYP], [MET], [TODO], or [RISK] to document claims")
     else:
-        print(f"\n✅ No untagged claims found in scope")
+        print("\n✅ No untagged claims found in scope")
 
     return True
 

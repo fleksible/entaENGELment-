@@ -15,8 +15,7 @@ import json
 import pathlib
 import sys
 from dataclasses import dataclass
-from typing import Dict, Any
-
+from typing import Any
 
 POLICY_PATH = pathlib.Path(__file__).parents[2] / "policies" / "gate_policy_v1.json"
 
@@ -32,7 +31,7 @@ class Context:
     psi_lock: bool          # Lock gesetzt?
 
 
-def load_policy(path: pathlib.Path = POLICY_PATH) -> Dict[str, Any]:
+def load_policy(path: pathlib.Path = POLICY_PATH) -> dict[str, Any]:
     """Lädt die Gate-Policy aus JSON-Datei.
 
     Args:
@@ -41,11 +40,11 @@ def load_policy(path: pathlib.Path = POLICY_PATH) -> Dict[str, Any]:
     Returns:
         dict: Geladene Policy-Konfiguration
     """
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.load(f)
 
 
-def gate_open(ctx: Context, policy: Dict[str, Any]) -> bool:
+def gate_open(ctx: Context, policy: dict[str, Any]) -> bool:
     """Prüft, ob das Gate basierend auf Kontext und Policy geöffnet werden kann.
 
     Args:
@@ -86,7 +85,8 @@ def main(argv: list[str]) -> int:
         return 2
 
     phi = float(argv[1])
-    parse_bool = lambda s: s.lower() in {"1", "true", "yes", "y", "on"}
+    def parse_bool(s):
+        return s.lower() in {"1", "true", "yes", "y", "on"}
 
     ctx = Context(
         phi=phi,

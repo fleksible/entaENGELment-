@@ -10,11 +10,10 @@ Rules:
 from __future__ import annotations
 
 import argparse
-import os
 import re
 import sys
 from pathlib import Path
-from typing import Dict, List, NamedTuple, Set
+from typing import NamedTuple
 
 try:
     import yaml
@@ -61,12 +60,12 @@ def is_optional_context(text: str) -> bool:
     return False
 
 
-def extract_paths_from_yaml(yaml_path: Path, repo_root: Path) -> List[PointerResult]:
+def extract_paths_from_yaml(yaml_path: Path, repo_root: Path) -> list[PointerResult]:
     """Extract file paths from a YAML file."""
-    results: List[PointerResult] = []
+    results: list[PointerResult] = []
 
     try:
-        with open(yaml_path, "r", encoding="utf-8") as f:
+        with open(yaml_path, encoding="utf-8") as f:
             content = f.read()
             data = yaml.safe_load(content)
     except Exception as e:
@@ -77,8 +76,6 @@ def extract_paths_from_yaml(yaml_path: Path, repo_root: Path) -> List[PointerRes
         return results
 
     # Keys that typically contain file paths
-    PATH_KEYS = {"path", "implemented_by", "manifest", "sample", "status_json",
-                 "status_badge", "verify_report", "evidence", "generated_doc"}
 
     def clean_path(raw: str) -> str:
         """Clean a path string by removing CLI arguments and whitespace."""
@@ -156,7 +153,7 @@ def is_core_path(path: str) -> bool:
 
 def verify_pointers(repo_root: Path, strict: bool = False) -> bool:
     """Verify all pointers in index and module files."""
-    all_results: List[PointerResult] = []
+    all_results: list[PointerResult] = []
 
     # Scan index directory
     index_dir = repo_root / "index"
@@ -170,11 +167,11 @@ def verify_pointers(repo_root: Path, strict: bool = False) -> bool:
         all_results.extend(extract_paths_from_yaml(voidmap, repo_root))
 
     # Categorize results
-    missing_core: List[PointerResult] = []
-    missing_optional: List[PointerResult] = []
-    valid_paths: List[PointerResult] = []
+    missing_core: list[PointerResult] = []
+    missing_optional: list[PointerResult] = []
+    valid_paths: list[PointerResult] = []
 
-    seen: Set[str] = set()
+    seen: set[str] = set()
     for result in all_results:
         if result.path in seen:
             continue
@@ -191,26 +188,26 @@ def verify_pointers(repo_root: Path, strict: bool = False) -> bool:
             missing_optional.append(result)
 
     # Report results
-    print(f"\n=== POINTER VERIFICATION ===")
+    print("\n=== POINTER VERIFICATION ===")
     print(f"Checked: {len(seen)} unique paths")
     print(f"Valid:   {len(valid_paths)}")
     print(f"Missing (optional): {len(missing_optional)}")
     print(f"Missing (CORE):     {len(missing_core)}")
 
     if valid_paths:
-        print(f"\n✅ Valid paths:")
+        print("\n✅ Valid paths:")
         for r in valid_paths[:10]:  # Show first 10
             print(f"   {r.path}")
         if len(valid_paths) > 10:
             print(f"   ... and {len(valid_paths) - 10} more")
 
     if missing_optional:
-        print(f"\n⚠️  Missing (optional/non-core):")
+        print("\n⚠️  Missing (optional/non-core):")
         for r in missing_optional:
             print(f"   {r.path} (from: {r.source})")
 
     if missing_core:
-        print(f"\n❌ Missing (OPERATIONAL CORE):")
+        print("\n❌ Missing (OPERATIONAL CORE):")
         for r in missing_core:
             print(f"   {r.path} (from: {r.source})")
 
@@ -222,7 +219,7 @@ def verify_pointers(repo_root: Path, strict: bool = False) -> bool:
     if strict and missing_optional:
         print(f"\n[WARN] {len(missing_optional)} optional paths missing (strict mode)")
 
-    print(f"\n✅ All core pointers valid")
+    print("\n✅ All core pointers valid")
     return True
 
 

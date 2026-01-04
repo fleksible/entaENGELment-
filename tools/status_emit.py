@@ -30,7 +30,6 @@ import os
 import subprocess
 import sys
 from datetime import datetime, timezone
-from typing import Dict, List, Optional, Tuple
 
 VALID_TAGS = {"[FACT]", "[HYP]", "[MET]", "[TODO]", "[RISK]"}
 
@@ -40,12 +39,12 @@ def get_secret() -> str:
     return os.environ.get("ENTA_HMAC_SECRET") or os.environ.get("CI_SECRET") or ""
 
 
-def canonical_json(payload: Dict) -> str:
+def canonical_json(payload: dict) -> str:
     """Create canonical JSON representation (json_c14n_v1)."""
     return json.dumps(payload, sort_keys=True, separators=(",", ":"))
 
 
-def sign_payload(payload: Dict, secret: str) -> str:
+def sign_payload(payload: dict, secret: str) -> str:
     """Create HMAC-SHA256 signature of canonical payload."""
     canonical = canonical_json(payload)
     signature = hmac.new(
@@ -56,13 +55,13 @@ def sign_payload(payload: Dict, secret: str) -> str:
     return signature
 
 
-def compute_state_fingerprint(payload: Dict) -> str:
+def compute_state_fingerprint(payload: dict) -> str:
     """Compute SHA256 fingerprint of canonical payload."""
     canonical = canonical_json(payload)
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
-def get_git_info() -> Tuple[str, str, List[str]]:
+def get_git_info() -> tuple[str, str, list[str]]:
     """Get current git branch, commit, and changed files."""
     try:
         branch = subprocess.check_output(
@@ -113,7 +112,7 @@ def emit_badge(status: str, out_dir: str) -> None:
         f.write(svg)
 
 
-def build_status_payload(args: argparse.Namespace) -> Tuple[Dict, str]:
+def build_status_payload(args: argparse.Namespace) -> tuple[dict, str]:
     """Build legacy status payload with metrics."""
     secret = get_secret() or args.secret
     payload = {
@@ -140,7 +139,7 @@ def build_status_payload(args: argparse.Namespace) -> Tuple[Dict, str]:
     return payload, secret
 
 
-def build_receipt(args: argparse.Namespace) -> Tuple[Dict, str]:
+def build_receipt(args: argparse.Namespace) -> tuple[dict, str]:
     """Build protocol v1.2 receipt."""
     secret = get_secret()
     branch, commit, files_changed = get_git_info()
