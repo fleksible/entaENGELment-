@@ -1,0 +1,15 @@
+{
+  "summary": "Aggregate confabulation risk over last 28 days",
+  "channels": [
+    {
+      "name": "zahlen_date_math",
+      "cri": 0.72,
+      "severity": "high"
+    },
+    {
+      "name": "news_latest_claim_no_cite",
+      "cri": 0.64,
+      "severity": "medium"
+    }
+  ]
+}

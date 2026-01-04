@@ -1,0 +1,6 @@
+{
+  "sample_size": 37,
+  "cri": 0.64,
+  "privacy_budget": 0.9,
+  "notes": "citation lag beyond 72h"
+}
