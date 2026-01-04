@@ -62,3 +62,6 @@ dmypy.json
 *.tmp
 *.bak
 .cache/
+
+# DeepJump generated output
+out/
