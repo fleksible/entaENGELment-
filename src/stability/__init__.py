@@ -9,8 +9,8 @@ Provides Hessian-based void detection and stability classification.
 
 # MOD_16: Hessian-based analysis
 from .hessian_void import (
-    compute_hessian_numerical,
     classify_stability,
+    compute_hessian_numerical,
     detect_void_type,
 )
 

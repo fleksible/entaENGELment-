@@ -6,16 +6,12 @@ Implementiert Fail-Safe-Logik basierend auf Hessian-Stabilität:
 - UNSTABLE → Block
 """
 
-from typing import Tuple
 import numpy as np
 
 from src.stability.hessian_void import classify_stability
 
 
-def stability_gate(
-    hessian: np.ndarray,
-    consent_available: bool = False
-) -> Tuple[bool, str]:
+def stability_gate(hessian: np.ndarray, consent_available: bool = False) -> tuple[bool, str]:
     """Safety-Gate basierend auf Hessian-Stabilität.
 
     Args:
@@ -27,10 +23,10 @@ def stability_gate(
     """
     status, eigvals = classify_stability(hessian)
 
-    if status == 'STABLE':
+    if status == "STABLE":
         return True, f"STABLE: All eigenvalues positive (min={eigvals.min():.2e})"
 
-    elif status == 'FLAT':
+    elif status == "FLAT":
         if consent_available:
             return True, "FLAT: Proceeding with explicit consent (VOID acknowledged)"
         else:
@@ -50,7 +46,7 @@ def check_stability_safe(hessian: np.ndarray) -> bool:
         True nur wenn STABLE
     """
     status, _ = classify_stability(hessian)
-    return status == 'STABLE'
+    return status == "STABLE"
 
 
 def requires_consent(hessian: np.ndarray) -> bool:
@@ -63,4 +59,4 @@ def requires_consent(hessian: np.ndarray) -> bool:
         True wenn FLAT (VOID) Status
     """
     status, _ = classify_stability(hessian)
-    return status == 'FLAT'
+    return status == "FLAT"

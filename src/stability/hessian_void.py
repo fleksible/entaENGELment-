@@ -6,14 +6,13 @@ Implementiert Stabilitäts-Klassifizierung via Hessian-Eigenwertanalyse:
 - UNSTABLE: λ < 0 (Sattel/Maximum, blockieren)
 """
 
-from typing import Callable, Tuple
+from typing import Callable
+
 import numpy as np
 
 
 def compute_hessian_numerical(
-    func: Callable[[np.ndarray], float],
-    point: np.ndarray,
-    eps: float = 1e-5
+    func: Callable[[np.ndarray], float], point: np.ndarray, eps: float = 1e-5
 ) -> np.ndarray:
     """Numerische Hessian-Approximation via finite Differenzen.
 
@@ -45,10 +44,7 @@ def compute_hessian_numerical(
     return (H + H.T) / 2  # Symmetrisierung
 
 
-def classify_stability(
-    hessian: np.ndarray,
-    threshold: float = 1e-6
-) -> Tuple[str, np.ndarray]:
+def classify_stability(hessian: np.ndarray, threshold: float = 1e-6) -> tuple[str, np.ndarray]:
     """Klassifiziert Stabilitätstyp via Hessian-Eigenwerte.
 
     Args:
@@ -61,11 +57,11 @@ def classify_stability(
     eigvals = np.linalg.eigvalsh(hessian)
 
     if np.all(eigvals > threshold):
-        return 'STABLE', eigvals
+        return "STABLE", eigvals
     elif np.any(np.abs(eigvals) < threshold):
-        return 'FLAT', eigvals  # VOID: flache Richtung
+        return "FLAT", eigvals  # VOID: flache Richtung
     else:
-        return 'UNSTABLE', eigvals
+        return "UNSTABLE", eigvals
 
 
 def detect_void_type(hessian: np.ndarray) -> str:
@@ -86,4 +82,4 @@ def rosenbrock(x: np.ndarray, a: float = 1.0, b: float = 100.0) -> float:
 
     Standard-Testfunktion mit globalem Minimum bei (a, a²).
     """
-    return (a - x[0])**2 + b * (x[1] - x[0]**2)**2
+    return (a - x[0]) ** 2 + b * (x[1] - x[0] ** 2) ** 2

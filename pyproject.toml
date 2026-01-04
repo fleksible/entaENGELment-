@@ -93,6 +93,8 @@ extend-exclude = '''
 [tool.ruff]
 line-length = 100
 target-version = "py39"
+
+[tool.ruff.lint]
 select = [
     "E",   # pycodestyle errors
     "W",   # pycodestyle warnings
@@ -106,7 +108,7 @@ ignore = [
     "E501",  # line too long (handled by black)
 ]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]  # Unused imports in __init__.py
 
 [tool.mypy]
