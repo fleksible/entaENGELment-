@@ -9,6 +9,6 @@ Enthält die fünf Kern-Metriken (Core-5):
 - PF (Power Flux)
 """
 
-from .metrics import eci, plv, mi, fd, pf
+from .metrics import eci, fd, mi, pf, plv
 
 __all__ = ["eci", "plv", "mi", "fd", "pf"]

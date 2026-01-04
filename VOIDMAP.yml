@@ -1,0 +1,149 @@
+# VOIDMAP.yml - Void Registry (Source of Truth)
+# DeepJump Protocol v1.2
+#
+# This file tracks open gaps (VOIDs) in the entaENGELment framework.
+# Each VOID represents a known gap that needs to be addressed.
+#
+# Status: OPEN | IN_PROGRESS | CLOSED
+# Priority: critical | high | medium | low
+# Domain tags: [BIO], [MATH], [PHYS], [CHEM], [COMP], [META], [DEV]
+
+version: "1.0"
+description: >
+  Central registry for tracking open voids (gaps) in the entaENGELment
+  framework. Updated via DeepJump protocol.
+
+metadata:
+  maintainer: entaENGELment
+  last_updated: "2026-01-04"
+  generated_doc: docs/voids_backlog.md
+
+voids:
+  - id: VOID-001
+    title: "DeepJump Protocol Implementation"
+    status: CLOSED
+    priority: critical
+    owner: claude-code
+    domain: "[DEV]"
+    symptom: "No standardized verification flow for changes"
+    closing_path: "Implement verify_pointers.py, claim_lint.py, and update Makefile"
+    evidence: null
+    created: "2026-01-04"
+    closed: "2026-01-04"
+    notes: |
+      [FACT] Implemented as part of DeepJump Protocol v1.2 setup.
+
+  - id: VOID-002
+    title: "CI Pipeline Integration"
+    status: OPEN
+    priority: high
+    owner: null
+    domain: "[DEV]"
+    symptom: "CI does not run full verify/status/snapshot flow"
+    closing_path: "Update deepjump-ci.yml with verify_pointers and claim_lint steps"
+    evidence: null
+    created: "2026-01-04"
+    closed: null
+    notes: |
+      [TODO] Needs CI workflow update to include new tools.
+
+  - id: VOID-003
+    title: "Status Emit Receipt Format"
+    status: OPEN
+    priority: medium
+    owner: null
+    domain: "[DEV]"
+    symptom: "status_emit.py does not emit full receipt format per protocol"
+    closing_path: "Update status_emit.py with --claim, --tag, --module options"
+    evidence: null
+    created: "2026-01-04"
+    closed: null
+    notes: |
+      [TODO] Protocol specifies receipt format v1.0 with additional fields.
+
+# Template for new VOIDs:
+#
+#  - id: VOID-XXX
+#    title: "Short descriptive title"
+#    status: OPEN
+#    priority: critical|high|medium|low
+#    owner: null
+#    domain: "[TAG]"
+#    symptom: "What is the problem?"
+#    closing_path: "How will this be resolved?"
+#    evidence: null  # → receipts/YYYY-MM-DD_voidXXX_closure.json
+#    created: "YYYY-MM-DD"
+#    closed: null
+#    notes: |
+#      [TAG] Additional context...
+
+
+  - id: VOID-010
+    title: "Taxonomie & Spektren (Empirie)"
+    status: OPEN
+    priority: high
+    owner: null
+    domain: "[PHYS]"
+    symptom: "Spektrale Zuordnung ohne belastbare Literatur-/Datenbasis"
+    closing_path: "Literatur-Scan + zitierte Tabelle (CSV) + Evidence-Bundle"
+    evidence: null
+    created: "2026-01-04"
+    closed: null
+    notes: |
+      [BIO][PHYS] Empirie-Bridge für MOD_18/Taxonomie.
+
+  - id: VOID-011
+    title: "Metriken der Resonanz (MI, PLV, FD)"
+    status: OPEN
+    priority: high
+    owner: null
+    domain: "[MATH]"
+    symptom: "MI/FD sind aktuell Minimal-Stubs; keine Toy-Simulation als Proof"
+    closing_path: "Option B: toy_resonance_dataset + robuste Implementierung + Tests"
+    evidence: null
+    created: "2026-01-04"
+    closed: null
+    notes: |
+      [COMP] Siehe src/tools/toy_resonance_dataset.py und docs/voids/VOID-011_resonance_metrics.md
+
+  - id: VOID-012
+    title: "GateProof Checkliste (Governance)"
+    status: OPEN
+    priority: critical
+    owner: null
+    domain: "[DEV]"
+    symptom: "Keine einheitliche, testbare Checkliste für latent→manifest Übergänge"
+    closing_path: "policies/gateproof_v1.yaml + negative ethics tests"
+    evidence: null
+    created: "2026-01-04"
+    closed: null
+    notes: |
+      [META] Governance als Judikative: Lint/Guards/Receipts müssen zusammen geprüft werden.
+
+  - id: VOID-013
+    title: "Sensor-Architektur (BOM & Protokoll)"
+    status: OPEN
+    priority: medium
+    owner: null
+    domain: "[DEV]"
+    symptom: "Kein BOM/Protokoll für Sensorik, falls Messschicht gebaut wird"
+    closing_path: "docs/sensors/bom.md + spec/sensors.spec.json"
+    evidence: null
+    created: "2026-01-04"
+    closed: null
+    notes: |
+      [BIO] Nur Komponenten-/Protokollebene, keine riskanten Anleitungen.
+
+  - id: VOID-014
+    title: "Protein-Design (in-silico, safety-bounded)"
+    status: OPEN
+    priority: medium
+    owner: null
+    domain: "[BIO]"
+    symptom: "Exploration gewünscht, aber hohes Risiko bei operativen Laboranleitungen"
+    closing_path: "High-level Tool/Literatur-Übersicht + nicht-operative Demos"
+    evidence: null
+    created: "2026-01-04"
+    closed: null
+    notes: |
+      [SAFETY] Nur computational exploration; keine Nasslabor-Protokolle.

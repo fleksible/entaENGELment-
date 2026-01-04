@@ -47,7 +47,7 @@
 ---
 
 ## 🜃 Adaptive Schicht: Markt-als-Signal
-**MSI-Adapter:** siehe `adapters/msi-adapter-v1.yaml`.  
+**MSI-Adapter:** siehe `adapters/msi_adapter_v1.yaml`.  
 **Trennung:** `context_signature` belegt Modulation; `receipt_proof` bleibt unvermischt.
 
 *Glosse:* *Wind im Segel, nicht Hand am Ruder.*
@@ -62,7 +62,7 @@
 *Glosse:* *Vertrauen = wiederholbare Evidenz.*
 **Aktiver Sprint (7 Tage)**  
 1) **T1.1.2 Lyra Linearity-Cal:** Edge-Input-Kalibrierung.  
-2) **MSI-Adapter:** `adapters/msi-adapter-v1.yaml` (geplant) + `context_signature`-Hook.  
+2) **MSI-Adapter:** `adapters/msi_adapter_v1.yaml` + `context_signature`-Hook.  
 3) **T2.x Zeta-Panel:** Explain-Overlay-Logik (Transparenz).
 
 *Glosse:* *Leere wird Form — gezielt, nicht zufällig.*
@@ -86,6 +86,27 @@ entaENGELment-/
 ├─ seeds/                   # Seeds für Snapshot (strict)
 └─ audit/                   # Audit-Trails & Tabellen
 ```
+
+### Erste Schritte
+1. Repository klonen
+2. `./scripts/nightly.sh` prüfen & lokal ausführen
+3. [`docs/masterindex.md`](./docs/masterindex.md) lesen
+4. Policy-Schema validieren: `python -m json.tool policies/gate_policy_v1.json`
+
+**Hinweis:** Dieses Repo dient als explorativer Container, kein Produkt-Release.
+
+### Erweiterte Komponenten
+
+- **Grammophon:** Polyeder-Klanggeometrie mit Slice-Rotation ([`spec/grammophon.spec.json`](./spec/grammophon.spec.json))
+- **CGLG:** Consensual Gate Logic & Mutual Perception ([`spec/cglg.spec.json`](./spec/cglg.spec.json))
+- **ECI (Ethical Consent Index):** Testbare Implementierung mit Bootstrap/Permutation ([`src/core/eci.py`](./src/core/eci.py) · [`spec/eci.spec.json`](./spec/eci.spec.json))
+- **CPT-Test-Harness:** Charge-Parity-Time Invarianz-Validation ([`tests/cpt/test_cpt_harness.py`](./tests/cpt/test_cpt_harness.py))
+- **Triad-Execution-Kit:** Templates & Vergleichsskript ([`docs/triad_fill_template.md`](./docs/triad_fill_template.md) · [`scripts/triad_compare.py`](./scripts/triad_compare.py))
+- **Meta-Backprop:** Policy-Evolution durch Feedback-Loops ([`src/meta_backprop.py`](./src/meta_backprop.py))
+- **Evidence-Chain:** Receipt-Chain & Auditierbarkeit ([`scripts/evidence_bundle.sh`](./scripts/evidence_bundle.sh))
+- **Triadische Topologie:** 3-Strang-Resonanz-Analyse ([`docs/triad_topology.md`](./docs/triad_topology.md))
+
+*Glosse:* *Struktur als Behälter — Policy, Spec, Runtime, Evidence. Alles schwingt im selben Takt.*
 
 ---
 

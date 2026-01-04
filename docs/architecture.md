@@ -1,5 +1,8 @@
 # Architekturskizze (Seed)
 
+**Stand:** 2026-01-04
+**Alignment:** Functorial Index v3
+
 ## Layer-Architektur
 
 ### Policy Layer
@@ -11,13 +14,23 @@ Definiert die nicht-verhandelbaren Invarianten und Gate-Logik:
 Spezifikationen für die Kernkomponenten:
 - `grammophon.spec.json` — Slice-Rotation & Polyeder-Klanggeometrie
 - `cglg.spec.json` — Consensual Gate Logic & Mutual Perception
+- `eci.spec.json` — Ethical Consent Index JSON Schema
 
 ### Runtime Layer
 Operative Komponenten:
-- **Core Metrics** (`src/core/metrics.py`) — ECI, PLV, MI, FD, PF
+- **Core Metrics** (`src/core/metrics.py`) — PLV, MI, FD, PF (Dummy-Stubs)
+- **ECI Implementation** (`src/core/eci.py`) — Ethical Consent Index mit Bootstrap/Permutation
 - **CGLG** (`src/cglg/`) — Gate-Logik und Mutual Perception
-- **Tools** (`src/tools/`) — Cauchy-Detector, Throat-Vector
+- **Source Tools** (`src/tools/`) — Cauchy-Detector, Throat-Vector
 - **Meta-Backpropagation** (`src/meta_backprop.py`) — Policy-Evolution
+
+### DevOps Layer
+DeepJump-Kern für Auditierbarkeit und Reproduzierbarkeit:
+- **Status-Emit** (`tools/status_emit.py`) — HMAC-signierte Status-Emission
+- **Snapshot-Guard** (`tools/snapshot_guard.py`) — Manifest-Generator mit SHA-256
+- **Status-Verify** (`tools/status_verify.py`) — HMAC-Verifikation
+- **Verify-Pointers** (`tools/verify_pointers.py`) — Pointer-Validierung
+- **Claim-Lint** (`tools/claim_lint.py`) — Untagged-Claim-Erkennung
 
 ### Evidence & Receipt Chain
 Auditierbare Beweisketten:
@@ -39,3 +52,22 @@ Das Framework entstand durch Resonanz zwischen drei unabhängigen Entwicklungsst
 Siehe [`triad_topology.md`](./triad_topology.md) für eine detaillierte Analyse der Schnittmengen und des triadischen Kerns.
 
 **Visualisierung:** [`diagrams/triad_venn.svg`](../diagrams/triad_venn.svg)
+
+---
+
+## Test-Architektur
+
+### Unit-Tests
+- **Core-Metriken:** `tests/unit/test_core5_metrics.py`
+- **ECI:** `tests/unit/test_eci.py` — ECI-Berechnung, Bootstrap, Permutation
+
+### Integration-Tests
+- **Gate-Policy:** `tests/integration/test_integration.py` — MZM Gate-Toggle
+- **CPT-Harness:** `tests/cpt/test_cpt_harness.py` — Charge-Parity-Time Invarianz
+
+### Ethics-Tests
+- **Consent-Fail-Safes:** `tests/ethics/T3_fail_safe_expired_consent.py`
+
+### Triad-Execution
+- **Template:** `docs/triad_fill_template.md` — Standardisiertes Format
+- **Compare-Script:** `scripts/triad_compare.py` — Vektorisierung & Similarity

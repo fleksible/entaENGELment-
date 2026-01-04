@@ -1,4 +1,5 @@
-from tools.mzm.gate_toggle import Context, load_policy, gate_open
+from tools.mzm.gate_toggle import Context, gate_open, load_policy
+
 
 def test_gate_closes_when_consent_expired():
     policy = load_policy()

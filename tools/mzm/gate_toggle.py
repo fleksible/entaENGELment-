@@ -1,23 +1,4 @@
 #!/usr/bin/env python3
-from __future__ import annotations
-import json, pathlib, sys
-from dataclasses import dataclass
-
-POLICY_PATH = pathlib.Path(__file__).parents[2] / "policies" / "gate_policy_v1.json"
-
-@dataclass
-class Context:
-    phi: float               # Resonanzpotential Φ
-    rcc_ec: bool             # RCC:EC erfüllt?
-    non_overlap: bool        # ¬PO
-    m_norm_l2: float         # ||M||_2
-    psi_lock: bool           # Lock gesetzt?
-
-def load_policy(path=POLICY_PATH):
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
-
-def gate_open(ctx: Context, policy: dict) -> bool:
 """MZM Gate Toggle - Hard-Gate Policy für entaENGELment Framework.
 
 Implementiert die Gate-Logik basierend auf der MZM-Policy (gate_policy_v1.json).
@@ -28,15 +9,13 @@ Das Gate öffnet nur, wenn alle Constraints erfüllt sind:
 - ||M||_2 = 1.0
 - Psi-Lock gesetzt
 """
-
 from __future__ import annotations
 
 import json
 import pathlib
 import sys
 from dataclasses import dataclass
-from typing import Dict, Any
-
+from typing import Any
 
 POLICY_PATH = pathlib.Path(__file__).parents[2] / "policies" / "gate_policy_v1.json"
 
@@ -45,14 +24,14 @@ POLICY_PATH = pathlib.Path(__file__).parents[2] / "policies" / "gate_policy_v1.j
 class Context:
     """Kontext-Datenstruktur für Gate-Evaluierung."""
 
-    phi: float              # Resonanzpotential Φ
-    rcc_ec: bool            # RCC:EC erfüllt?
-    non_overlap: bool       # ¬PO (Non-Overlap)
-    m_norm_l2: float        # ||M||_2 (L2-Norm)
-    psi_lock: bool          # Lock gesetzt?
+    phi: float  # Resonanzpotential Φ
+    rcc_ec: bool  # RCC:EC erfüllt?
+    non_overlap: bool  # ¬PO (Non-Overlap)
+    m_norm_l2: float  # ||M||_2 (L2-Norm)
+    psi_lock: bool  # Lock gesetzt?
 
 
-def load_policy(path: pathlib.Path = POLICY_PATH) -> Dict[str, Any]:
+def load_policy(path: pathlib.Path = POLICY_PATH) -> dict[str, Any]:
     """Lädt die Gate-Policy aus JSON-Datei.
 
     Args:
@@ -61,11 +40,11 @@ def load_policy(path: pathlib.Path = POLICY_PATH) -> Dict[str, Any]:
     Returns:
         dict: Geladene Policy-Konfiguration
     """
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.load(f)
 
 
-def gate_open(ctx: Context, policy: Dict[str, Any]) -> bool:
+def gate_open(ctx: Context, policy: dict[str, Any]) -> bool:
     """Prüft, ob das Gate basierend auf Kontext und Policy geöffnet werden kann.
 
     Args:
@@ -85,18 +64,6 @@ def gate_open(ctx: Context, policy: Dict[str, Any]) -> bool:
     ]
     return all(checks)
 
-def main(argv):
-    # Minimal-CLI: mzm_gate_toggle.py 0.87 true true 1.0 true
-    if len(argv) != 6:
-        print("usage: mzm_gate_toggle.py <phi> <rcc_ec> <non_overlap> <m_norm_l2> <psi_lock>", file=sys.stderr)
-        return 2
-    phi = float(argv[1])
-    parse_bool = lambda s: s.lower() in {"1","true","yes","y","on"}
-    ctx = Context(phi, parse_bool(argv[2]), parse_bool(argv[3]), float(argv[4]), parse_bool(argv[5]))
-    policy = load_policy()
-    print("GateOpen=" + ("true" if gate_open(ctx, policy) else "false"))
-    return 0
-
 
 def main(argv: list[str]) -> int:
     """CLI-Einstiegspunkt für Gate-Toggle.
@@ -113,19 +80,21 @@ def main(argv: list[str]) -> int:
     if len(argv) != 6:
         print(
             "usage: mzm_gate_toggle.py <phi> <rcc_ec> <non_overlap> <m_norm_l2> <psi_lock>",
-            file=sys.stderr
+            file=sys.stderr,
         )
         return 2
 
     phi = float(argv[1])
-    parse_bool = lambda s: s.lower() in {"1", "true", "yes", "y", "on"}
+
+    def parse_bool(s):
+        return s.lower() in {"1", "true", "yes", "y", "on"}
 
     ctx = Context(
         phi=phi,
         rcc_ec=parse_bool(argv[2]),
         non_overlap=parse_bool(argv[3]),
         m_norm_l2=float(argv[4]),
-        psi_lock=parse_bool(argv[5])
+        psi_lock=parse_bool(argv[5]),
     )
 
     policy = load_policy()

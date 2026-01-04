@@ -1,17 +1,45 @@
 # Masterindex — Seed
 
+**Version:** 1.0.0
+**Stand:** 2026-01-04
+**Letzte Prüfung:** Alignment mit Functorial Index v3
+
 Startpunkt des Masterindex. Enthält Struktur, narrative Einordnung und Links zu Canvas-Dokumenten.
 
 ## Verzeichnisstruktur
 
 - **policies/** — Gate-Policies und Schema-Definitionen
 - **spec/** — Spezifikationen für Grammophon und CGLG
-- **src/** — Source-Code (Core-Metriken, CGLG, Tools)
+- **src/** — Source-Code (Core-Metriken, CGLG, Meta-Backprop)
+  - **src/core/** — Core-5 Metriken (ECI, PLV, MI, FD, PF)
+  - **src/cglg/** — Consensual Gate Logic und Mutual Perception
+  - **src/tools/** — Cauchy-Detector, Throat-Vector
+- **tools/** — DeepJump DevOps-Tools
+  - `status_emit.py` — HMAC-signierte Status-Emission
+  - `status_verify.py` — HMAC-Verifikation
+  - `snapshot_guard.py` — Manifest-Generator mit SHA-256
+  - `verify_pointers.py` — Pointer-Validierung
+  - `claim_lint.py` — Claim-Scanning
 - **scripts/** — Automatisierungs-Scripts (Evidence-Bundling, Nightly Checks)
 - **tests/** — Test-Suite (Unit, Integration, Ethics)
 - **docs/** — Dokumentation und Architektur
+- **index/** — Functorial Index v3 und Modul-Metadaten
+- **diagrams/** — Visualisierungen (Triad-Venn, Grammophon-Hexaliminal)
+- **adapters/** — MSI-Adapter und Konfigurationen
+- **audit/** — Audit-Trails und Governance-Tabellen
+- **seeds/** — Konfigurations-Seeds für Snapshot
+- **receipts/** — Beispiel-Quittungen (JSON)
+
+## Narrative Canon (Lazy-load)
+
+- `docs/narratives/symphonie_der_resonanz.md` — Symphonie + operationalisierte Rückkopplung + Voids
+- `docs/kenograms/LYRA.md` — ☐-LYRA (Audiohook als auditierbares Kenogramm)
+- `src/tools/toy_resonance_dataset.py` — Option B: Toy Dataset (Proof of Wiring)
 
 ## Nächster Schritt
+
+- Canon-Narrativ: `docs/narratives/symphonie_der_resonanz.md`
+- Functorial Map: `index/ENTAENGELMENT_INDEX_v3_FUNCTORIAL.yaml`
 
 Ausformulierung der Kenogramm-Slots & Aufbau der Receipt-Chain.
 
@@ -38,9 +66,9 @@ Kenogramme (☐) markieren **bekanntes Nichtwissen** — Bereiche wo strukturell
 ### Aus Strang B (GPT):
 | Kenogramm | Frage | Komponenten | Status |
 |-----------|-------|-------------|--------|
-| ☐-LYRA | Audio→7-Band Mapping validiert? | processors/lyra_mapper.py | UI-Stub vorhanden |
-| ☐-THOTH | Prosody-Gates reduzieren False-Positive? | processors/throat_vector.py | A/B-Test ausstehend |
-| ☐-KOLIBRI | Medium-Proxy ↔ Propagation-Weight? | processors/kolibri.py | Consent-protected |
+| ☐-LYRA | Audio→7-Band Mapping validiert? | docs/kenograms/LYRA.md | Stub (Kenogramm) |
+| ☐-THOTH | Prosody-Gates reduzieren False-Positive? | src/tools/throat_vector.py | Implementiert |
+| ☐-KOLIBRI | Medium-Proxy ↔ Propagation-Weight? | src/tools/kolibri.py | Consent-protected |
 
 ### Triadisch (A ∩ B ∩ C):
 | Kenogramm | Frage | Perspektiven | Status |

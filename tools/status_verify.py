@@ -12,17 +12,18 @@ import hmac
 import json
 import os
 import sys
-from typing import Dict, Tuple
 
 
-def verify_payload(data: Dict, secret: str) -> Tuple[bool, str]:
+def verify_payload(data: dict, secret: str) -> tuple[bool, str]:
     signatures = data.pop("signatures", None)
     if not signatures or "hmac" not in signatures:
         return False, "No signature found"
 
     target_hmac = signatures["hmac"]
     canonical = json.dumps(data, sort_keys=True, separators=(",", ":"))
-    computed_hmac = hmac.new(secret.encode("utf-8"), canonical.encode("utf-8"), hashlib.sha256).hexdigest()
+    computed_hmac = hmac.new(
+        secret.encode("utf-8"), canonical.encode("utf-8"), hashlib.sha256
+    ).hexdigest()
     if hmac.compare_digest(target_hmac, computed_hmac):
         return True, "OK"
     return False, f"Mismatch: {computed_hmac} != {target_hmac}"
@@ -39,7 +40,7 @@ def main() -> None:
         print("[ERR] Cannot verify: No secret provided.")
         sys.exit(2)
 
-    with open(args.json_file, "r") as f:
+    with open(args.json_file) as f:
         data = json.load(f)
 
     valid, msg = verify_payload(data, secret)
