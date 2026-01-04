@@ -4,12 +4,11 @@ Testet Governance-Integration: FLAT erfordert Consent.
 """
 
 import numpy as np
-import pytest
 
 from src.core.stability_guard import (
-    stability_gate,
     check_stability_safe,
     requires_consent,
+    stability_gate,
 )
 
 
