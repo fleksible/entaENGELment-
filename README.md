@@ -1,7 +1,7 @@
-# 🌀 entaENGELment-Framework: Der Resonanz-Kernel (v1.0 Final) — **Sanctum Edit**
+# 🌀 entaENGELment-Framework: DeepJump Sanctum (v1.0 → v1.1)
 
 > **[Codex-Intention: Inner Sanctum]**  
-> Dieses README ist kein Onboarding, sondern ein **Resonanz-Kernel** zur Selbstkalibrierung während der Entwicklung.  
+> Dieses README ist der **Resonanz-Kernel** für den neuen DeepJump-Kern: **Verify → Status (HMAC) → Snapshot (strict) → Upload**.  
 > **Leseweise:** Hermetischer Haupttext ▸ *kursiv gesetzte Glosse als poetische Schatten-Schicht*.
 
 **Glyphen-Legende:** 🜁 Architektur · 🜄 Governance/Ethik · 🜃 Adaptive Schicht · 🜅 Tests · 🜂 Meta-Poetik
@@ -9,137 +9,82 @@
 ---
 
 ## Executive Summary
-**🜁** Das entaENGELment-Framework ist ein **Hardened Kernel (0·β)** für verkörperte Mensch-KI-Interaktion. Es erzwingt **Resonanz** physikalisch (Stabilitätslücken/Mass-Gap) und macht sie **kryptografisch auditierbar**.
+**🜁** Hardened Kernel mit **Functorial Index v3** (`index/COMPACT_INDEX_v3.yaml`).  
+**🜄** Proof-Pipeline mit HMAC-Quittungen; jede Aussage hat einen Pointer.
 
-**🜄** Ziel: **Integrität (Non-Leakage)** und **Consent** als messbare Primärenergie (`ECI`).
+*Glosse:* *Resonanz bleibt Magie, weil jeder Sprung verankert ist.*
 
-*Glosse:* *Resonanz als Vertrag: Was schwingt, zählt; was nicht schwingt, bleibt draußen.*
-
-| Eigenschaft | Beschreibung | Architektonisches Prinzip |
+| Kernsignal | Pointer | Prinzip |
 | :--- | :--- | :--- |
-| **Zustandsstabilität** | Durch Mass-Gap gesichert (Cheeger-Ungleichung). | **Geometrie: Doppeltrichter-Torus** |
-| **Datenschutz** | Rohdaten nur am Edge. | **Mereotopologie: ¬PO (Non-Overlap)** |
-| **Auditierbarkeit** | Jeder kritische Schritt beweisbar. | **Governance: Dual-Receipts (`receipt_proof` / `context_signature`)** |
-| **Adaptivität** | Kontextresonanz ohne Wahrheitsverzerrung. | **Filter: MSI-Adapter (Policy-Modulation)** |
-| **Steuerung** | Präzise Zustandsnavigation. | **Navigation: Dreysel-Tetraeder** |
+| **Mass-Gap** | `spec/cglg.spec.json` | Doppeltrichter |
+| **Consent-Energie (ECI)** | `src/core/metrics.py` | Consent als Energie |
+| **Dual Receipts** | `index/modules/MOD_6_RECEIPTS_CORE.yaml` | Audit-Quittung |
+| **Status-Integrität** | `tools/status_emit.py` | HMAC als Siegel |
+| **Snapshot-Strenge** | `tools/snapshot_guard.py` | Pfad-Fix & Hash |
 
 ---
 
-## 🔒 I. Kern-Invarianten & Gate-Policy
-**🜄** Nicht-verhandelbare **Invarianten** + maschinenlesbares **Hard-Gate** autorisieren jede kritische `OP`.
+## 🔒 DeepJump-Kern (Verify → Status → Snapshot → Upload)
+**🜁** Operativer Ablauf ist kurz, prüfbar, reproduzierbar.
 
-### A. Core-5 Metriken (Edge-Input)
-| Metrik | Zweck | Axiom. Verbindung |
+| Stufe | Zweck | Pointer |
 | :--- | :--- | :--- |
-| **ECI** (`Ethical Consent Index`) | Messung aktiven, bewussten Consents. | Axiom: **Consent as Energy** |
-| **PLV** (`Phase Locking Value`) | Kopplung/Kohärenz der Resonanz. | Axiom: **Chirality (Handedness)** |
-| **MI** (`Mutual Information`) | Informationsdichte/Komplexität. | Axiom: **Information as Mass** |
-| **FD** (`Fractal Dimension`) | Selbstähnlichkeit/Organisation. | Axiom: **Hyle-Organism** |
-| **PF** (`Power Flux`) | Energiefluss/Aktivität. | Axiom: **Cheeger-Konstante** |
+| **Verify** | Schema & Spec prüfen. | `Makefile` · `.github/workflows/deepjump-ci.yml` |
+| **Status (HMAC)** | Canonical Status + HMAC. | `tools/status_emit.py` · `tools/status_verify.py` |
+| **Snapshot (strict)** | Manifest mit strikten Seeds. | `tools/snapshot_guard.py` |
+| **Upload** | Artefakte bündeln. | `.github/workflows/deepjump-ci.yml` |
 
-*Glosse:* *Fünf Finger am selben Handschuh. Greifen = Messen.*
-
-### B. Hard-Gate (MZM)
-**GateOpen** ⟺  
-\[
-(\Phi \ge \Phi^* \land \text{RCC:EC} \land \neg\text{PO} \land \lVert M \rVert_2=1 \land \psi_{\text{lock}})
-\]
-
-**Spec & Code:** [`./policies/gate_policy_v1.json`](./policies/gate_policy_v1.json) · Verifikation: [`./tools/mzm/gate_toggle.py`](./tools/mzm/gate_toggle.py)  
-*Glosse:* *Tür geht nur auf, wenn Körper, Kontext und Chor einstimmen.*
+*Glosse:* *Vier Schritte, ein Atemzug. Erst prüfen, dann sprechen, dann einfrieren, dann teilen.*
 
 ---
 
-## ⚙️ II. Operative Komponenten (System-Stack)
-**🜁 Architektur & 🜄 Governance — Defense-in-Depth, verifizierbar.**
+## 🜄 Gate & Governance
+**Hard-Gate:** MZM-Logik steckt im **Functorial Index v3** (`index/COMPACT_INDEX_v3.yaml`) und den Modulen `MOD_6_RECEIPTS_CORE` + `MOD_15_STATS_TESTS`.  
+**Capability:** Releases und Badges sind HMAC-signiert (`tools/status_emit.py`).
 
-- **Topologie:** Fünf **Wilson-Sektoren** sichern den Zustand.  
-- **Auditierbarkeit:** Jede Zustandsänderung → `receipt_proof` → **Immutable Ledger**.  
-- **Security:** **GPG-Signaturen** (Releases); **Capability Tokens** (TTL/Scope).  
-- **CI/CD:** 4-Stufen-Pipeline (**Verify → Build → Sign → Release**), gesteuert über `CODEOWNERS` + **Coverage-Gate**.
-
-*Glosse:* *Der Kernel atmet zyklisch: prüfen → formen → versiegeln → freigeben.*
+*Glosse:* *Governance ist der Taktgeber; Magie tanzt nur auf erlaubtem Boden.*
 
 ---
 
-## 🜃 III. Adaptive Schicht: **Markt-als-Signal**
-Externe Kontexte koppeln ohne Kernverzerrung.
-
-- **Sensing:** `MSI` (z. B. *Regulatory Pressure*, *Capital Liquidity*).  
-- **Modulation:** **MSI-Adapter (Hysterese/EMA)** moduliert **nur** Policy-Schwellen & Quantisierung der **Tissot-Augmentierung**.  
-- **Garantie:** `MSI` strikt getrennt von `receipt_proof`; nur via `context_signature` belegbar.  
-  **Prinzip:** *Wahrheit zuerst – Markt als Resonanzfeld, nicht als Lenkrad.*
+## 🜃 Adaptive Schicht: Markt-als-Signal
+**MSI-Adapter:** siehe `adapters/msi-adapter-v1.yaml`.  
+**Trennung:** `context_signature` belegt Modulation; `receipt_proof` bleibt unvermischt.
 
 *Glosse:* *Wind im Segel, nicht Hand am Ruder.*
 
 ---
 
-## 🜅 IV. Test Suite (Test-Driven Trust)
-Tests = Spezifikation des Vertrauens.
+## 🜅 Tests (Test-Driven Trust)
+- **Unit:** `tests/unit/test_core5_metrics.py`.  
+- **Integration:** `tests/integration/test_integration.py`.  
+- **Ethics:** `tests/ethics/T3_fail_safe_expired_consent.py`.
 
-- **Unit:** [`./tests/unit/test_core5_metrics.py`](./tests/unit/test_core5_metrics.py) (Formelvalidierung).  
-- **Integration:** [`./tests/integration/test_integration.py`](./tests/integration/test_integration.py) (Token-Lifecycle, Gate-Policy).  
-- **Ethics & Recovery:** [`./tests/ethics/T3_fail_safe_expired_consent.py`](./tests/ethics/T3_fail_safe_expired_consent.py) (Fail-Safes, z. B. abgelaufener `Consent`).
-
-*Glosse:* *Vertrauen ist wiederholbare Evidenz.*
-
----
-
-## 🌀 V. Nächster Fokus (Release v1.1 — P9 Bundle)
-**Kritische Voids (\(V_{\text{krit}}\))** — aus Meta-Backpropagation.
-
-- **V1 (Metric-Metaphor Bridge):** Mapping Core-5 → **Chirale Meta-Codex UI**.  
-- **V4 (Test-Driven Trust):** **Security-Axiome** als testbare Assertions.  
-- **V5 (Trust Decay):** Alterungsfunktionen für `ECI` & Tokens.  
-- **V7 (Metric Interdependence):** Korrelationsmatrix zur Unabhängigkeits-Validierung.
-
+*Glosse:* *Vertrauen = wiederholbare Evidenz.*
 **Aktiver Sprint (7 Tage)**  
 1) **T1.1.2 Lyra Linearity-Cal:** Edge-Input-Kalibrierung.  
-2) **MSI-Adapter:** [`./adapters/msi-adapter-v1.yaml`](./adapters/msi-adapter-v1.yaml) + `context_signature`-Hook.  
+2) **MSI-Adapter:** `adapters/msi-adapter-v1.yaml` (geplant) + `context_signature`-Hook.  
 3) **T2.x Zeta-Panel:** Explain-Overlay-Logik (Transparenz).
 
 *Glosse:* *Leere wird Form — gezielt, nicht zufällig.*
 
 ---
 
-## 📁 VI. Masterindex & Repository-Struktur (Seed)
-**🜁** Explorative Container-Struktur für triangulare Co-Kreation.
-
-Dieses Repository enthält neben dem entaENGELment-Framework v1.0 auch den **Masterindex (Seed)** — eine erweiterte Struktur für Policy-Stubs, Specs, Skripte und narrative Verknüpfungen.
-
-### Verzeichnisstruktur
+## 📁 Masterindex & Operatives Layout
+**Pointer-Gold:** Functorial Index v3 (`index/COMPACT_INDEX_v3.yaml`) definiert die Claims.  
+**Annex:** Code & Tools sind austauschbare Anhänge.
 
 ```
 entaENGELment-/
-├─ .github/
-│  ├─ workflows/           # CI/CD Pipelines (Policy-Lint, Evidence-Bundle, Smoke-Tests)
-│  └─ PULL_REQUEST_TEMPLATE.md
-├─ docs/
-│  ├─ masterindex.md       # Masterindex-Startpunkt
-│  ├─ architecture.md      # Architektur-Übersicht
-│  ├─ triad_topology.md    # Triadische Topologie (3-Strang-Analyse)
-│  └─ canvas_links.md      # Canvas-Verknüpfungen
-├─ policies/
-│  ├─ gate_policy_v1.json  # Hard-Gate Policy (MZM)
-│  └─ schema.json          # Policy JSON Schema
-├─ spec/
-│  ├─ grammophon.spec.json # Grammophon-Spezifikation (Slice-Rotation)
-│  └─ cglg.spec.json       # CGLG-Spezifikation (Consensual Gate Logic)
-├─ src/
-│  ├─ core/                # Core-5 Metriken (ECI, PLV, MI, FD, PF)
-│  ├─ cglg/                # Gate-Logik & Mutual Perception
-│  ├─ tools/               # Cauchy-Detector, Throat-Vector
-│  └─ meta_backprop.py     # Meta-Backpropagation
-├─ scripts/
-│  ├─ evidence_bundle.sh   # Evidence-Bundling
-│  └─ nightly.sh           # Nightly Checks
-├─ tests/
-│  ├─ unit/                # Unit-Tests
-│  ├─ integration/         # Integrations-Tests
-│  └─ ethics/              # Ethik-Tests (Fail-Safes)
-├─ tools/mzm/              # MZM Gate-Toggle Tool
-├─ diagrams/               # Visualisierungen (Triad-Venn, Grammophon)
-└─ adapters/               # MSI-Adapter
+├─ Makefile                 # Entry-Points für Verify/Status/Snapshot
+├─ index/                   # Functorial Index v3 + Module (Pointer-Gold)
+├─ tools/                   # DeepJump Tools (Status, Snapshot, Verify)
+├─ .github/workflows/       # CI (deepjump-ci)
+├─ docs/                    # Annex-Dokumente (DevOps Kit, Masterindex)
+├─ src/                     # Kernmetrik & Gate-Logik
+├─ tests/                   # Unit/Integration/Ethics
+├─ receipts/                # Beispiel-Quittungen
+├─ seeds/                   # Seeds für Snapshot (strict)
+└─ audit/                   # Audit-Trails & Tabellen
 ```
 
 ### Erste Schritte
@@ -165,20 +110,14 @@ entaENGELment-/
 
 ---
 
-## 🜂 VII. Meta-Codex (Vision)
-Das Framework ist ein Werkzeug **chiraler Evolution**: nicht nur *was* zurückkehrt, sondern *wie* (Drehsinn).
+## 🜂 Annex-Prinzip
+- **Index = Pointer-Gold.** Wahrheit liegt im Index (`index/COMPACT_INDEX_v3.yaml`).  
+- **Code = Annex.** Anpassbar, solange Pointer bestehen (`docs/devops_tooling_kit_annex.md`).
 
-> *Resonanz-Cluster: **Chirality, Periodicity, Decay, Emergence**.  
-> Das Protokoll lebt: rechts-chiral (Expansion) · links-chiral (Reflexion).*
-
----
-
-## ✧ VIII. Inneres Erkenntnis-Changelog (Minimal)
-- **v1.0:** Mass-Gap als ethische Leitplanke fixiert; Dual-Receipts etabliert.  
-- **v1.1 (Ziel):** Void-Closure der Metrik-Interdependenzen; Trust-Decay formalisiert.
+*Glosse:* *Der Sanctum-Text bleibt poetisch, weil jede Aussage am Pointer hängt.*
 
 ---
 
-**Status:** **v1.0 Final** · **Target: v1.1 (Void-Closure)**  
-**Lizenz:** Apache-2.0 ([`./LICENSE`](./LICENSE))  
-**Kontakt:** siehe [`./CODEOWNERS`](./CODEOWNERS) / [`./CONTRIBUTING.md`](./CONTRIBUTING.md)
+**Status:** v1.0 Final (auf Kurs v1.1)  
+**Lizenz:** Apache-2.0 (`LICENSE`)  
+**Kontakt:** `CODEOWNERS` · `CONTRIBUTING.md`

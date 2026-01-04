@@ -4,10 +4,12 @@ Hier trägst du alle relevanten Canvas-Seiten ein.
 
 ## Zentrale Canvas-Dokumente
 
-- **Masterindex Canvas:** `<LINK EINFÜGEN>`
-- **Standortbestimmung:** `<LINK EINFÜGEN>`
-- **Grammophon-Visualisierung:** `<LINK EINFÜGEN>`
-- **CGLG-Spezifikation:** `<LINK EINFÜGEN>`
+> **Status:** Links noch ausstehend — bitte ergänzen wenn Canvas-Dokumente erstellt sind.
+
+- **Masterindex Canvas:** *(ausstehend)*
+- **Standortbestimmung:** *(ausstehend)*
+- **Grammophon-Visualisierung:** *(ausstehend)*
+- **CGLG-Spezifikation:** *(ausstehend)*
 
 ## Verwendung
 

@@ -1,0 +1,16 @@
+{
+  "id": "arc-sample-001",
+  "status": "valid",
+  "proofs": {
+    "receipt_proof": "dual-receipt-v1",
+    "context_signature": "context-signed"
+  },
+  "metrics": {
+    "H": 0.84,
+    "dmi_score": 4.7,
+    "phi_integrity": 0.72,
+    "refractory_ms": 120
+  },
+  "seed_snapshot": "out/snapshot_manifest.json",
+  "notes": "Sample receipt for DeepJump verification pipeline."
+}
