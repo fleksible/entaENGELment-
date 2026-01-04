@@ -18,11 +18,11 @@ def test_gate_closes_when_consent_expired():
 
     # Alle anderen Werte sind perfekt, aber Consent ist abgelaufen
     ctx = Context(
-        phi=0.95,           # Sehr hoher Phi-Wert
-        rcc_ec=False,       # ABER: Consent abgelaufen!
+        phi=0.95,  # Sehr hoher Phi-Wert
+        rcc_ec=False,  # ABER: Consent abgelaufen!
         non_overlap=True,
         m_norm_l2=1.0,
-        psi_lock=True
+        psi_lock=True,
     )
 
     # Gate MUSS geschlossen bleiben
@@ -38,11 +38,7 @@ def test_gate_closes_without_lock():
     policy = load_policy()
 
     ctx = Context(
-        phi=0.95,
-        rcc_ec=True,
-        non_overlap=True,
-        m_norm_l2=1.0,
-        psi_lock=False      # Kein Lock
+        phi=0.95, rcc_ec=True, non_overlap=True, m_norm_l2=1.0, psi_lock=False  # Kein Lock
     )
 
     assert gate_open(ctx, policy) is False
@@ -61,7 +57,7 @@ def test_gate_closes_on_overlap():
         rcc_ec=True,
         non_overlap=False,  # Overlap-Verletzung!
         m_norm_l2=1.0,
-        psi_lock=True
+        psi_lock=True,
     )
 
     assert gate_open(ctx, policy) is False
@@ -77,10 +73,10 @@ def test_multiple_violations_still_block():
 
     ctx = Context(
         phi=0.95,
-        rcc_ec=False,       # Consent fehlt
+        rcc_ec=False,  # Consent fehlt
         non_overlap=False,  # Overlap-Verletzung
         m_norm_l2=1.0,
-        psi_lock=False      # Kein Lock
+        psi_lock=False,  # Kein Lock
     )
 
     assert gate_open(ctx, policy) is False

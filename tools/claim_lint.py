@@ -112,13 +112,15 @@ def find_claims_in_file(filepath: Path, repo_root: Path) -> list[ClaimResult]:
                 has_tag = has_claim_tag(line)
                 # Only report if no tag present
                 if not has_tag:
-                    results.append(ClaimResult(
-                        file=rel_path,
-                        line_num=line_num,
-                        line=stripped[:80] + ("..." if len(stripped) > 80 else ""),
-                        claim_word=match.group(),
-                        has_tag=has_tag,
-                    ))
+                    results.append(
+                        ClaimResult(
+                            file=rel_path,
+                            line_num=line_num,
+                            line=stripped[:80] + ("..." if len(stripped) > 80 else ""),
+                            claim_word=match.group(),
+                            has_tag=has_tag,
+                        )
+                    )
                 break  # Only report once per line
 
     return results
@@ -187,24 +189,16 @@ def run_claim_lint(repo_root: Path, scope: list[str], strict: bool = False) -> b
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Detect untagged claims in core artefacts"
-    )
+    parser = argparse.ArgumentParser(description="Detect untagged claims in core artefacts")
     parser.add_argument(
         "--scope",
         default=",".join(DEFAULT_SCOPE),
-        help=f"Comma-separated directories to scan (default: {','.join(DEFAULT_SCOPE)})"
+        help=f"Comma-separated directories to scan (default: {','.join(DEFAULT_SCOPE)})",
     )
     parser.add_argument(
-        "--strict",
-        action="store_true",
-        help="Fail if any untagged claims are found"
+        "--strict", action="store_true", help="Fail if any untagged claims are found"
     )
-    parser.add_argument(
-        "--help-extended",
-        action="store_true",
-        help="Show extended help"
-    )
+    parser.add_argument("--help-extended", action="store_true", help="Show extended help")
     args = parser.parse_args()
 
     if args.help_extended:

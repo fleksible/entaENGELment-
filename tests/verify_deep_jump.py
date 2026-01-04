@@ -53,7 +53,9 @@ def build_report(data: dict) -> dict:
         "status": data.get("status"),
         "verdict": verdict,
         "issues": issues,
-        "proofs_present": {"receipt_proof", "context_signature"}.issubset(set(data.get("proofs", {}).keys())),
+        "proofs_present": {"receipt_proof", "context_signature"}.issubset(
+            set(data.get("proofs", {}).keys())
+        ),
         "metrics_keys": sorted(data.get("metrics", {}).keys()),
         "seed_snapshot": data.get("seed_snapshot"),
     }

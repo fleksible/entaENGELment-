@@ -48,9 +48,7 @@ def sign_payload(payload: dict, secret: str) -> str:
     """Create HMAC-SHA256 signature of canonical payload."""
     canonical = canonical_json(payload)
     signature = hmac.new(
-        secret.encode("utf-8"),
-        canonical.encode("utf-8"),
-        hashlib.sha256
+        secret.encode("utf-8"), canonical.encode("utf-8"), hashlib.sha256
     ).hexdigest()
     return signature
 
@@ -64,31 +62,33 @@ def compute_state_fingerprint(payload: dict) -> str:
 def get_git_info() -> tuple[str, str, list[str]]:
     """Get current git branch, commit, and changed files."""
     try:
-        branch = subprocess.check_output(
-            ["git", "rev-parse", "--abbrev-ref", "HEAD"],
-            stderr=subprocess.DEVNULL
-        ).decode().strip()
+        branch = (
+            subprocess.check_output(
+                ["git", "rev-parse", "--abbrev-ref", "HEAD"], stderr=subprocess.DEVNULL
+            )
+            .decode()
+            .strip()
+        )
     except Exception:
         branch = "unknown"
 
     try:
-        commit = subprocess.check_output(
-            ["git", "rev-parse", "HEAD"],
-            stderr=subprocess.DEVNULL
-        ).decode().strip()
+        commit = (
+            subprocess.check_output(["git", "rev-parse", "HEAD"], stderr=subprocess.DEVNULL)
+            .decode()
+            .strip()
+        )
     except Exception:
         commit = None
 
     try:
         # Get staged and unstaged changed files
-        status = subprocess.check_output(
-            ["git", "status", "--porcelain"],
-            stderr=subprocess.DEVNULL
-        ).decode().strip()
-        files_changed = [
-            line[3:].strip() for line in status.split("\n")
-            if line.strip()
-        ]
+        status = (
+            subprocess.check_output(["git", "status", "--porcelain"], stderr=subprocess.DEVNULL)
+            .decode()
+            .strip()
+        )
+        files_changed = [line[3:].strip() for line in status.split("\n") if line.strip()]
     except Exception:
         files_changed = []
 
@@ -105,8 +105,8 @@ def emit_badge(status: str, out_dir: str) -> None:
         f'<g fill="#fff" text-anchor="middle" font-family="Verdana" font-size="11">'
         f'<text x="27.5" y="14">DeepJump</text>'
         f'<text x="77.5" y="14">{status}</text>'
-        f'</g>'
-        f'</svg>'
+        f"</g>"
+        f"</svg>"
     )
     with open(os.path.join(out_dir, "deepjump.svg"), "w") as f:
         f.write(svg)
@@ -227,23 +227,14 @@ def main() -> None:
     )
 
     # Receipt mode arguments
-    parser.add_argument(
-        "--claim",
-        help="Claim description for receipt mode"
-    )
+    parser.add_argument("--claim", help="Claim description for receipt mode")
     parser.add_argument(
         "--tag",
         choices=["[FACT]", "[HYP]", "[MET]", "[TODO]", "[RISK]"],
-        help="Claim tag for receipt mode"
+        help="Claim tag for receipt mode",
     )
-    parser.add_argument(
-        "--module",
-        help="Module ID (e.g., MOD_6)"
-    )
-    parser.add_argument(
-        "--output",
-        help="Output directory for receipt (default: receipts/)"
-    )
+    parser.add_argument("--module", help="Module ID (e.g., MOD_6)")
+    parser.add_argument("--output", help="Output directory for receipt (default: receipts/)")
 
     # Legacy status mode arguments
     parser.add_argument("--outdir", help="Output directory for status mode")

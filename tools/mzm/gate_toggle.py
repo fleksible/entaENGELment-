@@ -24,11 +24,11 @@ POLICY_PATH = pathlib.Path(__file__).parents[2] / "policies" / "gate_policy_v1.j
 class Context:
     """Kontext-Datenstruktur für Gate-Evaluierung."""
 
-    phi: float              # Resonanzpotential Φ
-    rcc_ec: bool            # RCC:EC erfüllt?
-    non_overlap: bool       # ¬PO (Non-Overlap)
-    m_norm_l2: float        # ||M||_2 (L2-Norm)
-    psi_lock: bool          # Lock gesetzt?
+    phi: float  # Resonanzpotential Φ
+    rcc_ec: bool  # RCC:EC erfüllt?
+    non_overlap: bool  # ¬PO (Non-Overlap)
+    m_norm_l2: float  # ||M||_2 (L2-Norm)
+    psi_lock: bool  # Lock gesetzt?
 
 
 def load_policy(path: pathlib.Path = POLICY_PATH) -> dict[str, Any]:
@@ -80,11 +80,12 @@ def main(argv: list[str]) -> int:
     if len(argv) != 6:
         print(
             "usage: mzm_gate_toggle.py <phi> <rcc_ec> <non_overlap> <m_norm_l2> <psi_lock>",
-            file=sys.stderr
+            file=sys.stderr,
         )
         return 2
 
     phi = float(argv[1])
+
     def parse_bool(s):
         return s.lower() in {"1", "true", "yes", "y", "on"}
 
@@ -93,7 +94,7 @@ def main(argv: list[str]) -> int:
         rcc_ec=parse_bool(argv[2]),
         non_overlap=parse_bool(argv[3]),
         m_norm_l2=float(argv[4]),
-        psi_lock=parse_bool(argv[5])
+        psi_lock=parse_bool(argv[5]),
     )
 
     policy = load_policy()

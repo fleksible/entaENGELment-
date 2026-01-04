@@ -126,12 +126,14 @@ def extract_paths_from_yaml(yaml_path: Path, repo_root: Path) -> list[PointerRes
                     except ValueError:
                         pass  # Keep original path
 
-                results.append(PointerResult(
-                    path=path,
-                    source=str(yaml_path.relative_to(repo_root)),
-                    exists=exists,
-                    optional=optional,
-                ))
+                results.append(
+                    PointerResult(
+                        path=path,
+                        source=str(yaml_path.relative_to(repo_root)),
+                        exists=exists,
+                        optional=optional,
+                    )
+                )
         elif isinstance(obj, dict):
             for k, v in obj.items():
                 find_paths(v, f"{context} {k}", k)
@@ -224,19 +226,11 @@ def verify_pointers(repo_root: Path, strict: bool = False) -> bool:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Verify pointers in index and module definitions"
-    )
+    parser = argparse.ArgumentParser(description="Verify pointers in index and module definitions")
     parser.add_argument(
-        "--strict",
-        action="store_true",
-        help="Also warn about optional missing paths"
+        "--strict", action="store_true", help="Also warn about optional missing paths"
     )
-    parser.add_argument(
-        "--help-extended",
-        action="store_true",
-        help="Show extended help"
-    )
+    parser.add_argument("--help-extended", action="store_true", help="Show extended help")
     args = parser.parse_args()
 
     if args.help_extended:

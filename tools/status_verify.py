@@ -21,7 +21,9 @@ def verify_payload(data: dict, secret: str) -> tuple[bool, str]:
 
     target_hmac = signatures["hmac"]
     canonical = json.dumps(data, sort_keys=True, separators=(",", ":"))
-    computed_hmac = hmac.new(secret.encode("utf-8"), canonical.encode("utf-8"), hashlib.sha256).hexdigest()
+    computed_hmac = hmac.new(
+        secret.encode("utf-8"), canonical.encode("utf-8"), hashlib.sha256
+    ).hexdigest()
     if hmac.compare_digest(target_hmac, computed_hmac):
         return True, "OK"
     return False, f"Mismatch: {computed_hmac} != {target_hmac}"
