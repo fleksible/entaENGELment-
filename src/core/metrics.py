@@ -10,6 +10,7 @@ Dieses Modul implementiert die fünf Kern-Metriken des entaENGELment-Frameworks:
 Version: 1.0 (Minimal-Stubs für Testbarkeit; vollständige Implementierung folgt in v1.1)
 """
 
+import math
 from typing import Union
 
 
@@ -28,18 +29,37 @@ def eci(signal: list[Union[int, float]]) -> float:
 
 
 def plv(phases: list[Union[int, float]]) -> float:
-    """Phase Locking Value - Misst Kopplung/Kohärenz der Resonanz.
+    """Phase Locking Value (PLV) – Standarddefinition.
+
+    Erwartet Phasen (idealerweise Phasendifferenzen) in RADIANS.
+    Robust gegen Drift, weil die Auswertung auf dem Einheitskreis passiert.
 
     Args:
-        phases: Liste von Phasen-Werten
+        phases: Liste von Phasen-Werten (Radians)
 
     Returns:
         float: PLV-Wert zwischen 0.0 und 1.0
     """
     if not phases:
         return 0.0
-    phase_range = max(phases) - min(phases)
-    return float(min(max(1.0 - (phase_range / 3.14159), 0.0), 1.0))
+
+    sum_cos = 0.0
+    sum_sin = 0.0
+    two_pi = 2.0 * math.pi
+
+    for p in phases:
+        x = float(p)
+        # normalize to [-pi, pi] for numerical stability
+        x = ((x + math.pi) % two_pi) - math.pi
+        sum_cos += math.cos(x)
+        sum_sin += math.sin(x)
+
+    n = float(len(phases))
+    mean_cos = sum_cos / n
+    mean_sin = sum_sin / n
+
+    r = math.sqrt(mean_cos * mean_cos + mean_sin * mean_sin)
+    return float(min(max(r, 0.0), 1.0))
 
 
 def mi(x: list[Union[int, float]], y: list[Union[int, float]]) -> float:
