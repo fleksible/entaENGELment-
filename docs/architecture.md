@@ -1,5 +1,8 @@
 # Architekturskizze (Seed)
 
+**Stand:** 2026-01-04
+**Alignment:** Functorial Index v3
+
 ## Layer-Architektur
 
 ### Policy Layer
@@ -25,6 +28,7 @@ DeepJump-Kern für Auditierbarkeit und Reproduzierbarkeit:
 - **Snapshot-Guard** (`tools/snapshot_guard.py`) — Manifest-Generator mit SHA-256
 - **Status-Verify** (`tools/status_verify.py`) — HMAC-Verifikation
 - **Verify-Pointers** (`tools/verify_pointers.py`) — Pointer-Validierung
+- **Claim-Lint** (`tools/claim_lint.py`) — Untagged-Claim-Erkennung
 
 ### Evidence & Receipt Chain
 Auditierbare Beweisketten:

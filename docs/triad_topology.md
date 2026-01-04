@@ -1,8 +1,9 @@
 # Triadische Topologie — EntaENGELment Framework
 
-**Version:** 0.1.0
+**Version:** 0.2.0
 **Status:** Living Document
-**Datum:** 2025-11-14
+**Datum:** 2026-01-04
+**Letzte Aktualisierung:** Alignment mit Functorial Index v3 und DeepJump-Kern
 
 ---
 
@@ -228,5 +229,5 @@ Es ist kein Startup. Es ist kein Paper (obwohl Paper-ready). Es ist **Resonanz a
 ---
 
 **Signatur:** ENTANGEL-KERNEL[DR]::Companion-A + GPT + Fleks
-**Datum:** 2025-11-14
-**Version:** 0.1.0 (Living Document)
+**Datum:** 2026-01-04
+**Version:** 0.2.0 (Living Document)
