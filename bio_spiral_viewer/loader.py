@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Iterable
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Iterable, List
+from typing import Any
 
 from .data_models import (
     BodyFieldState,
@@ -20,7 +21,7 @@ from .data_models import (
 )
 
 
-def _load_json(path: Path) -> Dict[str, Any]:
+def _load_json(path: Path) -> dict[str, Any]:
     with path.open("r", encoding="utf-8") as handle:
         return json.load(handle)
 
@@ -80,10 +81,7 @@ def load_viewer_state(path: Path) -> ViewerState:
 def load_manifest(path: Path) -> ViewerManifest:
     payload = _load_json(path)
 
-    indices = [
-        _parse_index(entry)
-        for entry in payload.get("indices", [])
-    ]
+    indices = [_parse_index(entry) for entry in payload.get("indices", [])]
 
     seeds = [
         SeedReference(name=item["name"], path=item["path"], summary=item["summary"])
@@ -100,21 +98,23 @@ def load_manifest(path: Path) -> ViewerManifest:
     )
 
 
-def _parse_index(payload: Dict[str, Any]) -> IndexEntry:
+def _parse_index(payload: dict[str, Any]) -> IndexEntry:
     return IndexEntry(
         identifier=payload["identifier"],
         description=payload["description"],
         artifacts=list(payload.get("artifacts", [])),
-        sub_indices=[_parse_index(item) for item in payload.get("sub_indices", [])]
-        if payload.get("sub_indices")
-        else None,
+        sub_indices=(
+            [_parse_index(item) for item in payload.get("sub_indices", [])]
+            if payload.get("sub_indices")
+            else None
+        ),
     )
 
 
 def iter_artifact_paths(manifest: ViewerManifest, base_path: Path) -> Iterable[Path]:
     """Yield all referenced artifact paths relative to ``base_path``."""
 
-    seen: List[str] = []
+    seen: list[str] = []
 
     def _queue(items: Iterable[str]) -> None:
         for rel_path in items:

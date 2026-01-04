@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import List, Optional
 
 
 @dataclass
@@ -57,7 +56,7 @@ class SpiralState:
     spinor_state: str
     df_flip_committed: bool
     cooldown_remaining: float
-    eight_channel_drive: List[SpiralDriveChannel]
+    eight_channel_drive: list[SpiralDriveChannel]
 
 
 @dataclass
@@ -75,8 +74,8 @@ class IndexEntry:
 
     identifier: str
     description: str
-    artifacts: List[str]
-    sub_indices: Optional[List["IndexEntry"]] = None
+    artifacts: list[str]
+    sub_indices: list[IndexEntry] | None = None
 
 
 @dataclass
@@ -92,9 +91,9 @@ class SeedReference:
 class ViewerManifest:
     """Complete manifest required to initialise the viewer."""
 
-    indices: List[IndexEntry]
-    seeds: List[SeedReference]
-    governance_artifacts: List[str]
-    konfab_artifacts: List[str]
-    lyra_artifacts: List[str]
-    overlay_artifacts: List[str]
+    indices: list[IndexEntry]
+    seeds: list[SeedReference]
+    governance_artifacts: list[str]
+    konfab_artifacts: list[str]
+    lyra_artifacts: list[str]
+    overlay_artifacts: list[str]

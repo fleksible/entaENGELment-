@@ -3,13 +3,12 @@
 from __future__ import annotations
 
 from dataclasses import asdict
-from typing import Dict
 
 from .data_models import ViewerState
 from .metrics import compute_drive_balance, compute_resonance_score
 
 
-def format_viewer_state(state: ViewerState) -> Dict[str, object]:
+def format_viewer_state(state: ViewerState) -> dict[str, object]:
     """Create a dictionary ready for presentation layers."""
 
     resonance_score = compute_resonance_score(state.body)
