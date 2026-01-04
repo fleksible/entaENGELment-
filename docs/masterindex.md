@@ -9,6 +9,10 @@ Startpunkt des Masterindex. Enthält Struktur, narrative Einordnung und Links zu
 ## Verzeichnisstruktur
 
 - **policies/** — Gate-Policies und Schema-Definitionen
+- **spec/** — Spezifikationen für Grammophon, CGLG und ECI
+- **src/** — Source-Code (Core-Metriken inkl. ECI, CGLG, Tools)
+- **scripts/** — Automatisierungs-Scripts (Evidence-Bundling, Nightly Checks, Triad-Compare)
+- **tests/** — Test-Suite (Unit, Integration, Ethics, CPT)
 - **spec/** — Spezifikationen für Grammophon und CGLG
 - **src/** — Source-Code (Core-Metriken, CGLG, Meta-Backprop)
   - **src/core/** — Core-5 Metriken (ECI, PLV, MI, FD, PF)
@@ -23,6 +27,8 @@ Startpunkt des Masterindex. Enthält Struktur, narrative Einordnung und Links zu
 - **scripts/** — Automatisierungs-Scripts (Evidence-Bundling, Nightly Checks)
 - **tests/** — Test-Suite (Unit, Integration, Ethics)
 - **docs/** — Dokumentation und Architektur
+- **reports/** — Test-Reports und Templates (CPT, Triad-Similarity)
+- **validation/** — ECI-Validierungs-Artefakte
 - **index/** — Functorial Index v3 und Modul-Metadaten
 - **diagrams/** — Visualisierungen (Triad-Venn, Grammophon-Hexaliminal)
 - **adapters/** — MSI-Adapter und Konfigurationen
@@ -40,6 +46,9 @@ Dieser Masterindex ist integriert mit dem entaENGELment Framework v1.0 und erwei
 - Grammophon-Klanggeometrie (slice-rotation)
 - CGLG (Consensual Gate Logic)
 - Meta-Backpropagation für Policy-Evolution
+- **ECI (Ethical Consent Index)** — Implementierung mit Bootstrap/Permutation-Tests
+- **CPT-Test-Harness** — Charge-Parity-Time Invarianz-Validation
+- **Triad-Execution-Kit** — Templates und Vergleichsskripts für 3-Strang-Analyse
 
 ---
 
@@ -87,3 +96,28 @@ Kenogramme (☐) markieren **bekanntes Nichtwissen** — Bereiche wo strukturell
 - Strang B (GPT): Grün (#10b981)
 - Strang C (Fleks): Orange (#f59e0b)
 - Triadischer Kern: Rot (#dc2626)
+
+---
+
+## XIII. Testbare Implementierungen
+
+### ECI (Ethical Consent Index)
+- **Spec:** `spec/eci.spec.json` — JSON Schema für ECI-Vektoren und Kalibrierung
+- **Implementierung:** `src/core/eci.py` — ECI-Berechnung mit Bootstrap/Permutation
+- **Tests:** `tests/unit/test_eci.py` — Unit-Tests für ECI-Funktionen
+- **CLI:** `python src/core/eci.py --likert 6 --behavior 0.6 --physio 0.5 --out validation/eci_example.json`
+
+### CPT-Test-Harness
+- **Implementierung:** `tests/cpt/test_cpt_harness.py` — Charge-Parity-Time Transformationen
+- **Template:** `reports/cpt_test_report_template.json` — Report-Format
+- **Tests:** `pytest tests/cpt/test_cpt_harness.py -q`
+
+### Triad-Execution-Kit
+- **Template:** `docs/triad_fill_template.md` — Standardisierter Slot für jeden Pol
+- **Vergleichsskript:** `scripts/triad_compare.py` — TF-Vektorisierung & Cosine-Similarity
+- **Usage:** `python scripts/triad_compare.py claude.md gpt.md fleks.md reports/triad_similarity.json`
+
+**Dependencies:**
+```bash
+pip install numpy scipy pytest
+```
