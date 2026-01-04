@@ -30,7 +30,16 @@ Startpunkt des Masterindex. Enthält Struktur, narrative Einordnung und Links zu
 - **seeds/** — Konfigurations-Seeds für Snapshot
 - **receipts/** — Beispiel-Quittungen (JSON)
 
+## Narrative Canon (Lazy-load)
+
+- `docs/narratives/symphonie_der_resonanz.md` — Symphonie + operationalisierte Rückkopplung + Voids
+- `docs/kenograms/LYRA.md` — ☐-LYRA (Audiohook als auditierbares Kenogramm)
+- `src/tools/toy_resonance_dataset.py` — Option B: Toy Dataset (Proof of Wiring)
+
 ## Nächster Schritt
+
+- Canon-Narrativ: `docs/narratives/symphonie_der_resonanz.md`
+- Functorial Map: `index/ENTAENGELMENT_INDEX_v3_FUNCTORIAL.yaml`
 
 Ausformulierung der Kenogramm-Slots & Aufbau der Receipt-Chain.
 
@@ -57,7 +66,7 @@ Kenogramme (☐) markieren **bekanntes Nichtwissen** — Bereiche wo strukturell
 ### Aus Strang B (GPT):
 | Kenogramm | Frage | Komponenten | Status |
 |-----------|-------|-------------|--------|
-| ☐-LYRA | Audio→7-Band Mapping validiert? | src/tools/lyra_mapper.py | UI-Stub geplant |
+| ☐-LYRA | Audio→7-Band Mapping validiert? | docs/kenograms/LYRA.md | Stub (Kenogramm) |
 | ☐-THOTH | Prosody-Gates reduzieren False-Positive? | src/tools/throat_vector.py | Implementiert |
 | ☐-KOLIBRI | Medium-Proxy ↔ Propagation-Weight? | src/tools/kolibri.py | Consent-protected |
 
