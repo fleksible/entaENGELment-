@@ -7,9 +7,12 @@ Startpunkt des Masterindex. Enthält Struktur, narrative Einordnung und Links zu
 - **policies/** — Gate-Policies und Schema-Definitionen
 - **spec/** — Spezifikationen für Grammophon und CGLG
 - **src/** — Source-Code (Core-Metriken, CGLG, Tools)
+- **tools/** — DeepJump DevOps-Tools (Status-Emit, Snapshot-Guard, Verify)
 - **scripts/** — Automatisierungs-Scripts (Evidence-Bundling, Nightly Checks)
 - **tests/** — Test-Suite (Unit, Integration, Ethics)
 - **docs/** — Dokumentation und Architektur
+- **index/** — Functorial Index v3 und Modul-Metadaten
+- **diagrams/** — Visualisierungen (Triad-Venn, Grammophon-Hexaliminal)
 
 ## Nächster Schritt
 
