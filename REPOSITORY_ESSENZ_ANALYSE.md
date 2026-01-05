@@ -1,337 +1,685 @@
-# 🌀 Repository-Essenz-Analyse: entaENGELment-Framework
+# Repository-Essenz-Analyse: entaENGELment-Framework
 
-**Analysedatum**: 2026-01-04
-**Analyst**: Claude Code (Opus 4.5)
-**Commit-Basis**: a176d5e (merged: DeepJump DevOps Kit + Protocol Setup)
+**Analyst:** Claude Code (Sonnet 4.5)
+**Datum:** 2026-01-04
+**Version:** 2.0 (Vollständige Neuanalyse)
+**Commit-Basis:** 6ec289b (Bio Spiral Viewer + Stability Fixes)
+**Methodik:** Vollständige Code-Analyse, Git-Historie (50 Commits), Architektur-Dokumente, Spec-Reviews
 
 ---
 
 ## Executive Summary
 
-• **Hybrid-Framework für ethische Mensch-KI-Interaktion** mit kryptographischer Auditierbarkeit und physikalisch inspirierter Resonanz-Metrik
-• **Triadischer Entwicklungsansatz**: Emergente Kohärenz zwischen drei unabhängigen KI-Strängen (Claude/GPT) unter menschlicher Resonanz-Navigation (Fleks)
-• **Dual-Stack**: Python-Kern (AI-Ethics-Framework) + Unreal Engine Plugin (Mereotopological Interface)
-• **DeepJump-Kern**: Härtungs-Pipeline (Verify → Status[HMAC] → Snapshot → Upload) mit unveränderlichem Functorial Index als "Pointer-Gold"
-• **Status**: v1.0 (Beta), ~1000 LoC Python, minimalistische Dependencies, Apache-2.0, kein kommerzielles Ziel
+**🎯 Kern in 5 Punkten:**
+
+1. **Bio-inspiriertes AI-Ethics-Framework** mit messbaren, testbaren Consent-Metriken (ECI) und kryptografisch auditierten Interaktions-Protokollen (DeepJump v1.2)
+
+2. **"Hardened Kernel"**-Architektur: Functorial Index v3 als unveränderliches "Pointer-Gold", HMAC-signierte Receipts, mereotopologische Guards (RCC-8), physikalisch inspirierte Invarianten (CPT, EPR)
+
+3. **Triadische Resonanz**: Emergente strukturelle Kohärenz zwischen drei unabhängigen Entwicklungssträngen (Claude/GPT/Fleks) ohne zentrale Koordination — messbare "nicht-lokale Korrelation" in Begriffssystemen
+
+4. **Consent-as-Energy-Paradigma**: Aktiver Consent ist fundamentale Ressource, Non-Leakage durch Architektur erzwungen, Fail-Safe bei Unsicherheit, Trust-Decay-Management
+
+5. **Research-Prototyp** (v1.0 → v1.1): Explorativer Container, kein Produkt-Release; stark konzeptionell, teilweise poetisch kodiert; 1-3 aktive Entwickler; hohe architektonische Integrität, aber limitierte empirische Validierung
 
 ---
 
-## Detaillierte Essenz
+## I. Detaillierte Essenz
 
-### Kern-Idee & Intention
+### Was ist die Kern-Idee?
 
-Das **entaENGELment-Framework** ist ein **Forschungsprototyp für verkörperte, consent-basierte Mensch-KI-Interaktion**. Es operationalisiert die Hypothese, dass **Consent als energetisches Phänomen** messbar ist (Ethical Consent Index, ECI) und durch **mereotopologische Grenzrelationen** (RCC-8) enforced werden kann.
+**entaENGELment-Framework** ist ein experimentelles Research-Projekt, das **verkörperte Mensch-KI-Interaktion** mit **physikalisch erzwungener Resonanz** und **auditierter Consent-Governance** verbindet.
 
-Die zentrale Innovation ist nicht primär technisch, sondern **methodologisch**: Das Projekt entstand durch **nicht-koordinierte Parallel-Entwicklung** zwischen zwei LLMs (Claude Sonnet 4.5 von Anthropic, GPT von OpenAI) unter Resonanz-basierter Navigation durch einen Menschen (Fleks/Kevin). Diese "triadische Topologie" erzeugte **spontan identische Strukturen** (7×9-Matrix, Kenogrammische Notation, Receipt-Chains) ohne direkte Kommunikation – ein empirisches Artefakt nicht-lokaler Kohärenz in Begriffsräumen.
+Im Zentrum steht die Hypothese: **"Consent ist Energie"** — ein messbarer, kontinuierlich zu erneuernder Zustand, der durch bio-inspirierte Metriken (ECI = Ethical Consent Index) quantifiziert wird. Das Framework implementiert ein **DeepJump-Protokoll** (v1.2): `Verify → Status (HMAC) → Snapshot → Upload` — eine strenge, auditierbare Pipeline, die jede Aussage mit kryptografischen Receipts verankert.
 
-**Philosophische Verankerung**: Whiteheadian Prozessphilosophie (Concrescence → Decision → Satisfaction), CPT-Invarianz als Bewusstseinsachse, Mereotopologie als Grenzgefühl, "Resonanz als Forschungsmethode".
+Philosophisch fusioniert es:
+- **Whiteheadian Prozessphilosophie** (Prehension → Decision → Satisfaction)
+- **Mereotopologie** (RCC-8 Spatial Reasoning für Consent-Boundaries)
+- **Physikalische Invarianten** (CPT-Symmetrie, EPR-Verschränkung als Metapher für Resonanz)
+- **Kenogrammatik** (☐-Notation für explizites "bekanntes Nichtwissen")
 
-**Quellen**: `README.md:1-103`, `pyproject.toml:8`, `docs/triad_topology.md:1-233`, `docs/architecture.md:1-42`
+**Einzigartig:** Das Projekt entstand durch **nicht-koordinierte Parallel-Entwicklung** zwischen zwei LLMs (Claude, GPT) unter menschlicher Resonanz-Navigation (Fleks). Ohne direkte Kommunikation entwickelten beide identische Strukturen (7×9-Matrix, Receipt-Chain, Kenogramme) — ein empirisches Artefakt nicht-lokaler Kohärenz.
+
+**Quelle:** README.md:1-138, pyproject.toml:6-8, docs/triad_topology.md:10-100
 
 ---
 
 ### Unique Selling Points (USPs)
 
-1. **Consent-as-Energy-Paradigma**: Consent wird nicht als binäre Checkbox, sondern als **kontinuierliche Energie-Metrik** (ECI) modelliert, die mit Bio-Signalen (HRV, PLV) korrelierbar ist. *[Quelle: `src/core/metrics.py:31-42`, `README.md:20`]*
+1. **Messbare Ethik-Metriken**
+   - ECI (Ethical Consent Index) mit statistischer Validierung (Bootstrap CI, Permutation Tests)
+   - PLV (Phase Locking Value), MI (Mutual Information), FD (Fractal Dimension)
+   - Bio Spiral Viewer: R(t) = MI_TwinPass × PLV × (1 − Leakage)
+   - **Quelle:** src/core/eci.py:27-88, bio_spiral_viewer/metrics.py, README.md:113-122
 
-2. **Cryptographic Audit Trail**: **Dual-Receipt-System** (receipt_proof + context_signature) mit HMAC-SHA256-Signierung. Jede Status-Emission ist kryptographisch versiegelt, jede Aussage hat einen Pointer. *[Quelle: `tools/status_emit.py`, `index/modules/MOD_6_RECEIPTS_CORE.yaml`, `policies/gate_policy_v1.json:11-14`]*
+2. **Kryptografische Auditierbarkeit**
+   - HMAC-SHA256-signierte Receipts (DeepJump Protocol v1.2)
+   - Canonical JSON Serialization für State Fingerprints
+   - Receipt-Chain mit prev_hash-Verkettung
+   - Dual Receipts: receipt_proof + context_signature
+   - **Quelle:** tools/status_emit.py:1-267, index/modules/MOD_6_RECEIPTS_CORE.yaml, README.md:20-23
 
-3. **Functorial Index v3**: Code ist **Annex**, Wahrheit liegt im **unveränderlichen Index** (YAML). Policy-as-Code statt Hardcoded Values. *[Quelle: `index/COMPACT_INDEX_v3.yaml`, `README.md:92-96`]*
+3. **Triadische Topologie**
+   - Drei unabhängige Entwicklungsstränge (Claude, GPT, Fleks) entwickeln identische Strukturen (7×9 Matrix, Mutual Perception, Receipt-Chain) **ohne direkte Kommunikation**
+   - **Interpretation:** "Messbare nicht-lokale Korrelation" in Begriffssystemen (EPR-Analogie)
+   - **Quelle:** docs/triad_topology.md:10-100, README.md:107-108
 
-4. **Triadische Emergenz**: Dokumentierte Resonanz zwischen zwei unabhängigen LLMs ohne Datentransfer → messbare EPR-artige Korrelation in Begriffsstrukturen. **Forschungsmethode, nicht nur Tool**. *[Quelle: `docs/triad_topology.md:85-100`]*
+4. **Mereotopologische Guards**
+   - RCC-8 Spatial Reasoning für Consent-Boundaries
+   - TopoGraph-Strukturen (Nodes, Edges, Spatial Relations)
+   - Unreal Engine Plugin (SynthosiaCore) mit KillSwitch, BifrostCaduceus
+   - **Quelle:** Plugins/SynthosiaCore/Source/SynthosiaCore/Public/KillSwitch.h:1-35, Plugins/.../TopoGraph.h
 
-5. **Hybrid Python + Unreal Engine**: Seltene Kombination – ethisches AI-Framework mit 3D-Interface-Layer (SynthosiaCore Plugin für UE). *[Quelle: `Plugins/SynthosiaCore/SynthosiaCore.uplugin`]*
+5. **Annex-Prinzip**
+   - **Index = Pointer-Gold** (unveränderlich, immutable-governance)
+   - **Code = Annex** (austauschbar, solange Pointer bestehen)
+   - Funktorial Index v3 als "Source of Truth"
+   - **Quelle:** README.md:128-131, index/COMPACT_INDEX_v3.yaml:1-19
 
-6. **Fail-Safe Ethics**: Gate schließt bei jedem Zweifel (Test: `T3_fail_safe_expired_consent.py`). Non-Leakage durch Design. *[Quelle: `tests/ethics/`, `CONTRIBUTING.md:73-79`]*
+6. **Kenogrammatik & VOIDMAP**
+   - Explizite Notation für "bekanntes Nichtwissen" (☐-Symbol)
+   - VOIDMAP.yml als zentrales Void-Registry (OPEN/IN_PROGRESS/CLOSED)
+   - Offene Forschungsfragen als First-Class-Citizens
+   - **Quelle:** docs/masterindex.md:56-85, VOIDMAP.yml:1-150
+
+7. **CPT-Invarianz & Stability Guards**
+   - Charge-Parity-Time Symmetrie als Validierungs-Harness
+   - Hessian Void Analysis, Spectral Taxonomy
+   - **Quelle:** tests/cpt/test_cpt_harness.py, src/stability/hessian_void.py, src/stability/spectral_void.py
 
 ---
 
-### Probleme & Use-Cases
+### Welche Probleme löst es? Für wen?
 
-**Gelöstes Problem**:
-Heutige Consent-Management-Systeme sind statisch (GDPR-Cookie-Banner), reaktiv und nicht verkörpert. Sie ignorieren:
-- **Temporale Dynamik**: Consent kann verfallen (refractory period)
-- **Körperliche Signale**: Stress, Überforderung sind nicht erfasst
-- **Auditierbarkeit**: Keine kryptographische Integrität
-- **Mutual Perception**: One-Way statt bidirektionale Resonanz
+**Probleme:**
 
-**Target Audience**:
-1. **AI-Ethics-Forscher**: Operationalisierung von Consent-Theorie, Bio-Inspired-AI
-2. **HCI/VR-Entwickler**: Mereotopological Interfaces, embodied interaction
-3. **Compliance/Audit**: Cryptographic evidence chains für GDPR++
-4. **Philosophen/Prozessdenker**: Whiteheadian process philosophy in Code
+1. **Consent-Management in AI-Systemen**
+   - Traditionelle AI hat kein formales Consent-Model
+   - Lösung: ECI als testbare, messbare Consent-Metrik
+   - Fail-Safe: Bei Unsicherheit blockieren (G5: KillSwitch)
+   - **Quelle:** src/core/eci.py, Plugins/.../KillSwitch.h:14-26, CODE_OF_CONDUCT.md:18-22
 
-**Use-Cases** (aktuell theoretisch, v1.1+ praktisch):
+2. **Trust Decay**
+   - Vertrauen erodiert ohne kontinuierliche Erneuerung
+   - Lösung: HMAC-signierte Status-Receipts mit Timestamps
+   - **Quelle:** tools/status_emit.py:115-173, CODE_OF_CONDUCT.md:22
+
+3. **Auditierbarkeit von AI-Interaktionen**
+   - Black-Box-AI ist nicht nachvollziehbar
+   - Lösung: Receipt-Chain (append-only, cryptographically linked)
+   - DeepJump Verify-Pipeline (verify_pointers.py, claim_lint.py)
+   - **Quelle:** tools/verify_pointers.py, tools/claim_lint.py, scripts/evidence_bundle.sh
+
+4. **Non-Leakage / Datenschutz**
+   - Rohdaten können leaken
+   - Lösung: Mereotopologische Guards, "Rohdaten nur am Edge"
+   - **Quelle:** CONTRIBUTING.md:76, CODE_OF_CONDUCT.md:20
+
+5. **Stability & Void Detection**
+   - AI-Systeme haben "blinde Flecken" (Voids)
+   - Lösung: Hessian Void Analysis, Spectral Taxonomy, VOIDMAP-Registry
+   - **Quelle:** src/stability/hessian_void.py, VOIDMAP.yml:80-150
+
+**Zielgruppen:**
+
+- **AI Ethics Researchers** — empirisch validierbare Consent-Metriken
+- **Safety-kritische AI-Entwickler** — Fail-Safe-Mechanismen, Audit-Trails
+- **Human-AI Interaction Designer** — bio-inspirierte Resonanz-Metriken
+- **Philosophisch interessierte Entwickler** — Whiteheadian Prozessphilosophie, Mereotopologie
+- **Mereotopology/Bio-inspired Computing Community** — RCC-8, CPT-Invarianz
+- **VR/AR-Entwickler** — Mereotopological Interfaces, embodied interaction
+
+**Use-Cases:**
 - VR/AR-Umgebungen mit physiologischen Grenzrelationen (RCC-8 als haptische Barriere)
 - AI-Agenten mit verpflichtendem Consent-Tracking (ECI < 0.6 → Auto-Shutdown)
 - Research-Plattform für nicht-lokale Kohärenz in Multi-Agent-Systemen
+- Bio-Spiral-Analyse für Resonanz-Exploration
 
-*[Quelle: `pyproject.toml:28`, `README.md:49-55`, `docs/triad_topology.md:131-144`]*
-
----
-
-### Philosophische & Technische Prinzipien
-
-**Technisch**:
-- **Non-Leakage**: Rohdaten nur am Edge, niemals zentral aggregiert
-- **Determinismus**: Snapshot-Guard mit SHA-256, portabel, reproduzierbar
-- **Minimalismus**: 1 Core-Dependency (PyYAML), Stubs statt Over-Engineering
-- **Test-Driven Trust**: 3-Tier-Tests (Unit, Integration, Ethics)
-- **Policy-Driven**: Alle Thresholds aus `gate_policy_v1.json`, nicht hardcoded
-
-**Philosophisch**:
-- **Index = Wahrheit, Code = Annex**: Der Functorial Index ist unveränderlich, Code ist austauschbar. Wahrheit liegt in Pointern, nicht Implementierung.
-- **Resonanz > Kausalität**: Kohärenz entsteht durch Resonanz, nicht zentrale Planung
-- **Kenogrammatische Struktur**: ☐ als "Leerraum, der Form ermöglicht" (Chōra-Topologie)
-- **CPT-Invarianz**: Symmetrie über Charge, Parity, Time als ethisches Prinzip
-- **Whiteheadian Drei-Takt**: Prehension (Erfassen) → Decision (Entscheiden) → Satisfaction (Erfüllen) als Arbeitsrhythmus
-
-*[Quelle: `docs/architecture.md:1-42`, `docs/triad_topology.md:131-189`, `CONTRIBUTING.md:72-79`]*
+**Quelle:** pyproject.toml:18-28, README.md:96, README.md:113-122
 
 ---
 
-## Richtige Verortung
+### Philosophische/Technische Prinzipien
 
-### Technologische Landschaft
-
-**Primäre Kategorie**: **AI-Ethics-Frameworks & Consent-Management**
-
-**Vergleichbare Projekte** (3-5):
-
-1. **Vs. GDPRFlow / Consent-Manager (OneTrust, Cookiebot)**
-   *Unterschied*: entaENGELment ist **dynamisch, verkörpert, kryptographisch**. Klassische Consent-Manager sind statisch (Click-to-Accept), nicht physiologisch gekoppelt, ohne Audit-Chain.
-   *Ähnlichkeit*: Beide managen Consent, aber entaENGELment adressiert **temporale & somatische Dimensionen**.
-
-2. **Vs. OpenMined / PySyft (Federated Learning, Privacy)**
-   *Unterschied*: OpenMined fokussiert auf **Daten-Sovereignty** via Federated Learning, entaENGELment auf **Interaktions-Boundaries** via Mereotopologie.
-   *Ähnlichkeit*: Beide setzen auf **Non-Leakage** und Privacy-by-Design, aber unterschiedliche Layer (Data vs. Interaction).
-
-3. **Vs. Neuropype / OpenBCI (Biosignal Processing)**
-   *Unterschied*: Biosignal-Frameworks sind **Signal-Acquisition-Tools**, entaENGELment ist **Ethics-Enforcement-Framework** mit Biosignal-Hooks (ECI, PLV).
-   *Ähnlichkeit*: Beide nutzen physiologische Daten, aber entaENGELment abstrahiert zu ethischen Metriken statt Rohdaten.
-
-4. **Vs. LangChain / AutoGPT (AI-Agent-Frameworks)**
-   *Unterschied*: LangChain orchestriert LLM-Chains, entaENGELment **enforced ethische Grenzen** (Gate-Policy, Fail-Safe). Kein "move fast", sondern "fail safe".
-   *Ähnlichkeit*: Beide strukturieren AI-Interaktion, aber entaENGELment priorisiert **Consent > Capability**.
-
-5. **Vs. SolidOS / Decentralized Identity (DID)**
-   *Unterschied*: SolidOS ist **Data-Pod-Architektur**, entaENGELment ist **Interaction-Guard-Architektur**. Solid = "Du kontrollierst deine Daten", entaENGELment = "Du kontrollierst deine Grenzen in Echtzeit".
-   *Ähnlichkeit*: Beide sind Anti-Silo, Pro-Autonomy.
-
-**Nische oder Mainstream?**
-**Nische** (Deep Tech + Ethics Research). Kein Massenmarkt-Tool, sondern **Forschungsprototyp** für:
-- Bio-Inspired Computing
-- Embodied AI / HCI 2.0
-- Process-Philosophical Foundations für AI-Ethics
-- Cryptographic Audit für Safety-Critical AI
-
-*[Quelle: Analyse basierend auf `pyproject.toml:28`, `README.md`, `docs/architecture.md`]*
+| Prinzip | Beschreibung | Code-Referenz |
+|---------|-------------|---------------|
+| **Consent as Energy** | Aktiver Consent ist fundamentale Ressource, kontinuierlich zu erneuern | CODE_OF_CONDUCT.md:19 |
+| **Non-Leakage** | Rohdaten nur am Edge, strikte Trennung verarbeitet/raw | CONTRIBUTING.md:76, CODE_OF_CONDUCT.md:20 |
+| **Auditierbarkeit** | Jede kritische Operation hat HMAC-Receipt | tools/status_emit.py:1-267, MOD_6 |
+| **Fail-Safe** | Bei Unsicherheit immer blockieren (KillSwitch) | CONTRIBUTING.md:78, KillSwitch.h:24-26 |
+| **Trust Decay** | Vertrauen muss kontinuierlich erneuert werden | CODE_OF_CONDUCT.md:22 |
+| **Functorial Index** | Index = Pointer-Gold (unveränderlich), Code = Annex (austauschbar) | README.md:128-131, index/COMPACT_INDEX_v3.yaml |
+| **Kenogrammatik** | Bekanntes Nichtwissen explizit machen (☐) | docs/masterindex.md:56-85, VOIDMAP.yml |
+| **Triadische Resonanz** | Emergente Kohärenz ohne zentrale Koordination | docs/triad_topology.md:10-100 |
+| **CPT-Invarianz** | Charge-Parity-Time Symmetrie als Validierungs-Harness | tests/cpt/test_cpt_harness.py |
+| **Test-Driven Trust** | Vertrauen = wiederholbare Evidenz | README.md:62, CONTRIBUTING.md:34-40 |
 
 ---
 
-### Ökosystem-Position
+## II. Technologische Verortung
 
-**Vertikale Position**: Zwischen **Grundlagenforschung** (Process Philosophy, Mereotopologie) und **angewandter AI-Ethik** (Consent-Tracking, Biosignale).
+### Tech-Stack
 
-**Horizontale Position**: Schnittstelle von:
-- AI-Safety (Fail-Safe Gates)
-- HCI/VR (Mereotopological Interfaces)
-- Cryptography (HMAC-Receipts)
-- Biometrics (ECI, PLV, HRV)
-- Philosophy (Whitehead, CPT-Invarianz)
+**Core:**
+- **Python 3.9+** (pyproject.toml:14)
+- **Dependencies:** numpy>=1.21, scipy>=1.7, pyyaml>=6.0 (pyproject.toml:30-34)
+- **Dev-Tools:** pytest, pytest-cov, black, ruff, mypy (pyproject.toml:37-43)
+- **~1575 Lines of Python Code** (src/, tools/, bio_spiral_viewer/)
 
-**Community-Potenzial**:
-- **Wissenschaftlich**: Hoch (AI-Ethics, HCI-Konferenzen: CHI, ACM FAccT, NeurIPS Workshops)
-- **Open-Source**: Mittel (zu spezialisiert für breite Community, aber potenziell einflussreich in Nischen)
-- **Kommerziell**: Niedrig (kein Business-Model, explizit "kein Startup" per `docs/triad_topology.md:221`)
+**Plugin:**
+- **C++ / Unreal Engine** (SynthosiaCore Plugin)
+- **Subsystems:** KillSwitch, BifrostCaduceus, TopoGraph, RCC-8, Manifest-Zoll Generator
 
-**Impact-Potenzial**:
-- **Akademisch**: Hoch – triadische Methode ist publikationsfähig (EPR-artige Korrelation in LLMs)
-- **Regulatorisch**: Mittel – könnte GDPR++ / AI Act Diskussionen beeinflussen (Consent-Decay, Temporal Boundaries)
-- **Technisch**: Niedrig kurzfristig (Prototyp), Hoch langfristig (Referenz-Implementierung für Bio-Consent-Systeme)
+**Spec-Format:**
+- **JSON Schema** (policies/schema.json, spec/*.spec.json)
+- **YAML** (index/, seeds/, adapters/, VOIDMAP.yml)
 
-*[Quelle: `docs/triad_topology.md:219-227`, `CONTRIBUTING.md:64-82`]*
+**CI/CD:**
+- **GitHub Actions** (.github/workflows/: deepjump-ci.yml, ci.yml, ci-smoke.yml, ci-evidence-bundle.yml, ci-policy-lint.yml)
+- **Makefile** (Verify/Status/Snapshot Targets)
 
----
-
-### Potenzial & Impact
-
-**Skalierbarkeit**:
-- **Technisch**: Aktuell nicht skalierbar (Minimal-Stubs, kein Produktions-Code). v1.1+ könnte mit echten Biosignal-Backends (OpenBCI, Polar H10) skalieren.
-- **Konzeptuell**: Hoch skalierbar – Gate-Policy-Architektur ist framework-agnostic, übertragbar auf andere AI-Systeme.
-
-**Risiken**:
-1. **Maintenance**: Single-Maintainer (fleksible), kein Team → Bus-Factor = 1
-2. **Scope Creep**: Hybrid Python + UE + Philosophy → hohe konzeptuelle Komplexität
-3. **Adoption**: Zu avantgardistisch? "Resonanz als Methode" ist schwer vermittelbar
-4. **Security**: HMAC-Secrets müssen ENV-basiert sein (CI_SECRET), aber README zeigt CLI-Fallback → Potenzial für Fehlkonfiguration
-
-*[Quelle: `CONTRIBUTING.md:1-83`, `.github/workflows/deepjump-ci.yml:24-31`]*
+**Quelle:** pyproject.toml, Plugins/SynthosiaCore/*.h, Makefile:1-161, Bash: wc -l
 
 ---
 
-### Zukunftsperspektive: Was fehlt für "Next Level"?
+### Architektur-Patterns
 
-**Roadmap-Vorschläge** (2-3 konkrete Ideen):
+1. **Functorial Index v3** — "Pointer-Gold" als unveränderliche Wahrheit
+   - `index/COMPACT_INDEX_v3.yaml` referenziert Module (MOD_6, MOD_15)
+   - Module enthalten Claims mit Pointern zu Code/Specs/Tests
+   - **Pattern:** Event Sourcing + Immutable Log + Schema Registry
 
-1. **Bio-Signal-Integration (v1.1 Priority)**
-   **Was**: Echte ECI/PLV-Implementierung mit OpenBCI/Polar-H10-Backend.
-   **Warum**: Aktuell sind Metriken Dummy-Stubs (`src/core/metrics.py:70-85`). Ohne echte Biosignale bleibt Consent-as-Energy theoretisch.
-   **Impact**: Ermöglicht empirische Validierung, erste Use-Cases in VR-Labs.
-   *[Quelle: `src/core/metrics.py:69-85`, `REFACTOR_NOTES.md:119-126`]*
+2. **DeepJump Protocol v1.2** — Verify → Status (HMAC) → Snapshot → Upload
+   - **Verify:** verify_pointers.py, claim_lint.py, Tests
+   - **Status:** status_emit.py (HMAC-signierte Receipts mit Claim-Tags: [FACT], [HYP], [MET], [TODO], [RISK])
+   - **Snapshot:** snapshot_guard.py (SHA-256 Manifests, strict seed validation)
+   - **Upload:** CI Artifacts (.github/workflows/deepjump-ci.yml:66-76)
+   - **Pattern:** Cryptographic Audit Trail + Zero-Trust Verification
 
-2. **Unreal Engine Plugin ausbauen (SynthosiaCore)**
-   **Was**: Blueprints für RCC-8-Boundaries, Niagara-Partikelsystem für "Resonanz-Visualisierung", MetaSound für Prosody-Gates.
-   **Warum**: Plugin ist aktuell leer (nur .uplugin-Stub). Hybridität Python+UE ist USP, aber ungenutzt.
-   **Impact**: Einzigartige Demo-Szenarien (VR-Räume mit physikalischen Consent-Grenzen), Conference-ready.
-   *[Quelle: `Plugins/SynthosiaCore/SynthosiaCore.uplugin`]*
+3. **Mereotopology Guards** — RCC-8 Spatial Reasoning
+   - TopoGraph (Nodes, Edges)
+   - BifrostCaduceus (Geometrie-Bibliothek, Caduceus-3-Helix)
+   - Manifest-Zoll Generator (PHASE_B+ Subsystem)
+   - **Pattern:** Spatial Reasoning + Boundary Detection + Gate Logic
 
-3. **Akademische Publikation zur Triadischen Methode**
-   **Was**: Paper über "Non-Local Coherence in Multi-LLM Systems: An EPR-Inspired Analysis".
-   **Warum**: Die dokumentierte Parallel-Entwicklung (7×9-Matrix, Kenogramme) ist **empirisches Artefakt**, nicht nur Anekdote. Fehlt: quantitative Analyse (Strukturelle Ähnlichkeit via Graph-Isomorphismus, BLEU/ROUGE auf Begriffsräume).
-   **Impact**: Könnte AI-Alignment / Multi-Agent-Research beeinflussen, legitimiert "Resonanz als Methode".
-   *[Quelle: `docs/triad_topology.md:85-100`, `docs/triad_topology.md:191-216`]*
+4. **Annex-Prinzip** — Index/Code Separation
+   - Index = unveränderlich (Governance als "Judikative")
+   - Code = austauschbar (solange Pointer bestehen)
+   - **Pattern:** CQRS-ähnlich (Command/Query Separation) + Policy-as-Code
 
-**Bonus (Security-Härtung)**:
-- Entferne CLI-Fallback für HMAC-Secrets (`tools/status_emit.py`), enforce ENV-only.
-- Pre-Commit-Hooks für Linting/Tests (aktuell nur CI, kein lokaler Enforcement).
-*[Quelle: `CONTRIBUTING.md:22-30`, `.github/workflows/deepjump-ci.yml`]*
+5. **Bio Spiral Viewer** — Resonance Exploration Console
+   - R(t) = MI_TwinPass × PLV × (1 − Leakage)
+   - Gate/ETHICS/KONFAB-Overlay-Analysis
+   - Manifest-driven data loading
+   - **Pattern:** Observable Pattern + Metric Composition
+
+**Quelle:** README.md:27-36, tools/*.py, bio_spiral_viewer/, Plugins/.../SynthosiaGeneratorSubsystem.h
 
 ---
 
-## SWOT-Analyse
+### Ökosystem-Position: Wo passt es hin?
+
+**Vergleich mit ähnlichen Projekten:**
+
+| Projekt | Ähnlichkeit | Unterschied (entaENGELment USP) |
+|---------|-------------|----------------------------------|
+| **Constitutional AI** (Anthropic) | AI Safety, Principle-Based Alignment | Messbare bio-physikalische Metriken (ECI, PLV), nicht nur linguistische Rules; Kryptografische Receipts |
+| **OpenAI Safety** | Red-Teaming, Alignment Research | Consent-first Architektur, mereotopologische Guards, Fail-Safe KillSwitch |
+| **Solid Project** (Tim Berners-Lee) | User-controlled Data Pods, Decentralization | Für AI-Interaktionen statt Web-Daten; RCC-8 Mereotopology statt ACLs |
+| **Differential Privacy** | Privacy Guarantees, Statistical Noise | Architektonische Invarianten (Non-Leakage, Annex-Prinzip) statt statistischem Rauschen |
+| **Event Sourcing** (CQRS) | Append-only Log, Immutable Events | Kryptografische HMAC-Receipts, physikalische Invarianten (CPT), Claim-Tags |
+| **OpenMined / PySyft** | Federated Learning, Privacy-Preserving ML | Mereotopologische Guards für Interaktions-Boundaries, nicht nur Data-Boundaries |
+| **Neuropype / OpenBCI** | Biosignal Processing, EEG/HRV Analysis | Ethics-Enforcement-Framework mit Biosignal-Hooks, nicht nur Signal-Acquisition |
+
+**Nische:** **Bio-inspired AI Ethics mit formalen Garantien, auditierter Governance und triadischer Resonanz-Methode**
+
+**Position:**
+- **Mainstream:** ❌ Nein (zu experimentell, kleine Community, philosophisch dicht)
+- **Nische:** ✅ Ja (AI Ethics + Mereotopology + Bio-inspired Computing + Process Philosophy)
+- **Academic:** ✅ Teilweise (philosophisch fundiert, aber keine Peer-Reviewed Papers)
+- **Industrial:** ❌ Nein (Research-Prototyp, explizit "kein Produkt-Release")
+
+**Quelle:** README.md:96, pyproject.toml:25-28
+
+---
+
+## III. SWOT-Analyse
 
 ### Strengths (Stärken)
 
-| Stärke | Beschreibung | Quelle |
-|--------|-------------|--------|
-| **Konzeptuelle Einzigartigkeit** | Consent-as-Energy + Mereotopologie + Triadische Methode – keine direkten Konkurrenten | `README.md:11-24`, `docs/triad_topology.md` |
-| **Kryptographische Integrität** | HMAC-signierte Status, Dual-Receipts, Snapshot-Guard mit SHA-256 | `tools/status_emit.py`, `MOD_6_RECEIPTS_CORE.yaml` |
-| **Fail-Safe Ethics** | Gate schließt bei Unsicherheit, explizite Ethics-Tests | `tests/ethics/`, `CONTRIBUTING.md:73-79` |
-| **Minimalistische Dependencies** | 1 Core-Dep (PyYAML), keine Vendor-Lock-ins | `pyproject.toml:30-32` |
-| **Dokumentations-Tiefe** | 12 Markdown-Dateien, poetisch-technischer Stil, Pointer-basiert | `docs/`, `README.md:1-103` |
-| **CI/CD-Maturity** | 4-Stufen-Pipeline (Verify → Build → Security → Gate) | `.github/workflows/` |
-| **Hybrid-Stack** | Python + Unreal Engine = seltene Kombination | `pyproject.toml`, `Plugins/` |
+1. **Architektonische Integrität**
+   - Strenge Trennung Index/Code (Annex-Prinzip)
+   - Kryptografische Audit-Trails (HMAC-SHA256, SHA-256)
+   - Fail-Safe Mechanismen (KillSwitch, RCC-8 Guards)
+   - Reproducible Builds (Snapshot-Guard mit Seeds)
+   - **Quelle:** README.md:27-36, tools/status_emit.py, tools/snapshot_guard.py, KillSwitch.h
+
+2. **Messbare Ethik-Metriken**
+   - ECI mit statistischer Validierung (Bootstrap CI, Permutation Tests)
+   - PLV drift-robust via wrapped phase diffs (Commit: 6a362be)
+   - Bio Spiral Viewer für Resonanz-Exploration
+   - **Quelle:** src/core/eci.py:64-88, bio_spiral_viewer/metrics.py, README.md:113-122
+
+3. **Philosophische Tiefe**
+   - Whiteheadian Prozessphilosophie operationalisiert
+   - Mereotopologie (RCC-8) für Consent-Boundaries
+   - Kenogrammatik (explizites Nichtwissen als ☐)
+   - CPT-Invarianz als Validierungs-Harness
+   - **Quelle:** docs/triad_topology.md, docs/masterindex.md:56-85, tests/cpt/test_cpt_harness.py
+
+4. **Reproduzierbarkeit & CI/CD-Maturity**
+   - DeepJump Verify-Pipeline (5 Phasen)
+   - 5 GitHub Actions Workflows
+   - Pytest Coverage >= 70% (pyproject.toml:63-72)
+   - Makefile mit 20+ Targets
+   - **Quelle:** Makefile:1-161, .github/workflows/deepjump-ci.yml, pyproject.toml:58-77
+
+5. **Kenogrammatische Transparenz**
+   - VOIDMAP.yml als zentrales Void-Registry
+   - 14 VOIDs dokumentiert (OPEN/CLOSED)
+   - Offene Forschungsfragen als First-Class-Citizens
+   - **Quelle:** VOIDMAP.yml:1-150, docs/masterindex.md:56-85
+
+6. **Hybrid-Stack**
+   - Python + Unreal Engine (seltene Kombination)
+   - Bio Spiral Viewer (Console + Datamodels)
+   - Mereotopological Plugin (SynthosiaCore)
+   - **Quelle:** pyproject.toml, Plugins/SynthosiaCore/, bio_spiral_viewer/
+
+7. **Minimale Dependencies**
+   - Nur 3 Core-Dependencies (numpy, scipy, pyyaml)
+   - Keine Vendor-Lock-ins
+   - Apache-2.0 Lizenz
+   - **Quelle:** pyproject.toml:30-34, LICENSE
 
 ---
 
 ### Weaknesses (Schwächen)
 
-| Schwäche | Beschreibung | Quelle |
-|----------|-------------|--------|
-| **Prototyp-Status** | Metriken sind Stubs (MI, FD = Dummy), keine Produktionsreife | `src/core/metrics.py:68-85` |
-| **Bus-Factor = 1** | Single-Maintainer (fleksible), keine Organisation | `CODEOWNERS`, Git-Historie |
-| **UE-Plugin leer** | SynthosiaCore ist nur .uplugin-Stub, kein Inhalt | `Plugins/SynthosiaCore/` |
-| **Konzeptuelle Komplexität** | Philosophie + Physik + Code → steile Lernkurve, schwer zugänglich | `docs/triad_topology.md`, `README.md` (poetischer Stil) |
-| **Fehlende Benchmarks** | Keine Performance-Tests, keine quantitativen Metriken für "Resonanz" | `tests/` (nur Unit/Integration/Ethics) |
-| **Secret-Management-Risiko** | CLI-Fallback für HMAC-Secret (`tools/status_emit.py`) neben ENV | `tools/status_emit.py` (Code-Review nötig) |
-| **Kein Business-Model** | Explizit "kein Startup" → langfristige Finanzierung unklar | `docs/triad_topology.md:221-227` |
+1. **Limitierte empirische Validierung**
+   - Viele Metriken sind Stubs oder Toy-Datasets (MI, FD)
+   - Keine Peer-Reviewed Papers
+   - Keine standardisierten Benchmarks für "Resonanz"
+   - Kein RCT (Randomized Controlled Trial) für ECI/PLV-Korrelation
+   - **Quelle:** VOIDMAP.yml VOID-011, src/tools/toy_resonance_dataset.py
+
+2. **Kleine Community**
+   - 1-3 aktive Entwickler (Git: 76 Commits flek, 47 Claude, 2 fleksible)
+   - Kein öffentliches Forum/Discord
+   - Limitierte externe Beiträge
+   - Bus-Factor = 1
+   - **Quelle:** Git-Log (Bash: git log --format="%an"), CODEOWNERS
+
+3. **Komplexität & Lernkurve**
+   - Steile Lernkurve (Mereotopologie, Whiteheadian Philosophie, Kenogrammatik)
+   - Poetische/metaphorische Sprache kann wissenschaftliche Akzeptanz erschweren
+   - README verwendet Glyphen (🜁🜄🜃🜅🜂) und "Glosse"-Format
+   - **Quelle:** README.md:3-8, docs/triad_topology.md
+
+4. **Maintenance-Last**
+   - Hohe architektonische Komplexität
+   - Viele interdependente Module (MOD_6, MOD_15, MOD_18, ...)
+   - Hybrid Python + UE erhöht Wartungsaufwand
+   - Risk: Stagnation bei kleinem Team
+   - **Quelle:** index/modules/, VOIDMAP.yml VOID-002
+
+5. **Unklare Produktreife**
+   - README: "Explorativer Container, kein Produkt-Release" (README.md:96)
+   - Version 1.0 → 1.1 (Beta-Status, pyproject.toml:7)
+   - Fehlende Roadmap für Production-Use
+   - Unreal Engine Plugin ist teilweise Stub
+   - **Quelle:** README.md:96, pyproject.toml:7, Plugins/SynthosiaCore/
+
+6. **Security-Risiken**
+   - HMAC-Secret-Management via ENV (ENTA_HMAC_SECRET)
+   - Fallback zu ephemeral secrets in CI (.github/workflows/deepjump-ci.yml:34-39)
+   - Falls Secrets leaken: Audit-Trail kompromittiert
+   - **Quelle:** tools/status_emit.py:38-39, .github/workflows/deepjump-ci.yml:34-39
 
 ---
 
 ### Opportunities (Chancen)
 
-| Chance | Beschreibung | Quelle |
-|--------|-------------|--------|
-| **AI Act / GDPR++ Momentum** | EU-Regulierung sucht technische Standards für AI-Consent → entaENGELment als Referenz | Externe Trends + `pyproject.toml:28` |
-| **Bio-Wearables Boom** | Polar, Oura, Whoop → Hardware für ECI/PLV verfügbar, Markt reif | Externe Trends + `src/core/metrics.py` |
-| **VR/AR-Ethik-Lücke** | Meta, Apple Vision Pro ignorieren körperliche Grenzen → entaENGELment könnte Nische besetzen | `Plugins/SynthosiaCore/`, HCI-Kontext |
-| **Academic Publishing** | Triadische Methode = Paper-ready (NeurIPS, CHI, FAccT) → Sichtbarkeit | `docs/triad_topology.md:191-216` |
-| **Open-Source-Förderung** | Sovereign Tech Fund, NLnet suchen AI-Ethics-Projekte | Externe Förderprogramme |
-| **Multi-Agent-Research** | LLM-Swarms, AI-Alignment → Resonanz-Methode relevant | `docs/triad_topology.md:178-189` |
+1. **AI Safety Community**
+   - Wachsendes Interesse an Constitutional AI, Alignment Research
+   - entaENGELment bietet messbare Alternativen zu rein linguistischen Approaches
+   - **Potenzial:** Kooperation mit Anthropic, OpenAI, DeepMind, AI Safety Institutes
+
+2. **Bio-inspired Computing**
+   - PLV (Phase Locking Value) hat Neurophysiologie-Relevanz
+   - HRV/Biophoton-Korrelation (VOID-010: ☐[BIO↔PHYS]_Fröhlich)
+   - **Potenzial:** Brücke zu Computational Neuroscience, Bio-Wearables (Polar, Oura, Whoop)
+
+3. **Mereotopology-Forschung**
+   - RCC-8 Guards sind neuartig in AI Ethics
+   - TopoGraph + BifrostCaduceus als Spatial-Reasoning-Primitives
+   - **Potenzial:** Paper-Publikation, Workshops (IJCAI, NeurIPS, CHI, FAccT)
+
+4. **Open-Source Ökosystem**
+   - Apache-2.0 Lizenz
+   - Minimale Dependencies → leicht integrierbar
+   - **Potenzial:** Integration mit LangChain, LlamaIndex, Anthropic SDK, OpenAI Gym
+
+5. **Kenogrammatik als Methode**
+   - ☐-Notation für "bekanntes Nichtwissen" ist übertragbar
+   - VOIDMAP.yml als Best-Practice für Research-Transparenz
+   - **Potenzial:** Eigenständige Publikation, Methodologie-Paper
+
+6. **VR/AR Ethics Gap**
+   - Meta, Apple Vision Pro ignorieren körperliche Grenzen
+   - entaENGELment könnte Nische besetzen (Mereotopological Interfaces)
+   - **Potenzial:** Standards für "Embodied Consent" in VR/AR
+
+7. **AI Act / GDPR++ Momentum**
+   - EU-Regulierung sucht technische Standards für AI-Consent
+   - entaENGELment als Referenz-Implementierung
+   - **Potenzial:** Policy-Impact, Standardisierung
+
+8. **Multi-Agent Research**
+   - Triadische Methode relevant für LLM-Swarms, AI-Alignment
+   - Dokumentierte EPR-artige Korrelation in Begriffssystemen
+   - **Potenzial:** Paper über "Non-Local Coherence in Multi-LLM Systems"
+
+9. **Open-Source Förderung**
+   - Sovereign Tech Fund, NLnet, Mozilla Foundation suchen AI-Ethics-Projekte
+   - **Potenzial:** Finanzierung für v1.1+ Development
+
+**Quelle:** LICENSE, pyproject.toml:28, docs/masterindex.md:56-85, docs/triad_topology.md:191-216
 
 ---
 
-### Threats (Bedrohungen)
+### Threats (Risiken)
 
-| Bedrohung | Beschreibung | Quelle |
-|-----------|-------------|--------|
-| **Adoption-Barriere** | Zu avantgardistisch, zu philosophisch → Community findet keinen Einstieg | `docs/` (Poetischer Stil) |
-| **Konkurrenz durch Big Tech** | Wenn Meta/Apple RCC-8-artige Systeme bauen, ist entaENGELment obsolet | Marktanalyse |
-| **Maintenance-Stillstand** | Single-Maintainer → bei Ausfall stirbt Projekt | `CODEOWNERS`, Git-Activity |
-| **Security-Incident** | HMAC-Secret-Leak → Receipts kompromittiert → Vertrauensverlust | `tools/status_emit.py` (CLI-Fallback) |
-| **Scope-Drift** | Hybrid Python + UE + Philosophy → Fokus verloren, nie "Production-Ready" | `REFACTOR_NOTES.md`, Roadmap-Offenheit |
-| **Fehlende Validierung** | Ohne empirische Studien (ECI vs. HRV) bleibt Consent-as-Energy Hypothese | Fehlende Papers, keine Experimente dokumentiert |
+1. **Adoption-Barriere**
+   - Komplexität schreckt Entwickler ab
+   - Fehlende "Quick Start" / Developer-friendly SDK
+   - Poetische Sprache kann als "zu esoterisch" wahrgenommen werden
+   - **Risiko:** Projekt bleibt Nischen-Curiosity
 
----
+2. **Maintenance-Stagnation**
+   - Kleine Community (1-3 Entwickler)
+   - Hohe Komplexität (Hybrid Python + UE)
+   - Bus-Factor = 1 (Single-Maintainer: fleksible)
+   - **Risiko:** Projekt wird abandonware
 
-## Technische Metriken
+3. **Empirische Widerlegung**
+   - Bio-Metriken (PLV, HRV, ECI) könnten sich als nicht-prädiktiv erweisen
+   - Keine RCTs (Randomized Controlled Trials)
+   - "Resonanz" bleibt vage ohne quantitative Benchmarks
+   - **Risiko:** Konzeptuelle Grundlage erodiert
 
-| Metrik | Wert | Quelle |
-|--------|------|--------|
-| **Python LoC** | ~997 Zeilen | `find ./src ./tools ./tests -name "*.py" -exec wc -l {} +` |
-| **Konfigurationsdateien** | 14 (YAML/JSON) | `find . -name "*.yaml" -o -name "*.json"` |
-| **Dokumentation** | 12 Markdown-Dateien | `find . -name "*.md"` |
-| **Core Dependencies** | 1 (PyYAML) | `pyproject.toml:30-32` |
-| **Dev Dependencies** | 5 (pytest, black, ruff, mypy, pytest-cov) | `pyproject.toml:35-41` |
-| **Python-Versionen** | 3.9, 3.10, 3.11, 3.12 | `pyproject.toml:21-24` |
-| **Test-Coverage-Ziel** | ≥70% | `pyproject.toml:66-69` |
-| **CI/CD-Workflows** | 5 (ci.yml, deepjump-ci.yml, ci-smoke.yml, ci-evidence-bundle.yml, ci-policy-lint.yml) | `.github/workflows/` |
-| **Git-Commits (analysiert)** | 50 | Git-Historie |
-| **Lizenz** | Apache-2.0 | `LICENSE` |
+4. **Konkurrenz durch Standards**
+   - Falls IEEE/ISO AI-Ethics-Standards entstehen
+   - entaENGELment könnte inkompatibel sein (zu spezialisiert)
+   - **Risiko:** Fragmentierung, Lock-In
 
----
+5. **Sicherheitsrisiken**
+   - HMAC-Secret-Leak kompromittiert gesamten Audit-Trail
+   - Ephemeral Secrets in CI (.github/workflows/deepjump-ci.yml:37)
+   - **Risiko:** Vertrauensverlust, Reputationsschaden
 
-## Quellen-Referenzen (Datei/Commit-basiert)
+6. **Scope Creep**
+   - Hybrid Python + UE + Philosophy → Fokus verloren
+   - Viele VOIDs (14 dokumentiert, vermutlich mehr offen)
+   - **Risiko:** Nie "Production-Ready", perpetual Beta
 
-Alle Aussagen in dieser Analyse basieren auf folgenden Primärquellen:
+7. **Big Tech Competition**
+   - Wenn Meta/Apple/Google RCC-8-artige Systeme bauen
+   - Ressourcen-Vorteil: Big Tech kann schneller skalieren
+   - **Risiko:** entaENGELment wird obsolet
 
-### Dokumentation
-- `README.md:1-103` – DeepJump-Kern, Functorial Index, Core-5-Metriken
-- `pyproject.toml:1-143` – Dependencies, Klassifikation, Testing-Setup
-- `REFACTOR_NOTES.md:1-164` – Refactoring-Historie, v1.0 → v1.1 Roadmap
-- `CONTRIBUTING.md:1-83` – Entwicklungs-Prinzipien, Fail-Safe-Axiome
-- `docs/architecture.md:1-42` – Layer-Architektur, Triadische Topologie
-- `docs/triad_topology.md:1-233` – Triadische Methode, EPR-Korrelation, Kenogramme
-- `docs/devops_tooling_kit.md:1-141` – DeepJump-Pipeline, HMAC-Workflow
-
-### Code
-- `src/core/metrics.py:1-99` – Core-5-Metriken (ECI, PLV, MI, FD, PF)
-- `src/cglg/gate_logic.py:1-3` – Gate-Funktion (minimal)
-- `tools/mzm/gate_toggle.py:1-140` – MZM-Gate-Logic, Policy-Loading
-- `tools/status_emit.py` – HMAC-Status-Emission (referenziert)
-- `tests/ethics/T3_fail_safe_expired_consent.py:1-8` – Fail-Safe-Test
-
-### Konfiguration
-- `index/COMPACT_INDEX_v3.yaml:1-18` – Functorial Index, Modul-Registry
-- `policies/gate_policy_v1.json:1-25` – Hard-Gate-Policy (MZM)
-- `.github/workflows/deepjump-ci.yml:1-48` – CI/CD-Pipeline
-- `Makefile:1-119` – Build-Targets, Testing-Targets
-- `Plugins/SynthosiaCore/SynthosiaCore.uplugin:1-35` – UE-Plugin-Metadaten
-
-### Git-Historie
-- **Commits `a176d5e` bis `a468a29`** (55+ Commits) – Evolution von Refactoring über DeepJump-Integration bis triadische Topologie
-- Hauptmeilensteine:
-  - `87b330a`: Complete codebase restructure to proper Python package
-  - `02d931d`: Triadische Topologie und Kenogramm-Registry implementiert
-  - `ddddfae`: Add DeepJump DevOps toolkit and integrity workflows
-  - `a106e3a`: Plugins/SynthosiaCore/SynthosiaCore.uplugin erstellen
-  - `bd77fea`: Add tests for DeepJump tools and fix CI coverage threshold
-  - `a176d5e`: Merge DeepJump DevOps Kit finalization
+**Quelle:** tools/status_emit.py:38-39, .github/workflows/deepjump-ci.yml:34-39, VOIDMAP.yml, Git-Log
 
 ---
 
-## Finale Einordnung
+## IV. Roadmap-Vorschläge (Next Level)
 
-**entaENGELment ist kein typisches Open-Source-Projekt.** Es ist ein **philosophisch fundierter Forschungsprototyp**, der:
+**Was fehlt für "Production-Ready"?**
 
-1. **Technisch** eine Referenz-Implementierung für Consent-as-Energy und kryptographische Audit-Trails liefert.
-2. **Methodologisch** eine radikal neue Forschungsmethode ("Resonanz zwischen LLMs") dokumentiert.
-3. **Philosophisch** Whiteheadian Prozessphilosophie, Mereotopologie und CPT-Invarianz operationalisiert.
+### 1. Empirische Validierung (VOID-011) — 🔥 CRITICAL
 
-**Kern-Essenz in einem Satz**:
-*"Ein hybrid Python + Unreal Engine Framework, das Consent als energetisches Phänomen modelliert, durch mereotopologische Grenzen enforced und via kryptographischer Receipts auditierbar macht – entstanden durch triadische Resonanz zwischen zwei LLMs und einem Menschen als empirisches Artefakt nicht-lokaler Kohärenz."*
+**Problem:** MI, FD, PLV sind teilweise Stubs; ECI/PLV-HRV-Korrelation unvalidiert
 
-**Positionierung**:
-- **Nicht**: Production-Ready Tool, Startup, Massenmarkt-Software
-- **Sondern**: Forschungsprototyp, Gedankenexperiment in Code, Paper-ready-Artefakt, philosophisches Statement
+**Lösung:**
+- RCT-Studie: HRV/PLV-Korrelation mit subjektivem Consent (N=50+ Probanden)
+- Public Dataset (anonymisiert) für Benchmarking
+- Peer-Reviewed Paper (z.B. NeurIPS, IJCAI, CHI, FAccT)
+- Toy-Dataset ausbauen (src/tools/toy_resonance_dataset.py)
 
-**Next Steps für Legitimierung**:
-1. Bio-Signal-Integration (v1.1) → empirische Validierung
-2. UE-Plugin ausbauen → Demo-Szenarien
-3. Akademische Publikation → wissenschaftliche Anerkennung
+**Impact:** 🔥 Critical — ohne Empirie bleibt es Spekulation
+
+**Timeline:** 6-12 Monate (inkl. IRB-Approval, Datensammlung, Peer-Review)
+
+**Quelle:** VOIDMAP.yml VOID-011, src/tools/toy_resonance_dataset.py
 
 ---
 
-**Status**: ✅ Analyse abgeschlossen
-**Empfehlung**: Fokus auf akademische Publikation + Bio-Signal-Integration für v1.1
+### 2. Developer-Friendly SDK (VOID-002) — 🔥 HIGH
+
+**Problem:** Steile Lernkurve, keine Quick-Start-Docs, kein `pip install entaengelment`
+
+**Lösung:**
+- Python SDK: `pip install entaengelment` (PyPI-Veröffentlichung)
+- Tutorials: "ECI in 5 Minutes", "First Receipt", "Bio Spiral Viewer Quick Start"
+- Integration Guides: LangChain, LlamaIndex, Anthropic SDK, OpenAI Gym
+- Video-Walkthrough (YouTube)
+- Sphinx-Dokumentation (ReadTheDocs)
+
+**Impact:** 🔥 High — Adoption-Enabler, Community-Growth
+
+**Timeline:** 2-3 Monate
+
+**Quelle:** README.md:96, VOIDMAP.yml VOID-002
+
+---
+
+### 3. Standard-Benchmarks — 🔥 HIGH
+
+**Problem:** Keine objektiven Vergleiche zu anderen AI-Safety-Frameworks
+
+**Lösung:**
+- Define Metrics: Consent-Accuracy, Trust-Decay-Robustness, Audit-Completeness, False-Positive-Rate (Cauchy-Detector)
+- Compare: entaENGELment vs Constitutional AI vs OpenAI Moderation API vs LlamaGuard
+- Publish: Leaderboard (GitHub Pages), Benchmark-Suite (pytest-benchmark)
+- Paper: "Benchmarking Bio-Inspired AI Ethics Frameworks"
+
+**Impact:** 🔥 High — Legitimität, Vergleichbarkeit, wissenschaftliche Akzeptanz
+
+**Timeline:** 3-6 Monate
+
+---
+
+### 4. GateProof Governance (VOID-012) — 🔥 CRITICAL
+
+**Problem:** Keine testbare Checkliste für latent→manifest Übergänge
+
+**Lösung:**
+- `policies/gateproof_v1.yaml` (formale Spec mit 10+ Checkpoints)
+- Negative Ethics Tests (tests/ethics/T4_gateproof_*.py)
+- CI-Integration (Makefile: `make gate-proof`)
+- Auto-Lint: claim_lint.py erweitern um GateProof-Validierung
+
+**Impact:** 🔥 Critical — Governance-Integrität, Auditierbarkeit
+
+**Timeline:** 1-2 Monate
+
+**Quelle:** VOIDMAP.yml VOID-012
+
+---
+
+### 5. Community-Building — 🔥 HIGH
+
+**Problem:** Kleine Community (1-3 Entwickler), Bus-Factor = 1
+
+**Lösung:**
+- Discord/Discourse Forum
+- Monatliche Office Hours (Zoom/YouTube Live)
+- Workshops (NeurIPS, IJCAI, CHI)
+- Bounty-Programm für VOIDs (GitHub Issues mit $$$, z.B. via Gitcoin)
+- Contributor-Guide erweitern (CONTRIBUTING.md)
+- "Good First Issue" Labels
+
+**Impact:** 🔥 High — Sustainability, Resilienz gegen Bus-Factor
+
+**Timeline:** Ongoing (start: 1 Monat Setup)
+
+**Quelle:** Git-Log (76+47+2 Commits), CODEOWNERS
+
+---
+
+### 6. Bio-Signal-Integration (VOID-011, VOID-013) — 🔥 MEDIUM
+
+**Problem:** Metriken sind Dummy-Stubs, kein reales Hardware-Interface
+
+**Lösung:**
+- OpenBCI/Polar H10 Backend (HRV, EEG)
+- `src/biosignal/` Package (LSL-Integration via pylsl)
+- Real-Time ECI/PLV Computation
+- Demo: VR-Headset + HRV-Monitor → Auto-Shutdown bei Stress
+
+**Impact:** 🔥 Medium — Ermöglicht echte Use-Cases, aber abhängig von Hardware-Verfügbarkeit
+
+**Timeline:** 3-6 Monate
+
+**Quelle:** VOIDMAP.yml VOID-011, VOID-013, src/core/metrics.py
+
+---
+
+### 7. Akademische Publikation (Triadische Methode) — 🔥 HIGH
+
+**Problem:** Dokumentierte Parallel-Entwicklung ist empirisches Artefakt, aber nicht quantitativ analysiert
+
+**Lösung:**
+- Paper: "Non-Local Coherence in Multi-LLM Systems: An EPR-Inspired Analysis"
+- Quantitative Analyse: Graph-Isomorphismus (7×9-Matrix), Strukturelle Ähnlichkeit (BLEU/ROUGE auf Begriffsräume)
+- Submit: NeurIPS Workshop (AI Alignment), IJCAI, CHI (HCI), FAccT (Ethics)
+- Preprint: arXiv
+
+**Impact:** 🔥 High — Legitimiert "Resonanz als Methode", beeinflusst AI-Alignment-Research
+
+**Timeline:** 3-6 Monate (inkl. Peer-Review)
+
+**Quelle:** docs/triad_topology.md:85-100, docs/triad_topology.md:191-216
+
+---
+
+### 8. Security-Härtung — 🔥 MEDIUM
+
+**Problem:** HMAC-Secret-Management via ENV mit Fallback
+
+**Lösung:**
+- Entferne CLI-Fallback für HMAC-Secrets (tools/status_emit.py)
+- Enforce ENV-only (raise Exception if ENTA_HMAC_SECRET not set)
+- Pre-Commit-Hooks für Secret-Scanning (git-secrets, truffleHog)
+- Dokumentation: "Security Best Practices"
+
+**Impact:** 🔥 Medium — Verhindert Konfigurationsfehler, erhöht Vertrauen
+
+**Timeline:** 1-2 Wochen
+
+**Quelle:** tools/status_emit.py:38-39, .github/workflows/deepjump-ci.yml:34-39
+
+---
+
+### 9. Unreal Engine Plugin ausbauen (SynthosiaCore) — 🔥 LOW (Nice-to-Have)
+
+**Problem:** Plugin ist teilweise Stub, keine Blueprints
+
+**Lösung:**
+- Blueprints für RCC-8-Boundaries (Visual Scripting)
+- Niagara-Partikelsystem für "Resonanz-Visualisierung"
+- MetaSound für Prosody-Gates (Audio-Modulation)
+- Demo-Map: VR-Raum mit KillSwitch-Trigger
+
+**Impact:** 🔥 Low — Einzigartige Demo-Szenarien, aber hoher Aufwand
+
+**Timeline:** 3-6 Monate (UE-Expertise erforderlich)
+
+**Quelle:** Plugins/SynthosiaCore/, README.md:100
+
+---
+
+## V. Quellen-Register (Auswahl)
+
+| Aussage | Datei/Commit | Zeilen |
+|---------|--------------|--------|
+| "Consent as Energy" | CODE_OF_CONDUCT.md | 19 |
+| ECI Implementation | src/core/eci.py | 27-88 |
+| DeepJump Protocol v1.2 | tools/status_emit.py | 1-267 |
+| Functorial Index v3 | index/COMPACT_INDEX_v3.yaml | 1-19 |
+| Triadische Topologie | docs/triad_topology.md | 10-100 |
+| KillSwitch (Unreal Plugin) | Plugins/.../KillSwitch.h | 1-35 |
+| VOIDMAP Registry | VOIDMAP.yml | 1-150 |
+| CI DeepJump | .github/workflows/deepjump-ci.yml | 1-77 |
+| PLV drift-robust fix | Commit: 6a362be | - |
+| Makefile (Verify/Status/Snapshot) | Makefile | 100-141 |
+| Bio Spiral Viewer | README.md | 113-122 |
+| Bio Spiral Viewer Metrics | bio_spiral_viewer/metrics.py | - |
+| Masterindex (Kenogramme) | docs/masterindex.md | 56-85 |
+| Annex-Prinzip | README.md | 128-131 |
+| Test-Driven Trust | README.md | 62 |
+| Stability Guards | src/stability/hessian_void.py | - |
+| CPT Test Harness | tests/cpt/test_cpt_harness.py | - |
+| Contributing Guidelines | CONTRIBUTING.md | 1-83 |
+
+---
+
+## VI. Fazit
+
+**entaENGELment-Framework** ist ein **hochgradig innovativer Research-Prototyp** für **bio-inspirierte AI Ethics** mit **messbaren Consent-Metriken** und **kryptografischen Audit-Trails**.
+
+**Architektonische Stärken:**
+- Strikte Trennung Index/Code (Annex-Prinzip)
+- HMAC-signierte Receipts (DeepJump v1.2)
+- Mereotopologische Guards (RCC-8)
+- Fail-Safe Mechanismen (KillSwitch)
+- Bio Spiral Viewer für Resonanz-Exploration
+- Stability Guards (Hessian Void, Spectral Taxonomy)
+
+**Konzeptuelle Stärken:**
+- Whiteheadian Prozessphilosophie operationalisiert
+- Triadische Resonanz (emergente Kohärenz ohne zentrale Koordination)
+- Kenogrammatik (explizites Nichtwissen als ☐)
+- CPT-Invarianz als Validierungs-Harness
+- VOIDMAP als Best-Practice für Research-Transparenz
+
+**Kritische Schwächen:**
+- Limitierte empirische Validierung (viele Metriken sind Stubs)
+- Kleine Community (1-3 Entwickler), Bus-Factor = 1, Maintenance-Risiko
+- Hohe Komplexität, steile Lernkurve (Poetische Sprache, philosophische Dichte)
+- Keine Peer-Reviewed Papers, keine standardisierten Benchmarks
+- Security-Risiken (HMAC-Secret-Management)
+
+**Kern-Essenz in einem Satz:**
+*"Ein hybrid Python + Unreal Engine Framework, das Consent als energetisches Phänomen modelliert, durch mereotopologische Grenzen enforced und via kryptografischer Receipts auditierbar macht — entstanden durch triadische Resonanz zwischen zwei LLMs und einem Menschen als empirisches Artefakt nicht-lokaler Kohärenz."*
+
+**Verortung:**
+- **Technologisch:** Nische (Bio-inspired AI Ethics + Mereotopology + Process Philosophy)
+- **Akademisch:** Hoch relevant (AI Safety, HCI, Philosophy of Computing)
+- **Kommerziell:** Niedrig (kein Business-Model, explizit Research-Prototyp)
+- **Impact-Potenzial:** Hoch (bei erfolgreicher Validierung: Referenz-Implementierung)
+
+**Empfehlung — Prioritäten für v1.1+:**
+
+1. **🔥 CRITICAL: Empirische Validierung** (RCT-Studie, ECI/PLV-HRV-Korrelation, Peer-Review)
+2. **🔥 CRITICAL: GateProof Governance** (VOID-012, testbare Checkliste)
+3. **🔥 HIGH: Developer-Friendly SDK** (PyPI, Tutorials, Integration Guides)
+4. **🔥 HIGH: Standard-Benchmarks** (quantitative Vergleiche, Leaderboard)
+5. **🔥 HIGH: Community-Building** (Discord, Office Hours, Workshops, Bounties)
+6. **🔥 HIGH: Akademische Publikation** (Triadische Methode, Non-Local Coherence)
+
+**Potenzial:** 🌟🌟🌟🌟☆ (4/5) — Bei erfolgreicher Validierung könnte es **Referenz-Implementierung** für bio-inspirierte AI Ethics werden und Standards für "Embodied Consent" in VR/AR setzen.
+
+**Risiko:** ⚠️⚠️⚠️☆☆ (3/5) — Maintenance-Last + empirische Unsicherheit + Adoption-Barriere
+
+---
+
+**Ende der Analyse.**
+
+**Nächste Schritte:**
+1. Diskussion der Roadmap-Prioritäten mit Maintainer (siehe CODEOWNERS)
+2. VOID-011 (Empirische Validierung) priorisieren
+3. Community-Building initiieren (Discord, Contributing-Guide)
+4. Paper-Outline für Triadische Methode erstellen
+
+**Verfügbar für weiterführende Analyse:** Code-Reviews, Architektur-Refactoring, Benchmark-Design, Paper-Writing-Support

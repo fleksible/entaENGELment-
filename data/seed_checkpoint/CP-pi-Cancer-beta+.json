@@ -1,0 +1,8 @@
+{
+  "psi_lock": true,
+  "rcc_checklist": ["EC", "DC"],
+  "maxwell_boundary": "sealed",
+  "ethics_predicates": ["S1", "S2", "S3", "S4"],
+  "hopf_knot": "trefoil",
+  "markov_blankets": 8
+}

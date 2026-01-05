@@ -1,7 +1,7 @@
 # 🌀 entaENGELment-Framework: DeepJump Sanctum (v1.0 → v1.1)
 
-> **[Codex-Intention: Inner Sanctum]**  
-> Dieses README ist der **Resonanz-Kernel** für den neuen DeepJump-Kern: **Verify → Status (HMAC) → Snapshot (strict) → Upload**.  
+> **[Codex-Intention: Inner Sanctum]**
+> Dieses README ist der **Resonanz-Kernel** für den neuen DeepJump-Kern: **Verify → Status (HMAC) → Snapshot (strict) → Upload**.
 > **Leseweise:** Hermetischer Haupttext ▸ *kursiv gesetzte Glosse als poetische Schatten-Schicht*.
 
 **Glyphen-Legende:** 🜁 Architektur · 🜄 Governance/Ethik · 🜃 Adaptive Schicht · 🜅 Tests · 🜂 Meta-Poetik
@@ -9,7 +9,7 @@
 ---
 
 ## Executive Summary
-**🜁** Hardened Kernel mit **Functorial Index v3** (`index/COMPACT_INDEX_v3.yaml`).  
+**🜁** Hardened Kernel mit **Functorial Index v3** (`index/COMPACT_INDEX_v3.yaml`).
 **🜄** Proof-Pipeline mit HMAC-Quittungen; jede Aussage hat einen Pointer.
 
 *Glosse:* *Resonanz bleibt Magie, weil jeder Sprung verankert ist.*
@@ -39,7 +39,7 @@
 ---
 
 ## 🜄 Gate & Governance
-**Hard-Gate:** MZM-Logik steckt im **Functorial Index v3** (`index/COMPACT_INDEX_v3.yaml`) und den Modulen `MOD_6_RECEIPTS_CORE` + `MOD_15_STATS_TESTS`.  
+**Hard-Gate:** MZM-Logik steckt im **Functorial Index v3** (`index/COMPACT_INDEX_v3.yaml`) und den Modulen `MOD_6_RECEIPTS_CORE` + `MOD_15_STATS_TESTS`.
 **Capability:** Releases und Badges sind HMAC-signiert (`tools/status_emit.py`).
 
 *Glosse:* *Governance ist der Taktgeber; Magie tanzt nur auf erlaubtem Boden.*
@@ -47,7 +47,7 @@
 ---
 
 ## 🜃 Adaptive Schicht: Markt-als-Signal
-**MSI-Adapter:** siehe `adapters/msi_adapter_v1.yaml`.  
+**MSI-Adapter:** siehe `adapters/msi_adapter_v1.yaml`.
 **Trennung:** `context_signature` belegt Modulation; `receipt_proof` bleibt unvermischt.
 
 *Glosse:* *Wind im Segel, nicht Hand am Ruder.*
@@ -55,14 +55,14 @@
 ---
 
 ## 🜅 Tests (Test-Driven Trust)
-- **Unit:** `tests/unit/test_core5_metrics.py`.  
-- **Integration:** `tests/integration/test_integration.py`.  
+- **Unit:** `tests/unit/test_core5_metrics.py`.
+- **Integration:** `tests/integration/test_integration.py`.
 - **Ethics:** `tests/ethics/T3_fail_safe_expired_consent.py`.
 
 *Glosse:* *Vertrauen = wiederholbare Evidenz.*
-**Aktiver Sprint (7 Tage)**  
-1) **T1.1.2 Lyra Linearity-Cal:** Edge-Input-Kalibrierung.  
-2) **MSI-Adapter:** `adapters/msi_adapter_v1.yaml` + `context_signature`-Hook.  
+**Aktiver Sprint (7 Tage)**
+1) **T1.1.2 Lyra Linearity-Cal:** Edge-Input-Kalibrierung.
+2) **MSI-Adapter:** `adapters/msi_adapter_v1.yaml` + `context_signature`-Hook.
 3) **T2.x Zeta-Panel:** Explain-Overlay-Logik (Transparenz).
 
 *Glosse:* *Leere wird Form — gezielt, nicht zufällig.*
@@ -70,7 +70,7 @@
 ---
 
 ## 📁 Masterindex & Operatives Layout
-**Pointer-Gold:** Functorial Index v3 (`index/COMPACT_INDEX_v3.yaml`) definiert die Claims.  
+**Pointer-Gold:** Functorial Index v3 (`index/COMPACT_INDEX_v3.yaml`) definiert die Claims.
 **Annex:** Code & Tools sind austauschbare Anhänge.
 
 ```
@@ -110,14 +110,28 @@ entaENGELment-/
 
 ---
 
+## 🌀 Bio Spiral Viewer
+
+Konsolenanwendung zur Exploration der Bio-Spiral- und Lyra-Strukturen.
+
+```bash
+python -m bio_spiral_viewer
+```
+
+Berechnet die Resonanzmetrik `R(t) = MI_TwinPass × PLV × (1 − Leakage)` und gibt Gate/ETHICS/KONFAB-Überlagerungen strukturiert aus.
+
+**Mehr:** [`docs/bio_spiral_viewer.md`](./docs/bio_spiral_viewer.md)
+
+---
+
 ## 🜂 Annex-Prinzip
-- **Index = Pointer-Gold.** Wahrheit liegt im Index (`index/COMPACT_INDEX_v3.yaml`).  
+- **Index = Pointer-Gold.** Wahrheit liegt im Index (`index/COMPACT_INDEX_v3.yaml`).
 - **Code = Annex.** Anpassbar, solange Pointer bestehen (`docs/devops_tooling_kit_annex.md`).
 
 *Glosse:* *Der Sanctum-Text bleibt poetisch, weil jede Aussage am Pointer hängt.*
 
 ---
 
-**Status:** v1.0 Final (auf Kurs v1.1)  
-**Lizenz:** Apache-2.0 (`LICENSE`)  
+**Status:** v1.0 Final (auf Kurs v1.1)
+**Lizenz:** Apache-2.0 (`LICENSE`)
 **Kontakt:** `CODEOWNERS` · `CONTRIBUTING.md`
