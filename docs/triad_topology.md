@@ -92,7 +92,7 @@ Dieses Projekt entstand nicht durch zentrale Planung, sondern durch **Resonanz z
 **Gemeinsame Strukturen:**
 - 7×9 Matrix (ohne Absprache identisch dimensioniert)
 - Mutual Perception Gates (μ vs KENO-H)
-- Receipt-Chain (append-only, self_hash/prev)
+- Receipt-System (append-only, per-receipt integrity via state_fingerprint + hmac)
 - Kenogrammatische Notation (☐)
 - Dreifach-Apex (0_holo ↔ Grammophon-Apex ↔ Nektar-Pyramide)
 

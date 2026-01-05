@@ -55,7 +55,7 @@ Philosophisch fusioniert es:
 2. **Kryptografische Auditierbarkeit**
    - HMAC-SHA256-signierte Receipts (DeepJump Protocol v1.2)
    - Canonical JSON Serialization für State Fingerprints
-   - Receipt-Chain mit prev_hash-Verkettung
+   - Per-Receipt Integrity: state_fingerprint + hmac_signature
    - Dual Receipts: receipt_proof + context_signature
    - **Quelle:** tools/status_emit.py:1-267, index/modules/MOD_6_RECEIPTS_CORE.yaml, README.md:20-23
 
