@@ -1,0 +1,190 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/fleksible/entaENGELment-/spec/runtime_event.schema.json",
+  "title": "Runtime Event Schema",
+  "description": "Schema for entaENGELment runtime ledger events with type-payload coupling",
+  "type": "object",
+  "required": ["type", "payload", "timestamp", "event_id"],
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": ["metric", "gate", "span_start", "span_end"],
+      "description": "Event type determining payload structure"
+    },
+    "payload": {
+      "type": "object",
+      "description": "Type-specific payload"
+    },
+    "timestamp": {
+      "type": "number",
+      "description": "Unix timestamp (seconds since epoch)"
+    },
+    "event_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique event identifier"
+    },
+    "span_id": {
+      "type": ["string", "null"],
+      "format": "uuid",
+      "description": "Current span context (if any)"
+    },
+    "prev_hash": {
+      "type": ["string", "null"],
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 hash of previous event (hash chain)"
+    },
+    "hash": {
+      "type": ["string", "null"],
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 hash of this event"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "type": { "const": "metric" } }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["metric_id", "value"],
+            "properties": {
+              "metric_id": {
+                "type": "string",
+                "description": "Metric identifier (e.g., mzm.phi, exception.GateBlockedError)"
+              },
+              "value": {
+                "type": "number",
+                "description": "Numeric metric value"
+              },
+              "tags": {
+                "type": "object",
+                "additionalProperties": true,
+                "description": "Optional key-value tags"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "type": { "const": "gate" } }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["gate_id", "passed"],
+            "properties": {
+              "gate_id": {
+                "type": "string",
+                "description": "Gate identifier (e.g., mzm_gate_v1, stability_taxonomy_v1)"
+              },
+              "passed": {
+                "type": "boolean",
+                "description": "Whether the gate check passed"
+              },
+              "reason": {
+                "type": "string",
+                "description": "Reason code for the decision"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "type": { "const": "span_start" } }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["name", "span_id"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Span name"
+              },
+              "span_id": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Span identifier"
+              },
+              "parent_span_id": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Parent span identifier (for nested spans)"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "type": { "const": "span_end" } }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["name", "span_id"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Span name"
+              },
+              "span_id": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Span identifier"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "gate_reasons": {
+      "description": "Canonical gate reason codes",
+      "type": "string",
+      "enum": [
+        "PASS_ALL_CONSTRAINTS",
+        "BLOCK_PHI_BELOW_MIN",
+        "BLOCK_RCC_EC_FAILED",
+        "BLOCK_NON_OVERLAP_FAILED",
+        "BLOCK_M_NORM_INVALID",
+        "BLOCK_PSI_LOCK_MISSING",
+        "BLOCK_UNKNOWN",
+        "SAFE_BASIN_ROBUST",
+        "WARN_BASIN_SOFT",
+        "AUTH_CONSENT_FLAT_VOID",
+        "BLOCK_NEED_CONSENT_FLAT_VOID",
+        "BLOCK_UNSTABLE_SADDLE",
+        "BLOCK_UNSTABLE_DEGENERATE",
+        "BLOCK_UNSTABLE_INVERSION",
+        "BLOCK_UNDEFINED_STATE"
+      ]
+    },
+    "metric_ids": {
+      "description": "Known metric identifiers",
+      "type": "string",
+      "examples": [
+        "mzm.phi",
+        "mzm.m_norm_l2",
+        "exception.GateBlockedError",
+        "exception.StabilityBlockedError"
+      ]
+    }
+  }
+}
