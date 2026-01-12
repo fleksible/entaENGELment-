@@ -87,6 +87,7 @@ bandwidth_shaping:
 The bandwidth shaping integrates with gate decisions:
 
 ```
+0. If core_integrity_fail -> gate_decision = REJECTED (integrity), grade = 0, stop; no further processing
 1. Compute BW_norm from incoming metrics
 2. Update heat based on time + previous decision
 3. Compute B_effective from current bandwidth & heat

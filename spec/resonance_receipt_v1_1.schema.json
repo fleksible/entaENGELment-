@@ -123,10 +123,14 @@
         },
         "kenosis": {
           "type": "number",
+          "minimum": 0,
+          "maximum": 1.0,
           "description": "Emptying/reduction metric"
         },
         "phi": {
           "type": "number",
+          "minimum": 0,
+          "maximum": 1.0,
           "description": "Phase alignment"
         }
       }
