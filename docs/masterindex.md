@@ -33,6 +33,7 @@ Startpunkt des Masterindex. Enthält Struktur, narrative Einordnung und Links zu
 ## Narrative Canon (Lazy-load)
 
 - `docs/narratives/symphonie_der_resonanz.md` — Symphonie + operationalisierte Rückkopplung + Voids
+- `docs/narratives/grimm2/_template.md` — Grimm 2.0 Template (docs-first, Slice + Stacking)
 - `docs/kenograms/LYRA.md` — ☐-LYRA (Audiohook als auditierbares Kenogramm)
 - `src/tools/toy_resonance_dataset.py` — Option B: Toy Dataset (Proof of Wiring)
 

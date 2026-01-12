@@ -97,3 +97,5 @@ BODY_POINTERS:
   VOIDMAP: VOIDMAP.yml
   MOD_06: index/modules/MOD_15_STATS_TESTS.yaml
   MOD_15: index/modules/MOD_6_RECEIPTS_CORE.yaml
+  META-FORM-IN-BEWEGUNG: index/pointers/form_in_bewegung__learning_edge.pointer.md
+  NARR-GRIMM2-TEMPLATE: index/pointers/grimm2__template.pointer.md
