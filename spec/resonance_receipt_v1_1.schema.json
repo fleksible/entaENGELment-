@@ -117,7 +117,9 @@
       "properties": {
         "omega": {
           "type": "number",
-          "description": "Amplitude (frequency/energy)"
+          "minimum": 0,
+          "maximum": 1.0,
+          "description": "Amplitude (frequency/energy), normalized to [0,1]"
         },
         "kenosis": {
           "type": "number",

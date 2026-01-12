@@ -13,7 +13,7 @@ algorithms:
 
 # Core resonance thresholds
 thresholds:
-  omega_max: 100.0          # Maximum amplitude (frequency/energy)
+  omega_max: 0.80           # Maximum amplitude (frequency/energy), normalized [0,1]
   kenosis_base: 0.3         # Minimum kenosis (emptying) requirement
   phi_base: 0.707           # Phase alignment baseline (cos(45°) ≈ 0.707)
   phi_tolerance: 0.1        # Acceptable phase deviation
@@ -50,9 +50,9 @@ genesis:
 # Evaluated in this exact order:
 decision_priority:
   - step: 1
-    condition: "core_metrics_fail"
+    condition: "core_integrity_fail"
     decision: "REJECTED"
-    description: "Amplitude, kenosis, or phase out of bounds"
+    description: "Signature/hash/canonicalization mismatch"
 
   - step: 2
     condition: "bandwidth_below_min"
