@@ -10,8 +10,8 @@
   "verification_reasons": [
     {
       "code": "AMPLITUDE_CHECK",
-      "value": 45.2,
-      "threshold": 100.0
+      "value": 0.53,
+      "threshold": 0.80
     },
     {
       "code": "KENOSIS_CHECK",
@@ -36,7 +36,7 @@
     "is_phase_aligned": true
   },
   "core_metrics": {
-    "omega": 45.2,
+    "omega": 0.53,
     "kenosis": 0.42,
     "phi": 0.75
   },
@@ -49,7 +49,7 @@
   "extensions": {
     "x_embedding_model": "text-embedding-3-small",
     "x_embedding_dim": 1536,
-    "x_session_id": "sess_a1b2c3d4e5f6",
+    "x_session_hmac": "7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069",
     "x_grade": 1
   }
 }
