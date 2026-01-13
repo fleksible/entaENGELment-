@@ -82,3 +82,11 @@ entaENGELment-/
 ---
 
 *This document is additive - it doesn't replace the README, just offers a gentler entry point.*
+
+---
+
+## Orbital Meta-Structure
+- [Orbital Model](./ORBIT_MODEL.md)
+- [Orbital Roadmap](./ROADMAP_ORBITAL_v1.md)
+- [BridgeCard — Consent as Transit](./bridgecards/BC_consent_as_transit.md)
+- [Validation Demo v1](./validation/VALIDATION_DEMO_v1.md)
