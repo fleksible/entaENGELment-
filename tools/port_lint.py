@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """Port Matrix Linter (K0..K4) — Repo-konform.
 Ziel:
 - Erkennt Port-Marker in Docs/Specs/Policies:  K0::NEBEL, K1::FADEN, K2::PORT?, K3::LEAK, K4::PASS
@@ -13,8 +12,8 @@ from __future__ import annotations
 import os
 import re
 import sys
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable, List, Tuple
 
 MARKERS = [
     "K0::NEBEL",
@@ -55,11 +54,11 @@ def read_text(p: Path) -> str:
         return ""
 
 
-def extract_markers(text: str) -> List[str]:
+def extract_markers(text: str) -> list[str]:
     return MARKER_RE.findall(text)
 
 
-def validate_marker_sequence(found: List[str]) -> List[str]:
+def validate_marker_sequence(found: list[str]) -> list[str]:
     """
     If markers appear, enforce they are in non-decreasing "order" from K0..K4.
     Gaps are allowed (docs may only mention K2/K3, etc).
@@ -69,7 +68,7 @@ def validate_marker_sequence(found: List[str]) -> List[str]:
         return []
     order = {m: i for i, m in enumerate(MARKERS)}
     idxs = [order[m] for m in found if m in order]
-    errs: List[str] = []
+    errs: list[str] = []
     # Only check for backwards movement
     for a, b in zip(idxs, idxs[1:]):
         if b < a:
@@ -78,7 +77,7 @@ def validate_marker_sequence(found: List[str]) -> List[str]:
     return errs
 
 
-def validate_receipt_flood(text: str) -> List[str]:
+def validate_receipt_flood(text: str) -> list[str]:
     """
     Very light heuristic: if a file looks like a receipt and has too many claim tags, flag.
     This is intentionally conservative (no parsing dependency).
@@ -92,7 +91,7 @@ def validate_receipt_flood(text: str) -> List[str]:
     return []
 
 
-def lint_file(p: Path) -> List[Tuple[str, str]]:
+def lint_file(p: Path) -> list[tuple[str, str]]:
     """
     Returns list of (error_code, message).
     Only enforces marker rules if file contains any markers.
@@ -101,7 +100,7 @@ def lint_file(p: Path) -> List[Tuple[str, str]]:
     if not txt:
         return []
     found = extract_markers(txt)
-    errors: List[Tuple[str, str]] = []
+    errors: list[tuple[str, str]] = []
     if found:
         seq_errs = validate_marker_sequence(found)
         if seq_errs:
@@ -116,7 +115,7 @@ def lint_file(p: Path) -> List[Tuple[str, str]]:
     return errors
 
 
-def main(argv: List[str]) -> int:
+def main(argv: list[str]) -> int:
     root = Path(".")
     exts = DEFAULT_SCAN_EXTS
     # Allow limiting scope
@@ -127,7 +126,7 @@ def main(argv: List[str]) -> int:
             print("Usage: python tools/port_lint.py [--path <dir_or_file>]", file=sys.stderr)
             return 2
         only_path = Path(argv[i + 1])
-    targets: List[Path]
+    targets: list[Path]
     if only_path:
         if only_path.is_file():
             targets = [only_path]
@@ -135,7 +134,7 @@ def main(argv: List[str]) -> int:
             targets = list(iter_files(only_path, exts))
     else:
         targets = list(iter_files(root, exts))
-    all_errors: List[Tuple[str, str]] = []
+    all_errors: list[tuple[str, str]] = []
     for p in targets:
         all_errors.extend(lint_file(p))
     if all_errors:
