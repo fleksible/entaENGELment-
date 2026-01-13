@@ -147,3 +147,48 @@ voids:
     closed: null
     notes: |
       [SAFETY] Nur computational exploration; keine Nasslabor-Protokolle.
+
+  - id: VOID-020
+    title: "Port-Matrix Suite (K0..K4) fehlt"
+    layer: GUARD
+    status: CLOSED
+    priority: high
+    symptom: "Kein Port-Linter / keine Marker-Operationalisierung"
+    closing_path: "tools/port_lint.py"
+    evidence:
+      - "tools/port_lint.py"
+      - "tests/test_port_lint.py"
+    created: "2026-01-13"
+    closed: "2026-01-13"
+
+  - id: VOID-021
+    title: "Port-Codebooks fehlen"
+    layer: GUARD
+    status: CLOSED
+    priority: med
+    symptom: "Semantik/Marker nicht zentral dokumentiert"
+    closing_path: "policies/port_codebooks.yaml"
+    evidence: "policies/port_codebooks.yaml"
+    created: "2026-01-13"
+    closed: "2026-01-13"
+
+  - id: VOID-022
+    title: "Flood-Guard Threshold fehlt (MAX_CLAIMS_PER_RECEIPT)"
+    layer: GUARD
+    status: CLOSED
+    priority: med
+    symptom: "Keine harte Grenze gegen Receipt-Überflutung"
+    closing_path: "tools/port_lint.py"
+    evidence: "tools/port_lint.py"
+    created: "2026-01-13"
+    closed: "2026-01-13"
+
+  - id: VOID-023
+    title: "MICRO/MESO/MACRO Tagging konsistent ausrollen"
+    layer: EXPLAIN
+    status: OPEN
+    priority: low
+    symptom: "Scope-Tags nicht überall konsistent"
+    closing_path: null
+    evidence: null
+    created: "2026-01-13"
