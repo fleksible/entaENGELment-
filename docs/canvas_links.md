@@ -1,6 +1,6 @@
 # Canvas-Links
 
-**Stand:** 2026-01-04
+**Stand:** 2026-01-13
 
 Hier werden alle relevanten Canvas-Seiten und Dokumentenverknüpfungen eingetragen.
 
@@ -21,6 +21,10 @@ Die folgenden Repository-Dokumente bieten umfassende Kontextinformationen:
 - [`docs/architecture.md`](./architecture.md) — Layer-Architektur und Triadische Topologie
 - [`docs/triad_topology.md`](./triad_topology.md) — Detaillierte Analyse der drei Entwicklungsstränge
 - [`docs/masterindex.md`](./masterindex.md) — Verzeichnisstruktur und Kenogramm-Registry
+- [`docs/ORBIT_MODEL.md`](./ORBIT_MODEL.md) — Orbital Meta-Struktur (Kern/Transit/Peripherie)
+- [`docs/ROADMAP_ORBITAL_v1.md`](./ROADMAP_ORBITAL_v1.md) — Roadmap nach Orbital-Kadenz
+- [`docs/bridgecards/BC_consent_as_transit.md`](./bridgecards/BC_consent_as_transit.md) — BridgeCard: Consent als Transit-Requirement
+- [`docs/validation/VALIDATION_DEMO_v1.md`](./validation/VALIDATION_DEMO_v1.md) — Replizierbare Demo (nicht Studie)
 
 ### DevOps & Tooling
 - [`docs/devops_tooling_kit.md`](./devops_tooling_kit.md) — Vollständiges DevOps-Kit

@@ -1,10 +1,17 @@
 # Masterindex — Seed
 
 **Version:** 1.0.0
-**Stand:** 2026-01-04
+**Stand:** 2026-01-13
 **Letzte Prüfung:** Alignment mit Functorial Index v3
 
 Startpunkt des Masterindex. Enthält Struktur, narrative Einordnung und Links zu Canvas-Dokumenten.
+
+## Orbital Meta-Structure (Kern / Transit / Peripherie)
+
+- `docs/ORBIT_MODEL.md` — Modell & Kadenz
+- `docs/ROADMAP_ORBITAL_v1.md` — Roadmap (Orbit-basiert)
+- `docs/bridgecards/BC_consent_as_transit.md` — Consent als Transit-Brücke
+- `docs/validation/VALIDATION_DEMO_v1.md` — Replizierbare Demo, kein Studienclaim
 
 ## Verzeichnisstruktur
 
