@@ -8,7 +8,7 @@ DMI ?= 4.7
 PHI ?= 0.72
 REFRACTORY ?= 120
 
-.PHONY: help install install-dev test test-unit test-integration test-ethics coverage lint format type-check clean gate-test verify verify-pointers claim-lint verify-json status status-verify snapshot all deepjump
+.PHONY: help install install-dev test test-unit test-integration test-ethics coverage lint format type-check clean gate-test port-lint verify verify-pointers claim-lint verify-json status status-verify snapshot all deepjump
 
 help:
 	@echo "entaENGELment Framework - Development Commands"
@@ -78,6 +78,10 @@ coverage:
 lint:
 	ruff check src/ tools/ tests/
 
+port-lint:
+	@echo "🔍 Running Port-Matrix linter (K0..K4)..."
+	@python3 tools/port_lint.py
+
 format:
 	black src/ tools/ tests/
 
@@ -98,9 +102,11 @@ gate-test:
 # === DeepJump Protocol v1.2 ===
 
 # Phase 1: VERIFY (vor jedem Arbeitsschritt)
-verify: verify-pointers claim-lint
+verify: port-lint test verify-pointers claim-lint
 	@echo ""
 	@echo "=== VERIFY COMPLETE ==="
+	@echo "✅ Port-Matrix linter ran"
+	@echo "✅ Tests ran"
 	@echo "✅ Pointers checked"
 	@echo "✅ Claims linted"
 	@echo ""
