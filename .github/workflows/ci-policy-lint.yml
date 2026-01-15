@@ -1,5 +1,9 @@
 name: Policy Lint
-on: [push, pull_request]
+on:
+  push:
+    branches: ["main", "claude/**"]
+  pull_request:
+    branches: ["main"]
 jobs:
   lint:
     runs-on: ubuntu-latest
