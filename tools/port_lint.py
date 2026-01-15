@@ -70,7 +70,7 @@ def validate_marker_sequence(found: list[str]) -> list[str]:
     idxs = [order[m] for m in found if m in order]
     errs: list[str] = []
     # Only check for backwards movement
-    for a, b in zip(idxs, idxs[1:], strict=False):
+    for a, b in zip(idxs, idxs[1:]):
         if b < a:
             errs.append("marker_order_backwards")
             break
