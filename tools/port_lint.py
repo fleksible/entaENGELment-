@@ -104,13 +104,18 @@ def lint_file(p: Path) -> list[tuple[str, str]]:
     if found:
         seq_errs = validate_marker_sequence(found)
         if seq_errs:
-            errors.append(("K_MARKER_ORDER", f"{p.as_posix()}: marker order goes backwards: {found}"))
+            errors.append(
+                ("K_MARKER_ORDER", f"{p.as_posix()}: marker order goes backwards: {found}")
+            )
     # Receipt flood heuristic only on JSON/YAML-like files to avoid noisy docs
     if p.suffix.lower() in {".json", ".yaml", ".yml"}:
         flood = validate_receipt_flood(txt)
         if flood:
             errors.append(
-                ("RECEIPT_FLOOD", f"{p.as_posix()}: too many claim tags (> {MAX_CLAIMS_PER_RECEIPT})")
+                (
+                    "RECEIPT_FLOOD",
+                    f"{p.as_posix()}: too many claim tags (> {MAX_CLAIMS_PER_RECEIPT})",
+                )
             )
     return errors
 
