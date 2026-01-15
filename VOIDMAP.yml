@@ -156,8 +156,9 @@ voids:
     symptom: "Kein Port-Linter / keine Marker-Operationalisierung"
     closing_path: "tools/port_lint.py"
     evidence:
-      - "tools/port_lint.py"
-      - "tests/test_port_lint.py"
+      - tools/port_lint.py
+      - tests/test_port_lint.py
+      - audit/port_matrix_audit_2026-01-13.md
     created: "2026-01-13"
     closed: "2026-01-13"
 
@@ -168,7 +169,9 @@ voids:
     priority: med
     symptom: "Semantik/Marker nicht zentral dokumentiert"
     closing_path: "policies/port_codebooks.yaml"
-    evidence: "policies/port_codebooks.yaml"
+    evidence:
+      - policies/port_codebooks.yaml
+      - audit/port_matrix_audit_2026-01-13.md
     created: "2026-01-13"
     closed: "2026-01-13"
 
@@ -179,7 +182,9 @@ voids:
     priority: med
     symptom: "Keine harte Grenze gegen Receipt-Überflutung"
     closing_path: "tools/port_lint.py"
-    evidence: "tools/port_lint.py"
+    evidence:
+      - tools/port_lint.py
+      - audit/port_matrix_audit_2026-01-13.md
     created: "2026-01-13"
     closed: "2026-01-13"
 
@@ -190,5 +195,7 @@ voids:
     priority: low
     symptom: "Scope-Tags nicht überall konsistent"
     closing_path: null
-    evidence: null
+    evidence:
+      - audit/port_matrix_audit_2026-01-13.md
+      - policies/port_codebooks.yaml
     created: "2026-01-13"

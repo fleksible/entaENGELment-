@@ -78,9 +78,31 @@ def extract_paths_from_yaml(yaml_path: Path, repo_root: Path) -> list[PointerRes
     # Keys that typically contain file paths
 
     def clean_path(raw: str) -> str:
-        """Clean a path string by removing CLI arguments and whitespace."""
+        """Clean a path string by removing CLI arguments and punctuation."""
         # Strip CLI arguments (e.g., "tools/foo.py --strict" → "tools/foo.py")
         path = raw.split()[0] if " " in raw else raw
+        path = path.strip().strip("`'\"")
+        path = path.strip("()")
+        if ":" in path:
+            left, _right = path.split(":", 1)
+            if left.endswith(
+                (
+                    ".py",
+                    ".md",
+                    ".yml",
+                    ".yaml",
+                    ".json",
+                    ".toml",
+                    ".txt",
+                    ".sh",
+                    ".c",
+                    ".cpp",
+                    ".h",
+                    ".hpp",
+                )
+            ):
+                path = left
+        path = path.rstrip(",.;:")
         return path.strip()
 
     def looks_like_path(s: str) -> bool:
