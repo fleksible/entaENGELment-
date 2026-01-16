@@ -66,3 +66,6 @@ dmypy.json
 
 # DeepJump generated output
 out/
+
+# Claude local config
+CLAUDE.local.md
