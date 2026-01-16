@@ -23,12 +23,34 @@ import sys
 # Erwartet: "FOKUS: <mindestens ein Wort>"
 RX_FOKUS = re.compile(r"^\s*FOKUS\s*:\s*\S+", re.IGNORECASE | re.MULTILINE)
 
-# Pattern für FOKUS-SWITCH: Marker
+# Pattern für FOKUS-SWITCH: Marker (captures rest of line and following content)
 # Varianten: FOKUS-SWITCH, FOKUS_SWITCH, FOKUS SWITCH
 RX_SWITCH = re.compile(r"FOKUS[-_\s]*SWITCH\s*:", re.IGNORECASE)
 
 # Pattern für Frage (Zeile endet mit ?)
 RX_QUESTION = re.compile(r"\?\s*$", re.MULTILINE)
+
+# Max lines after FOKUS-SWITCH to search for question
+MAX_LINES_AFTER_SWITCH = 5
+
+
+def has_question_after_switch(text: str) -> bool:
+    """
+    Check if there's a question within MAX_LINES_AFTER_SWITCH lines after FOKUS-SWITCH.
+
+    Returns:
+        True if question found in the appropriate section, False otherwise.
+    """
+    match = RX_SWITCH.search(text)
+    if not match:
+        return True  # No switch means no requirement
+
+    # Get text after the FOKUS-SWITCH marker
+    text_after_switch = text[match.end() :]
+    lines_after = text_after_switch.split("\n")[: MAX_LINES_AFTER_SWITCH + 1]
+    section_to_check = "\n".join(lines_after)
+
+    return bool(RX_QUESTION.search(section_to_check))
 
 
 def check_text(text: str) -> tuple[bool, list[str]]:
@@ -49,9 +71,12 @@ def check_text(text: str) -> tuple[bool, list[str]]:
     if not RX_FOKUS.search(text):
         errors.append("Missing required marker: `FOKUS:`")
 
-    # Check 2: Wenn FOKUS-SWITCH vorhanden, muss auch eine Frage da sein
-    if RX_SWITCH.search(text) and not RX_QUESTION.search(text):
-        errors.append("Found `FOKUS-SWITCH:` but no question line ending with `?`.")
+    # Check 2: Wenn FOKUS-SWITCH vorhanden, muss Frage in den nächsten Zeilen folgen
+    if RX_SWITCH.search(text) and not has_question_after_switch(text):
+        errors.append(
+            f"Found `FOKUS-SWITCH:` but no question (line ending with `?`) "
+            f"within {MAX_LINES_AFTER_SWITCH} lines after the marker."
+        )
 
     return (len(errors) == 0), errors
 
