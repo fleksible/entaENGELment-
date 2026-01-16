@@ -1,0 +1,11 @@
+# OUT Directory
+
+Dieser Ordner enthält generierte Reports und Outputs.
+
+Dateien hier sind typischerweise:
+- Exploration Reports (Witness Mode)
+- Setup Completion Reports
+- Audit Outputs
+- Generierte Dokumentation
+
+Nicht committen: Temporäre oder sensitive Outputs.
