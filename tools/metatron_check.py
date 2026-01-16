@@ -13,10 +13,11 @@ Exit Codes:
     1 = FAIL (missing FOKUS or question after FOKUS-SWITCH)
 """
 
+from __future__ import annotations
+
 import argparse
 import re
 import sys
-from typing import List, Tuple
 
 # Pattern für FOKUS: Marker (case-insensitive)
 # Erwartet: "FOKUS: <mindestens ein Wort>"
@@ -30,7 +31,7 @@ RX_SWITCH = re.compile(r"FOKUS[-_\s]*SWITCH\s*:", re.IGNORECASE)
 RX_QUESTION = re.compile(r"\?\s*$", re.MULTILINE)
 
 
-def check_text(text: str) -> Tuple[bool, List[str]]:
+def check_text(text: str) -> tuple[bool, list[str]]:
     """
     Prüft den Text auf Metatron-Guard Compliance.
 
@@ -42,7 +43,7 @@ def check_text(text: str) -> Tuple[bool, List[str]]:
         - success: True wenn alle Checks bestanden
         - errors: Liste von Fehlermeldungen
     """
-    errors: List[str] = []
+    errors: list[str] = []
 
     # Check 1: FOKUS: muss vorhanden sein
     if not RX_FOKUS.search(text):
@@ -50,9 +51,7 @@ def check_text(text: str) -> Tuple[bool, List[str]]:
 
     # Check 2: Wenn FOKUS-SWITCH vorhanden, muss auch eine Frage da sein
     if RX_SWITCH.search(text) and not RX_QUESTION.search(text):
-        errors.append(
-            "Found `FOKUS-SWITCH:` but no question line ending with `?`."
-        )
+        errors.append("Found `FOKUS-SWITCH:` but no question line ending with `?`.")
 
     return (len(errors) == 0), errors
 
