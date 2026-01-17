@@ -127,6 +127,30 @@ export default function HomePage() {
             </div>
           </Link>
 
+          {/* FractalSense */}
+          <Link
+            href="/fractalsense"
+            className="
+              flex items-start gap-4 p-4 md:p-5
+              bg-gradient-to-br from-violet-500/10 to-amber-500/10
+              rounded-xl border border-violet-500/30
+              hover:from-violet-500/20 hover:to-amber-500/20
+              transition-colors duration-150
+              touch-manipulation
+            "
+          >
+            <span className="text-3xl">🌀</span>
+            <div>
+              <h3 className="font-semibold text-zinc-100">FractalSense</h3>
+              <p className="text-sm text-zinc-400 mt-1">
+                Resonante Fraktal-Visualisierung
+              </p>
+              <span className="inline-block mt-2 px-2 py-0.5 bg-amber-500/20 text-amber-400 text-xs rounded">
+                NEU
+              </span>
+            </div>
+          </Link>
+
           {/* Nichtraum */}
           <Link
             href="/nichtraum"

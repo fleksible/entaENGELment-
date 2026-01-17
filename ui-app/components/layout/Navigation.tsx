@@ -9,6 +9,7 @@ const NAV_ITEMS: NavItem[] = [
   { id: 'metatron', label: 'Fokus', icon: '🎯', href: '/metatron' },
   { id: 'voidmap', label: 'VOIDs', icon: '☐', href: '/voidmap' },
   { id: 'guards', label: 'Guards', icon: '🛡️', href: '/guards' },
+  { id: 'fractalsense', label: 'Fraktal', icon: '🌀', href: '/fractalsense' },
   { id: 'nichtraum', label: 'Nichtraum', icon: '◌', href: '/nichtraum' },
 ];
 
