@@ -1,0 +1,38 @@
+{
+  "VOIDMAP_vs_Docs": {
+    "total_voids": 12,
+    "documented": 5,
+    "missing_docs": [
+      "VOID-001",
+      "VOID-002",
+      "VOID-003",
+      "VOID-010",
+      "VOID-011",
+      "VOID-012",
+      "VOID-013",
+      "VOID-014",
+      "VOID-020",
+      "VOID-021",
+      "VOID-022",
+      "VOID-023"
+    ],
+    "orphaned_docs": [
+      "VOID-010_taxonomy_and_spectra",
+      "VOID-011_resonance_metrics",
+      "VOID-012_gateproof_checklist",
+      "VOID-013_sensor_architecture",
+      "VOID-014_protein_design_in_silico"
+    ]
+  },
+  "Guards_defined": {
+    ".claude/rules/annex.md": true,
+    ".claude/rules/metatron.md": true,
+    ".claude/rules/security.md": true,
+    "CLAUDE.md": true
+  },
+  "Evidence_exists": {
+    "missing_count": 0,
+    "missing": []
+  },
+  "Missing_files": []
+}
