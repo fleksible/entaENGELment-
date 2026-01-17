@@ -139,6 +139,19 @@ Philosophisch fusioniert es:
 
 ---
 
+### UI-App Features (v1.1)
+
+**FractalSense Integration**:
+- Interactive Mandelbrot/Julia/Burning-Ship visualization
+- 7 φ-basierte Colormaps: `resonant` (Violett→Gold), `harmonic` (Fibonacci), `spectral` (380-750nm), `fractal` (Mandelbrot-inspired), `mereotopological` (Knoten/Kanten), `quantum` (Energieniveaus), `goldenRatio`
+- Canvas-basiertes Rendering mit Smooth Coloring Algorithm
+- Touch/Mouse Pan & Zoom
+- TypeScript-Port von `Fractalsense/color_generator.py`
+
+*[Quelle: `ui-app/lib/colormaps.ts`, `ui-app/components/fractalsense/`, `ui-app/app/fractalsense/page.tsx`]*
+
+---
+
 ### Philosophische/Technische Prinzipien
 
 | Prinzip | Beschreibung | Code-Referenz |
@@ -280,11 +293,11 @@ Philosophisch fusioniert es:
    - Offene Forschungsfragen als First-Class-Citizens
    - **Quelle:** VOIDMAP.yml:1-150, docs/masterindex.md:56-85
 
-6. **Hybrid-Stack**
-   - Python + Unreal Engine (seltene Kombination)
+6. **Triple-Stack**
+   - Python (AI-Ethics Core) + Unreal Engine (Mereotopological Interface) + Next.js/React (UI Dashboard mit FractalSense)
    - Bio Spiral Viewer (Console + Datamodels)
    - Mereotopological Plugin (SynthosiaCore)
-   - **Quelle:** pyproject.toml, Plugins/SynthosiaCore/, bio_spiral_viewer/
+   - **Quelle:** pyproject.toml, Plugins/SynthosiaCore/, bio_spiral_viewer/, ui-app/
 
 7. **Minimale Dependencies**
    - Nur 3 Core-Dependencies (numpy, scipy, pyyaml)

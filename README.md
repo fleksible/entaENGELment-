@@ -124,6 +124,29 @@ Berechnet die Resonanzmetrik `R(t) = MI_TwinPass × PLV × (1 − Leakage)` und 
 
 ---
 
+## 🌀 FractalSense Visualization (v1.1)
+
+Interactive fractal explorer mit φ-basierten Colormaps und Canvas-Rendering.
+
+```bash
+cd ui-app
+npm install
+npm run dev
+# → http://localhost:3000/fractalsense
+```
+
+**Features:**
+- **7 φ-basierte Colormaps:** `resonant` (Violett→Gold), `harmonic` (Fibonacci), `spectral` (380-750nm), `fractal`, `mereotopological`, `quantum`, `goldenRatio`
+- **3 Fractal-Typen:** Mandelbrot, Julia, Burning Ship
+- **Smooth Coloring Algorithm** mit Canvas-Rendering
+- **Touch/Mouse Pan & Zoom**
+
+*TypeScript-Port von `Fractalsense/color_generator.py`*
+
+**Mehr:** [`ui-app/app/fractalsense/page.tsx`](./ui-app/app/fractalsense/page.tsx) · [`ui-app/lib/colormaps.ts`](./ui-app/lib/colormaps.ts)
+
+---
+
 ## 🜂 Annex-Prinzip
 - **Index = Pointer-Gold.** Wahrheit liegt im Index (`index/COMPACT_INDEX_v3.yaml`).
 - **Code = Annex.** Anpassbar, solange Pointer bestehen (`docs/devops_tooling_kit_annex.md`).
