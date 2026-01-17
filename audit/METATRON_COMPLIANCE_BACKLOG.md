@@ -1,4 +1,6 @@
-# Nachträgliche FOKUS-Dokumentation
+# Metatron Compliance Backlog
+
+> Historisches Compliance-Log für G4 (Metatron-Regel)
 
 **Erstellt:** 2026-01-17
 **Grund:** G4 Metatron-Regel wurde nachträglich eingeführt
@@ -11,7 +13,10 @@ Die folgenden Commits wurden vor Einführung der Metatron-Regel erstellt
 und enthalten keinen FOKUS-Marker. Eine retrospektive Dokumentation
 ist optional, da die Regel prospektiv gilt.
 
-**Empfehlung:** Merge-Commits von der FOKUS-Prüfung ausnehmen.
+**Ausnahmen vom FOKUS-Check:**
+- Merge-Commits (`Merge ...`)
+- Squash-Commits (`squash! ...`)
+- Fixup-Commits (`fixup! ...`)
 
 ---
 
@@ -58,23 +63,15 @@ Siehe: `audit/metatron_violations.txt` (47 Einträge)
 
 ---
 
-## Empfehlung für CI
+## CI-Integration
 
-```yaml
-# In .github/workflows/deepjump-ci.yml hinzufügen:
+Der FOKUS-Check wird in `.github/workflows/metatron-guard.yml` durchgeführt.
 
-- name: Check FOKUS marker
-  run: |
-    # Skip merge commits
-    if git log -1 --format=%s | grep -q "^Merge"; then
-      echo "Merge commit - FOKUS check skipped"
-      exit 0
-    fi
-    
-    # Check for FOKUS marker
-    if ! git log -1 --format=%B | grep -q "FOKUS:"; then
-      echo "::error::Commit muss FOKUS: Marker enthalten"
-      exit 1
-    fi
-```
+**Ausgenommene Commit-Typen:**
+- `Merge ...` (Merge-Commits)
+- `squash! ...` (Auto-Squash für Rebase)
+- `fixup! ...` (Auto-Fixup für Rebase)
+
+Diese Commits sind Git-Konventionen für Workflow-Automatisierung und
+benötigen keinen expliziten FOKUS-Marker.
 
