@@ -1,0 +1,25 @@
+{
+  "version": "1.0",
+  "description": "Hard-Gate Policy (MZM) for entaENGELment v1.0",
+  "constraints": {
+    "phi_min": 0.8,
+    "rcc_ec_required": true,
+    "non_overlap_required": true,
+    "m_norm_l2": 1.0,
+    "psi_lock_required": true
+  },
+  "receipts": {
+    "require_dual_receipts": true,
+    "proof_types": ["receipt_proof", "context_signature"]
+  },
+  "phi_thresholds": {
+    "pass": 0.6,
+    "warn": 0.5,
+    "hold": 0.35
+  },
+  "kpi_thresholds": {
+    "gate_pass_rate": 0.9,
+    "ack_freshness_minutes": 60
+  },
+  "notes": "Seed policy — edit after MetaBackprop proposals"
+}

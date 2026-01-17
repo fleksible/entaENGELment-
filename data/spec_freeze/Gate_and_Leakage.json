@@ -1,0 +1,10 @@
+{
+  "gate_formula": "Phi >= Phi_star and RCC_EC and not RCC_PO and ||M||_2 = 1 and psi_lock and twin_pass_ok and cri < theta_deny",
+  "leakage_invariants": [
+    "S1: zero teleporter overlap",
+    "S2: RCC-8 adjacency only",
+    "S3: ethics consent intact",
+    "S4: spinor parity held",
+    "S5: ledger hash recorded"
+  ]
+}

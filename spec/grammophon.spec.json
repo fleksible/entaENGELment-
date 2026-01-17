@@ -1,0 +1,7 @@
+{
+  "name": "grammophon",
+  "version": "0.1",
+  "description": "Spec für die grammophonartige Slice-Rotation & Polyeder-Klanggeometrie.",
+  "inputs": ["slice_angle", "apex_pressure", "column_spin"],
+  "outputs": ["tone_index", "slice_color"]
+}

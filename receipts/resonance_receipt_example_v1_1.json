@@ -1,0 +1,55 @@
+{
+  "receipt_id": "550e8400-e29b-41d4-a716-446655440000",
+  "version": "1.1",
+  "timestamp_utc": "2026-01-12T10:30:00.000Z",
+  "gate_decision": "TUNNEL_GRANTED",
+  "bandwidth_norm": 0.67,
+  "prev_receipt_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+  "receipt_hash": "a3f5d8b2c1e4f6a8d9c0b1e2f3a4d5c6b7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2",
+  "signature": "3045022100abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890022100fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321",
+  "verification_reasons": [
+    {
+      "code": "AMPLITUDE_CHECK",
+      "value": 0.53,
+      "threshold": 0.80
+    },
+    {
+      "code": "KENOSIS_CHECK",
+      "value": 0.42,
+      "threshold": 0.3
+    },
+    {
+      "code": "PHASE_CHECK",
+      "value": 0.75,
+      "threshold": 0.707,
+      "nonce_hmac": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "code": "BANDWIDTH_CHECK",
+      "value": 0.67,
+      "threshold": 0.25
+    }
+  ],
+  "policy_flags": {
+    "is_amplitude_compliant": true,
+    "is_kenosis_sufficient": true,
+    "is_phase_aligned": true
+  },
+  "core_metrics": {
+    "omega": 0.53,
+    "kenosis": 0.42,
+    "phi": 0.75
+  },
+  "bandwidth_shaping": {
+    "B_current": 1.0,
+    "BW_norm": 0.67,
+    "heat": 0.0,
+    "alpha": 0.05
+  },
+  "extensions": {
+    "x_embedding_model": "text-embedding-3-small",
+    "x_embedding_dim": 1536,
+    "x_session_hmac": "7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069",
+    "x_grade": 1
+  }
+}

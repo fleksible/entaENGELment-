@@ -1,0 +1,12 @@
+{
+  "n_sessions": 0,
+  "results": [
+    {
+      "id": "session-id",
+      "d_c": null,
+      "d_p": null,
+      "d_t": null
+    }
+  ],
+  "notes": "Distances: d_c (charge/inversion), d_p (parity/mirror seq), d_t (time-reversal). Lower = more invariant."
+}

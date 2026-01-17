@@ -1,0 +1,7 @@
+{
+  "name": "cglg",
+  "version": "0.1",
+  "description": "Spec für Consensual Gate Logic & Mutual Perception Signals.",
+  "signals": ["phi", "psi", "delta_kappa"],
+  "operations": ["gate", "ack", "sync"]
+}

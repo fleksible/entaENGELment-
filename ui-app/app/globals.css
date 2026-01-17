@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base styles */
+:root {
+  --foreground: 244 244 245;
+  --background: 9 9 11;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  color: rgb(var(--foreground));
+  background: rgb(var(--background));
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Mobile touch optimization */
+@media (hover: none) and (pointer: coarse) {
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar for webkit */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(39 39 42);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(63 63 70);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(82 82 91);
+}
+
+/* Focus styles */
+*:focus-visible {
+  outline: 2px solid rgb(16 185 129);
+  outline-offset: 2px;
+}
+
+/* Animation utilities */
+.animate-in {
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Status badge styles */
+.status-open {
+  @apply text-amber-400 bg-amber-400/10;
+}
+
+.status-progress {
+  @apply text-blue-500 bg-blue-500/10;
+}
+
+.status-closed {
+  @apply text-green-500 bg-green-500/10;
+}
+
+/* Guard status styles */
+.guard-ok {
+  @apply text-emerald-500 bg-emerald-500/10 border-emerald-500/30;
+}
+
+.guard-warning {
+  @apply text-amber-500 bg-amber-500/10 border-amber-500/30;
+}
+
+.guard-error {
+  @apply text-red-500 bg-red-500/10 border-red-500/30;
+}

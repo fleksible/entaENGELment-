@@ -1,0 +1,105 @@
+# Receipt Policy v0.1
+# Pinned algorithms, thresholds, and bandwidth shaping parameters for resonance receipt validation
+
+version: "0.1"
+policy_type: "resonance_receipt_hybrid"
+
+# Pinned cryptographic algorithms
+algorithms:
+  canonical_serialization: "RFC8785"  # JCS (JSON Canonicalization Scheme)
+  hash_algorithm: "SHA-256"
+  hmac_algorithm: "HMAC-SHA-256"
+  signature_algorithm: "ED25519"
+
+# Core resonance thresholds
+thresholds:
+  omega_max: 0.80           # Maximum amplitude (frequency/energy), normalized [0,1]
+  kenosis_base: 0.3         # Minimum kenosis (emptying) requirement
+  phi_base: 0.707           # Phase alignment baseline (cos(45°) ≈ 0.707)
+  phi_tolerance: 0.1        # Acceptable phase deviation
+
+# Bandwidth requirements
+bandwidth_min: 0.25         # Minimum normalized bandwidth for TUNNEL_GRANTED
+
+# Grade 3 (high-security) margins
+# Applied as multiplicative factors to tighten thresholds
+grade3_margins:
+  omega_margin: 0.15        # Reduce omega_max by 15% for grade 3
+  kenosis_margin: 0.10      # Increase kenosis requirement by 10% for grade 3
+  phi_margin: 0.10          # Tighten phi tolerance by 10% for grade 3
+  bandwidth_margin: 0.20    # Increase bandwidth_min by 20% for grade 3
+
+# Adiabatic bandwidth shaping constants
+bandwidth_shaping:
+  B0: 1.0                   # Baseline bandwidth (initial capacity)
+  BW0: 0.5                  # Initial normalized bandwidth metric
+  k: 0.1                    # Bandwidth decay/recovery constant (1/s)
+  alpha: 0.05               # Heat cooling exponent (1/s)
+  heat_capacity: 10.0       # Maximum heat accumulation before full throttle
+  weights:
+    w_omega: 0.4            # Weight for omega contribution to BW_norm
+    w_kenosis: 0.3          # Weight for kenosis contribution to BW_norm
+    w_phi: 0.3              # Weight for phi contribution to BW_norm
+
+# Genesis receipt normalization
+genesis:
+  prev_receipt_hash: "0000000000000000000000000000000000000000000000000000000000000000"
+  description: "64 zeros indicate first receipt in chain"
+
+# Gate decision flow priority
+# Evaluated in this exact order:
+decision_priority:
+  - step: 1
+    condition: "core_integrity_fail"
+    decision: "REJECTED"
+    description: "Signature/hash/canonicalization mismatch"
+
+  - step: 2
+    condition: "bandwidth_below_min"
+    decision: "COOLED"
+    description: "Normalized bandwidth < bandwidth_min"
+
+  - step: 3
+    condition: "policy_flags_violation"
+    decision: "REFLECTED"
+    description: "Policy compliance flags indicate violation"
+
+  - step: 4
+    condition: "all_checks_pass"
+    decision: "TUNNEL_GRANTED"
+    description: "All metrics and policies satisfied"
+
+# Privacy rules
+privacy:
+  - rule: "no_raw_nonces"
+    description: "Use HMAC-SHA-256(nonce) in verification_reasons, never raw nonce"
+
+  - rule: "no_user_identifiers"
+    description: "Do not include user_id, email, IP address, or other PII in receipts"
+
+  - rule: "no_raw_tokens"
+    description: "Never embed bearer tokens or session tokens in receipts"
+
+  - rule: "normalized_metrics_only"
+    description: "All metrics normalized to [0,1] range before inclusion"
+
+# Extension guidelines
+extensions:
+  allowed_prefixes:
+    - "x_"                  # Custom extension fields must start with x_
+
+  embedding_pins:
+    - name: "x_embedding_model"
+      allowed_values: ["text-embedding-3-small", "all-MiniLM-L6-v2"]
+      description: "Pinned embedding models for semantic verification"
+
+    - name: "x_embedding_dim"
+      allowed_values: [384, 1536]
+      description: "Embedding dimension must match model"
+
+# Compliance notes
+compliance:
+  - "All timestamps MUST be UTC ISO 8601 format"
+  - "Signatures MUST cover canonical RFC8785 serialization of receipt_hash"
+  - "Schema version 1.1 required for this policy"
+  - "additionalProperties: false enforced on verification_reasons items and policy_flags"

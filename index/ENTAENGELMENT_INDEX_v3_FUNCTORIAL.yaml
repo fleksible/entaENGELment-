@@ -1,0 +1,101 @@
+# ==============================================================================
+# ENTAENGELMENT INDEX v3.0 [FUNCTORIAL MAP]
+# Architecture: Hierarchical Sparse Attention / Sheaf-like Structure
+# Load Policy: LAZY (Expand categories/modules only on distinct query)
+# ==============================================================================
+
+META:
+  version: "3.0"
+  state: "v2.0_INTEGRATED"
+  categories: 7
+  total_modules: 20  # 0-19 (conceptual ids)
+  invariant: "Structure > Content"
+
+# ----------------------------------------------------------------------------
+# Repo-Alignment Notes
+# - This repository currently contains an operational DevOps/Receipt toolchain.
+# - Some conceptual module ids map to concrete repo modules (aliases).
+# ----------------------------------------------------------------------------
+ALIASES:
+  MOD_06: MOD_15_STATS_TESTS      # Statistical Tests (concept) -> repo module
+  MOD_15: MOD_6_RECEIPTS_CORE     # Receipt System (concept) -> repo module
+
+CATEGORIES:
+  CAT_00_FOUNDATION:
+    name: "Foundational & Kenogrammatics"
+    focus: "Logic, Ulam-Formalism, Pre-Geometry"
+    modules: [MOD_00, MOD_02]
+
+  CAT_01_PHYSICS:
+    name: "Plasma & Physical Layer"
+    focus: "Ginzburg-Landau, Fröhlich, Superconductivity"
+    modules: [MOD_01, MOD_08, MOD_09]
+
+  CAT_02_BIOELECTRIC:
+    name: "Bioelectric Empirics"
+    focus: "Levin-Model, Gap Junctions, Morphogenesis"
+    modules: [MOD_03, MOD_04, MOD_05]
+
+  CAT_03_CROSS_DOMAIN:
+    name: "Cross-Domain Gates & Bridges"
+    focus: "Isomorphism, Translation, Mythos-Logos"
+    modules: [MOD_07, MOD_10, MOD_11, MOD_12]
+
+  CAT_04_GOVERNANCE:
+    name: "Governance & Ethics"
+    focus: "Constitution, Safety Guards, Human-in-the-Loop"
+    modules: [MOD_13, MOD_14]
+
+  CAT_05_INFRASTRUCTURE:
+    name: "Infrastructure & Receipts"
+    focus: "Statistical Testing, Receipts, CI/CD"
+    modules: [MOD_06, MOD_15]
+
+  CAT_06_ULAM_V2:
+    name: "Ulam Second-Order Analysis (v2.0)"
+    focus: "Hessian, Symplectic Geometry, Void-Taxonomy"
+    status: "ACTIVE_CONTEXT"
+    modules: [MOD_16, MOD_17, MOD_18, MOD_19]
+
+MODULES:
+  MOD_00: "Ulam's Problem Space (Combinatorial explosion, recursive definition)."
+  MOD_01: "Ginzburg-Landau (Order parameter, phase transition, coherence length)."
+  MOD_02: "Kenogrammatics (Empty placeholders, distinctions, proto-logic)."
+  MOD_03: "Planarian Memory (Non-neural regeneration, bioelectric pattern storage)."
+  MOD_04: "Gap Junctions (Gating mechanisms, electrical synapses)."
+  MOD_05: "Bioelectric Fields (Voltage gradients as morphogenetic instructors)."
+  MOD_06: "Statistical Tests (P-values, confidence intervals, signal detection)."
+  MOD_07: "Gate-Definitions (Logic gates mapped to biological/physical states)."
+  MOD_08: "Bifrost-Superconductor (Type-II analogy, flux tubes as data channels)."
+  MOD_09: "Abrikosov Vortex (Topological protection of data states)."
+  MOD_10: "Hopf-Fibration (Topological mapping S3 -> S2, fiber bundles)."
+  MOD_11: "Torus/Caduceus (Cyclic flow models, energetic circulation)."
+  MOD_12: "Mythos-Bridge (Hermes, Archetypes as compression algorithms)."
+  MOD_13: "Charta/Constitution (Fundamental rights, AI-Human contract)."
+  MOD_14: "Safety Guards (Kill-switches, limits, ethical boundaries)."
+  MOD_15: "Receipt System (Immutable logging, hashing, proof-of-thought)."
+  MOD_16: "Hessian Void Analysis (Curvature detection, stability of voids)."
+  MOD_17: "Symplectic Stability (Phase space volume preservation, Liouville)."
+  MOD_18: "Spectral Void Taxonomy (7-Type classification via Eigenvalues)."
+  MOD_19: "Minimum Work Distance (Energetic cost of traversing the graph)."
+
+PROTOCOLS:
+  F_EXPAND(Module_ID):
+    returns: "Detailed components, math, and code for ONE module."
+
+  F_TRACE(Concept):
+    returns: "Subgraph connecting multiple modules (e.g., 'Stability')."
+
+  F_DIFF(v1, v2):
+    returns: "Specific upgrades between versions/modules."
+
+# ----------------------------------------------------------------------------
+# Body pointers (collapsed by default)
+# ----------------------------------------------------------------------------
+BODY_POINTERS:
+  DOC-RESONANCE-SYMPHONIE: docs/narratives/symphonie_der_resonanz.md
+  VOIDMAP: VOIDMAP.yml
+  MOD_06: index/modules/MOD_15_STATS_TESTS.yaml
+  MOD_15: index/modules/MOD_6_RECEIPTS_CORE.yaml
+  META-FORM-IN-BEWEGUNG: index/pointers/form_in_bewegung__learning_edge.pointer.md
+  NARR-GRIMM2-TEMPLATE: index/pointers/grimm2__template.pointer.md
