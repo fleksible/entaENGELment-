@@ -1,0 +1,27 @@
+GOLD files: 23
+ANNEX files: 166
+NICHTRAUM files: 0
+UNKNOWN files: 59
+
+⚠️  UNKNOWN paths:
+  - reports/cpt_test_report_template.json
+  - receipts/arc_sample.json
+  - receipts/resonance_receipt_example_v1_1.json
+  - tickets/T2.4-KONFAB-ACM.yaml
+  - tickets/tickets_T1_1_bundle.yaml
+  - schedules/verify_rotation_sig.cron
+  - schedules/nightly_verify.cron
+  - schedules/verify_summary.cron
+  - overlay/pins/confab_news_latest_claim_no_cite.json
+  - overlay/pins/confab_zahlen_date_math.json
+  - aggregates/acm_zahlen_date_math_28d.json
+  - aggregates/acm_news_latest_citation_lag_28d.json
+  - Plugins/SynthosiaCore/SynthosiaCore.uplugin
+  - Plugins/SynthosiaCore/Source/SynthosiaCore/Public/SynthosiaGeneratorSubsystem.h
+  - Plugins/SynthosiaCore/Source/SynthosiaCore/Public/ConsentTypes.h
+  - Plugins/SynthosiaCore/Source/SynthosiaCore/Public/TopoGraph.h
+  - Plugins/SynthosiaCore/Source/SynthosiaCore/Public/RCC8.h
+  - Plugins/SynthosiaCore/Source/SynthosiaCore/Public/KillSwitch.h
+  - Plugins/SynthosiaCore/Source/SynthosiaCore/Public/BifrostCaduceus.h
+  - Plugins/SynthosiaCore/Source/SynthosiaCore/Private/KillSwitch.cpp
+  ... and 39 more

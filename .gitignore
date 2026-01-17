@@ -90,3 +90,7 @@ out/
 
 # Claude local config
 CLAUDE.local.md
+
+# Audit reports (temporary)
+audit/
+!audit/METATRON_COMPLIANCE_BACKLOG.md

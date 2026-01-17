@@ -3,11 +3,15 @@ name: Metatron Guard
 on:
   pull_request:
     types: [opened, edited, synchronize]
+  push:
+    branches-ignore:
+      - main
 
 jobs:
-  metatron-check:
+  metatron-pr-check:
     name: Check PR for FOKUS marker
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
 
     steps:
       - name: Checkout repository
@@ -68,3 +72,60 @@ jobs:
           echo ""
           echo "See: docs/guards/metatron_rule.md for details"
           echo "================================================"
+
+  metatron-commit-check:
+    name: Check commits for FOKUS marker
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check commit message for FOKUS marker
+        run: |
+          echo "Checking commit for Metatron-Guard compliance..."
+          echo ""
+
+          COMMIT_MSG=$(git log -1 --format=%s)
+          COMMIT_BODY=$(git log -1 --format=%B)
+
+          echo "Commit: $COMMIT_MSG"
+          echo ""
+
+          # Skip merge commits
+          if echo "$COMMIT_MSG" | grep -qE "^Merge "; then
+            echo "✓ Merge commit - FOKUS check skipped"
+            exit 0
+          fi
+
+          # Skip squash! commits (git rebase --autosquash)
+          if echo "$COMMIT_MSG" | grep -qE "^squash! "; then
+            echo "✓ Squash commit - FOKUS check skipped"
+            exit 0
+          fi
+
+          # Skip fixup! commits (git rebase --autosquash)
+          if echo "$COMMIT_MSG" | grep -qE "^fixup! "; then
+            echo "✓ Fixup commit - FOKUS check skipped"
+            exit 0
+          fi
+
+          # Check for FOKUS marker in commit body
+          if echo "$COMMIT_BODY" | grep -q "FOKUS:"; then
+            echo "✓ FOKUS marker found"
+            echo ""
+            echo "$COMMIT_BODY" | grep "FOKUS:"
+            exit 0
+          fi
+
+          # FOKUS not found - warn but don't fail (soft enforcement)
+          echo "⚠ Warning: Commit lacks FOKUS marker"
+          echo ""
+          echo "Recommended format:"
+          echo "  FOKUS: <brief task description>"
+          echo ""
+          echo "This is currently a soft warning. Future enforcement may require FOKUS."
+          exit 0

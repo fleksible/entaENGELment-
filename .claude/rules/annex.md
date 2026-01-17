@@ -61,6 +61,21 @@ Das Repository hat eine klare Hierarchie:
 | `tests/` | Test-Code | Frei |
 | `docs/` | Dokumentation | Frei (außer `negations.md`) |
 | `scripts/` | Build/Deploy Scripts | Mit Vorsicht |
+| `reports/` | Generierte Reports | Frei |
+| `tickets/` | Task-Tickets | Frei |
+| `schedules/` | Zeitpläne | Frei |
+| `overlay/` | Overlay-Module | Frei |
+| `aggregates/` | Aggregat-Module | Frei |
+| `Plugins/` | Plugin-System | Mit Vorsicht |
+| `Fractalsense/` | Fractalsense-Modul | Frei (nach Plan) |
+| `bio_spiral_viewer/` | Visualisierung | Frei |
+| `dashboard/` | Dashboard-UI | Frei |
+| `lyra/` | Lyra-Subsystem | Frei |
+| `ui-app/` | Next.js UI App | Frei (nach Plan) |
+| `__tests__/` | Jest Tests | Frei |
+| `adapters/` | Adapter-Schicht | Frei |
+| `diagrams/` | Diagramme | Frei |
+| `runbooks/` | Runbook-Docs | Frei |
 
 ### Regeln
 
@@ -201,11 +216,11 @@ Aktion:
 
 | Kategorie | Pfade | Darf ich? |
 |-----------|-------|-----------|
-| GOLD | index/, policies/, VOIDMAP.* | Nur nach explizitem OK |
-| ANNEX | src/, tools/, tests/, docs/ | Ja, nach Plan |
+| GOLD | index/, policies/, VOIDMAP.*, spec/, seeds/ | Nur nach explizitem OK |
+| ANNEX | src/, tools/, tests/, docs/, ui-app/, Fractalsense/, reports/, tickets/, schedules/, overlay/, aggregates/, Plugins/, bio_spiral_viewer/, dashboard/, lyra/, __tests__/, adapters/, diagrams/, runbooks/ | Ja, nach Plan |
 | IMMUTABLE | data/receipts/, receipts/ | Nur neue hinzufügen |
 | Semi-GOLD | docs/negations.md | Mit erhöhter Vorsicht |
 
 ---
 
-*Letzte Aktualisierung: 2026-01-16*
+*Letzte Aktualisierung: 2026-01-17*

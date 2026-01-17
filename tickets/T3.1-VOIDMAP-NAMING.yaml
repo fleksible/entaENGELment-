@@ -1,0 +1,33 @@
+ticket: T3.1-VOIDMAP-NAMING
+summary: Harmonize VOIDMAP docs naming convention
+owner: null
+status: open
+priority: low
+created: "2026-01-17"
+
+description: |
+  VOID documentation files use inconsistent naming:
+  - VOIDMAP.yml uses: VOID-010, VOID-011, etc.
+  - docs/voids/ uses: VOID-010_taxonomy_and_spectra.md, etc.
+
+  The consistency check fails because it expects VOID-010.md
+  but finds VOID-010_taxonomy_and_spectra.md.
+
+options:
+  - id: A
+    description: Rename docs to match ID (VOID-010.md)
+    pros: Simple, matches VOIDMAP exactly
+    cons: Loses descriptive info in filename
+
+  - id: B
+    description: Update consistency check to tolerate suffixes
+    pros: Preserves descriptive filenames
+    cons: More complex matching logic
+
+recommendation: Option B (preserve descriptive filenames)
+
+evidence:
+  - audit/consistency_report.json
+  - audit/DEEP_AUDIT_REPORT_20260117.md
+
+related_voids: []

@@ -1,0 +1,47 @@
+❌ FOKUS fehlt: 928601a Merge pull request #54 from fleksible/claude/fractalsense-ui-integration-UfxBi
+❌ FOKUS fehlt: 32c757a feat(ui): integrate Fractalsense module
+❌ FOKUS fehlt: 946223d Trigger CI rebuild with pygame dependency
+❌ FOKUS fehlt: dd65dcd Add pygame to dev requirements for CI
+❌ FOKUS fehlt: 522a263 Add source files required for tests
+❌ FOKUS fehlt: f157d38 Merge remote main, combine .gitignore files
+❌ FOKUS fehlt: 8277bcb Add comprehensive test infrastructure
+❌ FOKUS fehlt: 23aca0c Merge pull request #53 from fleksible/claude/entaengelment-ui-prototype-VNbAR
+❌ FOKUS fehlt: 650e171 fix(metatron_check): require question within 5 lines after FOKUS-SWITCH
+❌ FOKUS fehlt: 4a3989c fix(metatron_check): update type hints for Python 3.9+ and apply black formatting
+❌ FOKUS fehlt: 1ad52f9 Merge pull request #50 from fleksible/claude/fix-commits-workflow-YKETI
+❌ FOKUS fehlt: faad43b Merge branch 'main' into claude/fix-commits-workflow-YKETI
+❌ FOKUS fehlt: e563076 fix(port_lint): remove Python 3.10+ strict keyword for Python 3.9 compatibility
+❌ FOKUS fehlt: c0e1085 Merge pull request #49 from fleksible/claude/fix-commits-workflow-YKETI
+❌ FOKUS fehlt: 712e2f1 style(port_lint): apply black formatting
+❌ FOKUS fehlt: 45503ad fix(workflows): comprehensive CI/CD workflow fixes and dependency cleanup
+❌ FOKUS fehlt: fa0a749 Merge pull request #47 from fleksible/codex/implement-port-matrix-update-as-pr-ready-change
+❌ FOKUS fehlt: 970bbd9 fix: add strict parameter to port lint zip
+❌ FOKUS fehlt: a11f1b8 fix: satisfy ruff typing/import rules in port lint
+❌ FOKUS fehlt: 235d4a1 fix: make pytest run without pytest-cov defaults; normalize VOIDMAP evidence pointers
+❌ FOKUS fehlt: a47ee4b Merge pull request #46 from fleksible/codex/add-orbital-meta-structure-documentation
+❌ FOKUS fehlt: 23a7bf4 Clean up orbital doc formatting
+❌ FOKUS fehlt: c0ce733 Merge pull request #45 from fleksible/claude/polish-receipt-v1_1-metrics-bands-bfZDz
+❌ FOKUS fehlt: b20078d chore(receipts): clamp kenosis/phi to [0..1] and document REJECTED flow
+❌ FOKUS fehlt: df910b1 Merge pull request #44 from fleksible/claude/fix-receipt-policy-privacy-Ra461
+❌ FOKUS fehlt: 938dae2 fix(receipts): correct REJECTED flow, enforce omega norm [0..1], remove raw identifiers
+❌ FOKUS fehlt: 36d035a Merge pull request #43 from fleksible/claude/apply-patch-validate-hThFX
+❌ FOKUS fehlt: f9d8d57 feat(receipts): resonance receipt v1.1 schema + bandwidth shaping + policy stub
+❌ FOKUS fehlt: 0f94dd9 Merge pull request #42 from fleksible/claude/add-meta-insight-docs-Buuev
+❌ FOKUS fehlt: 4572995 index: integrate new meta docs and narrative template into navigation
+❌ FOKUS fehlt: be26e84 docs(narratives): add Grimm 2.0 narrative template with workflow
+❌ FOKUS fehlt: 84d12fb docs(meta): add Form in Bewegung learning edge documentation
+❌ FOKUS fehlt: 4cf5273 Merge pull request #41 from fleksible/claude/audit-dependencies-mk1m9j762bxrox2g-HYbt0
+❌ FOKUS fehlt: 7578732 Merge pull request #40 from fleksible/claude/integrate-and-resolve-conflicts-vAIiQ
+❌ FOKUS fehlt: d5b8e5b style: format triad_compare.py with black
+❌ FOKUS fehlt: a6ea705 feat: add ledger strict-mode enforcement and safety tests
+❌ FOKUS fehlt: b002619 Merge pull request #32 from fleksible/codex/fix-high-priority-bug-in-ci-workflow
+❌ FOKUS fehlt: 08d5777 Merge branch 'main' into codex/fix-high-priority-bug-in-ci-workflow
+❌ FOKUS fehlt: b0424f0 docs: correct inaccurate prev_hash chaining claims
+❌ FOKUS fehlt: 19f759d Merge pull request #39 from fleksible/claude/audit-dependencies-mk1m9j762bxrox2g-HYbt0
+❌ FOKUS fehlt: 855dd85 fix: audit and clean up dependency specifications
+❌ FOKUS fehlt: 3aace0a Merge pull request #38 from fleksible/claude/analyze-repo-essence-8MyAZ
+❌ FOKUS fehlt: 367e2bf docs: comprehensive repository essence analysis v2.0
+❌ FOKUS fehlt: 6ec289b Merge pull request #37 from fleksible/claude/bio-spiral-viewer-rebase-27ZcM
+❌ FOKUS fehlt: 61d4841 style: apply ruff/black fixes to bio_spiral_viewer
+❌ FOKUS fehlt: d4a323a Add Bio Spiral Viewer console and data manifest
+❌ FOKUS fehlt: 2a5cc8f Merge pull request #36 from fleksible/claude/fix-stability-exports-27ZcM
