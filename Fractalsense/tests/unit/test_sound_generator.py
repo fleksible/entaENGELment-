@@ -12,16 +12,18 @@ Tests cover:
 - Chord generation
 """
 
-import pytest
-import numpy as np
 import sys
 from pathlib import Path
+
+import numpy as np
+import pytest
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from sound_generator import SoundGenerator
-from tests.conftest import assert_wave_valid, get_dominant_frequency
+
+from tests.conftest import get_dominant_frequency
 
 
 class TestSoundGeneratorInit:
@@ -257,7 +259,7 @@ class TestADSREnvelope:
         result = sound_generator.apply_envelope(wave, 0.1, 0.1, 0.7, 0.1)
         assert len(result) == 4410
         # Should still have envelope shape
-        assert result[0] < result[len(result)//4]
+        assert result[0] < result[len(result) // 4]
 
     def test_preserves_wave_length(self, sound_generator):
         """Envelope should not change wave length."""
@@ -284,34 +286,34 @@ class TestFilter:
         """Lowpass filter should reduce high frequency content."""
         # Create wave with high frequency content
         wave = sound_generator.generate_harmonic_wave(440.0, 1.0)
-        filtered = sound_generator.apply_filter(wave, 'lowpass', 500.0)
+        filtered = sound_generator.apply_filter(wave, "lowpass", 500.0)
         assert filtered is not None
         assert len(filtered) == len(wave)
 
     def test_highpass_filter(self, sound_generator):
         """Highpass filter should reduce low frequency content."""
         wave = sound_generator.generate_sine_wave(100.0, 1.0)
-        filtered = sound_generator.apply_filter(wave, 'highpass', 500.0)
+        filtered = sound_generator.apply_filter(wave, "highpass", 500.0)
         # Filtered wave should have lower amplitude (100Hz filtered out)
         assert np.max(np.abs(filtered)) < np.max(np.abs(wave))
 
     def test_bandpass_filter(self, sound_generator):
         """Bandpass filter should work without errors."""
         wave = sound_generator.generate_harmonic_wave(440.0, 1.0)
-        filtered = sound_generator.apply_filter(wave, 'bandpass', 500.0)
+        filtered = sound_generator.apply_filter(wave, "bandpass", 500.0)
         assert filtered is not None
         assert len(filtered) == len(wave)
 
     def test_unknown_filter_returns_original(self, sound_generator):
         """Unknown filter type should return original wave unchanged."""
         wave = sound_generator.generate_sine_wave(440.0, 1.0)
-        result = sound_generator.apply_filter(wave, 'unknown_type', 500.0)
+        result = sound_generator.apply_filter(wave, "unknown_type", 500.0)
         assert np.array_equal(wave, result)
 
     def test_filter_preserves_length(self, sound_generator):
         """Filter should not change wave length."""
         wave = sound_generator.generate_sine_wave(440.0, 1.0)
-        for filter_type in ['lowpass', 'highpass', 'bandpass']:
+        for filter_type in ["lowpass", "highpass", "bandpass"]:
             filtered = sound_generator.apply_filter(wave, filter_type, 500.0)
             assert len(filtered) == len(wave)
 
@@ -321,46 +323,46 @@ class TestChordGeneration:
 
     def test_major_chord(self, sound_generator):
         """Should generate major chord."""
-        wave = sound_generator.generate_chord(440.0, 'major', 1.0)
+        wave = sound_generator.generate_chord(440.0, "major", 1.0)
         assert wave is not None
         assert len(wave) == 44100
 
     def test_minor_chord(self, sound_generator):
         """Should generate minor chord."""
-        wave = sound_generator.generate_chord(440.0, 'minor', 1.0)
+        wave = sound_generator.generate_chord(440.0, "minor", 1.0)
         assert wave is not None
 
     def test_diminished_chord(self, sound_generator):
         """Should generate diminished chord."""
-        wave = sound_generator.generate_chord(440.0, 'diminished', 1.0)
+        wave = sound_generator.generate_chord(440.0, "diminished", 1.0)
         assert wave is not None
 
     def test_augmented_chord(self, sound_generator):
         """Should generate augmented chord."""
-        wave = sound_generator.generate_chord(440.0, 'augmented', 1.0)
+        wave = sound_generator.generate_chord(440.0, "augmented", 1.0)
         assert wave is not None
 
     def test_seventh_chords(self, sound_generator):
         """Should generate 7th chords."""
-        for chord_type in ['major7', 'minor7', 'dominant7']:
+        for chord_type in ["major7", "minor7", "dominant7"]:
             wave = sound_generator.generate_chord(440.0, chord_type, 1.0)
             assert wave is not None
 
     def test_unknown_chord_defaults_to_major(self, sound_generator):
         """Unknown chord type should default to major."""
-        wave_unknown = sound_generator.generate_chord(440.0, 'unknown_chord', 1.0)
-        wave_major = sound_generator.generate_chord(440.0, 'major', 1.0)
+        wave_unknown = sound_generator.generate_chord(440.0, "unknown_chord", 1.0)
+        wave_major = sound_generator.generate_chord(440.0, "major", 1.0)
         assert np.allclose(wave_unknown, wave_major)
 
     def test_chord_normalized(self, sound_generator):
         """Chord should be normalized to specified amplitude."""
-        wave = sound_generator.generate_chord(440.0, 'major', 1.0, amplitude=0.5)
+        wave = sound_generator.generate_chord(440.0, "major", 1.0, amplitude=0.5)
         assert np.max(np.abs(wave)) <= 0.5 + 0.001
 
     def test_different_chords_differ(self, sound_generator):
         """Different chord types should produce different waves."""
-        major = sound_generator.generate_chord(440.0, 'major', 1.0)
-        minor = sound_generator.generate_chord(440.0, 'minor', 1.0)
+        major = sound_generator.generate_chord(440.0, "major", 1.0)
+        minor = sound_generator.generate_chord(440.0, "minor", 1.0)
         assert not np.allclose(major, minor)
 
 
