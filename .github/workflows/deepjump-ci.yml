@@ -1,9 +1,3 @@
-- name: Mask HMAC secret
-  run: |
-    if [ -n "${ENTA_HMAC_SECRET:-}" ]; then
-      echo "::add-mask::$ENTA_HMAC_SECRET"
-    fi
-
 name: DeepJump CI
 
 # DeepJump Protocol v1.2 CI Pipeline
@@ -42,6 +36,13 @@ jobs:
           if [ -z "$ENTA_HMAC_SECRET" ]; then
             echo "ENTA_HMAC_SECRET=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
             echo "::warning::No ENTA_HMAC_SECRET set. Using ephemeral secret."
+          fi
+
+      - name: Mask HMAC secret
+        shell: bash
+        run: |
+          if [ -n "${ENTA_HMAC_SECRET:-}" ]; then
+            echo "::add-mask::$ENTA_HMAC_SECRET"
           fi
 
       # Phase 1: VERIFY
