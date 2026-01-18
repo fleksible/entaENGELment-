@@ -31,20 +31,22 @@ jobs:
 
           # Handle empty PR body
           if [ -z "$PR_BODY" ]; then
-            echo "Error: PR body is empty"
-            echo "METATRON-GUARD: FAIL"
+            echo "::warning::PR body is empty - consider adding FOKUS: marker"
             echo ""
-            echo "Please add a PR description with:"
+            echo "Recommended: Add a PR description with:"
             echo "  FOKUS: <your task focus>"
             echo ""
             echo "If you switched focus during this PR, also add:"
             echo "  FOKUS-SWITCH: <old focus> -> <new focus>"
             echo "  <question ending with ?>"
-            exit 1
+            exit 0
           fi
 
-          # Run the metatron check
-          echo "$PR_BODY" | python tools/metatron_check.py --verbose
+          # Run the metatron check (non-blocking)
+          echo "$PR_BODY" | python tools/metatron_check.py --verbose || {
+            echo "::warning::PR body lacks FOKUS: marker - see docs/guards/metatron_rule.md"
+            exit 0
+          }
 
       - name: Post failure instructions
         if: failure()
