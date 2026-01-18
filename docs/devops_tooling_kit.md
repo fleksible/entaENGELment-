@@ -62,8 +62,10 @@ Härtung: ENV‑Secrets, Canonical JSON."""
 
 ### Nutzung
 
+> **Hinweis:** Never commit real secrets; use GitHub Secrets or environment variables.
+
 ```bash
-CI_SECRET="my-secret" python tools/status_emit.py --outdir out --status PASS --H 0.85 --dmi 4.8 --phi 0.75 --refractory 120
+CI_SECRET="<YOUR_SECRET>" python tools/status_emit.py --outdir out --status PASS --H 0.85 --dmi 4.8 --phi 0.75 --refractory 120
 ```
 
 ## Status Verify
