@@ -42,37 +42,41 @@ jobs:
             exit 0
           fi
 
-          # Run the metatron check (non-blocking)
-          echo "$PR_BODY" | python tools/metatron_check.py --verbose || {
+          # Run the metatron check
+          # Exit 1 = missing FOKUS (non-blocking warning)
+          # Other non-zero = script error (should fail CI)
+          set +e
+          echo "$PR_BODY" | python tools/metatron_check.py --verbose
+          EXIT_CODE=$?
+          set -e
+
+          if [ "$EXIT_CODE" -eq 0 ]; then
+            exit 0
+          elif [ "$EXIT_CODE" -eq 1 ]; then
             echo "::warning::PR body lacks FOKUS: marker - see docs/guards/metatron_rule.md"
             exit 0
-          }
+          else
+            echo "::error::metatron_check.py failed unexpectedly (exit code: $EXIT_CODE)"
+            exit 1
+          fi
 
       - name: Post failure instructions
         if: failure()
         run: |
           echo ""
           echo "================================================"
-          echo "  Metatron-Guard Check Failed"
+          echo "  Metatron-Guard Check Failed (Script Error)"
           echo "================================================"
           echo ""
-          echo "Your PR body must include:"
+          echo "The metatron_check.py script encountered an unexpected error."
+          echo "This is NOT about a missing FOKUS marker - check the error above."
           echo ""
-          echo "  FOKUS: <brief description of your task focus>"
+          echo "Possible causes:"
+          echo "  - Script file missing or not executable"
+          echo "  - Python syntax/import error"
+          echo "  - Runtime exception"
           echo ""
-          echo "Example:"
-          echo "  FOKUS: Add authentication to API"
-          echo ""
-          echo "If you changed focus during this work, also add:"
-          echo ""
-          echo "  FOKUS-SWITCH: <old focus> -> <new focus>"
-          echo "  Why did you switch? <question with ?>"
-          echo ""
-          echo "Example:"
-          echo "  FOKUS-SWITCH: Add auth -> Fix security bug"
-          echo "  Should we prioritize the security fix?"
-          echo ""
-          echo "See: docs/guards/metatron_rule.md for details"
+          echo "See: tools/metatron_check.py for the script source"
           echo "================================================"
 
   metatron-commit-check:
