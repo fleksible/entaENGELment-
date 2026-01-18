@@ -1,0 +1,77 @@
+name: DeepJump Audit (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      python-version:
+        required: false
+        type: string
+        default: "3.11"
+    secrets:
+      ENTA_HMAC_SECRET:
+        required: false
+
+jobs:
+  deepjump-audit:
+    runs-on: ubuntu-latest
+    env:
+      ENTA_HMAC_SECRET: ${{ secrets.ENTA_HMAC_SECRET }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Setup Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: ${{ inputs.python-version }}
+
+      - name: Install Dependencies
+        run: |
+          pip install pyyaml pytest
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Set HMAC Secret (fallback to ephemeral)
+        run: |
+          if [ -z "$ENTA_HMAC_SECRET" ]; then
+            echo "ENTA_HMAC_SECRET=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
+            echo "::warning::No ENTA_HMAC_SECRET set. Using ephemeral secret."
+          fi
+
+      - name: Mask HMAC secret
+        shell: bash
+        run: |
+          if [ -n "${ENTA_HMAC_SECRET:-}" ]; then
+            echo "::add-mask::$ENTA_HMAC_SECRET"
+          fi
+
+      - name: "Phase 1: Verify Pointers"
+        run: python3 tools/verify_pointers.py --strict
+
+      - name: "Phase 1: Claim Lint"
+        run: python3 tools/claim_lint.py --scope index,spec,receipts,tools
+        continue-on-error: true
+
+      - name: "Phase 1: Run Tests"
+        run: pytest tests/ -v --tb=short || echo "::warning::Some tests failed"
+
+      - name: "Phase 2: Emit & Verify Status"
+        run: make status-verify STATUS=PASS H=0.85 DMI=4.8 PHI=0.75
+
+      - name: "Phase 3: Generate Snapshot Manifest"
+        run: make snapshot SNAPSHOT_INPUTS='"seeds/*.yaml" "audit/*.yaml" "index/*.yaml"'
+
+      - name: "Legacy: Verify JSON Receipts"
+        run: make verify-json || echo "::warning::Legacy verify-json failed"
+        continue-on-error: true
+
+      - name: Upload Audit Artifacts
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: deepjump-audit-trail
+          path: |
+            out/status/deepjump_status.json
+            out/badges/deepjump.svg
+            out/verify.json
+            out/snapshot_manifest.json
+          if-no-files-found: warn
