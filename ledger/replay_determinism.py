@@ -20,7 +20,6 @@ import uuid
 from dataclasses import dataclass, asdict
 from typing import Any, Dict, List
 
-
 # Namespace for stable UUIDs (UUIDv5) — keep constant for the project.
 NAMESPACE_ENTAENGELMENT = uuid.UUID("12345678-1234-5678-1234-567812345678")
 
@@ -95,6 +94,7 @@ class ReplayableReceipt:
 
     def verify_replay(self) -> bool:
         """Check if stored replay_hash matches computed hash."""
+
         def _norm_sha256(s: str) -> str:
             """Normalize either 'hex' or 'sha256:hex' to 'hex'."""
             s = (s or "").strip()
