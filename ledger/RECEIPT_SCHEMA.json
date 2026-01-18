@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://entaengelment.local/schemas/receipt.schema.json",
+  "title": "EntaENGELment Replayable Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["event", "deterministic", "input", "transforms", "output", "signatures"],
+  "properties": {
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["receipt_id", "timestamp", "session_id", "user_id_hash"],
+      "properties": {
+        "receipt_id": {"type": "string", "format": "uuid"},
+        "timestamp": {"type": "string"},
+        "session_id": {"type": "string"},
+        "user_id_hash": {"type": "string", "minLength": 8}
+      }
+    },
+    "deterministic": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["seed", "config_hash", "input_hash", "output_hash", "replay_hash"],
+      "properties": {
+        "seed": {"type": "integer"},
+        "config_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "input_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "output_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "replay_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text_canonical", "metadata"],
+      "properties": {
+        "text_canonical": {"type": "string"},
+        "metadata": {"type": "object"}
+      }
+    },
+    "transforms": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["step", "op"],
+        "properties": {
+          "step": {"type": "integer", "minimum": 0},
+          "op": {"type": "string"},
+          "idx": {"type": ["integer", "null"]}
+        }
+      }
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "signatures": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["user_consent", "system_checksum"],
+      "properties": {
+        "user_consent": {"type": "string"},
+        "system_checksum": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    }
+  }
+}

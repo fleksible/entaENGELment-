@@ -1,0 +1,129 @@
+metadata:
+  version: "0.1.0"
+  axes:
+    x: "Operational (Layer 0-5)"
+    y: "Epistemological (L0-L5)"
+    z: "Representational (Helix-L/R)"
+  notes: "Skeleton mapping (v0). Extend to 30-40 concepts." 
+
+concepts:
+  - name: "Bedingungslose Liebe"
+    aliases: ["Unconditional Love", "Agape", "Universal Empathy"]
+    coordinates:
+      x: { layer: 0, component: "epsilon_resonance", role: "stabilizer" }
+      y: { layer: 0, component: "erleben", role: "ground" }
+      z: "Helix-L+R"
+    rcc_relations:
+      - target: "ETHICS::PREDICATES"
+        relation: "NTPP"
+        description: "Ethik ist Teil-Aspekt im Liebes-Frame (placeholder)"
+    theta_score: 1.0
+    status: "defined"
+
+  - name: "ETHICS::PREDICATES"
+    aliases: ["Ethics Predicates", "Ethik-Prädikate"]
+    coordinates:
+      x: { layer: 0, component: "governance", role: "guard" }
+      y: { layer: 3, component: "normativ", role: "constraint" }
+      z: "Helix-L"
+    rcc_relations:
+      - target: "Ledger"
+        relation: "EC"
+        description: "Ethik berührt Audit/Log an der Grenze"
+    theta_score: 0.95
+    status: "defined"
+
+  - name: "Ledger"
+    aliases: ["Receipts", "Audit Trail"]
+    coordinates:
+      x: { layer: 1, component: "logging", role: "evidence" }
+      y: { layer: 2, component: "method", role: "reproducibility" }
+      z: "Helix-L"
+    rcc_relations:
+      - target: "Replay-Determinismus"
+        relation: "TPP"
+        description: "Determinismus als Teil des Ledgers"
+    theta_score: 0.9
+    status: "defined"
+
+  - name: "Replay-Determinismus"
+    aliases: ["Replay Determinism"]
+    coordinates:
+      x: { layer: 1, component: "canonicalization", role: "replay" }
+      y: { layer: 2, component: "evidence", role: "verification" }
+      z: "Helix-L"
+    rcc_relations:
+      - target: "Canonicalization"
+        relation: "EQ"
+        description: "In v0 behandeln wir beide als äquivalent (später trennen)"
+    theta_score: 0.85
+    status: "partial"
+
+  - name: "Canonicalization"
+    aliases: ["NFC", "Stable Hashing"]
+    coordinates:
+      x: { layer: 1, component: "text_norm", role: "hash_input" }
+      y: { layer: 1, component: "notation", role: "stability" }
+      z: "Helix-L"
+    rcc_relations: []
+    theta_score: 0.8
+    status: "defined"
+
+  - name: "Kenogramm"
+    aliases: ["Void Map", "☐"]
+    coordinates:
+      x: { layer: 2, component: "knowledge_map", role: "gaps" }
+      y: { layer: 4, component: "unknowing", role: "productive_void" }
+      z: "Helix-R+L"
+    rcc_relations:
+      - target: "VOIDs"
+        relation: "NTPP"
+        description: "Voids sind Teilmenge der Kenogrammatik"
+    theta_score: 0.9
+    status: "defined"
+
+  - name: "VOIDs"
+    aliases: ["Gaps", "Unbenannte Knoten"]
+    coordinates:
+      x: { layer: 2, component: "gap_register", role: "tracking" }
+      y: { layer: 4, component: "open_questions", role: "to_define" }
+      z: "Helix-L"
+    rcc_relations: []
+    theta_score: 0.75
+    status: "void"
+
+  - name: "Chiasma"
+    aliases: ["X", "Kreuzung"]
+    coordinates:
+      x: { layer: 3, component: "bridge", role: "swap" }
+      y: { layer: 1, component: "metaphor", role: "translation" }
+      z: "Helix-R+L"
+    rcc_relations:
+      - target: "Chiralität"
+        relation: "EC"
+        description: "Chiasma berührt die Chiralität an der Kante"
+    theta_score: 0.88
+    status: "partial"
+
+  - name: "Chiralität"
+    aliases: ["Links/Rechts", "Helix"]
+    coordinates:
+      x: { layer: 3, component: "dual_rep", role: "contrast" }
+      y: { layer: 1, component: "frame", role: "polarity" }
+      z: "Helix-L+R"
+    rcc_relations: []
+    theta_score: 0.85
+    status: "defined"
+
+  - name: "Tensor-Logik"
+    aliases: ["Tensor Mapping", "3-Achsen"]
+    coordinates:
+      x: { layer: 4, component: "coord_system", role: "alignment" }
+      y: { layer: 2, component: "formalism", role: "structure" }
+      z: "Helix-L"
+    rcc_relations:
+      - target: "TENSOR_MAPPING.yml"
+        relation: "TPP"
+        description: "Die Datei ist Implementierung des Konzepts"
+    theta_score: 0.82
+    status: "defined"
