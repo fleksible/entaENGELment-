@@ -38,6 +38,13 @@ jobs:
             echo "::warning::No ENTA_HMAC_SECRET set. Using ephemeral secret."
           fi
 
+      - name: Mask HMAC secret
+        shell: bash
+        run: |
+          if [ -n "${ENTA_HMAC_SECRET:-}" ]; then
+            echo "::add-mask::$ENTA_HMAC_SECRET"
+          fi
+
       # Phase 1: VERIFY
       - name: "Phase 1: Verify Pointers"
         run: python3 tools/verify_pointers.py --strict
