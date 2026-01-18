@@ -36,8 +36,7 @@ def test_receipt_100x_identical_replay_hash():
     consent = "signed:2026-01-18T14:00:00Z"
 
     receipts = [
-        create_receipt(text, seed, config, transforms, output, user_id, consent)
-        for _ in range(100)
+        create_receipt(text, seed, config, transforms, output, user_id, consent) for _ in range(100)
     ]
 
     replay_hashes = [r.deterministic["replay_hash"] for r in receipts]
