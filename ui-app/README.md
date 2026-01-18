@@ -8,6 +8,24 @@ Web-App für die Visualisierung der EntaENGELment-Konzepte (Guard System, VOIDMA
 - **VOIDMAP Explorer** - Durchsuchen aller VOIDs mit Filter
 - **Guard Dashboard** - G0-G6 Status-Überwachung
 - **Nichtraum View** - Visualisierung des geschützten Bereichs (G2)
+- **FractalSense** 🌀 - Interactive fractal explorer mit 7 φ-basierten Colormaps **[NEU v1.1]**
+
+## Routes
+
+| Route | Beschreibung |
+|-------|-------------|
+| `/` | Dashboard |
+| `/metatron` | Focus/Attention HUD (G4) |
+| `/voidmap` | VOID Explorer |
+| `/guards` | Guard Status (G0-G6) |
+| `/fractalsense` | Fractal Visualization 🌀 **[NEU v1.1]** |
+| `/nichtraum` | Protected Space |
+
+## New in v1.1
+
+- **FractalSense Integration**: 7 φ-basierte Colormaps, 3 Fractal-Typen, interaktives Canvas
+- TypeScript-Port von Python `color_generator.py`
+- Route: `/fractalsense`
 
 ## Tech Stack
 
