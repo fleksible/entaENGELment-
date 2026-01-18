@@ -94,3 +94,16 @@ CLAUDE.local.md
 # Audit reports (temporary)
 audit/
 !audit/METATRON_COMPLIANCE_BACKLOG.md
+!audit/DEEP_AUDIT_REPORT_*.md
+!audit/SESSION.yaml
+!audit/INVENTORY.md
+!audit/STRUCTURE_MAP.md
+!audit/MISSING_FILES.md
+!audit/DUPLICATES.md
+!audit/WORKFLOW_AUDIT.md
+!audit/VERIFY_MATRIX.md
+!audit/SECURITY_NOTES.md
+!audit/SWOT.md
+!audit/CONCLUSION.md
+!audit/ACTION_PLAN.md
+!audit/FILE_MANIFEST.csv

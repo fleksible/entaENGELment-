@@ -2,11 +2,12 @@
 Pytest Configuration and Shared Fixtures for FractalSense EntaENGELment Tests
 """
 
-import pytest
-import numpy as np
 import sys
 from pathlib import Path
 from unittest.mock import MagicMock, patch
+
+import numpy as np
+import pytest
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -15,6 +16,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 # ============================================================================
 # Sound Generator Fixtures
 # ============================================================================
+
 
 @pytest.fixture
 def sample_rate():
@@ -26,13 +28,14 @@ def sample_rate():
 def sound_generator():
     """Create a SoundGenerator instance for testing."""
     from sound_generator import SoundGenerator
+
     return SoundGenerator(sample_rate=44100)
 
 
 @pytest.fixture
 def mock_pygame():
     """Mock pygame.mixer for tests that don't need actual audio output."""
-    with patch('pygame.mixer') as mock:
+    with patch("pygame.mixer") as mock:
         mock.get_init.return_value = True
         mock.Sound.return_value = MagicMock()
         yield mock
@@ -42,10 +45,12 @@ def mock_pygame():
 # Color Generator Fixtures
 # ============================================================================
 
+
 @pytest.fixture
 def color_generator():
     """Create a ColorGenerator instance for testing."""
     from color_generator import ColorGenerator
+
     return ColorGenerator()
 
 
@@ -53,10 +58,12 @@ def color_generator():
 # Module System Fixtures
 # ============================================================================
 
+
 @pytest.fixture
 def event_system():
     """Create an EventSystem instance for testing."""
     from modular_app_structure import EventSystem
+
     return EventSystem()
 
 
@@ -64,19 +71,12 @@ def event_system():
 def temp_config_file(tmp_path):
     """Create a temporary config file for testing."""
     import json
+
     config_data = {
-        'app': {
-            'name': 'Test App',
-            'version': '1.0.0'
-        },
-        'modules': {
-            'TestModule': {
-                'enabled': True,
-                'setting1': 'value1'
-            }
-        }
+        "app": {"name": "Test App", "version": "1.0.0"},
+        "modules": {"TestModule": {"enabled": True, "setting1": "value1"}},
     }
-    config_file = tmp_path / 'test_config.json'
+    config_file = tmp_path / "test_config.json"
     config_file.write_text(json.dumps(config_data, indent=2))
     return str(config_file)
 
@@ -85,16 +85,17 @@ def temp_config_file(tmp_path):
 # Sensor Data Fixtures
 # ============================================================================
 
+
 @pytest.fixture
 def sample_sensor_data():
     """Sample sensor data for testing sensor integration."""
     return {
-        'accel_x': 0.5,
-        'accel_y': -0.3,
-        'accel_z': 0.8,
-        'gyro_x': 0.1,
-        'gyro_y': -0.2,
-        'gyro_z': 0.05
+        "accel_x": 0.5,
+        "accel_y": -0.3,
+        "accel_z": 0.8,
+        "gyro_x": 0.1,
+        "gyro_y": -0.2,
+        "gyro_z": 0.05,
     }
 
 
@@ -102,16 +103,17 @@ def sample_sensor_data():
 def sample_fractal_params():
     """Sample fractal parameters for testing."""
     return {
-        'center': complex(-0.75, 0),
-        'zoom': 2.0,
-        'maxIterations': 100,
-        'fractalType': 'mandelbrot'
+        "center": complex(-0.75, 0),
+        "zoom": 2.0,
+        "maxIterations": 100,
+        "fractalType": "mandelbrot",
     }
 
 
 # ============================================================================
 # Wave Data Fixtures
 # ============================================================================
+
 
 @pytest.fixture
 def sine_wave_440hz(sound_generator):
@@ -129,6 +131,7 @@ def short_wave(sound_generator):
 # Helper Functions
 # ============================================================================
 
+
 def assert_wave_valid(wave, expected_length=None, max_amplitude=1.0):
     """Assert that a wave array is valid.
 
@@ -144,8 +147,9 @@ def assert_wave_valid(wave, expected_length=None, max_amplitude=1.0):
     if expected_length is not None:
         assert len(wave) == expected_length, f"Expected length {expected_length}, got {len(wave)}"
 
-    assert np.max(np.abs(wave)) <= max_amplitude + 0.01, \
-        f"Wave amplitude {np.max(np.abs(wave))} exceeds max {max_amplitude}"
+    assert (
+        np.max(np.abs(wave)) <= max_amplitude + 0.01
+    ), f"Wave amplitude {np.max(np.abs(wave))} exceeds max {max_amplitude}"
 
 
 def get_dominant_frequency(wave, sample_rate):
@@ -159,11 +163,11 @@ def get_dominant_frequency(wave, sample_rate):
         float: Dominant frequency in Hz
     """
     fft = np.fft.fft(wave)
-    freqs = np.fft.fftfreq(len(wave), 1/sample_rate)
+    freqs = np.fft.fftfreq(len(wave), 1 / sample_rate)
 
     # Only look at positive frequencies
-    positive_freqs = freqs[:len(freqs)//2]
-    positive_fft = np.abs(fft[:len(fft)//2])
+    positive_freqs = freqs[: len(freqs) // 2]
+    positive_fft = np.abs(fft[: len(fft) // 2])
 
     # Find the peak
     peak_idx = np.argmax(positive_fft)
