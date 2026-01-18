@@ -3,8 +3,8 @@
 import time
 
 from ledger.replay_determinism import (
-    create_receipt,
     canonicalize_text,
+    create_receipt,
     hash_canonical,
 )
 
