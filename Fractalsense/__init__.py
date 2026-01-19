@@ -8,8 +8,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg
-from numba import jit
 import time
+
+# Optional numba import for performance optimization
+try:
+    from numba import jit
+except ImportError:
+    # Fallback no-op decorator when numba is not installed
+    def jit(*args, **kwargs):
+        def decorator(func):
+            return func
+        return decorator
 from typing import Dict, List, Any, Tuple, Optional
 
 # Importiere das Modul-Interface
