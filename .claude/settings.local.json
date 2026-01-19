@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python:*)",
+      "Bash(xxd:*)",
+      "Bash(pip install:*)",
+      "Bash(npm run test:js:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)",
+      "Bash(git config:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nAdd comprehensive test infrastructure\n\n- Add Jest testing framework for JavaScript\n  - Canvas 2D API mock for fractal rendering tests\n  - Web Audio API mock for sound synthesis tests\n  - 36 tests for fractal math calculations\n- Add pytest framework for Python\n  - 51 tests for SoundGenerator\n  - 45 tests for ColorGenerator\n  - 44 tests for modular app structure \\(EventSystem, ConfigManager, ModuleRegistry\\)\n- Add GitHub Actions CI workflow\n  - Automated testing on push/PR\n  - Multi-version Python testing \\(3.10, 3.11, 3.12\\)\n  - Coverage report artifacts\n\nTotal: 176 tests covering core functionality\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git remote add:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(git push:*)",
+      "Bash(git fetch:*)",
+      "Bash(git pull:*)",
+      "Bash(git commit:*)"
+    ]
+  }
+}

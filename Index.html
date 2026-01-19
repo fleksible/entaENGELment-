@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Fraktale Explorer mit Chaos-Klang-Turing-Maschine</title>
+  <style>
+    /* Basis-CSS */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+      touch-action: manipulation;
+    }
+    body {
+      overflow: hidden;
+      background-color: #000;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    #canvas-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+    /* Der vorhandene Canvas soll sichtbar bleiben */
+    canvas {
+      display: block;
+      touch-action: none;
+    }
+    .controls {
+      padding: 10px;
+      background-color: rgba(0, 0, 0, 0.7);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      border-top: 1px solid #333;
+      z-index: 300; /* UI im Vordergrund */
+      position: relative;
+    }
+    .control-group {
+      margin: 5px;
+    }
+    button {
+      padding: 10px;
+      margin: 3px;
+      background: linear-gradient(145deg, #222, #444);
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      min-width: 40px;
+      min-height: 40px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    button:active {
+      background: linear-gradient(145deg, #444, #222);
+    }
+    select, input {
+      padding: 8px;
+      margin: 3px;
+      background-color: #333;
+      color: #fff;
+      border: 1px solid #555;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    label {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 12px;
+    }
+    .sound-button {
+      background: linear-gradient(145deg, #2a2a5a, #4a4a8a);
+    }
+    .sound-button:active {
+      background: linear-gradient(145deg, #4a4a8a, #2a2a5a);
+    }
+    .dimension-button.active {
+      background: linear-gradient(145deg, #5a2a2a, #8a4a4a);
+    }
+    #info-panel {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      padding: 10px;
+      font-size: 12px;
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+      max-height: 80%;
+      overflow-y: auto;
+      z-index: 400;
+    }
+    #info-panel.visible {
+      transform: translateY(0);
+    }
+    #info-toggle {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      background-color: rgba(0, 0, 0, 0.5);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      z-index: 500;
+      cursor: pointer;
+    }
+    #loading-indicator {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 20px;
+      border-radius: 10px;
+      display: none;
+      z-index: 600;
+    }
+    /* Zusätzliche UI-Elemente */
+    .ui-container {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 10px;
+      background-color: rgba(0, 0, 0, 0.5);
+      border-radius: 5px;
+      z-index: 200;
+      pointer-events: auto;
+    }
+  </style>
+</head>
+<body>
+  <!-- Hinweis: Starte diese Seite nicht über file:// sondern über einen lokalen Webserver -->
+  <div id="canvas-container">
+    <!-- Verwende den vorhandenen Canvas -->
+    <canvas id="fractalCanvas"></canvas>
+    <button id="info-toggle">i</button>
+    <div id="loading-indicator">Fraktal wird generiert...</div>
+    <!-- Info-Feld (README) -->
+    <div id="info-panel">
+      <h3>README – Fraktale Explorer</h3>
+      <p>
+        Dieses Programm visualisiert fraktale Strukturen in den Dimensionen 1D bis 3D und integriert nicht-deterministische Klang- und Turing-Maschinen-Elemente.
+      </p>
+      <h4>Funktionen im Überblick:</h4>
+      <ul>
+        <li>Fraktal-Erzeugung in diversen Modi (Mandelbrot, Julia, Sierpinski, Menger, Cantor, Koch, Lorenz, Turing-generiert und Morphing).</li>
+        <li>Dynamische Shader, die Zeit, Dimension und Chaos-Parameter einbeziehen.</li>
+        <li>Nicht-deterministische Turing-Maschine für zufällige Übergänge und Klangmuster.</li>
+        <li>Integrierte Audio-Synthese mit Tone.js.</li>
+      </ul>
+      <h4>Bedienung:</h4>
+      <ul>
+        <li>Dimension wählen: Über Knöpfe oder Slider zwischen 1D, 2D, 2D-3D und 3D wechseln.</li>
+        <li>Chaos-Parameter: Über den Slider den Zufallsfaktor beeinflussen.</li>
+        <li>Fraktaltyp wechseln: Mittels Navigationstasten (auch über die Pfeiltasten auf der Tastatur) oder Dropdown.</li>
+        <li>Aktionen: "Reset View" setzt Kamera/Rotation zurück; "Bild speichern" lädt einen Screenshot herunter.</li>
+        <li>Vollbild: Schaltet in den Vollbildmodus, wobei der Renderer automatisch angepasst wird.</li>
+        <li>Klang: Über den Sound-Button kann die Audioausgabe umgeschaltet werden.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="controls">
+    <div class="control-group">
+      <label for="fractal-type">Fraktaltyp</label>
+      <select id="fractal-type">
+        <option value="mandelbrot">Mandelbrot</option>
+        <option value="julia">Julia</option>
+        <option value="sierpinski">Sierpinski</option>
+        <option value="menger">Menger-Schwamm</option>
+        <option value="cantor">Cantor-Menge</option>
+        <option value="koch">Koch-Kurve</option>
+        <option value="custom">Turing-generiert</option>
+        <option value="lorenz">Lorenz-Attraktor</option>
+        <option value="morph">Morphing</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <label>Dimension</label>
+      <div>
+        <button class="dimension-button" data-dim="1">1D</button>
+        <button class="dimension-button active" data-dim="2">2D</button>
+        <button class="dimension-button" data-dim="2.5">2D-3D</button>
+        <button class="dimension-button" data-dim="3">3D</button>
+      </div>
+    </div>
+    <div class="control-group">
+      <label>Chaos-Parameter</label>
+      <input type="range" id="chaos-param" min="0" max="100" value="50">
+    </div>
+    <div class="control-group">
+      <label>Klang</label>
+      <div>
+        <button class="sound-button" id="sound-toggle">🔊</button>
+        <button class="sound-button" id="generate-sound">▶️</button>
+      </div>
+    </div>
+    <div class="control-group">
+      <label>Aktionen</label>
+      <div>
+        <button id="reset-view">🔄</button>
+        <button id="save-image">💾</button>
+      </div>
+    </div>
+  </div>
+  <!-- UI für erweiterte Steuerung -->
+  <div class="ui-container" id="ui-container">
+    <h2>Fraktal-Explorer</h2>
+    <div>
+      <button id="prev-fractal">&lt;</button>
+      <span id="fractal-type-display">Mandelbrot</span>
+      <button id="next-fractal">&gt;</button>
+    </div>
+    <div>
+      <label>Dimension: <span id="dimension-value">2.0</span></label><br>
+      <input type="range" id="dimension-slider" min="1" max="3" step="0.1" value="2">
+    </div>
+    <div>
+      <label>Chaos: <span id="chaos-value">0.50</span></label><br>
+      <input type="range" id="chaos-slider" min="0" max="1" step="0.01" value="0.5">
+    </div>
+    <div>
+      <label>Geschwindigkeit:</label><br>
+      <input type="range" id="speed-slider" min="0" max="2" step="0.1" value="0.5">
+    </div>
+    <div>
+      <button id="fullscreen-button">Vollbild</button>
+    </div>
+  </div>
+  
+  <!-- Skript-Bibliotheken -->
+  <!-- Verwende alternative CDN-Links, die als klassische Skripte verfügbar sind -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://unpkg.com/three@0.128.0/examples/js/utils/BufferGeometryUtils.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.37/Tone.js"></script>
+  
+  <script>
+    // Hilfsfunktion, um NaN-Werte in Arrays zu ersetzen
+    function createSanitizedBufferAttribute(data, itemSize) {
+      for (let i = 0; i < data.length; i++) {
+        if (isNaN(data[i])) {
+          console.warn("NaN detected in data at index " + i);
+          data[i] = 0;
+        }
+      }
+      return new THREE.Float32BufferAttribute(data, itemSize);
+    }
+    
+    // Globale Variablen
+    let canvas = document.getElementById('fractalCanvas');
+    let scene, camera, renderer, controls;
+    let dimension = 2;
+    let fractalType = 'mandelbrot';
+    let chaosParameter = 0.5;
+    let soundEnabled = false;
+    let turingMachine = null;
+    let fractalObject = null;
+    let animationTime = 0;
+    let juliaConstant = { x: -0.8, y: 0.156 };
+    let animationSpeed = 0.5;
+    
+    // Für UI-Navigation der Fraktaltypen; neuer Typ "morph" integriert
+    const fractalTypes = ['mandelbrot', 'julia', 'sierpinski', 'menger', 'cantor', 'koch', 'custom', 'lorenz', 'morph'];
+    let currentFractalIndex = 0;
+    
+    // Tone.js: Synth-Initialisierung
+    const synth = new Tone.PolySynth(Tone.Synth).toDestination();
+    const noiseSynth = new Tone.NoiseSynth().toDestination();
+    noiseSynth.volume.value = -20;
+    
+    // Klasse für die nicht-deterministische Turing-Maschine
+    class ChaosTuringMachine {
+      constructor(chaosParam = 0.5) {
+        this.tape = new Array(1000).fill(0);
+        this.position = 500;
+        this.state = 0;
+        this.chaosParam = chaosParam;
+        this.steps = 0;
+        this.maxSteps = 1000;
+        this.transitionRules = this.generateRules();
+        this.history = [];
+      }
+      generateRules() {
+        const numStates = 5;
+        const alphabet = 3;
+        let rules = {};
+        for (let state = 0; state < numStates; state++) {
+          rules[state] = {};
+          for (let symbol = 0; symbol < alphabet; symbol++) {
+            const rand = Math.random();
+            const nextState = Math.floor(rand * numStates);
+            const writeSymbol = Math.floor(rand * alphabet);
+            const moveDirection = rand < 0.33 ? 'L' : rand < 0.66 ? 'R' : 'S';
+            rules[state][symbol] = { nextState, write: writeSymbol, move: moveDirection };
+          }
+        }
+        return rules;
+      }
+      step() {
+        if (this.steps >= this.maxSteps) return false;
+        const currentSymbol = this.tape[this.position];
+        const rule = this.transitionRules[this.state][currentSymbol];
+        this.history.push({ position: this.position, state: this.state, symbol: currentSymbol });
+        if (this.history.length > 50) this.history.shift();
+        if (Math.random() < this.chaosParam) {
+          const rand = Math.random();
+          this.tape[this.position] = Math.floor(rand * 3);
+          this.state = Math.floor(rand * 5);
+          this.position += (rand < 0.33 ? -1 : rand < 0.66 ? 1 : 0);
+        } else {
+          this.tape[this.position] = rule.write;
+          this.state = rule.nextState;
+          if (rule.move === 'L') this.position--;
+          else if (rule.move === 'R') this.position++;
+        }
+        if (this.position < 0) this.position = 0;
+        if (this.position >= this.tape.length) this.position = this.tape.length - 1;
+        this.steps++;
+        return true;
+      }
+      reset(chaosParam) {
+        this.tape = new Array(1000).fill(0);
+        this.position = 500;
+        this.state = 0;
+        this.chaosParam = chaosParam || this.chaosParam;
+        this.steps = 0;
+        this.history = [];
+        this.transitionRules = this.generateRules();
+      }
+      getSoundPattern() {
+        const centralSegment = this.tape.slice(Math.max(0, this.position - 10), Math.min(this.tape.length, this.position + 10));
+        const pattern = this.history.map(h => {
+          const note = ['C4', 'E4', 'G4', 'A4', 'D4'][h.state];
+          const velocity = 0.3 + (h.symbol / 3) * 0.7;
+          const duration = h.symbol === 0 ? '8n' : h.symbol === 1 ? '16n' : '4n';
+          return { note, velocity, duration };
+        });
+        return { centralData: centralSegment, pattern };
+      }
+    }
+    
+    // Fraktal-Erzeugungsfunktionen
+    function createFractal() {
+      if (fractalObject) scene.remove(fractalObject);
+      if (fractalType === 'custom') {
+        turingMachine.reset(chaosParameter);
+        for (let i = 0; i < 500; i++) turingMachine.step();
+      }
+      switch(fractalType) {
+        case 'mandelbrot': createMandelbrot(); break;
+        case 'julia': createJulia(); break;
+        case 'sierpinski': createSierpinski(); break;
+        case 'menger': createMenger(); break;
+        case 'cantor': createCantor(); break;
+        case 'koch': createKoch(); break;
+        case 'lorenz': createLorenz(); break;
+        case 'morph': createMorphingFractal(); break;
+        case 'custom': createTuringFractal(); break;
+        default: createMandelbrot(); break;
+      }
+    }
+    
+    // Mandelbrot mit DoubleSide
+    function createMandelbrot() {
+      const geometry = new THREE.PlaneGeometry(4, 4, 100, 100);
+      const material = new THREE.ShaderMaterial({
+        uniforms: {
+          time: { value: animationTime },
+          dimension: { value: dimension },
+          chaosParam: { value: chaosParameter }
+        },
+        side: THREE.DoubleSide,
+        vertexShader: `
+          varying vec2 vUv;
+          void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: `
+          uniform float time;
+          uniform float dimension;
+          uniform float chaosParam;
+          varying vec2 vUv;
+          vec3 hsv2rgb(vec3 c) {
+            vec4 K = vec4(1.0, 2.0/3.0, 1.0/3.0, 3.0);
+            vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+            return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+          }
+          void main() {
+            vec2 c = vec2(vUv.x * 4.0 - 2.5, vUv.y * 4.0 - 2.0);
+            vec2 z = vec2(0.0);
+            float iter = 0.0;
+            float maxIter = 100.0;
+            for (float i = 0.0; i < 100.0; i++) {
+              if (dimension >= 1.9) {
+                float xtemp = z.x * z.x - z.y * z.y + c.x;
+                z.y = 2.0 * z.x * z.y + c.y;
+                z.x = xtemp;
+              } else {
+                z.x = chaosParam * z.x * (1.0 - z.x) + c.x * 0.1;
+                z.y = z.x * 0.1;
+              }
+              if (dimension > 2.1) {
+                z.x += sin(time * 0.1) * 0.01 * (dimension - 2.0);
+                z.y += cos(time * 0.1) * 0.01 * (dimension - 2.0);
+              }
+              if (dot(z, z) > 4.0) break;
+              iter++;
+            }
+            if (iter < maxIter) {
+              float hue = iter / maxIter + time * 0.05;
+              float sat = 0.6 + chaosParam * 0.4;
+              float val = 0.7 + sin(time + iter * 0.1) * 0.3;
+              if (dimension < 1.9) {
+                val *= (1.0 - abs(vUv.y - 0.5) * 2.0);
+              } else if (dimension > 2.1) {
+                val *= 0.7 + 0.3 * sin(iter * 0.1 + time);
+              }
+              vec3 color = hsv2rgb(vec3(hue, sat, val));
+              gl_FragColor = vec4(color, 1.0);
+            } else {
+              gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+            }
+          }
+        `
+      });
+      fractalObject = new THREE.Mesh(geometry, material);
+      scene.add(fractalObject);
+    }
+    
+    function createJulia() {
+      const geometry = new THREE.PlaneGeometry(4, 4, 100, 100);
+      juliaConstant.x = -0.8 + Math.sin(animationTime * 0.05) * chaosParameter * 0.3;
+      juliaConstant.y = 0.156 + Math.cos(animationTime * 0.04) * chaosParameter * 0.2;
+      const material = new THREE.ShaderMaterial({
+        uniforms: {
+          time: { value: animationTime },
+          dimension: { value: dimension },
+          chaosParam: { value: chaosParameter },
+          juliaC: { value: new THREE.Vector2(juliaConstant.x, juliaConstant.y) }
+        },
+        vertexShader: `
+          varying vec2 vUv;
+          void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: `
+          uniform float time;
+          uniform float dimension;
+          uniform float chaosParam;
+          uniform vec2 juliaC;
+          varying vec2 vUv;
+          vec3 hsv2rgb(vec3 c) {
+            vec4 K = vec4(1.0, 2.0/3.0, 1.0/3.0, 3.0);
+            vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+            return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+          }
+          void main() {
+            vec2 z = vec2(vUv.x * 4.0 - 2.0, vUv.y * 4.0 - 2.0);
+            vec2 c = juliaC;
+            float iter = 0.0;
+            float maxIter = 100.0;
+            for (float i = 0.0; i < 100.0; i++) {
+              if (dimension >= 1.9) {
+                float xtemp = z.x * z.x - z.y * z.y + c.x;
+                z.y = 2.0 * z.x * z.y + c.y;
+                z.x = xtemp;
+              } else {
+                z.x = chaosParam * z.x * (1.0 - z.x) + c.x;
+                z.y = z.x * 0.1;
+              }
+              if (dimension > 2.1) {
+                float zMod = 0.05 * (dimension - 2.0);
+                z.x += sin(time * 0.1 + z.y) * zMod;
+                z.y += cos(time * 0.1 + z.x) * zMod;
+              }
+              if (dot(z, z) > 4.0) break;
+              iter++;
+            }
+            if (iter < maxIter) {
+              float hue = iter / maxIter * 0.5 + time * 0.05;
+              float sat = 0.7 + chaosParam * 0.3;
+              float val = 0.8 - iter / maxIter * 0.2;
+              if (dimension > 2.1) {
+                val *= 0.7 + 0.3 * sin(iter * 0.1 + time);
+                sat *= 0.8 + 0.2 * cos(iter * 0.05 + time * 0.5);
+              }
+              vec3 color = hsv2rgb(vec3(hue, sat, val));
+              gl_FragColor = vec4(color, 1.0);
+            } else {
+              gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+            }
+          }
+        `
+      });
+      fractalObject = new THREE.Mesh(geometry, material);
+      scene.add(fractalObject);
+    }
+    
+    function createSierpinski() {
+      if (dimension < 1.9) { create1DSierpinski(); }
+      else if (dimension >= 2.9) { create3DSierpinski(); }
+      else { create2DSierpinski(); }
+    }
+    
+    function create1DSierpinski() {
+      const points = [];
+      const iterations = 5;
+      function subdivide(start, end, depth) {
+        if (depth === 0) {
+          points.push(start, end);
+          return;
+        }
+        const mid = (start + end) / 2;
+        const third = (end - start) / 3;
+        subdivide(start, start + third, depth - 1);
+        subdivide(end - third, end, depth - 1);
+      }
+      subdivide(-1.5, 1.5, iterations);
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', createSanitizedBufferAttribute(points, 1));
+      const material = new THREE.LineBasicMaterial({ color: 0x00ffff, linewidth: 1 });
+      fractalObject = new THREE.Line(geometry, material);
+      scene.add(fractalObject);
+    }
+    
+    function create2DSierpinski() {
+      const useCarpet = chaosParameter > 0.5;
+      if (useCarpet) {
+        const geometry = new THREE.PlaneGeometry(2, 2);
+        const material = new THREE.ShaderMaterial({
+          uniforms: {
+            time: { value: animationTime },
+            dimension: { value: dimension },
+            chaosParam: { value: chaosParameter }
+          },
+          vertexShader: `
+            varying vec2 vUv;
+            void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }
+          `,
+          fragmentShader: `
+            uniform float time;
+            uniform float dimension;
+            uniform float chaosParam;
+            varying vec2 vUv;
+            float sierpinskiCarpet(vec2 p) {
+              float result = 0.0;
+              for(int i = 0; i < 6; i++) {
+                vec2 divided = fract(p * 3.0);
+                vec2 center = abs(divided - 0.5);
+                float square = max(center.x, center.y);
+                if (square < 0.16667) { result = 1.0; break; }
+                p = fract(p * 3.0);
+              }
+              return result;
+            }
+            vec3 hsv2rgb(vec3 c) {
+              vec4 K = vec4(1.0, 2.0/3.0, 1.0/3.0, 3.0);
+              vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+              return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+            }
+            void main() {
+              vec2 p = vUv;
+              float depth = 0.0;
+              if (dimension > 2.0) { depth = (dimension - 2.0) * 0.5 * sin(time + p.x * 5.0 + p.y * 5.0); }
+              float pattern = sierpinskiCarpet(p);
+              vec3 color;
+              if (pattern > 0.5) {
+                float hue = fract(time * 0.05);
+                float sat = 0.7 + 0.3 * chaosParam;
+                float val = 0.8 - depth * 0.3;
+                color = hsv2rgb(vec3(hue, sat, val));
+              } else {
+                color = vec3(0.0);
+              }
+              gl_FragColor = vec4(color, 1.0);
+            }
+          `
+        });
+        fractalObject = new THREE.Mesh(geometry, material);
+      } else {
+        const iterations = 5;
+        const triangles = [];
+        function subdivideTriangle(a, b, c, depth) {
+          if (depth === 0) {
+            triangles.push(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z);
+            return;
+          }
+          const ab = { x: (a.x+b.x)/2, y: (a.y+b.y)/2, z: (a.z+b.z)/2 };
+          const bc = { x: (b.x+c.x)/2, y: (b.y+c.y)/2, z: (b.z+c.z)/2 };
+          const ca = { x: (c.x+a.x)/2, y: (c.y+a.y)/2, z: (c.z+a.z)/2 };
+          subdivideTriangle(a, ab, ca, depth-1);
+          subdivideTriangle(ab, b, bc, depth-1);
+          subdivideTriangle(ca, bc, c, depth-1);
+        }
+        const a = { x: 0, y: 1.5, z: 0 };
+        const b = { x: -1.3, y: -0.75, z: 0 };
+        const c = { x: 1.3, y: -0.75, z: 0 };
+        subdivideTriangle(a, b, c, iterations);
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', createSanitizedBufferAttribute(triangles, 3));
+        const colors = [];
+        const posAttr = geometry.getAttribute('position');
+        for (let i = 0; i < posAttr.count; i++) {
+          const y = posAttr.getY(i);
+          const hue = (y + 1.5) / 3;
+          const color = new THREE.Color();
+          color.setHSL(hue, 0.8, 0.5);
+          colors.push(color.r, color.g, color.b);
+        }
+        geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+        const material = new THREE.MeshBasicMaterial({ vertexColors: true, wireframe: chaosParameter > 0.7, side: THREE.DoubleSide });
+        fractalObject = new THREE.Mesh(geometry, material);
+      }
+      scene.add(fractalObject);
+    }
+    
+    function create3DSierpinski() {
+      const tetrahedronSize = 1.5;
+      const iterations = Math.min(3, Math.floor(3 + chaosParameter * 2));
+      const positions = [];
+      const colors = [];
+      const v0 = new THREE.Vector3(0, tetrahedronSize, 0);
+      const v1 = new THREE.Vector3(-tetrahedronSize, -tetrahedronSize, tetrahedronSize);
+      const v2 = new THREE.Vector3(tetrahedronSize, -tetrahedronSize, tetrahedronSize);
+      const v3 = new THREE.Vector3(0, -tetrahedronSize, -tetrahedronSize);
+      function divideTetrahedron(a, b, c, d, depth) {
+        if (depth === 0) {
+          positions.push(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z);
+          positions.push(a.x, a.y, a.z, c.x, c.y, c.z, d.x, d.y, d.z);
+          positions.push(a.x, a.y, a.z, d.x, d.y, d.z, b.x, b.y, b.z);
+          positions.push(b.x, b.y, b.z, d.x, d.y, d.z, c.x, c.y, c.z);
+          for (let i = 0; i < 12; i++) {
+            const randomHue = Math.random();
+            const color = new THREE.Color();
+            color.setHSL(randomHue, 0.7, 0.5);
+            colors.push(color.r, color.g, color.b);
+          }
+          return;
+        }
+        const ab = new THREE.Vector3().addVectors(a, b).multiplyScalar(0.5);
+        const ac = new THREE.Vector3().addVectors(a, c).multiplyScalar(0.5);
+        const ad = new THREE.Vector3().addVectors(a, d).multiplyScalar(0.5);
+        const bc = new THREE.Vector3().addVectors(b, c).multiplyScalar(0.5);
+        const bd = new THREE.Vector3().addVectors(b, d).multiplyScalar(0.5);
+        const cd = new THREE.Vector3().addVectors(c, d).multiplyScalar(0.5);
+        divideTetrahedron(a, ab, ac, ad, depth-1);
+        divideTetrahedron(ab, b, bc, bd, depth-1);
+        divideTetrahedron(ac, bc, c, cd, depth-1);
+        divideTetrahedron(ad, bd, cd, d, depth-1);
+      }
+      divideTetrahedron(v0, v1, v2, v3, iterations);
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', createSanitizedBufferAttribute(positions, 3));
+      geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+      const material = new THREE.MeshBasicMaterial({ vertexColors: true, wireframe: chaosParameter > 0.7, side: THREE.DoubleSide });
+      fractalObject = new THREE.Mesh(geometry, material);
+      scene.add(fractalObject);
+    }
+    
+    function createMenger() {
+      const iterations = Math.min(3, Math.round(1 + chaosParameter * 2));
+      if (dimension < 1.9) { createCantor(); return; }
+      if (dimension < 2.9) { create2DSierpinski(); return; }
+      const mengerSize = 1.8;
+      function isMengerSponge(x, y, z, iteration) {
+        if (iteration === 0) return true;
+        const nx = Math.abs(x) / mengerSize;
+        const ny = Math.abs(y) / mengerSize;
+        const nz = Math.abs(z) / mengerSize;
+        for (let i = 1; i <= iteration; i++) {
+          const divisor = Math.pow(3, i);
+          const bx = Math.floor((nx * divisor) % 3);
+          const by = Math.floor((ny * divisor) % 3);
+          const bz = Math.floor((nz * divisor) % 3);
+          if ((bx === 1 && by === 1) || (bx === 1 && bz === 1) || (by === 1 && bz === 1)) {
+            return false;
+          }
+        }
+        return true;
+      }
+      const cubeSize = mengerSize / Math.pow(3, iterations);
+      const halfSize = mengerSize / 2;
+      const geometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
+      const material = new THREE.MeshLambertMaterial({ color: 0xffffff, vertexColors: true });
+      const sponge = new THREE.Group();
+      for (let x = -halfSize; x < halfSize; x += cubeSize) {
+        for (let y = -halfSize; y < halfSize; y += cubeSize) {
+          for (let z = -halfSize; z < halfSize; z += cubeSize) {
+            if (isMengerSponge(x + cubeSize/2, y + cubeSize/2, z + cubeSize/2, iterations)) {
+              const cube = new THREE.Mesh(geometry, material.clone());
+              cube.position.set(x + cubeSize/2, y + cubeSize/2, z + cubeSize/2);
+              const color = new THREE.Color();
+              const hue = (x + y + z + halfSize * 3) / (halfSize * 6);
+              color.setHSL(hue, 0.7, 0.5 + Math.sin(animationTime + x + y + z) * 0.2);
+              cube.material.color = color;
+              sponge.add(cube);
+            }
+          }
+        }
+      }
+      if (iterations <= 2) {
+        fractalObject = sponge;
+      } else {
+        const geometries = [];
+        sponge.children.forEach(cube => {
+          const clonedGeometry = geometry.clone();
+          clonedGeometry.translate(cube.position.x, cube.position.y, cube.position.z);
+          const colors = [];
+          const count = clonedGeometry.attributes.position.count;
+          for (let i = 0; i < count; i++) {
+            colors.push(cube.material.color.r, cube.material.color.g, cube.material.color.b);
+          }
+          clonedGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+          geometries.push(clonedGeometry);
+        });
+        let mergedGeometry;
+        if (geometries.length > 0) {
+          try {
+            mergedGeometry = THREE.BufferGeometryUtils.mergeBufferGeometries(geometries);
+          } catch (e) {
+            mergedGeometry = geometries[0].clone();
+          }
+          const mergedMaterial = new THREE.MeshBasicMaterial({ vertexColors: true });
+          fractalObject = new THREE.Mesh(mergedGeometry, mergedMaterial);
+        } else {
+          fractalObject = sponge;
+        }
+      }
+      const light = new THREE.DirectionalLight(0xffffff, 1);
+      light.position.set(5, 10, 7);
+      scene.add(light);
+      const ambientLight = new THREE.AmbientLight(0x404040);
+      scene.add(ambientLight);
+      scene.add(fractalObject);
+    }
+    
+    function createCantor() {
+      const points = [];
+      const iterations = 5;
+      function cantorSet(start, length, depth) {
+        if (depth === 0) {
+          points.push(start, 0, 0);
+          points.push(start + length, 0, 0);
+          return;
+        }
+        const newLength = length / 3;
+        cantorSet(start, newLength, depth - 1);
+        cantorSet(start + 2 * newLength, newLength, depth - 1);
+      }
+      cantorSet(-1.5, 3, iterations);
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', createSanitizedBufferAttribute(points, 3));
+      const material = new THREE.LineBasicMaterial({ color: 0x00ffff, linewidth: 2 });
+      fractalObject = new THREE.LineSegments(geometry, material);
+      if (dimension > 1.1) {
+        const verticalPoints = [];
+        for (let i = 0; i < points.length; i += 6) {
+          const x = points[i];
+          verticalPoints.push(x, -1, 0);
+          verticalPoints.push(x, 1, 0);
+        }
+        const vertGeometry = new THREE.BufferGeometry();
+        vertGeometry.setAttribute('position', createSanitizedBufferAttribute(verticalPoints, 3));
+        const vertMaterial = new THREE.LineBasicMaterial({ color: 0xff00ff, linewidth: 1 });
+        const vertLines = new THREE.LineSegments(vertGeometry, vertMaterial);
+        const group = new THREE.Group();
+        group.add(new THREE.LineSegments(geometry, material));
+        if (dimension > 1.5) group.add(vertLines);
+        fractalObject = group;
+      }
+      scene.add(fractalObject);
+    }
+    
+    function createKoch() {
+      const iterations = Math.min(5, Math.floor(2 + chaosParameter * 4));
+      if (dimension < 1.9) { createKoch1D(iterations); }
+      else if (dimension < 2.9) { createKoch2D(iterations); }
+      else { createKoch3D(iterations); }
+    }
+    
+    function createKoch1D(iterations) {
+      const points = [];
+      function kochCurve(start, end, depth) {
+        if (depth === 0) {
+          points.push(start.x, start.y, start.z);
+          points.push(end.x, end.y, end.z);
+          return;
+        }
+        const dx = end.x - start.x;
+        const dy = end.y - start.y;
+        const dz = end.z - start.z;
+        const length = Math.sqrt(dx*dx + dy*dy + dz*dz);
+        const normalizedDir = { x: dx/length, y: dy/length, z: dz/length };
+        const p1 = { x: start.x, y: start.y, z: start.z };
+        const p2 = { x: start.x + dx/3, y: start.y + dy/3, z: start.z + dz/3 };
+        const p4 = { x: start.x + 2*dx/3, y: start.y + 2*dy/3, z: start.z + 2*dz/3 };
+        const perp = { x: -normalizedDir.y, y: normalizedDir.x, z: 0 };
+        const spikeHeight = (length/3) * 0.5;
+        const p3 = { x: p2.x + perp.x * spikeHeight, y: p2.y + perp.y * spikeHeight, z: p2.z };
+        kochCurve(p1, p2, depth-1);
+        kochCurve(p2, p3, depth-1);
+        kochCurve(p3, p4, depth-1);
+        kochCurve(p4, end, depth-1);
+      }
+      const start = { x: -1.5, y: 0, z: 0 };
+      const end = { x: 1.5, y: 0, z: 0 };
+      kochCurve(start, end, iterations);
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', createSanitizedBufferAttribute(points, 3));
+      const colors = [];
+      for (let i = 0; i < points.length/3; i++) {
+        const hue = (i / (points.length/3)) + animationTime * 0.05;
+        const color = new THREE.Color().setHSL(hue % 1, 0.7, 0.5);
+        colors.push(color.r, color.g, color.b);
+      }
+      geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+      const material = new THREE.LineBasicMaterial({ vertexColors: true, linewidth: 2 });
+      fractalObject = new THREE.LineSegments(geometry, material);
+      scene.add(fractalObject);
+    }
+    
+    function createKoch2D(iterations) {
+      const points = [];
+      function kochSnowflake(start, end, depth) {
+        if (depth === 0) {
+          points.push(start.x, start.y, start.z);
+          points.push(end.x, end.y, end.z);
+          return;
+        }
+        const dx = end.x - start.x;
+        const dy = end.y - start.y;
+        const dz = end.z - start.z;
+        const length = Math.sqrt(dx*dx + dy*dy + dz*dz);
+        const normalizedDir = { x: dx/length, y: dy/length, z: dz/length };
+        const p1 = { x: start.x, y: start.y, z: start.z };
+        const p2 = { x: start.x + dx/3, y: start.y + dy/3, z: start.z + dz/3 };
+        const p4 = { x: start.x + 2*dx/3, y: start.y + 2*dy/3, z: start.z + 2*dz/3 };
+        const perp = { x: -normalizedDir.y, y: normalizedDir.x, z: 0 };
+        const spikeHeight = (length/3) * 0.5;
+        const p3 = { x: p2.x + perp.x * spikeHeight, y: p2.y + perp.y * spikeHeight, z: p2.z };
+        kochSnowflake(p1, p2, depth-1);
+        kochSnowflake(p2, p3, depth-1);
+        kochSnowflake(p3, p4, depth-1);
+        kochSnowflake(p4, end, depth-1);
+      }
+      const size = 1.5;
+      const height = size * Math.sqrt(3) / 2;
+      const p1 = { x: 0, y: height, z: 0 };
+      const p2 = { x: -size, y: -height/2, z: 0 };
+      const p3 = { x: size, y: -height/2, z: 0 };
+      kochSnowflake(p1, p2, iterations);
+      kochSnowflake(p2, p3, iterations);
+      kochSnowflake(p3, p1, iterations);
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', createSanitizedBufferAttribute(points, 3));
+      const colors = [];
+      for (let i = 0; i < points.length/3; i++) {
+        const hue = (i / (points.length/3)) + animationTime * 0.05;
+        const color = new THREE.Color().setHSL(hue % 1, 0.7, 0.5);
+        colors.push(color.r, color.g, color.b);
+      }
+      geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+      const material = new THREE.LineBasicMaterial({ vertexColors: true, linewidth: 2 });
+      fractalObject = new THREE.LineSegments(geometry, material);
+      scene.add(fractalObject);
+    }
+    
+    function createKoch3D(iterations) {
+      const points = [];
+      function koch3D(a, b, c, d, depth) {
+        if (depth === 0) {
+          points.push(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z);
+          points.push(a.x, a.y, a.z, c.x, c.y, c.z, d.x, d.y, d.z);
+          points.push(a.x, a.y, a.z, d.x, d.y, d.z, b.x, b.y, b.z);
+          points.push(b.x, b.y, b.z, c.x, c.y, c.z, d.x, d.y, d.z);
+          return;
+        }
+        const ab = { x: (a.x+b.x)/2, y: (a.y+b.y)/2, z: (a.z+b.z)/2 };
+        const ac = { x: (a.x+c.x)/2, y: (a.y+c.y)/2, z: (a.z+c.z)/2 };
+        const ad = { x: (a.x+d.x)/2, y: (a.y+d.y)/2, z: (a.z+d.z)/2 };
+        const bc = { x: (b.x+c.x)/2, y: (b.y+c.y)/2, z: (b.z+c.z)/2 };
+        const bd = { x: (b.x+d.x)/2, y: (b.y+d.y)/2, z: (b.z+d.z)/2 };
+        const cd = { x: (c.x+d.x)/2, y: (c.y+d.y)/2, z: (c.z+d.z)/2 };
+        koch3D(a, ab, ac, ad, depth-1);
+        koch3D(ab, b, bc, bd, depth-1);
+        koch3D(ac, bc, c, cd, depth-1);
+        koch3D(ad, bd, cd, d, depth-1);
+      }
+      const size = 1.5;
+      const a = { x: 0, y: size, z: 0 };
+      const b = { x: -size, y: -size/2, z: size/2 };
+      const c = { x: size, y: -size/2, z: size/2 };
+      const d = { x: 0, y: -size/2, z: -size };
+      koch3D(a, b, c, d, iterations);
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', createSanitizedBufferAttribute(points, 3));
+      const colors = [];
+      for (let i = 0; i < points.length/3; i++) {
+        const faceIndex = Math.floor(i/3);
+        const hue = (faceIndex % 4)/4 + animationTime * 0.05;
+        const color = new THREE.Color().setHSL(hue % 1, 0.7, 0.5);
+        colors.push(color.r, color.g, color.b);
+      }
+      geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+      const material = new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.DoubleSide });
+      fractalObject = new THREE.Mesh(geometry, material);
+      const light = new THREE.DirectionalLight(0xffffff, 1);
+      light.position.set(5, 10, 7);
+      scene.add(light);
+      scene.add(fractalObject);
+    }
+    
+    function createLorenz() {
+      const sigma = 10 + chaosParameter * 5;
+      const rho = 28 + chaosParameter * 10;
+      const beta = 8/3 + chaosParameter * 1;
+      const dt = 0.005;
+      const numPoints = 10000;
+      const points = [];
+      let x = 0.1, y = 0, z = 0;
+      for (let i = 0; i < numPoints; i++) {
+        const dx = sigma * (y - x) * dt;
+        const dy = (x * (rho - z) - y) * dt;
+        const dz = (x * y - beta * z) * dt;
+        x += dx; y += dy; z += dz;
+        points.push(x * 0.05, z * 0.05, y * 0.05);
+      }
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', createSanitizedBufferAttribute(points, 3));
+      const colors = [];
+      for (let i = 0; i < numPoints; i++) {
+        const hue = (i / numPoints) + animationTime * 0.05;
+        const saturation = 0.6 + chaosParameter * 0.4;
+        const lightness = 0.5;
+        const color = new THREE.Color().setHSL(hue % 1, saturation, lightness);
+        colors.push(color.r, color.g, color.b);
+      }
+      geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+      const material = new THREE.LineBasicMaterial({ vertexColors: true, linewidth: 1 });
+      fractalObject = new THREE.Line(geometry, material);
+      if (dimension < 1.9) {
+        const points1D = [];
+        for (let i = 0; i < numPoints; i++) {
+          const x = points[i * 3];
+          points1D.push(x, 0, 0);
+        }
+        const geometry1D = new THREE.BufferGeometry();
+        geometry1D.setAttribute('position', createSanitizedBufferAttribute(points1D, 3));
+        geometry1D.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+        fractalObject = new THREE.Line(geometry1D, material);
+      } else if (dimension < 2.9) {
+        const points2D = [];
+        for (let i = 0; i < numPoints; i++) {
+          const x = points[i * 3];
+          const y = points[i * 3 + 1];
+          points2D.push(x, y, 0);
+        }
+        const geometry2D = new THREE.BufferGeometry();
+        geometry2D.setAttribute('position', createSanitizedBufferAttribute(points2D, 3));
+        geometry2D.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+        fractalObject = new THREE.Line(geometry2D, material);
+      }
+      scene.add(fractalObject);
+    }
+    
+    function createTuringFractal() {
+      // Platzhalter: Ein einfacher Würfel als Symbol für die Turing-generierte Struktur
+      const geometry = new THREE.BoxGeometry(2, 2, 2);
+      const material = new THREE.MeshBasicMaterial({ color: 0xff00ff, wireframe: true });
+      fractalObject = new THREE.Mesh(geometry, material);
+      scene.add(fractalObject);
+    }
+    
+    // Neuer Fraktaltyp: Morphing zwischen 2D und 3D als Fraktal-Antenne
+    function createMorphingFractal() {
+      // morphProgress: Wert zwischen 0 (rein 2D) und 1 (voll 3D)
+      let morphProgress = Math.min(1, Math.max(0, (dimension - 1) / 2));
+      const geometry = new THREE.PlaneGeometry(4, 4, 100, 100);
+      const material = new THREE.ShaderMaterial({
+        uniforms: {
+          time: { value: animationTime },
+          morphProgress: { value: morphProgress },
+          chaosParam: { value: chaosParameter }
+        },
+        vertexShader: `
+          uniform float time;
+          uniform float morphProgress;
+          varying vec2 vUv;
+          // Einfache Funktion zur Erzeugung einer 3D-Variation
+          vec3 computeFractalPosition(vec3 pos) {
+            float displacement = sin(pos.x * 3.0 + time) * 0.2;
+            return vec3(pos.x, pos.y, displacement);
+          }
+          void main() {
+            vUv = uv;
+            vec3 pos2D = vec3(position.x, position.y, 0.0);
+            vec3 pos3D = computeFractalPosition(position);
+            vec3 finalPos = mix(pos2D, pos3D, morphProgress);
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(finalPos, 1.0);
+          }
+        `,
+        fragmentShader: `
+          uniform float time;
+          varying vec2 vUv;
+          void main() {
+            vec3 color = vec3(vUv, 0.5 + 0.5 * sin(time));
+            gl_FragColor = vec4(color, 1.0);
+          }
+        `
+      });
+      fractalObject = new THREE.Mesh(geometry, material);
+      scene.add(fractalObject);
+    }
+    
+    // Animationsschleife
+    function animate() {
+      requestAnimationFrame(animate);
+      animationTime += 0.01 * animationSpeed;
+      
+      // Automatische Drehung des Fraktals (um die Y-Achse) zusätzlich zur OrbitControls-Steuerung
+      if (fractalObject) {
+        fractalObject.rotation.y += 0.005 * animationSpeed;
+      }
+      
+      if (fractalObject && fractalObject.material && fractalObject.material.uniforms) {
+        if (fractalObject.material.uniforms.time) {
+          fractalObject.material.uniforms.time.value = animationTime;
+        }
+        if (fractalObject.material.uniforms.chaosParam) {
+          fractalObject.material.uniforms.chaosParam.value = chaosParameter;
+        }
+        if (fractalObject.material.uniforms.dimension) {
+          fractalObject.material.uniforms.dimension.value = dimension;
+        }
+        if (fractalObject.material.uniforms.juliaC) {
+          fractalObject.material.uniforms.juliaC.value.x = -0.8 + Math.sin(animationTime * 0.05) * chaosParameter * 0.3;
+          fractalObject.material.uniforms.juliaC.value.y = 0.156 + Math.cos(animationTime * 0.04) * chaosParameter * 0.2;
+        }
+        if (fractalType === 'morph' && fractalObject.material.uniforms.morphProgress) {
+          let morphProg = Math.min(1, Math.max(0, (dimension - 1) / 2));
+          fractalObject.material.uniforms.morphProgress.value = morphProg;
+        }
+      }
+      if (turingMachine && Math.random() < 0.05) {
+        turingMachine.step();
+        if (soundEnabled && Math.random() < 0.02) generateSound(true);
+      }
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    
+    function generateSound(subtle = false) {
+      const note = subtle ? "C4" : "E4";
+      synth.triggerAttackRelease(note, "8n");
+    }
+    
+    // Konsolidierte UI-Event-Listener
+    function setupEventListeners() {
+      // Info-Panel umschalten
+      document.getElementById('info-toggle').addEventListener('click', function() {
+        document.getElementById('info-panel').classList.toggle('visible');
+      });
+      // Slider für Dimension, Chaos und Geschwindigkeit
+      document.getElementById('dimension-slider').addEventListener('input', function(e) {
+        dimension = parseFloat(e.target.value);
+        updateFractal();
+        updateUI();
+      });
+      document.getElementById('chaos-slider').addEventListener('input', function(e) {
+        chaosParameter = parseFloat(e.target.value);
+        updateFractal();
+        updateUI();
+      });
+      document.getElementById('speed-slider').addEventListener('input', function(e) {
+        animationSpeed = parseFloat(e.target.value);
+      });
+      // Fraktal-Navigation per Overlay-Knöpfe
+      document.getElementById('prev-fractal').addEventListener('click', function() {
+        currentFractalIndex = (currentFractalIndex - 1 + fractalTypes.length) % fractalTypes.length;
+        updateFractal();
+        updateUI();
+      });
+      document.getElementById('next-fractal').addEventListener('click', function() {
+        currentFractalIndex = (currentFractalIndex + 1) % fractalTypes.length;
+        updateFractal();
+        updateUI();
+      });
+      // Dimension-Knöpfe
+      document.querySelectorAll('.dimension-button').forEach(function(button) {
+        button.addEventListener('click', function() {
+          document.querySelectorAll('.dimension-button').forEach(btn => btn.classList.remove('active'));
+          button.classList.add('active');
+          dimension = parseFloat(button.getAttribute('data-dim'));
+          updateFractal();
+          updateUI();
+        });
+      });
+      // Aktionen: Reset View
+      document.getElementById('reset-view').addEventListener('click', function() {
+        console.log("Reset View clicked");
+        camera.position.z = 5;
+        controls.reset();
+      });
+      // Aktionen: Bild speichern
+      document.getElementById('save-image').addEventListener('click', function() {
+        console.log("Save Image clicked");
+        const dataURL = renderer.domElement.toDataURL('image/png');
+        let link = document.createElement('a');
+        link.href = dataURL;
+        link.download = 'fractal.png';
+        link.click();
+      });
+      // Vollbild
+      document.getElementById('fullscreen-button').addEventListener('click', function() {
+        console.log("Fullscreen clicked");
+        if (renderer.domElement.requestFullscreen) renderer.domElement.requestFullscreen();
+        else if (renderer.domElement.webkitRequestFullscreen) renderer.domElement.webkitRequestFullscreen();
+      });
+      // Sound Toggle: Schaltet den Sound ein/aus
+      document.getElementById('sound-toggle').addEventListener('click', function() {
+        soundEnabled = !soundEnabled;
+        console.log("Sound toggled:", soundEnabled);
+        this.innerText = soundEnabled ? "🔊" : "🔇";
+      });
+      // Vollbildchange Event, um Renderer und Kamera neu zu justieren
+      document.addEventListener("fullscreenchange", () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        if (Tone.context.state !== 'running') Tone.start();
+      });
+      // Bei einem beliebigen Klick Tone.js starten (bei mobilen Geräten notwendig)
+      document.addEventListener("click", async () => {
+        if (Tone.context.state !== 'running') await Tone.start();
+      });
+      // Fenster resize
+      window.addEventListener('resize', function() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+      
+      // Zusätzliche Debug-Logs für UI-Elemente
+      attachDebugLogs();
+    }
+    
+    // Debugging-Funktion: Loggt Klick-Events an wichtigen UI-Elementen
+    function attachDebugLogs() {
+      console.log("Attaching debug logs for UI elements...");
+      document.querySelectorAll('.dimension-button').forEach(function(button) {
+         button.addEventListener('click', function() {
+              console.log("Dimension button clicked:", button.getAttribute('data-dim'));
+         });
+      });
+      document.getElementById('prev-fractal').addEventListener('click', function() {
+         console.log("Previous fractal button clicked");
+      });
+      document.getElementById('next-fractal').addEventListener('click', function() {
+         console.log("Next fractal button clicked");
+      });
+    }
+    
+    // Keyboard-Events: Pfeiltasten für Fraktal-Navigation
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowLeft') {
+        console.log("Keyboard ArrowLeft pressed");
+        currentFractalIndex = (currentFractalIndex - 1 + fractalTypes.length) % fractalTypes.length;
+        updateFractal();
+        updateUI();
+      } else if (e.key === 'ArrowRight') {
+        console.log("Keyboard ArrowRight pressed");
+        currentFractalIndex = (currentFractalIndex + 1) % fractalTypes.length;
+        updateFractal();
+        updateUI();
+      }
+    });
+    
+    function init() {
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      camera.position.z = 5;
+      // Verwende den vorhandenen Canvas:
+      renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setClearColor(0x0f0f1f);
+      
+      // Kein document.body.appendChild(renderer.domElement), da "canvas" bereits existiert.
+      
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.1;
+      
+      updateFractal();
+      setupEventListeners();
+      
+      turingMachine = new ChaosTuringMachine(chaosParameter);
+      animate();
+    }
+    
+    function updateFractal() {
+      fractalType = fractalTypes[currentFractalIndex];
+      createFractal();
+      document.getElementById('fractal-type-display').innerText = fractalType.charAt(0).toUpperCase() + fractalType.slice(1);
+    }
+    
+    function updateUI() {
+      document.getElementById('dimension-value').innerText = dimension.toFixed(1);
+      document.getElementById('chaos-value').innerText = chaosParameter.toFixed(2);
+    }
+    
+    window.onload = init;
+  </script>
+</body>
+</html>
+
+

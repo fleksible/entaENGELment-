@@ -1,0 +1,27 @@
+{
+  "app": {
+    "name": "FractalSense EntaENGELment",
+    "version": "1.0.0",
+    "modules_dir": "modules"
+  },
+  "modules": {
+    "fractal_visualization": {
+      "center_real": -0.75,
+      "center_imag": 0,
+      "zoom": 1.0,
+      "resolution": 400,
+      "max_iter": 50,
+      "colormap": "viridis"
+    },
+    "sensor_integration": {
+      "ip_address": "192.168.1.100",
+      "port": 8080,
+      "polling_interval": 0.1,
+      "filter_buffer_size": 10
+    },
+    "hypergraph_visualization": {
+      "threshold": 0.5,
+      "history_buffer_size": 50
+    }
+  }
+}

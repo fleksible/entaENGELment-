@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FractalSense EntaENGELment</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>FractalSense EntaENGELment</h1>
+        <div class="subtitle">Multisensorische Fraktal-Erfahrung</div>
+    </header>
+    
+    <div class="container">
+        <div class="nav-tabs">
+            <div class="nav-tab active" data-tab="fractal">Fraktal</div>
+            <div class="nav-tab" data-tab="sensors">Sensoren</div>
+            <div class="nav-tab" data-tab="resonance">Resonanz</div>
+            <div class="nav-tab" data-tab="hypergraph">Hypergraph</div>
+        </div>
+        
+        <div class="content-area">
+            <!-- Fraktal-Tab -->
+            <div class="tab-content active" id="fractal-tab">
+                <div class="fractal-container">
+                    <canvas id="fractal-canvas"></canvas>
+                    <div class="fractal-overlay"></div>
+                </div>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <h3>Navigation</h3>
+                        <div class="control-item">
+                            <label for="zoom">Zoom</label>
+                            <input type="range" id="zoom" class="slider" min="1" max="100" value="10">
+                        </div>
+                        <div class="control-item">
+                            <label for="position-x">Position X</label>
+                            <input type="range" id="position-x" class="slider" min="-100" max="100" value="0">
+                        </div>
+                        <div class="control-item">
+                            <label for="position-y">Position Y</label>
+                            <input type="range" id="position-y" class="slider" min="-100" max="100" value="0">
+                        </div>
+                        <div class="button-group">
+                            <button class="control-button" id="reset-fractal">Reset</button>
+                            <button class="control-button" id="save-fractal">Speichern</button>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <h3>Fraktal-Einstellungen</h3>
+                        <div class="control-item">
+                            <label for="fractal-type">Fraktal-Typ</label>
+                            <select id="fractal-type">
+                                <option value="mandelbrot">Mandelbrot</option>
+                                <option value="julia">Julia</option>
+                                <option value="burning-ship">Burning Ship</option>
+                            </select>
+                        </div>
+                        <div class="control-item">
+                            <label for="iterations">Iterationen</label>
+                            <input type="range" id="iterations" class="slider" min="10" max="1000" value="100">
+                        </div>
+                        <div class="control-item">
+                            <label for="resolution">Auflösung</label>
+                            <input type="range" id="resolution" class="slider" min="100" max="1000" value="500">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sensoren-Tab -->
+            <div class="tab-content" id="sensors-tab">
+                <div class="sensor-visualization">
+                    <div class="sensor-card">
+                        <div class="sensor-label">Beschleunigung X</div>
+                        <div class="sensor-value" id="accel-x-value">0.00</div>
+                        <input type="range" class="slider" id="accel-x-slider" min="-10" max="10" value="0" step="0.1">
+                    </div>
+                    <div class="sensor-card">
+                        <div class="sensor-label">Beschleunigung Y</div>
+                        <div class="sensor-value" id="accel-y-value">0.00</div>
+                        <input type="range" class="slider" id="accel-y-slider" min="-10" max="10" value="0" step="0.1">
+                    </div>
+                    <div class="sensor-card">
+                        <div class="sensor-label">Beschleunigung Z</div>
+                        <div class="sensor-value" id="accel-z-value">0.00</div>
+                        <input type="range" class="slider" id="accel-z-slider" min="-10" max="10" value="0" step="0.1">
+                    </div>
+                    <div class="sensor-card">
+                        <div class="sensor-label">Gyroskop X</div>
+                        <div class="sensor-value" id="gyro-x-value">0.00</div>
+                        <input type="range" class="slider" id="gyro-x-slider" min="-10" max="10" value="0" step="0.1">
+                    </div>
+                    <div class="sensor-card">
+                        <div class="sensor-label">Gyroskop Y</div>
+                        <div class="sensor-value" id="gyro-y-value">0.00</div>
+                        <input type="range" class="slider" id="gyro-y-slider" min="-10" max="10" value="0" step="0.1">
+                    </div>
+                    <div class="sensor-card">
+                        <div class="sensor-label">Gyroskop Z</div>
+                        <div class="sensor-value" id="gyro-z-value">0.00</div>
+                        <input type="range" class="slider" id="gyro-z-slider" min="-10" max="10" value="0" step="0.1">
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <h3>Sensor-Simulation</h3>
+                        <div class="control-item">
+                            <label for="sensor-speed">Simulationsgeschwindigkeit</label>
+                            <input type="range" id="sensor-speed" class="slider" min="1" max="10" value="5">
+                        </div>
+                        <div class="button-group">
+                            <button class="control-button" id="start-simulation">Start</button>
+                            <button class="control-button" id="stop-simulation">Stop</button>
+                            <button class="control-button" id="random-values">Zufallswerte</button>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <h3>Datenvisualisierung</h3>
+                        <div class="control-item">
+                            <label for="data-view">Ansicht</label>
+                            <select id="data-view">
+                                <option value="real-time">Echtzeit</option>
+                                <option value="graph">Diagramm</option>
+                                <option value="3d">3D-Visualisierung</option>
+                            </select>
+                        </div>
+                        <div class="button-group">
+                            <button class="control-button" id="export-data">Daten exportieren</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Resonanz-Tab -->
+            <div class="tab-content" id="resonance-tab">
+                <div class="resonance-visualization">
+                    <div class="color-preview" id="color-preview"></div>
+                    <div class="sound-preview">
+                        <div class="sound-wave" id="sound-wave"></div>
+                        <button class="play-button" id="play-sound">
+                            <div class="play-icon"></div>
+                            Klang abspielen
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <h3>Klang-Einstellungen</h3>
+                        <div class="control-item">
+                            <label for="sound-type">Klangtyp</label>
+                            <select id="sound-type">
+                                <option value="harmonic">Harmonisch</option>
+                                <option value="fractal">Fraktal</option>
+                                <option value="resonant">Resonant</option>
+                                <option value="spectral">Spektral</option>
+                            </select>
+                        </div>
+                        <div class="control-item">
+                            <label for="base-frequency">Basisfrequenz</label>
+                            <input type="range" id="base-frequency" class="slider" min="20" max="1000" value="220">
+                        </div>
+                        <div class="control-item">
+                            <label for="volume">Lautstärke</label>
+                            <input type="range" id="volume" class="slider" min="0" max="100" value="50">
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <h3>Farb-Einstellungen</h3>
+                        <div class="control-item">
+                            <label for="color-mode">Farbmodus</label>
+                            <select id="color-mode">
+                                <option value="resonant">Resonant</option>
+                                <option value="harmonic">Harmonisch</option>
+                                <option value="spectral">Spektral</option>
+                                <option value="fractal">Fraktal</option>
+                                <option value="cosmic">Kosmisch</option>
+                            </select>
+                        </div>
+                        <div class="control-item">
+                            <label for="color-speed">Farbwechselgeschwindigkeit</label>
+                            <input type="range" id="color-speed" class="slider" min="1" max="10" value="5">
+                        </div>
+                        <div class="control-item">
+                            <label for="color-intensity">Intensität</label>
+                            <input type="range" id="color-intensity" class="slider" min="1" max="10" value="7">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Hypergraph-Tab -->
+            <div class="tab-content" id="hypergraph-tab">
+                <div class="hypergraph-container" id="hypergraph-container">
+                    <!-- Hypergraph wird hier dynamisch gerendert -->
+                </div>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <h3>Hypergraph-Einstellungen</h3>
+                        <div class="control-item">
+                            <label for="node-count">Knotenanzahl</label>
+                            <input type="range" id="node-count" class="slider" min="5" max="50" value="15">
+                        </div>
+                        <div class="control-item">
+                            <label for="edge-count">Kantenanzahl</label>
+                            <input type="range" id="edge-count" class="slider" min="1" max="20" value="8">
+                        </div>
+                        <div class="control-item">
+                            <label for="layout-type">Layout</label>
+                            <select id="layout-type">
+                                <option value="force">Kraftbasiert</option>
+                                <option value="circular">Kreisförmig</option>
+                                <option value="grid">Gitter</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <h3>Datenquelle</h3>
+                        <div class="control-item">
+                            <label for="data-source">Quelle</label>
+                            <select id="data-source">
+                                <option value="fractal">Fraktal-Parameter</option>
+                                <option value="sensors">Sensordaten</option>
+                                <option value="combined">Kombiniert</option>
+                            </select>
+                        </div>
+                        <div class="button-group">
+                            <button class="control-button" id="update-graph">Aktualisieren</button>
+                            <button class="control-button" id="reset-graph">Zurücksetzen</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Präsentationsmodus-Steuerelemente -->
+            <div class="presentation-controls">
+                <button class="presentation-button" id="prev-slide">◀</button>
+                <button class="presentation-button" id="next-slide">▶</button>
+                <button class="presentation-button" id="pause-presentation">⏸</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
