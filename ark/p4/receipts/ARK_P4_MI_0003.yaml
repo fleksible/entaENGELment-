@@ -1,0 +1,54 @@
+receipt:
+  receipt_id: "ARK-P4-MI-0003"
+  created_local: "2026-01-23T00:00:00+01:00"
+  test_case: "MI proxy guard — JTC peak-width classifier (identical/similar/different)"
+  component_under_test:
+    name: "ΔMI Guard (Proxy)"
+    type: "joint_transform_correlator"
+    architecture: "double FFT; peak width detector"
+  spec_parameters:
+    delta_MI_min_bits: 3.0
+    decision_logic:
+      sharp_peak_width_lt: 0.2
+      broad_peak_width_range: [0.2, 0.6]
+      no_peak_intensity_lt_uW: 10
+  claims:
+    - tag: SPEC
+      reason_code: RC-SPEC-THRESH
+      claim: "Constraint: ΔMI >= 3.0 bit; violation yields no correlation peak / blocked."
+      evidence_ref: "ark_cephalo_manifest_v2.json:governance_invariants.mutual_information"
+    - tag: FACT
+      reason_code: RC-PHY-ENFORCE
+      claim: "Decision logic: sharp peak (<0.2) BLOCK, broad (0.2–0.6) PASS, no peak BLOCK."
+      evidence_ref: "hardware_requirements_summary.md:ΔMI Guard (Mutual Information Proxy)"
+    - tag: ACC
+      reason_code: RC-AUD-TRACE
+      claim: "Acceptance: peak-width classification matches expected for identical/similar/different pairs."
+      evidence_ref: "ark_cephalo_manifest_v2.json:validation.calibration_protocol.mi_guard"
+  procedure:
+    calibration_assets:
+      - "CALSET-JTC-IDENT: identical pairs"
+      - "CALSET-JTC-SIM: similar/resonant pairs"
+      - "CALSET-JTC-DIFF: different/no-match pairs"
+    steps:
+      - "Inject each pair into side-by-side input plane"
+      - "Measure correlation output peak: width metric w + peak intensity"
+      - "Classify with thresholds; log result"
+    metrics:
+      - "confusion_matrix over 3 classes"
+      - "peak_width distribution per class"
+  acceptance:
+    pass_if_all:
+      - "IDENT class yields sharp peak -> BLOCK (>=95% of cases)"
+      - "SIM class yields broad peak -> PASS (>=95% of cases)"
+      - "DIFF class yields no peak -> BLOCK (>=95% of cases)"
+    fail_if_any:
+      - "Class overlap too high (document drift + revise suite/threshold)"
+  outputs:
+    raw_data_paths:
+      - "evidence/raw/jtc_guard/jtc_classification_YYYYMMDD.csv"
+    hashes:
+      calset_sha256: "TBD"
+      raw_data_sha256: "TBD"
+  audit:
+    reviewer: "TBD"

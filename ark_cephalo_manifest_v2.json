@@ -1,0 +1,218 @@
+{
+  "$schema": "https://entaengelment.org/schemas/ark-manifest-v2.json",
+  "manifest_version": "2.1.0",
+  "created": "2026-01-20T16:45:00Z",
+  "maintainer": "Kevin Hörst (Fleks)",
+  "framework": "EntaENGELment",
+  "project": "Ark ⟦CephaloCamouflage⟧",
+
+  "meta": {
+    "paradigm": "Physics-Based Compliance",
+    "core_principle": "Governance constraints are physical properties, not software checks",
+    "error_model": "Energy dissipation (destructive interference → heat), not exception handling"
+  },
+
+  "software_artifacts": {
+    "description": "Existing PoC software components with SHA-256 hashes",
+    "seeds": {
+      "ttf.yaml": {
+        "purpose": "Tissot/Tentakel feature extraction configuration",
+        "sha256": "PLACEHOLDER_HASH_TTF"
+      },
+      "phtm.yaml": {
+        "purpose": "Hopf/Drill/Color mapping parameters",
+        "sha256": "PLACEHOLDER_HASH_PHTM"
+      },
+      "ark_ceph.yaml": {
+        "purpose": "FSM state machine definition (S0-S6)",
+        "sha256": "PLACEHOLDER_HASH_ARK"
+      },
+      "twinpass_v1.yaml": {
+        "purpose": "Twin-pass interference weights",
+        "sha256": "PLACEHOLDER_HASH_TWINPASS"
+      }
+    }
+  },
+
+  "governance_invariants": {
+    "phi_star": {
+      "description": "Solution confidence threshold",
+      "threshold": 0.72,
+      "enforcement": "saturable_absorber_physical_block"
+    },
+    "entropy": {
+      "description": "Texture entropy threshold",
+      "threshold": 0.78,
+      "enforcement": "high_pass_filter_physical_block"
+    },
+    "mutual_information": {
+      "description": "Mutual information lower bound",
+      "threshold_bits": 3.0,
+      "enforcement": "jtc_peak_width_proxy"
+    },
+    "refractory": {
+      "description": "Cooling / refractory time",
+      "threshold_ms": 120,
+      "enforcement": "thermo_optic_recovery"
+    }
+  },
+
+  "hardware_spec": {
+    "version": "1.1.0",
+    "platform": "Silicon Photonics (130-180nm), C-band 1550nm",
+    "layers": {
+      "layer_1_optical_core": {
+        "latency": "nanoseconds",
+        "feature_extraction": "lens_based_optical_fft",
+        "pattern_synthesis": "mach_zehnder_interferometer_mesh",
+        "guards": {
+          "phi_star_guard": {
+            "component": "graphene_on_sin_saturable_absorber",
+            "T0_percent": 15,
+            "T_sat_percent": 85,
+            "I_sat_mW": 12.5,
+            "policy": "if Φ* < 0.72 then absorb (no transmit)"
+          },
+          "entropy_guard": {
+            "component": "high_pass_spectral_filter",
+            "inner_radius_norm": 0.3,
+            "outer_radius_norm": 1.0,
+            "E_HF_threshold_uW": 50,
+            "policy": "if H < 0.78 then block (no enable)"
+          },
+          "mi_guard": {
+            "component": "joint_transform_correlator",
+            "decision_logic": "peak_width proxy for ΔMI",
+            "policy": "sharp peak => BLOCK; broad peak => PASS; no peak => BLOCK"
+          },
+          "tau_guard": {
+            "component": "thermo_optic_microring",
+            "tau_ms": 120,
+            "policy": "thermal recovery enforces refractory"
+          }
+        }
+      },
+
+      "layer_2_analog_monitoring": {
+        "latency": "microseconds",
+        "tap_fraction": "1-5_percent",
+        "tap_couplers": "bus_to_ring_evanescent_tap",
+        "outputs": ["sonification", "visual_scopes", "coherence_meter"],
+        "note": "Monitoring is read-only; no control path back into guards."
+      },
+
+      "layer_3_digital_governance": {
+        "latency": "milliseconds",
+        "fpga": "mutual_information_backup_check",
+        "microcontroller": "consent_ttl_check",
+        "audit_log": "append_only_hash_chain"
+      }
+    }
+  },
+
+  "validation": {
+    "description": "How to verify hardware compliance with specification",
+    "calibration_protocol": {
+      "phi_guard": {
+        "method": "sweep_input_intensity_measure_transmission",
+        "calset_id": "CALSET-PHI-0001",
+        "mapping_receipt_id": "ARK-MAP-PHI-0002",
+        "acceptance": "T_sat reached at I corresponding to Φ* = 0.72 ± 0.02 (see mapping_receipt)"
+      },
+      "entropy_guard": {
+        "method": "inject_known_entropy_patterns_verify_gating",
+        "acceptance": "PASS for H >= 0.78, BLOCK for H < 0.78"
+      },
+      "mi_guard": {
+        "method": "inject_identical_similar_different_image_pairs",
+        "acceptance": "peak_width classification matches expected"
+      },
+      "refractory": {
+        "method": "measure_thermal_recovery_curve",
+        "acceptance": "τ = 120ms ± 12ms (10% tolerance)"
+      },
+      "twin_pass": {
+        "method": "inject_channel_combinations_verify_interference",
+        "acceptance": ">= 95% correct PASS/FAIL decisions"
+      }
+    },
+    "continuous_self_test": {
+      "method": "pilot_tone_with_known_patterns",
+      "frequency": "every_100_frames",
+      "logging": "cryptographic_attestation_to_audit_trail"
+    },
+    "overlay_contract": {
+      "method": "verify_overlay_read_only",
+      "receipt_id": "ARK-OVL-RO-0001",
+      "acceptance": "no guard threshold change or false PASS events"
+    },
+    "degradation_detection": {
+      "saturable_absorber": "monitor_T0_drift_over_time",
+      "thermal_element": "measure_tau_shift",
+      "alert_threshold": "10%_deviation_from_calibrated_value"
+    }
+  },
+
+  "compatibility": {
+    "photonic_platforms": {
+      "preferred": ["IHP_SiN", "imec_SiPh", "AIM_Photonics"],
+      "wavelength": "1550nm_C_band",
+      "process_node": "130nm_180nm"
+    },
+    "partner_ecosystem": {
+      "chip_fabrication": ["Akhetonics", "IHP_Leibniz", "Fraunhofer_HHI"],
+      "materials": ["Graphenea_graphene", "AMO_2D_materials"],
+      "packaging": ["PHIX", "Tyndall"]
+    },
+    "european_supply_chain": {
+      "requirement": "100%_EU_sourceable",
+      "rationale": "sovereignty_and_audit_chain_integrity"
+    }
+  },
+
+  "roadmap_hardware": {
+    "P4_90_120d": {
+      "title": "Component Validation",
+      "tasks": [
+        "Source saturable absorber samples (graphene-on-SiN)",
+        "Characterize T(I) curve, verify I_sat tunability",
+        "Build JTC breadboard demonstrator",
+        "Measure thermal time constants of microring test structures"
+      ]
+    },
+    "P5_120_180d": {
+      "title": "Integration Prototype",
+      "tasks": [
+        "Tape-out first integrated test chip (guards only)",
+        "Validate guard cascade in optical path",
+        "Integrate with software audit trail"
+      ]
+    },
+    "P6_180_270d": {
+      "title": "Full System Demonstrator",
+      "tasks": [
+        "Complete photonic SoC with all three layers",
+        "End-to-end testing with real camouflage scenarios",
+        "Certification pre-study"
+      ]
+    }
+  },
+
+  "publication_targets": {
+    "primary": {
+      "journal": "Nature Machine Intelligence",
+      "angle": "Physics-Based Compliance as new AI safety paradigm"
+    },
+    "secondary": [
+      {"journal": "Optica", "angle": "Photonic implementation of governance guards"},
+      {"journal": "Science Robotics", "angle": "Adaptive camouflage with embedded ethics"},
+      {"conference": "NeurIPS", "angle": "Hardware-enforced AI alignment"}
+    ]
+  },
+
+  "checksums": {
+    "manifest_sha256": "COMPUTE_ON_FINALIZATION",
+    "spec_document_sha256": "LINK_TO_DOCX_HASH",
+    "notes": "All hashes computed with SHA-256, stored in audit chain"
+  }
+}

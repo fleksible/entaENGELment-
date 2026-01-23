@@ -1,0 +1,49 @@
+receipt:
+  receipt_id: "ARK-P4-ENT-0002"
+  created_local: "2026-01-23T00:00:00+01:00"
+  test_case: "Entropy guard — inject known-entropy patterns, verify gating"
+  component_under_test:
+    name: "H Guard"
+    type: "high_pass_spectral_filter"
+    mechanism: "annular_aperture_in_fourier_plane + outer-annulus detector"
+  spec_parameters:
+    H_threshold: 0.78
+    inner_radius_normalized: 0.3
+    outer_radius_normalized: 1.0
+    E_hf_at_threshold_uW: 50
+  claims:
+    - tag: SPEC
+      reason_code: RC-SPEC-THRESH
+      claim: "Constraint: H >= 0.78; otherwise signal blocked."
+      evidence_ref: "ark_cephalo_manifest_v2.json:governance_invariants.entropy"
+    - tag: FACT
+      reason_code: RC-PHY-ENFORCE
+      claim: "Implementation: ring/annulus detector measures high-frequency energy E_HF; switch transmits only if threshold met."
+      evidence_ref: "ark_cephalo_manifest_v2.json:hardware_spec.layer_1_optical_core.guards.entropy_guard"
+    - tag: ACC
+      reason_code: RC-SPEC-THRESH
+      claim: "Acceptance: PASS for H >= 0.78, BLOCK for H < 0.78."
+      evidence_ref: "ark_cephalo_manifest_v2.json:validation.calibration_protocol.entropy_guard"
+  procedure:
+    setup:
+      - "Pattern injector: define 3 entropy bands (LOW <0.78, MID ~0.78, HIGH >0.78)"
+      - "Measure E_HF at annulus detector + observe gate output (on/off)"
+    steps:
+      - "Play each pattern for N=100 frames; record E_HF distribution + gate state"
+      - "Compute confusion matrix: expected PASS/BLOCK vs observed"
+  acceptance:
+    pass_if_all:
+      - "All HIGH patterns PASS (>=99/100 frames each)"
+      - "All LOW patterns BLOCK (>=99/100 frames each)"
+      - "MID band shows transition around calibrated E_HF (document boundary)"
+    fail_if_any:
+      - "Gate leakage (LOW patterns pass frequently)"
+      - "E_HF threshold unstable across repeats"
+  outputs:
+    raw_data_paths:
+      - "evidence/raw/entropy_guard/EHF_gate_log_YYYYMMDD.csv"
+    hashes:
+      calset_sha256: "TBD"
+      raw_data_sha256: "TBD"
+  audit:
+    reviewer: "TBD"

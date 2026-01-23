@@ -1,0 +1,43 @@
+receipt:
+  receipt_id: "ARK-P4-TAU-0004"
+  created_local: "2026-01-23T00:00:00+01:00"
+  test_case: "Refractory guard — measure thermal recovery curve and τ"
+  component_under_test:
+    name: "τ* Guard"
+    type: "thermo_optic_bistable / microring detuning recovery"
+  spec_parameters:
+    tau_min_ms: 120
+    tolerance_percent: 10
+    ring_radius_um: 10
+    Q_factor: 10000
+    heating_power_mW: 2
+    dn_dT_per_K: 1.86e-4
+  claims:
+    - tag: SPEC
+      reason_code: RC-SPEC-THRESH
+      claim: "Constraint: τ >= 120ms enforced by thermal detuning recovery."
+      evidence_ref: "ark_cephalo_manifest_v2.json:governance_invariants.refractory"
+    - tag: FACT
+      reason_code: RC-PHY-ENFORCE
+      claim: "Thermodynamics determines timing; cannot be accelerated without violating physics."
+      evidence_ref: "hardware_requirements_summary.md:τ* Guard (Refractory ≥ 120 ms)"
+    - tag: ACC
+      reason_code: RC-SPEC-THRESH
+      claim: "Acceptance: τ = 120ms ± 12ms (10% tolerance)."
+      evidence_ref: "ark_cephalo_manifest_v2.json:validation.calibration_protocol.refractory"
+  procedure:
+    steps:
+      - "Apply heating pulse (2 mW) to detune ring; log transmission vs time"
+      - "Fit recovery to extract τ_thermal"
+      - "Repeat N=10; compute mean ± std"
+  acceptance:
+    pass_if_all:
+      - "mean_tau within [108ms, 132ms]"
+      - "no anomalous fast-path recovery (indicates measurement artifact or bypass)"
+  outputs:
+    raw_data_paths:
+      - "evidence/raw/refractory_guard/recovery_trace_YYYYMMDD.csv"
+    hashes:
+      raw_data_sha256: "TBD"
+  audit:
+    reviewer: "TBD"

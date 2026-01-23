@@ -1,0 +1,38 @@
+receipt:
+  receipt_id: "ARK-P4-INDEX-0000"
+  created_local: "2026-01-23T00:00:00+01:00"
+  scope: "P4 component validation (guards-only). Defines what must be proven."
+  claims:
+    - tag: SPEC
+      reason_code: RC-SPEC-THRESH
+      claim: "Φ* Guard requires Φ* >= 0.72 enforced by saturable absorber."
+      evidence_ref: "ark_cephalo_manifest_v2.json:governance_invariants.phi_star"
+    - tag: SPEC
+      reason_code: RC-SPEC-THRESH
+      claim: "Entropy guard requires H >= 0.78 enforced by high-pass spectral filter."
+      evidence_ref: "ark_cephalo_manifest_v2.json:governance_invariants.entropy"
+    - tag: SPEC
+      reason_code: RC-SPEC-THRESH
+      claim: "MI constraint uses ΔMI >= 3.0 bit with JTC peak-width proxy sweet spot."
+      evidence_ref: "ark_cephalo_manifest_v2.json:governance_invariants.mutual_information"
+    - tag: SPEC
+      reason_code: RC-SPEC-THRESH
+      claim: "Refractory constraint τ >= 120 ms enforced by thermal detuning recovery."
+      evidence_ref: "ark_cephalo_manifest_v2.json:governance_invariants.refractory"
+    - tag: SPEC
+      reason_code: RC-AUD-TRACE
+      claim: "Continuous self-test runs every 100 frames with cryptographic attestation."
+      evidence_ref: "ark_cephalo_manifest_v2.json:validation.continuous_self_test"
+  tests_required:
+    - "ARK-P4-PHI-0001"
+    - "ARK-P4-ENT-0002"
+    - "ARK-P4-MI-0003"
+    - "ARK-P4-TAU-0004"
+    - "ARK-P4-TWIN-0005"
+    - "ARK-P4-CST-0006"
+    - "CALSET-PHI-0001"
+    - "ARK-MAP-PHI-0002"
+    - "ARK-OVL-RO-0001"
+  audit:
+    rule: "No PASS unless each required receipt PASSes with hashes populated."
+    reviewer: "TBD"
