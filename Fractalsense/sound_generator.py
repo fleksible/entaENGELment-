@@ -6,7 +6,6 @@ Dieses Modul erweitert die Soundfunktionalität des ResonanceEnhancer-Moduls mit
 
 import threading
 import time
-from typing import List, Tuple
 
 import numpy as np
 import pygame
@@ -46,7 +45,7 @@ class SoundGenerator:
         self,
         base_frequency: float,
         duration: float,
-        harmonics: List[Tuple[int, float]] = None,
+        harmonics: list[tuple[int, float]] = None,
         amplitude: float = 1.0,
     ) -> np.ndarray:
         """Generiert eine Welle mit Obertönen.

@@ -8,7 +8,6 @@ Goal: fail fast on structural issues while keeping authoring ergonomic.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict, List, Tuple
 
 import yaml
 
@@ -19,15 +18,15 @@ STATUS = {"defined", "partial", "void"}
 
 @dataclass
 class ValidationResult:
-    errors: List[str]
-    warnings: List[str]
+    errors: list[str]
+    warnings: list[str]
 
     @property
     def ok(self) -> bool:
         return len(self.errors) == 0
 
 
-def _err(errors: List[str], msg: str) -> None:
+def _err(errors: list[str], msg: str) -> None:
     errors.append(msg)
 
 
@@ -37,8 +36,8 @@ def validate_tensor_mapping(filepath: str) -> ValidationResult:
     with open(filepath, "r", encoding="utf-8") as f:
         data = yaml.safe_load(f)
 
-    errors: List[str] = []
-    warnings: List[str] = []
+    errors: list[str] = []
+    warnings: list[str] = []
 
     if not isinstance(data, dict):
         return ValidationResult(errors=["Root must be a mapping/object"], warnings=[])

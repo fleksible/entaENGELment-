@@ -18,7 +18,7 @@ import json
 import unicodedata
 import uuid
 from dataclasses import dataclass, asdict
-from typing import Any, Dict, List
+from typing import Any
 
 # Namespace for stable UUIDs (UUIDv5) — keep constant for the project.
 NAMESPACE_ENTAENGELMENT = uuid.UUID("12345678-1234-5678-1234-567812345678")
@@ -61,12 +61,12 @@ def hash_canonical(obj: Any) -> str:
 class ReplayableReceipt:
     """Receipt with deterministic replay capability."""
 
-    event: Dict[str, Any]
-    deterministic: Dict[str, Any]
-    input: Dict[str, Any]
-    transforms: List[Dict[str, Any]]
-    output: Dict[str, Any]
-    signatures: Dict[str, Any]
+    event: dict[str, Any]
+    deterministic: dict[str, Any]
+    input: dict[str, Any]
+    transforms: list[dict[str, Any]]
+    output: dict[str, Any]
+    signatures: dict[str, Any]
 
     def compute_replay_hash(self) -> str:
         """Compute deterministic hash over ONLY stable fields.
@@ -112,7 +112,7 @@ class ReplayableReceipt:
         stored = _norm_sha256(self.deterministic.get("replay_hash", ""))
         return computed == stored
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for JSON serialization."""
         return asdict(self)
 
@@ -120,9 +120,9 @@ class ReplayableReceipt:
 def create_receipt(
     text: str,
     seed: int,
-    config: Dict[str, Any],
-    transforms: List[Dict[str, Any]],
-    output: Dict[str, Any],
+    config: dict[str, Any],
+    transforms: list[dict[str, Any]],
+    output: dict[str, Any],
     user_id_hash: str,
     user_consent: str,
     *,
@@ -172,9 +172,9 @@ def create_receipt(
     return receipt
 
 
-def verify_receipt_chain(receipts: List[Dict[str, Any]]) -> Dict[str, bool]:
+def verify_receipt_chain(receipts: list[dict[str, Any]]) -> dict[str, bool]:
     """Verify a list of receipts (dict form) for replay-hash integrity."""
-    results: Dict[str, bool] = {}
+    results: dict[str, bool] = {}
     for i, receipt in enumerate(receipts):
         obj = ReplayableReceipt(**receipt)
         results[f"receipt_{i}"] = obj.verify_replay()

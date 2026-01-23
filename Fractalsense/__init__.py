@@ -19,7 +19,7 @@ except ImportError:
         def decorator(func):
             return func
         return decorator
-from typing import Dict, List, Any, Tuple, Optional
+from typing import Any, Optional
 
 # Importiere das Modul-Interface
 from modular_app_structure import ModuleInterface
@@ -51,7 +51,7 @@ class FractalVisualizationModule(ModuleInterface):
         # Konfigurationsmanager
         self._config_manager = None
     
-    def initialize(self, app_context: Dict[str, Any]) -> bool:
+    def initialize(self, app_context: dict[str, Any]) -> bool:
         """Initialisiert das Modul mit dem App-Kontext.
         
         Args:
@@ -181,18 +181,18 @@ class FractalVisualizationModule(ModuleInterface):
         except Exception as e:
             print(f"Fehler beim Rendern des Fraktals: {str(e)}")
     
-    def _get_extent(self) -> Tuple[float, float, float, float]:
+    def _get_extent(self) -> tuple[float, float, float, float]:
         """Gibt den Darstellungsbereich für imshow zurück.
         
         Returns:
-            Tuple[float, float, float, float]: Darstellungsbereich (links, rechts, unten, oben)
+            tuple[float, float, float, float]: Darstellungsbereich (links, rechts, unten, oben)
         """
         return (-2/self._zoom + self._center.real, 
                 0.8/self._zoom + self._center.real, 
                 -1.4/self._zoom + self._center.imag, 
                 1.4/self._zoom + self._center.imag)
     
-    def _on_sensor_data_updated(self, event_type: str, event_data: Dict[str, Any]) -> None:
+    def _on_sensor_data_updated(self, event_type: str, event_data: dict[str, Any]) -> None:
         """Event-Handler für aktualisierte Sensordaten.
         
         Args:
@@ -217,7 +217,7 @@ class FractalVisualizationModule(ModuleInterface):
         # Fraktal neu rendern
         self._render_fractal()
     
-    def _on_zoom_in(self, event_type: str, event_data: Dict[str, Any]) -> None:
+    def _on_zoom_in(self, event_type: str, event_data: dict[str, Any]) -> None:
         """Event-Handler für Zoom-In.
         
         Args:
@@ -230,7 +230,7 @@ class FractalVisualizationModule(ModuleInterface):
         # Fraktal neu rendern
         self._render_fractal()
     
-    def _on_zoom_out(self, event_type: str, event_data: Dict[str, Any]) -> None:
+    def _on_zoom_out(self, event_type: str, event_data: dict[str, Any]) -> None:
         """Event-Handler für Zoom-Out.
         
         Args:
@@ -243,7 +243,7 @@ class FractalVisualizationModule(ModuleInterface):
         # Fraktal neu rendern
         self._render_fractal()
     
-    def _on_move(self, event_type: str, event_data: Dict[str, Any]) -> None:
+    def _on_move(self, event_type: str, event_data: dict[str, Any]) -> None:
         """Event-Handler für Bewegung.
         
         Args:
@@ -260,14 +260,14 @@ class FractalVisualizationModule(ModuleInterface):
         # Fraktal neu rendern
         self._render_fractal()
     
-    def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    def process(self, input_data: dict[str, Any]) -> dict[str, Any]:
         """Verarbeitet Eingabedaten und gibt Ergebnisse zurück.
         
         Args:
             input_data: Eingabedaten für die Verarbeitung
             
         Returns:
-            Dict[str, Any]: Ergebnisse der Verarbeitung
+            dict[str, Any]: Ergebnisse der Verarbeitung
         """
         # Verarbeite Eingabedaten
         if "center" in input_data:
@@ -298,11 +298,11 @@ class FractalVisualizationModule(ModuleInterface):
             "extent": self._get_extent()
         }
     
-    def get_ui_components(self) -> Dict[str, Any]:
+    def get_ui_components(self) -> dict[str, Any]:
         """Gibt UI-Komponenten des Moduls zurück.
         
         Returns:
-            Dict[str, Any]: UI-Komponenten des Moduls
+            dict[str, Any]: UI-Komponenten des Moduls
         """
         # In einer realen Anwendung würden hier UI-Komponenten zurückgegeben werden
         # Für dieses Beispiel geben wir nur die Figur zurück
@@ -361,6 +361,6 @@ class FractalVisualizationModule(ModuleInterface):
         return self._description
     
     @property
-    def dependencies(self) -> List[str]:
+    def dependencies(self) -> list[str]:
         """Gibt die Abhängigkeiten des Moduls zurück."""
         return self._dependencies
