@@ -5,7 +5,6 @@ Dieses Modul erweitert die Farbfunktionalität des ResonanceEnhancer-Moduls mit 
 """
 
 import colorsys
-from typing import Dict, List, Tuple
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -192,7 +191,7 @@ class ColorGenerator:
         )
 
     def create_dynamic_colormap(
-        self, base_hsv: Tuple[float, float, float], shift_factor: float, name: str = "dynamic"
+        self, base_hsv: tuple[float, float, float], shift_factor: float, name: str = "dynamic"
     ) -> LinearSegmentedColormap:
         """Erstellt eine dynamische Farbkarte basierend auf HSV-Werten.
 
@@ -221,7 +220,7 @@ class ColorGenerator:
         return dynamic_cmap
 
     def create_sensor_based_colormap(
-        self, sensor_data: Dict[str, float], fractal_zoom: float, name: str = "sensor_based"
+        self, sensor_data: dict[str, float], fractal_zoom: float, name: str = "sensor_based"
     ) -> LinearSegmentedColormap:
         """Erstellt eine Farbkarte basierend auf Sensordaten und Fraktal-Zoom.
 
@@ -283,7 +282,7 @@ class ColorGenerator:
 
     def create_resonant_gradient(
         self, base_frequency: float, harmonic_ratio: float, n_colors: int = 256
-    ) -> List[Tuple[float, float, float]]:
+    ) -> list[tuple[float, float, float]]:
         """Erstellt einen resonanten Farbverlauf basierend auf Frequenzverhältnissen.
 
         Args:
@@ -292,7 +291,7 @@ class ColorGenerator:
             n_colors: Anzahl der Farben
 
         Returns:
-            List[Tuple[float, float, float]]: Liste von RGB-Farben
+            list[tuple[float, float, float]]: Liste von RGB-Farben
         """
         colors = []
 

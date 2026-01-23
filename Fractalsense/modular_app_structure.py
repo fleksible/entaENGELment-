@@ -12,7 +12,7 @@ import logging
 import os
 import sys
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, List, Optional, Type
+from typing import Any, Callable, Optional, Type
 
 # Logging konfigurieren
 logging.basicConfig(
@@ -25,7 +25,7 @@ class ModuleInterface(ABC):
     """Basis-Interface für alle Module."""
 
     @abstractmethod
-    def initialize(self, app_context: Dict[str, Any]) -> bool:
+    def initialize(self, app_context: dict[str, Any]) -> bool:
         """Initialisiert das Modul mit dem App-Kontext.
 
         Args:
@@ -37,23 +37,23 @@ class ModuleInterface(ABC):
         pass
 
     @abstractmethod
-    def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    def process(self, input_data: dict[str, Any]) -> dict[str, Any]:
         """Verarbeitet Eingabedaten und gibt Ergebnisse zurück.
 
         Args:
             input_data: Eingabedaten für die Verarbeitung
 
         Returns:
-            Dict[str, Any]: Ergebnisse der Verarbeitung
+            dict[str, Any]: Ergebnisse der Verarbeitung
         """
         pass
 
     @abstractmethod
-    def get_ui_components(self) -> Dict[str, Any]:
+    def get_ui_components(self) -> dict[str, Any]:
         """Gibt UI-Komponenten des Moduls zurück.
 
         Returns:
-            Dict[str, Any]: UI-Komponenten des Moduls
+            dict[str, Any]: UI-Komponenten des Moduls
         """
         pass
 
@@ -82,7 +82,7 @@ class ModuleInterface(ABC):
 
     @property
     @abstractmethod
-    def dependencies(self) -> List[str]:
+    def dependencies(self) -> list[str]:
         """Gibt die Abhängigkeiten des Moduls zurück."""
         pass
 
@@ -91,11 +91,11 @@ class ModuleRegistry:
     """Verwaltet die Registrierung und Verwaltung von Modulen."""
 
     def __init__(self):
-        self._modules: Dict[str, ModuleInterface] = {}
-        self._module_classes: Dict[str, Type[ModuleInterface]] = {}
-        self._module_paths: Dict[str, str] = {}
-        self._module_dependencies: Dict[str, List[str]] = {}
-        self._module_load_order: List[str] = []
+        self._modules: dict[str, ModuleInterface] = {}
+        self._module_classes: dict[str, Type[ModuleInterface]] = {}
+        self._module_paths: dict[str, str] = {}
+        self._module_dependencies: dict[str, list[str]] = {}
+        self._module_load_order: list[str] = []
 
     def register_module_class(self, module_class: Type[ModuleInterface], module_path: str) -> bool:
         """Registriert eine Modulklasse.
@@ -172,7 +172,7 @@ class ModuleRegistry:
         logger.info(f"{count} Module gefunden und registriert.")
         return count
 
-    def initialize_modules(self, app_context: Dict[str, Any]) -> bool:
+    def initialize_modules(self, app_context: dict[str, Any]) -> bool:
         """Initialisiert alle registrierten Module in der richtigen Reihenfolge.
 
         Args:
@@ -255,11 +255,11 @@ class ModuleRegistry:
         """
         return self._modules.get(module_name)
 
-    def get_all_modules(self) -> Dict[str, ModuleInterface]:
+    def get_all_modules(self) -> dict[str, ModuleInterface]:
         """Gibt alle initialisierten Module zurück.
 
         Returns:
-            Dict[str, ModuleInterface]: Dictionary mit allen Modulen
+            dict[str, ModuleInterface]: Dictionary mit allen Modulen
         """
         return self._modules.copy()
 
@@ -282,7 +282,7 @@ class EventSystem:
     """Implementiert ein Event-System für die Kommunikation zwischen Modulen."""
 
     def __init__(self):
-        self._event_handlers: Dict[str, List[Callable]] = {}
+        self._event_handlers: dict[str, list[Callable]] = {}
 
     def register_handler(self, event_type: str, handler: Callable) -> None:
         """Registriert einen Event-Handler.
@@ -313,7 +313,7 @@ class EventSystem:
             return True
         return False
 
-    def emit_event(self, event_type: str, event_data: Dict[str, Any] = None) -> None:
+    def emit_event(self, event_type: str, event_data: Optional[dict[str, Any]] = None) -> None:
         """Sendet ein Event an alle registrierten Handler.
 
         Args:
@@ -338,7 +338,7 @@ class ConfigManager:
 
     def __init__(self, config_file: str):
         self._config_file = config_file
-        self._config: Dict[str, Any] = {
+        self._config: dict[str, Any] = {
             "app": {
                 "name": "FractalSense EntaENGELment",
                 "version": "1.0.0",
@@ -370,7 +370,7 @@ class ConfigManager:
             logger.error(f"Fehler beim Laden der Konfiguration: {str(e)}")
             return False
 
-    def _update_config(self, target: Dict[str, Any], source: Dict[str, Any]) -> None:
+    def _update_config(self, target: dict[str, Any], source: dict[str, Any]) -> None:
         """Aktualisiert die Konfiguration rekursiv.
 
         Args:
@@ -432,20 +432,20 @@ class ConfigManager:
 
         self._config[section][key] = value
 
-    def get_module_config(self, module_name: str) -> Dict[str, Any]:
+    def get_module_config(self, module_name: str) -> dict[str, Any]:
         """Gibt die Konfiguration eines Moduls zurück.
 
         Args:
             module_name: Name des Moduls
 
         Returns:
-            Dict[str, Any]: Modulkonfiguration oder leeres Dictionary, wenn nicht gefunden
+            dict[str, Any]: Modulkonfiguration oder leeres Dictionary, wenn nicht gefunden
         """
         if "modules" in self._config and module_name in self._config["modules"]:
             return self._config["modules"][module_name]
         return {}
 
-    def set_module_config(self, module_name: str, config: Dict[str, Any]) -> None:
+    def set_module_config(self, module_name: str, config: dict[str, Any]) -> None:
         """Setzt die Konfiguration eines Moduls.
 
         Args:

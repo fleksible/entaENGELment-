@@ -7,12 +7,12 @@ Dieses Modul integriert den ResonanceEnhancer mit den bestehenden Modulen.
 import os
 import sys
 import importlib
-from typing import Dict, List, Any
+from typing import Any
 
 # Importiere das modulare Framework
 from modular_app_structure import ModuleInterface, EventSystem
 
-def integrate_resonance_enhancer(app_context: Dict[str, Any]) -> bool:
+def integrate_resonance_enhancer(app_context: dict[str, Any]) -> bool:
     """Integriert das ResonanceEnhancer-Modul mit den bestehenden Modulen.
     
     Args:
@@ -73,7 +73,7 @@ def _connect_hypergraph_to_resonance(event_system: EventSystem) -> None:
     # Event-Handler für Hypergraph-Updates registrieren
     event_system.register_handler("hypergraph_updated", _on_hypergraph_updated)
 
-def _on_colormap_updated(event_type: str, event_data: Dict[str, Any]) -> None:
+def _on_colormap_updated(event_type: str, event_data: dict[str, Any]) -> None:
     """Event-Handler für aktualisierte Farbkarten.
     
     Args:
@@ -88,7 +88,7 @@ def _on_colormap_updated(event_type: str, event_data: Dict[str, Any]) -> None:
     event_system = EventSystem()
     event_system.emit_event("update_fractal_colormap", {"colormap": colormap})
 
-def _on_fractal_updated_for_sound(event_type: str, event_data: Dict[str, Any]) -> None:
+def _on_fractal_updated_for_sound(event_type: str, event_data: dict[str, Any]) -> None:
     """Event-Handler für aktualisiertes Fraktal (für Klangerzeugung).
     
     Args:
@@ -113,7 +113,7 @@ def _on_fractal_updated_for_sound(event_type: str, event_data: Dict[str, Any]) -
         "zoom": zoom
     })
 
-def _on_sensor_data_updated_for_resonance(event_type: str, event_data: Dict[str, Any]) -> None:
+def _on_sensor_data_updated_for_resonance(event_type: str, event_data: dict[str, Any]) -> None:
     """Event-Handler für aktualisierte Sensordaten (für ResonanceEnhancer).
     
     Args:
@@ -146,7 +146,7 @@ def _on_sensor_data_updated_for_resonance(event_type: str, event_data: Dict[str,
         "gyro_z": gyro_z
     })
 
-def _on_hypergraph_updated(event_type: str, event_data: Dict[str, Any]) -> None:
+def _on_hypergraph_updated(event_type: str, event_data: dict[str, Any]) -> None:
     """Event-Handler für aktualisierten Hypergraphen.
     
     Args:
@@ -280,7 +280,7 @@ from typing import Dict, List, Any
 # Importiere das modulare Framework
 from modular_app_structure import ModuleInterface, EventSystem
 
-def integrate_resonance_enhancer(app_context: Dict[str, Any]) -> bool:
+def integrate_resonance_enhancer(app_context: dict[str, Any]) -> bool:
     \"\"\"Integriert das ResonanceEnhancer-Modul mit den bestehenden Modulen.
     
     Args:
@@ -341,7 +341,7 @@ def _connect_hypergraph_to_resonance(event_system: EventSystem) -> None:
     # Event-Handler für Hypergraph-Updates registrieren
     event_system.register_handler("hypergraph_updated", _on_hypergraph_updated)
 
-def _on_colormap_updated(event_type: str, event_data: Dict[str, Any]) -> None:
+def _on_colormap_updated(event_type: str, event_data: dict[str, Any]) -> None:
     \"\"\"Event-Handler für aktualisierte Farbkarten.
     
     Args:
@@ -356,7 +356,7 @@ def _on_colormap_updated(event_type: str, event_data: Dict[str, Any]) -> None:
     event_system = EventSystem()
     event_system.emit_event("update_fractal_colormap", {"colormap": colormap})
 
-def _on_fractal_updated_for_sound(event_type: str, event_data: Dict[str, Any]) -> None:
+def _on_fractal_updated_for_sound(event_type: str, event_data: dict[str, Any]) -> None:
     \"\"\"Event-Handler für aktualisiertes Fraktal (für Klangerzeugung).
     
     Args:
@@ -381,7 +381,7 @@ def _on_fractal_updated_for_sound(event_type: str, event_data: Dict[str, Any]) -
         "zoom": zoom
     })
 
-def _on_sensor_data_updated_for_resonance(event_type: str, event_data: Dict[str, Any]) -> None:
+def _on_sensor_data_updated_for_resonance(event_type: str, event_data: dict[str, Any]) -> None:
     \"\"\"Event-Handler für aktualisierte Sensordaten (für ResonanceEnhancer).
     
     Args:
