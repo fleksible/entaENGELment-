@@ -1,0 +1,39 @@
+receipt:
+  receipt_id: "ARK-OVL-RO-0001"
+  created_local: "2026-01-23T00:00:00+01:00"
+  purpose: "Verify that the monitoring/overlay interface is read-only and cannot modify guard thresholds or control signals."
+  claims:
+    - tag: FACT
+      reason_code: RC-PHY-ENFORCE
+      claim: "Optical tap couplers extract a small fraction of light for monitoring without providing a feedback path."
+      evidence_ref: "ark_cephalo_manifest_v2.json:hardware_spec.layer_2_analog_monitoring.tap_couplers"
+    - tag: SPEC
+      reason_code: RC-DRIFT-GUARD
+      claim: "Overlay signals (audio, plots, metrics) must never cause changes to Φ, H, ΔMI, τ or twin-pass thresholds."
+      evidence_ref: "ark_cephalo_manifest_v2.json:hardware_spec.layer_2_analog_monitoring"
+    - tag: ACC
+      reason_code: RC-AUD-TRACE
+      claim: "Acceptance: injecting adversarial overlay stimuli does not alter guard outputs or thresholds."
+      evidence_ref: "ark_cephalo_manifest_v2.json:validation"
+  procedure:
+    steps:
+      - "Disconnect all digital control lines; run system with monitoring overlays active."
+      - "Inject intentionally malformed or high-amplitude monitoring signals into overlay path (e.g. audio feedback, EMI)."
+      - "Observe guard outputs (Φ, H, ΔMI, τ, twin-pass) and threshold measurements for drift."
+      - "Verify no threshold parameter changes occur."
+    controls:
+      - "Run baseline with overlays disabled to capture reference behavior."
+  acceptance:
+    pass_if_all:
+      - "No change in guard threshold parameters beyond measurement noise (±1%)."
+      - "No false PASS events occur when overlays are stressed."
+    fail_if_any:
+      - "Any threshold value is altered by overlay stimulus."
+      - "Adversarial overlay causes guard outputs to switch state incorrectly."
+  outputs:
+    raw_data_paths:
+      - "evidence/raw/overlay/overlay_influence_test_YYYYMMDD.csv"
+    hashes:
+      raw_data_sha256: "TBD"
+  audit:
+    reviewer: "TBD"

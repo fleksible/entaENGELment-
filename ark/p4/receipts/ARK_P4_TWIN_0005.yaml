@@ -1,0 +1,43 @@
+receipt:
+  receipt_id: "ARK-P4-TWIN-0005"
+  created_local: "2026-01-23T00:00:00+01:00"
+  test_case: "Twin-Pass interferometer — inject channel combinations and verify PASS/FAIL"
+  component_under_test:
+    name: "Twin-Pass Interferometer"
+    type: "optical_voting_interferometer"
+    channels:
+      vision: {weight_alpha: 0.4, beam_splitter_ratio: "40:60"}
+      texture: {weight_alpha: 0.3, beam_splitter_ratio: "30:70"}
+      entropy: {weight_alpha: 0.2, beam_splitter_ratio: "20:80"}
+      veto: {weight_alpha: 0.1, beam_splitter_ratio: "10:90", inverted: true}
+    combiner:
+      type: "MMI coupler"
+      threshold_tau: 0.6
+  claims:
+    - tag: FACT
+      reason_code: RC-PHY-ENFORCE
+      claim: "Decision is physical interference: constructive = PASS, destructive = FAIL."
+      evidence_ref: "ark_cephalo_manifest_v2.json:twin_pass.security_properties"
+    - tag: ACC
+      reason_code: RC-SPEC-THRESH
+      claim: "Acceptance: >= 95% correct PASS/FAIL decisions."
+      evidence_ref: "ark_cephalo_manifest_v2.json:validation.calibration_protocol.twin_pass"
+  procedure:
+    calibration_assets:
+      - "CALSET-TWIN-TRUTHTABLE: predefined channel vectors + expected outcomes"
+    steps:
+      - "Inject K combinations (recommend K>=50) covering boundary near tau=0.6"
+      - "Record output intensity and classify PASS/FAIL"
+      - "Compute accuracy vs expected"
+  acceptance:
+    pass_if_all:
+      - "accuracy >= 0.95"
+      - "boundary cases (near tau) are stable across repeats"
+  outputs:
+    raw_data_paths:
+      - "evidence/raw/twin_pass/truth_table_runs_YYYYMMDD.csv"
+    hashes:
+      calset_sha256: "TBD"
+      raw_data_sha256: "TBD"
+  audit:
+    reviewer: "TBD"

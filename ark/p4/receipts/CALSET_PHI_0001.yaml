@@ -1,0 +1,26 @@
+receipt:
+  receipt_id: "CALSET-PHI-0001"
+  created_local: "2026-01-23T00:00:00+01:00"
+  purpose: "Canonical calibration suite for Φ*↔Intensity mapping. Frozen by hash."
+  claim_tags: ["SPEC", "AUD"]
+  suite:
+    description: "Small set of reference inputs covering Φ* below/around/above 0.72."
+    items:
+      - id: "phi_low_01"
+        asset_path: "ark/p4/assets/calibration_sets/phi/phi_low_01.png"
+        reference_phi_star: 0.60
+        notes: "should be blocked"
+      - id: "phi_edge_01"
+        asset_path: "ark/p4/assets/calibration_sets/phi/phi_edge_01.png"
+        reference_phi_star: 0.72
+        notes: "threshold edge"
+      - id: "phi_high_01"
+        asset_path: "ark/p4/assets/calibration_sets/phi/phi_high_01.png"
+        reference_phi_star: 0.85
+        notes: "should pass"
+  hashing:
+    suite_files_sha256: "TBD"
+    suite_manifest_sha256: "TBD"
+  audit:
+    rule: "Any change requires new CALSET id (no edits in place)."
+    reviewer: "TBD"
