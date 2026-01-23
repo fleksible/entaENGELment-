@@ -3,6 +3,10 @@ receipt:
   created_local: "2026-01-23T00:00:00+01:00"
 
   test_case: "Φ* guard — saturable absorber intensity sweep validates physical threshold"
+  component_under_test:
+    name: "Φ* Guard"
+    type: "graphene_on_sin_saturable_absorber"
+    enforcement: "absorb_if_below_threshold"
   inputs:
     calset_id: "CALSET-PHI-0001"
     mapping_receipt_id: "ARK-MAP-PHI-0002"
@@ -22,16 +26,21 @@ receipt:
     - tag: "FACT"
       reason_code: "RC-PHY-ENFORCE"
       claim: "Guard is implemented physically via saturable absorber transmission barrier."
+      evidence_ref: "ark_cephalo_manifest_v2.json:hardware_spec.layers.layer_1_optical_core.guards.phi_star_guard"
       evidence_ref: "ark_cephalo_manifest_v2.json#/hardware_spec/layers/layer_1_optical_core/guards/phi_star_guard"
 
     - tag: "SPEC"
       reason_code: "RC-SPEC-THRESH"
       claim: "Constraint: Φ* >= 0.72; below threshold light is absorbed."
+      evidence_ref: "ark_cephalo_manifest_v2.json:governance_invariants.phi_star"
       evidence_ref: "ark_cephalo_manifest_v2.json#/governance_invariants/phi_star"
 
     - tag: "ACC"
       reason_code: "RC-CAL-MAP"
       claim: "Acceptance: T_sat reached at I corresponding to Φ* = 0.72 ± 0.02 as defined by ARK-MAP-PHI-0002."
+      evidence_ref: "ark_cephalo_manifest_v2.json:validation.calibration_protocol.phi_guard"
+
+  procedure:
       evidence_ref: "ark_cephalo_manifest_v2.json#/validation/calibration_protocol/phi_guard"
 
   procedure:
@@ -42,6 +51,9 @@ receipt:
       - "CALSET-PHI-0001: reference patterns for Φ* mapping"
     steps:
       - "Sweep incident intensity I from 0 → I_max across absorber (recommend 0..30 mW)."
+      - "Record transmitted intensity T(I) and compute Φ* mapping per ARK-MAP-PHI-0002."
+      - "Determine I_threshold where Φ* crosses 0.72."
+      - "Repeat for >= 5 runs to estimate drift and hysteresis."
       - "For each point measure I_out, compute T=I_out/I_in."
       - "Fit T(I) to model; extract I_sat_fit and T0_fit, T_sat_fit."
       - "Record transmitted intensity T(I) and compute Φ* mapping per ARK-MAP-PHI-0002."
@@ -64,6 +76,9 @@ receipt:
   outputs:
     raw_data_paths:
       - "evidence/raw/phi_guard/phi_sweep_YYYYMMDD.csv"
+    hashes:
+      calset_sha256: "TBD"
+      raw_data_sha256: "TBD"
     plot_paths:
       - "evidence/plots/phi_guard/T_vs_I.png"
     hashes:

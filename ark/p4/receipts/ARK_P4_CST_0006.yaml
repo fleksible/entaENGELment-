@@ -6,6 +6,7 @@ receipt:
     - tag: SPEC
       reason_code: RC-AUD-TRACE
       claim: "Self-test runs every 100 frames using pilot tone with known patterns and logs cryptographic attestation."
+      evidence_ref: "ark_cephalo_manifest_v2.json:validation.continuous_self_test"
       evidence_ref: "ark_cephalo_manifest_v2.json#/validation/continuous_self_test"
   procedure:
     steps:

@@ -28,11 +28,13 @@ receipt:
     - tag: "FACT"
       reason_code: "RC-PHY-ENFORCE"
       claim: "Decision is physical interference: constructive = PASS, destructive = FAIL."
+      evidence_ref: "ark_cephalo_manifest_v2.json:validation.calibration_protocol.twin_pass"
       evidence_ref: "ark_cephalo_manifest_v2.json#/validation/calibration_protocol/twin_pass"
 
     - tag: "ACC"
       reason_code: "RC-SPEC-THRESH"
       claim: "Acceptance: >= 95% correct PASS/FAIL decisions."
+      evidence_ref: "ark_cephalo_manifest_v2.json:validation.calibration_protocol.twin_pass"
       evidence_ref: "ark_cephalo_manifest_v2.json#/validation/calibration_protocol/twin_pass"
 
   procedure:

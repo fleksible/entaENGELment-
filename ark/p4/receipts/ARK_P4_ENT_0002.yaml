@@ -6,6 +6,7 @@ receipt:
   component_under_test:
     name: "Entropy Guard"
     type: "high_pass_spectral_filter"
+    enforcement: "hardware_blocking"
     mechanism: "annular_aperture_in_fourier_plane + outer-annulus detector"
     enforcement: "hardware_blocking"
   spec_parameters:
@@ -18,16 +19,21 @@ receipt:
     - tag: "FACT"
       reason_code: "RC-PHY-ENFORCE"
       claim: "Entropy gating is enforced by a physical high-pass spectral filter."
+      evidence_ref: "ark_cephalo_manifest_v2.json:hardware_spec.layers.layer_1_optical_core.guards.entropy_guard"
       evidence_ref: "ark_cephalo_manifest_v2.json#/hardware_spec/layers/layer_1_optical_core/guards/entropy_guard"
 
     - tag: "SPEC"
       reason_code: "RC-SPEC-THRESH"
       claim: "Constraint: H >= 0.78; below threshold signal is blocked."
+      evidence_ref: "ark_cephalo_manifest_v2.json:governance_invariants.entropy"
       evidence_ref: "ark_cephalo_manifest_v2.json#/governance_invariants/entropy"
 
     - tag: "ACC"
       reason_code: "RC-CAL-MAP"
       claim: "Acceptance: low-entropy calset scenes FAIL; high-entropy scenes PASS, with <= 2% false positives."
+      evidence_ref: "ark_cephalo_manifest_v2.json:validation.calibration_protocol.entropy_guard"
+
+  procedure:
       evidence_ref: "ark_cephalo_manifest_v2.json#/validation/calibration_protocol/entropy_guard"
 
   procedure:

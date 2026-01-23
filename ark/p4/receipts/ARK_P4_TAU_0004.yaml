@@ -16,6 +16,7 @@ receipt:
     - tag: SPEC
       reason_code: RC-SPEC-THRESH
       claim: "Constraint: τ >= 120ms enforced by thermal detuning recovery."
+      evidence_ref: "ark_cephalo_manifest_v2.json:governance_invariants.refractory"
       evidence_ref: "ark_cephalo_manifest_v2.json#/governance_invariants/refractory"
     - tag: FACT
       reason_code: RC-PHY-ENFORCE
@@ -24,6 +25,7 @@ receipt:
     - tag: ACC
       reason_code: RC-SPEC-THRESH
       claim: "Acceptance: τ = 120ms ± 12ms (10% tolerance)."
+      evidence_ref: "ark_cephalo_manifest_v2.json:validation.calibration_protocol.refractory"
       evidence_ref: "ark_cephalo_manifest_v2.json#/validation/calibration_protocol/refractory"
   procedure:
     steps:
