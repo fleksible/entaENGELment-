@@ -1,0 +1,46 @@
+receipt:
+  receipt_id: "ARK-MAP-PHI-0002"
+  created_local: "2026-01-23T00:00:00+01:00"
+  purpose: "Defines and proves Φ*↔I_abs mapping used to calibrate Φ* guard threshold at 0.72."
+  inputs:
+    calset_id: "CALSET-PHI-0001"
+    calset_hash_sha256: "TBD"
+    tap_method: "TPP optical tapping (observe without interfering)"
+  spec_anchor:
+    statement: "Intensity at absorber is proportional to Φ*; I_sat set so T_sat at Φ*=0.72."
+    citations:
+      - "Ark Spec v1 §5.1.2"
+  model:
+    mapping_form: "I_abs = k * Φ* + b"
+    constraints:
+      - "monotonic_increasing"
+      - "k > 0"
+  measurement_procedure:
+    steps:
+      - "For each CALSET item, inject pattern for N=200 frames"
+      - "Log tap photodiode reading P_tap and (optional) upstream power meter P_in"
+      - "Estimate I_abs proxy: I_abs_proxy = c * P_tap (c can be absorbed into k)"
+      - "Fit k,b by least squares (report R² + residuals)"
+  calibration_target:
+    phi_threshold: 0.72
+    acceptance_from_manifest: "T_sat reached at I corresponding to Φ* = 0.72 ± 0.02"
+  derived_parameters:
+    k: "TBD"
+    b: "TBD"
+    I_at_phi_072: "TBD"
+  acceptance:
+    pass_if_all:
+      - "fit_R2 >= 0.98 OR residuals show no systematic bias near Φ*=0.72"
+      - "I_at_phi_072 is stable across 3 repeats within ±2%"
+    fail_if_any:
+      - "non-monotonic mapping"
+      - "large uncertainty at Φ*=0.72 (edge is fuzzy)"
+  outputs:
+    raw_data_path: "ark/p4/evidence/raw/mapping_phi/phi_mapping_log_YYYYMMDD.csv"
+    raw_data_sha256: "TBD"
+    mapping_params_sha256: "TBD"
+  drift_monitoring:
+    method: "continuous self-test pilot patterns + compare k,b over time"
+    alert_threshold: "10% deviation from calibrated k or I_at_phi_072"
+  audit:
+    reviewer: "TBD"

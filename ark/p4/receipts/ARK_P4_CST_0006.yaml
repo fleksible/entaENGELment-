@@ -1,0 +1,26 @@
+receipt:
+  receipt_id: "ARK-P4-CST-0006"
+  created_local: "2026-01-23T00:00:00+01:00"
+  test_case: "Continuous self-test — pilot tone with known patterns every 100 frames + crypto attestation"
+  claims:
+    - tag: SPEC
+      reason_code: RC-AUD-TRACE
+      claim: "Self-test runs every 100 frames using pilot tone with known patterns and logs cryptographic attestation."
+      evidence_ref: "ark_cephalo_manifest_v2.json:validation.continuous_self_test"
+  procedure:
+    steps:
+      - "Define pilot-pattern set P (small, fixed, hashed)"
+      - "Inject P every 100 frames; measure expected guard outputs (Φ/H/JTC/τ/twin states)"
+      - "Create attestation record: {frame_idx, outputs, hashes} signed by device key (or placeholder in P4)"
+  acceptance:
+    pass_if_all:
+      - "self-test executed at correct cadence (±0 frames drift over 10k frames)"
+      - "attestation log is complete and verifiable against hashes"
+  outputs:
+    raw_data_paths:
+      - "evidence/raw/self_test/self_test_log_YYYYMMDD.jsonl"
+    hashes:
+      pilotset_sha256: "TBD"
+      log_sha256: "TBD"
+  audit:
+    reviewer: "TBD"
