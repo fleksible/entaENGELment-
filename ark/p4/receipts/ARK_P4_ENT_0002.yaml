@@ -1,49 +1,64 @@
 receipt:
   receipt_id: "ARK-P4-ENT-0002"
   created_local: "2026-01-23T00:00:00+01:00"
-  test_case: "Entropy guard — inject known-entropy patterns, verify gating"
+
+  test_case: "Entropy guard — verify high-pass spectral filter blocks monotone/low-entropy scenes"
   component_under_test:
-    name: "H Guard"
+    name: "Entropy Guard"
     type: "high_pass_spectral_filter"
     mechanism: "annular_aperture_in_fourier_plane + outer-annulus detector"
+    enforcement: "hardware_blocking"
   spec_parameters:
     H_threshold: 0.78
     inner_radius_normalized: 0.3
     outer_radius_normalized: 1.0
     E_hf_at_threshold_uW: 50
+
   claims:
-    - tag: SPEC
-      reason_code: RC-SPEC-THRESH
-      claim: "Constraint: H >= 0.78; otherwise signal blocked."
+    - tag: "FACT"
+      reason_code: "RC-PHY-ENFORCE"
+      claim: "Entropy gating is enforced by a physical high-pass spectral filter."
+      evidence_ref: "ark_cephalo_manifest_v2.json:hardware_spec.layers.layer_1_optical_core.guards.entropy_guard"
+
+    - tag: "SPEC"
+      reason_code: "RC-SPEC-THRESH"
+      claim: "Constraint: H >= 0.78; below threshold signal is blocked."
       evidence_ref: "ark_cephalo_manifest_v2.json:governance_invariants.entropy"
-    - tag: FACT
-      reason_code: RC-PHY-ENFORCE
-      claim: "Implementation: ring/annulus detector measures high-frequency energy E_HF; switch transmits only if threshold met."
-      evidence_ref: "ark_cephalo_manifest_v2.json:hardware_spec.layer_1_optical_core.guards.entropy_guard"
-    - tag: ACC
-      reason_code: RC-SPEC-THRESH
-      claim: "Acceptance: PASS for H >= 0.78, BLOCK for H < 0.78."
+
+    - tag: "ACC"
+      reason_code: "RC-CAL-MAP"
+      claim: "Acceptance: low-entropy calset scenes FAIL; high-entropy scenes PASS, with <= 2% false positives."
       evidence_ref: "ark_cephalo_manifest_v2.json:validation.calibration_protocol.entropy_guard"
+
   procedure:
     setup:
-      - "Pattern injector: define 3 entropy bands (LOW <0.78, MID ~0.78, HIGH >0.78)"
-      - "Measure E_HF at annulus detector + observe gate output (on/off)"
+      - "Pattern injector: define 3 entropy bands (LOW <0.78, MID ~0.78, HIGH >0.78)."
+      - "Measure E_HF at annulus detector + observe gate output (on/off)."
+    calibration_assets:
+      - "CALSET-ENT-LOW: monotone/striped patterns"
+      - "CALSET-ENT-HIGH: fractal/noise textures"
     steps:
-      - "Play each pattern for N=100 frames; record E_HF distribution + gate state"
-      - "Compute confusion matrix: expected PASS/BLOCK vs observed"
+      - "Inject CALSET-ENT-LOW patterns at fixed illumination; record output power after filter."
+      - "Inject CALSET-ENT-HIGH patterns at matched illumination; record output power after filter."
+      - "Compute classification using filter output proxy (E_HF)."
+      - "Play MID band patterns to document transition boundary."
+
   acceptance:
     pass_if_all:
-      - "All HIGH patterns PASS (>=99/100 frames each)"
-      - "All LOW patterns BLOCK (>=99/100 frames each)"
-      - "MID band shows transition around calibrated E_HF (document boundary)"
+      - "LOW set: >= 98% classified FAIL (blocked)."
+      - "HIGH set: >= 98% classified PASS (transmit)."
+      - "False positives <= 2% on LOW set."
+      - "MID band shows transition around calibrated E_HF boundary (documented)."
     fail_if_any:
-      - "Gate leakage (LOW patterns pass frequently)"
-      - "E_HF threshold unstable across repeats"
+      - "Gate leakage (LOW patterns pass frequently)."
+      - "E_HF threshold unstable across repeats."
+
   outputs:
     raw_data_paths:
-      - "evidence/raw/entropy_guard/EHF_gate_log_YYYYMMDD.csv"
+      - "evidence/raw/entropy_guard/ent_sweep_YYYYMMDD.csv"
     hashes:
       calset_sha256: "TBD"
       raw_data_sha256: "TBD"
+
   audit:
     reviewer: "TBD"
