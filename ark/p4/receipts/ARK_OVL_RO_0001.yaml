@@ -1,3 +1,4 @@
+# NOTE: YAML indentation uses ASCII spaces (no NBSP).
 receipt:
   receipt_id: "ARK-OVL-RO-0001"
   created_local: "2026-01-23T00:00:00+01:00"
