@@ -17,6 +17,7 @@ receipt:
       reason_code: RC-SPEC-THRESH
       claim: "Constraint: ΔMI >= 3.0 bit; violation yields no correlation peak / blocked."
       evidence_ref: "ark_cephalo_manifest_v2.json:governance_invariants.mutual_information"
+      evidence_ref: "ark_cephalo_manifest_v2.json#/governance_invariants/mutual_information"
     - tag: FACT
       reason_code: RC-PHY-ENFORCE
       claim: "Decision logic: sharp peak (<0.2) BLOCK, broad (0.2–0.6) PASS, no peak BLOCK."
@@ -25,6 +26,7 @@ receipt:
       reason_code: RC-AUD-TRACE
       claim: "Acceptance: peak-width classification matches expected for identical/similar/different pairs."
       evidence_ref: "ark_cephalo_manifest_v2.json:validation.calibration_protocol.mi_guard"
+      evidence_ref: "ark_cephalo_manifest_v2.json#/validation/calibration_protocol/mi_guard"
   procedure:
     calibration_assets:
       - "CALSET-JTC-IDENT: identical pairs"
