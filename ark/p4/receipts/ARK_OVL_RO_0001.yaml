@@ -1,48 +1,48 @@
 receipt:
-  receipt_id: "ARK-OVL-RO-0001"
-  created_local: "2026-01-23T00:00:00+01:00"
+  receipt_id: "ARK-OVL-RO-0001"
+  created_local: "2026-01-23T00:00:00+01:00"
 
-  test_case: "Overlay read-only contract — monitoring interface must not influence guards"
-  component_under_test:
-    name: "Analog monitoring overlay"
-    type: "optical_tap + sonification/plotting"
-    tap_fraction: "1-5% optical power"
+  test_case: "Overlay read-only contract — monitoring interface must not influence guards"
+  component_under_test:
+    name: "Analog monitoring overlay"
+    type: "optical_tap + sonification/plotting"
+    tap_fraction: "1-5% optical power"
 
-  claims:
-    - tag: "FACT"
-      reason_code: "RC-PHY-ENFORCE"
-      claim: "Optical tap couplers extract a small fraction of light for monitoring without providing a feedback path."
-      evidence_ref: "ark_cephalo_manifest_v2.json:hardware_spec.layers.layer_2_analog_monitoring.tap_couplers"
+  claims:
+    - tag: "FACT"
+      reason_code: "RC-PHY-ENFORCE"
+      claim: "Optical tap couplers extract a small fraction of light for monitoring without providing a feedback path."
+      evidence_ref: "ark_cephalo_manifest_v2.json:hardware_spec.layers.layer_2_analog_monitoring.tap_couplers"
 
-    - tag: "SPEC"
-      reason_code: "RC-DRIFT-GUARD"
-      claim: "Overlay signals (audio, plots, metrics) must never cause changes to Φ, H, ΔMI, τ or twin-pass thresholds."
-      evidence_ref: "ark_cephalo_manifest_v2.json:hardware_spec.layers.layer_2_analog_monitoring"
+    - tag: "SPEC"
+      reason_code: "RC-DRIFT-GUARD"
+      claim: "Overlay signals (audio, plots, metrics) must never cause changes to Φ, H, ΔMI, τ or twin-pass thresholds."
+      evidence_ref: "ark_cephalo_manifest_v2.json:hardware_spec.layers.layer_2_analog_monitoring"
 
-    - tag: "ACC"
-      reason_code: "RC-AUD-TRACE"
-      claim: "Acceptance: injecting adversarial overlay stimuli does not alter guard outputs or thresholds."
-      evidence_ref: "ark_cephalo_manifest_v2.json:validation"
+    - tag: "ACC"
+      reason_code: "RC-AUD-TRACE"
+      claim: "Acceptance: injecting adversarial overlay stimuli does not alter guard outputs or thresholds."
+      evidence_ref: "ark_cephalo_manifest_v2.json:validation"
 
-  procedure:
-    steps:
-      - "Run baseline suite: capture Φ*, H, ΔMI proxy, τ outputs over N frames (N>=500)."
-      - "Inject adversarial overlay patterns (audio/visual intensity spikes, rapid UI state toggles)."
-      - "Repeat suite and compare distributions."
-      - "Confirm no threshold or classification drift."
+  procedure:
+    steps:
+      - "Run baseline suite: capture Φ*, H, ΔMI proxy, τ outputs over N frames (N>=500)."
+      - "Inject adversarial overlay patterns (audio/visual intensity spikes, rapid UI state toggles)."
+      - "Repeat suite and compare distributions."
+      - "Confirm no threshold or classification drift."
 
-  acceptance:
-    pass_if_all:
-      - "No change in guard threshold parameters (Φ*, H, ΔMI proxy, τ, twin-pass) between baseline and adversarial run."
-      - "Guard PASS/FAIL decisions unchanged for identical optical inputs (replay determinism)."
+  acceptance:
+    pass_if_all:
+      - "No change in guard threshold parameters (Φ*, H, ΔMI proxy, τ, twin-pass) between baseline and adversarial run."
+      - "Guard PASS/FAIL decisions unchanged for identical optical inputs (replay determinism)."
 
-  outputs:
-    raw_data_paths:
-      - "evidence/raw/overlay_ro/baseline_YYYYMMDD.csv"
-      - "evidence/raw/overlay_ro/adversarial_YYYYMMDD.csv"
-    hashes:
-      baseline_sha256: "TBD"
-      adversarial_sha256: "TBD"
+  outputs:
+    raw_data_paths:
+      - "evidence/raw/overlay_ro/baseline_YYYYMMDD.csv"
+      - "evidence/raw/overlay_ro/adversarial_YYYYMMDD.csv"
+    hashes:
+      baseline_sha256: "TBD"
+      adversarial_sha256: "TBD"
 
-  audit:
-    reviewer: "TBD"
+  audit:
+    reviewer: "TBD"
