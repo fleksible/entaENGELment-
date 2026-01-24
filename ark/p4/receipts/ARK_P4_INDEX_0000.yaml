@@ -6,23 +6,6 @@ receipt:
     - tag: SPEC
       reason_code: RC-SPEC-THRESH
       claim: "Φ* Guard requires Φ* >= 0.72 enforced by saturable absorber."
-      evidence_ref: "ark_cephalo_manifest_v2.json:governance_invariants.phi_star"
-    - tag: SPEC
-      reason_code: RC-SPEC-THRESH
-      claim: "Entropy guard requires H >= 0.78 enforced by high-pass spectral filter."
-      evidence_ref: "ark_cephalo_manifest_v2.json:governance_invariants.entropy"
-    - tag: SPEC
-      reason_code: RC-SPEC-THRESH
-      claim: "MI constraint uses ΔMI >= 3.0 bit with JTC peak-width proxy sweet spot."
-      evidence_ref: "ark_cephalo_manifest_v2.json:governance_invariants.mutual_information"
-    - tag: SPEC
-      reason_code: RC-SPEC-THRESH
-      claim: "Refractory constraint τ >= 120 ms enforced by thermal detuning recovery."
-      evidence_ref: "ark_cephalo_manifest_v2.json:governance_invariants.refractory"
-    - tag: SPEC
-      reason_code: RC-AUD-TRACE
-      claim: "Continuous self-test runs every 100 frames with cryptographic attestation."
-      evidence_ref: "ark_cephalo_manifest_v2.json:validation.continuous_self_test"
       evidence_ref: "ark_cephalo_manifest_v2.json#/governance_invariants/phi_star"
     - tag: SPEC
       reason_code: RC-SPEC-THRESH

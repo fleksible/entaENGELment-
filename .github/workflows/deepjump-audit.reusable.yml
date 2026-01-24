@@ -47,6 +47,9 @@ jobs:
       - name: "Phase 1: Verify Pointers"
         run: python3 tools/verify_pointers.py --strict
 
+      - name: "Phase 1b: Receipt Lint (no duplicate keys)"
+        run: python3 tools/receipt_lint.py --strict ark/p4/receipts
+
       - name: "Phase 1: Claim Lint"
         run: python3 tools/claim_lint.py --scope index,spec,receipts,tools
         continue-on-error: true

@@ -13,20 +13,17 @@ receipt:
     - tag: "FACT"
       reason_code: "RC-PHY-ENFORCE"
       claim: "Optical tap couplers extract a small fraction of light for monitoring without providing a feedback path."
-      evidence_ref: "ark_cephalo_manifest_v2.json:hardware_spec.layers.layer_2_analog_monitoring.tap_couplers"
       evidence_ref: "ark_cephalo_manifest_v2.json#/hardware_spec/layers/layer_2_analog_monitoring/tap_couplers"
 
     - tag: "SPEC"
       reason_code: "RC-DRIFT-GUARD"
       claim: "Overlay signals (audio, plots, metrics) must never cause changes to Φ, H, ΔMI, τ or twin-pass thresholds."
-      evidence_ref: "ark_cephalo_manifest_v2.json:hardware_spec.layers.layer_2_analog_monitoring"
       evidence_ref: "ark_cephalo_manifest_v2.json#/hardware_spec/layers/layer_2_analog_monitoring"
 
     - tag: "ACC"
       reason_code: "RC-AUD-TRACE"
       claim: "Acceptance: injecting adversarial overlay stimuli does not alter guard outputs or thresholds."
-      evidence_ref: "ark_cephalo_manifest_v2.json:validation"
-      evidence_ref: "ark_cephalo_manifest_v2.json#/validation/overlay_contract"
+      evidence_ref: "ark_cephalo_manifest_v2.json#/validation"
 
   procedure:
     steps:
