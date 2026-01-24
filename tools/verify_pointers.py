@@ -27,6 +27,53 @@ class PointerResult(NamedTuple):
     source: str
     exists: bool
     optional: bool
+    invalid: bool = False
+
+
+def _resolve_under_repo(repo_root: Path, candidate: Path) -> Path:
+    """Resolve candidate path and ensure it remains under repo_root.
+
+    Prevents directory traversal (e.g. "../secrets.json") from being treated as
+    a valid in-repo pointer.
+    """
+    repo_root = repo_root.resolve()
+    resolved = candidate.resolve(strict=False)
+    try:
+        resolved.relative_to(repo_root)
+    except ValueError as e:
+        raise ValueError(f"Pointer escapes repo root: {candidate} -> {resolved}") from e
+    return resolved
+
+
+def _pick_safe_target(
+    *, repo_root: Path, yaml_path: Path, rel_path: str
+) -> tuple[Path | None, bool]:
+    """Return a safe resolved target path under repo_root.
+
+    Tries both:
+      1) path relative to the YAML file
+      2) path relative to repo root
+
+    Returns (target, invalid). invalid=True iff it cannot be resolved under repo_root.
+    """
+    p = Path(rel_path)
+    if p.is_absolute():
+        return None, True
+
+    candidates: list[Path] = []
+    for base in (yaml_path.parent, repo_root):
+        try:
+            candidates.append(_resolve_under_repo(repo_root, base / p))
+        except ValueError:
+            continue
+
+    if not candidates:
+        return None, True
+
+    for c in candidates:
+        if c.exists():
+            return c, False
+    return candidates[0], False
 
 
 # Directories considered OPERATIONAL CORE (must exist)
@@ -84,22 +131,21 @@ def extract_paths_from_yaml(yaml_path: Path, repo_root: Path) -> list[PointerRes
         return path.strip()
 
     def looks_like_path(s: str) -> bool:
-        """Check if string looks like a file path."""
-        # Must contain / but not be http
-        if "/" not in s or s.startswith("http"):
-            return False
-        # Skip special values
-        if s in ("REL_TO_ROOT", "sha256"):
-            return False
-        # Skip long descriptions (paths are usually short)
-        if len(s) > 100:
-            return False
-        # Must have a file-like pattern (contains . or ends with /)
-        if "." not in s and not s.endswith("/"):
-            return False
-        # Skip sentences (no spaces before the path portion)
+        """Check if string looks like a file path.
+
+        IMPORTANT: We check the *cleaned* token to avoid false positives from
+        prose containing slashes (e.g. "biological/physical") or punctuation.
+        """
         clean = clean_path(s)
-        if " " in clean:
+
+        if "/" not in clean or clean.startswith("http"):
+            return False
+        if clean in ("REL_TO_ROOT", "sha256"):
+            return False
+        if len(clean) > 160:
+            return False
+        p = Path(clean)
+        if not (p.suffix or clean.endswith("/")):
             return False
         return True
 
@@ -110,21 +156,10 @@ def extract_paths_from_yaml(yaml_path: Path, repo_root: Path) -> list[PointerRes
             if looks_like_path(obj):
                 path = clean_path(obj)
                 optional = is_optional_context(context)
-
-                # Try both absolute from repo root and relative from source file
-                full_path = repo_root / path
-                relative_path = yaml_path.parent / path
-
-                # Check if either path exists
-                exists = full_path.exists() or relative_path.exists()
-
-                # Use the path that exists, or fall back to absolute
-                if relative_path.exists() and not full_path.exists():
-                    # Convert to repo-relative path for consistent reporting
-                    try:
-                        path = str(relative_path.relative_to(repo_root))
-                    except ValueError:
-                        pass  # Keep original path
+                target, invalid = _pick_safe_target(
+                    repo_root=repo_root, yaml_path=yaml_path, rel_path=path
+                )
+                exists = bool(target and target.exists())
 
                 results.append(
                     PointerResult(
@@ -132,6 +167,7 @@ def extract_paths_from_yaml(yaml_path: Path, repo_root: Path) -> list[PointerRes
                         source=str(yaml_path.relative_to(repo_root)),
                         exists=exists,
                         optional=optional,
+                        invalid=invalid,
                     )
                 )
         elif isinstance(obj, dict):
@@ -169,6 +205,7 @@ def verify_pointers(repo_root: Path, strict: bool = False) -> bool:
         all_results.extend(extract_paths_from_yaml(voidmap, repo_root))
 
     # Categorize results
+    invalid_pointers: list[PointerResult] = []
     missing_core: list[PointerResult] = []
     missing_optional: list[PointerResult] = []
     valid_paths: list[PointerResult] = []
@@ -178,6 +215,10 @@ def verify_pointers(repo_root: Path, strict: bool = False) -> bool:
         if result.path in seen:
             continue
         seen.add(result.path)
+
+        if result.invalid:
+            invalid_pointers.append(result)
+            continue
 
         if result.exists:
             valid_paths.append(result)
@@ -193,6 +234,7 @@ def verify_pointers(repo_root: Path, strict: bool = False) -> bool:
     print("\n=== POINTER VERIFICATION ===")
     print(f"Checked: {len(seen)} unique paths")
     print(f"Valid:   {len(valid_paths)}")
+    print(f"Invalid (escapes root): {len(invalid_pointers)}")
     print(f"Missing (optional): {len(missing_optional)}")
     print(f"Missing (CORE):     {len(missing_core)}")
 
@@ -202,6 +244,11 @@ def verify_pointers(repo_root: Path, strict: bool = False) -> bool:
             print(f"   {r.path}")
         if len(valid_paths) > 10:
             print(f"   ... and {len(valid_paths) - 10} more")
+
+    if invalid_pointers:
+        print("\n🚫 Invalid pointers (escape repo root):")
+        for r in invalid_pointers:
+            print(f"   {r.path} (from: {r.source})")
 
     if missing_optional:
         print("\n⚠️  Missing (optional/non-core):")
@@ -218,6 +265,10 @@ def verify_pointers(repo_root: Path, strict: bool = False) -> bool:
         print(f"\n[FAIL] {len(missing_core)} dead pointer(s) in OPERATIONAL CORE")
         return False
 
+    if invalid_pointers:
+        print(f"\n[FAIL] {len(invalid_pointers)} invalid pointer(s) escape repo root")
+        return False
+
     if strict and missing_optional:
         print(f"\n[WARN] {len(missing_optional)} optional paths missing (strict mode)")
 
@@ -231,13 +282,18 @@ def main() -> None:
         "--strict", action="store_true", help="Also warn about optional missing paths"
     )
     parser.add_argument("--help-extended", action="store_true", help="Show extended help")
+    parser.add_argument(
+        "--repo-root",
+        type=Path,
+        help="Override repository root (default: auto-detect from script location)",
+    )
     args = parser.parse_args()
 
     if args.help_extended:
         print(__doc__)
         sys.exit(0)
 
-    repo_root = get_repo_root()
+    repo_root = args.repo_root.resolve() if args.repo_root else get_repo_root()
     print(f"[verify_pointers] Scanning from: {repo_root}")
 
     success = verify_pointers(repo_root, strict=args.strict)
