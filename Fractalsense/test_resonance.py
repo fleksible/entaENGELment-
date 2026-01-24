@@ -371,5 +371,5 @@ class TestApp:
     
     def on_send_sensor_data(self):
         """Event-Handler für den Sensordaten-senden-Button."""
-        # Sensordaten aus den Steuerelementen
-(Content truncated due to size limit. Use line ranges to read in chunks)
+        # TODO: Implement sensor data sending
+        pass
