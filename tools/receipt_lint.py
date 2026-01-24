@@ -17,9 +17,9 @@ Rules (strict):
 from __future__ import annotations
 
 import argparse
-import sys
+from collections.abc import Iterator
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any
 
 try:
     import yaml
@@ -91,9 +91,7 @@ def lint_file(path: Path, strict: bool) -> list[str]:
 
     for ref in find_evidence_refs(data):
         if is_legacy_manifest_colon(ref):
-            errors.append(
-                f"{path}: legacy evidence_ref style detected (use JSON pointer): {ref}"
-            )
+            errors.append(f"{path}: legacy evidence_ref style detected (use JSON pointer): {ref}")
         # Optional: enforce that manifest refs use JSON pointer
         if strict and ref.endswith(".json"):
             errors.append(f"{path}: evidence_ref missing JSON pointer fragment: {ref}")
