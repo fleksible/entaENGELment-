@@ -42,7 +42,7 @@ export const GUARD_DEFINITIONS: Omit<Guard, 'status' | 'lastCheck'>[] = [
     id: 'G6',
     name: 'Verify Before Merge',
     shortRule: 'Tests vor Merge',
-    fullRule: 'Tests laufen lassen, Report erstellen. Vor jedem Merge: CI muss grün sein. Report nach OUT/. Keine silent failures.',
+    fullRule: 'Tests laufen lassen, Report erstellen. Vor jedem Merge: CI muss grün sein. Report nach docs/audit/. Keine silent failures.',
   },
 ];
 

@@ -83,7 +83,7 @@ Nach Abschluss dieses Tasks:
 
 | Artefakt | Pfad | Beschreibung |
 |----------|------|--------------|
-| Report | `OUT/<name>_report.md` | Zusammenfassung |
+| Report | `docs/audit/<name>_report.md` | Zusammenfassung |
 | Code | `src/<path>` | Implementierung |
 | Tests | `tests/<path>` | Test-Coverage |
 

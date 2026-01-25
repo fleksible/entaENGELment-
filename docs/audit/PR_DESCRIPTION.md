@@ -99,7 +99,7 @@ pytest tests/ethics/ -v
 - test_multiple_violations_still_block: PASSED
 ```
 
-**Full verification log:** `OUT/2026-01-25_p1_void012_013_verify_log.md`
+**Full verification log:** `docs/audit/2026-01-25_p1_void012_013_verify_log.md`
 
 ---
 
@@ -211,9 +211,9 @@ git branch -D claude/governance-void012-013-4nJps
 ## References
 
 - **VOIDMAP.yml:** VOID-012, VOID-013
-- **Templates:** OUT/CONNECTIVITY_FIXLIST.md (Issues #2.1, #2.2)
+- **Templates:** docs/audit/CONNECTIVITY_FIXLIST.md (Issues #2.1, #2.2)
 - **Governance:** CLAUDE.md (Guards G0-G6)
-- **Verification:** OUT/2026-01-25_p1_void012_013_verify_log.md
+- **Verification:** docs/audit/2026-01-25_p1_void012_013_verify_log.md
 
 ---
 

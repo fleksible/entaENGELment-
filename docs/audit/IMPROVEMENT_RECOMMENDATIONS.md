@@ -563,19 +563,19 @@ def generate_html(graph):
 if __name__ == "__main__":
     graph = build_graph()
     html = generate_html(graph)
-    with open("OUT/connectivity_dashboard.html", "w") as f:
+    with open("docs/audit/connectivity_dashboard.html", "w") as f:
         f.write(html)
 ```
 
 #### Verification
 ```bash
 python tools/connectivity_dashboard.py
-open OUT/connectivity_dashboard.html
+open docs/audit/connectivity_dashboard.html
 ```
 
 #### Rollback
 ```bash
-rm tools/connectivity_dashboard.py OUT/connectivity_dashboard.html
+rm tools/connectivity_dashboard.py docs/audit/connectivity_dashboard.html
 ```
 
 **Deliverable:** Interactive connectivity visualization (optional)

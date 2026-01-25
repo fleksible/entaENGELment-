@@ -93,7 +93,7 @@ EntaENGELment Repository (Mixed Python/JavaScript)
 ├─ CI/CD Layer
 │  └─ .github/workflows/ - 8 YAML workflows, ~16KB
 │
-└─ OUT/ - Generated reports and outputs
+└─ docs/audit/ - Generated reports and outputs
 ```
 
 ### Language Breakdown
@@ -575,27 +575,27 @@ make coverage
 ## Artifacts Delivered
 
 ### Phase 0: Orientation
-- ✅ `OUT/PHASE0_ORIENTATION.md` (11KB)
+- ✅ `docs/audit/PHASE0_ORIENTATION.md` (11KB)
   - Repo map, languages, build commands, CI workflows
 
 ### Phase 1: Connectivity
-- ✅ `OUT/CONNECTIVITY_MAP.md` (52KB)
+- ✅ `docs/audit/CONNECTIVITY_MAP.md` (52KB)
   - Connectivity matrix, breakages, reference graph
-- ✅ `OUT/CONNECTIVITY_FIXLIST.md` (16KB)
+- ✅ `docs/audit/CONNECTIVITY_FIXLIST.md` (16KB)
   - Prioritized action items, verification commands
 
 ### Phase 2: Performance
-- ✅ `OUT/PERF_BASELINE.md` (28KB)
+- ✅ `docs/audit/PERF_BASELINE.md` (28KB)
   - Hot path analysis, baseline measurements, metrics
-- ✅ `OUT/PERF_RECOMMENDATIONS.md` (18KB)
+- ✅ `docs/audit/PERF_RECOMMENDATIONS.md` (18KB)
   - Implementation details, benchmarking methodology
 
 ### Phase 3: Improvements
-- ✅ `OUT/IMPROVEMENT_RECOMMENDATIONS.md` (18KB)
+- ✅ `docs/audit/IMPROVEMENT_RECOMMENDATIONS.md` (18KB)
   - 10 high-leverage improvements, roadmap, success criteria
 
 ### Phase 4: Audit Report
-- ✅ `OUT/AUDIT_REPORT.md` (this file)
+- ✅ `docs/audit/AUDIT_REPORT.md` (this file)
   - Comprehensive findings, executive summary, handoff
 
 **Total Artifacts:** 6 files, ~140KB of detailed analysis
@@ -621,7 +621,7 @@ The EntaENGELment repository is a **well-architected, thoughtfully governed fram
 ---
 
 **Audit Complete.**
-**Next Step:** Execute improvement roadmap (see OUT/IMPROVEMENT_RECOMMENDATIONS.md)
+**Next Step:** Execute improvement roadmap (see docs/audit/IMPROVEMENT_RECOMMENDATIONS.md)
 
 ---
 

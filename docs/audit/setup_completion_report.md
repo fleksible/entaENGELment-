@@ -18,7 +18,7 @@ Repository für Claude Code/Cowork-Integration vorbereiten durch Erstellung alle
 - [x] `.claude/skills/`
 - [x] `docs/guards/`
 - [x] `TASKS/`
-- [x] `OUT/`
+- [x] `docs/audit/`
 
 ### Neue Dateien erstellt (14)
 
@@ -34,8 +34,8 @@ Repository für Claude Code/Cowork-Integration vorbereiten durch Erstellung alle
 | 8 | `docs/guards/metatron_rule.md` | Vollständige Metatron-Dokumentation |
 | 9 | `docs/negations.md` | Negative Theologie |
 | 10 | `TASKS/_template.md` | Standard-Template für Tasks |
-| 11 | `OUT/.gitkeep` | Ordner-Erhaltung für OUT/ |
-| 12 | `OUT/setup_completion_report.md` | Dieser Report |
+| 11 | `docs/audit/.gitkeep` | Ordner-Erhaltung für docs/audit/ |
+| 12 | `docs/audit/setup_completion_report.md` | Dieser Report |
 
 ### Bestehende Dateien geändert (1)
 
