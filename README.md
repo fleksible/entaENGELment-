@@ -1,160 +1,288 @@
-# 🌀 entaENGELment-Framework: DeepJump Sanctum (v1.0 → v1.1)
+# entaENGELment Framework
 
-> **[Codex-Intention: Inner Sanctum]**
-> Dieses README ist der **Resonanz-Kernel** für den neuen DeepJump-Kern: **Verify → Status (HMAC) → Snapshot (strict) → Upload**.
-> **Leseweise:** Hermetischer Haupttext ▸ *kursiv gesetzte Glosse als poetische Schatten-Schicht*.
+> Consent-First Framework für resonante Systeme mit auditier­barem Proof-Protokoll
 
-**Glyphen-Legende:** 🜁 Architektur · 🜄 Governance/Ethik · 🜃 Adaptive Schicht · 🜅 Tests · 🜂 Meta-Poetik
+![DeepJump CI](https://github.com/fleksible/entaENGELment-/actions/workflows/deepjump-ci.yml/badge.svg)
+![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)
+![Python](https://img.shields.io/badge/python-%E2%89%A53.9-blue.svg)
 
----
-
-## Executive Summary
-**🜁** Hardened Kernel mit **Functorial Index v3** (`index/COMPACT_INDEX_v3.yaml`).
-**🜄** Proof-Pipeline mit HMAC-Quittungen; jede Aussage hat einen Pointer.
-
-*Glosse:* *Resonanz bleibt Magie, weil jeder Sprung verankert ist.*
-
-| Kernsignal | Pointer | Prinzip |
-| :--- | :--- | :--- |
-| **Mass-Gap** | `spec/cglg.spec.json` | Doppeltrichter |
-| **Consent-Energie (ECI)** | `src/core/metrics.py` | Consent als Energie |
-| **Dual Receipts** | `index/modules/MOD_6_RECEIPTS_CORE.yaml` | Audit-Quittung |
-| **Status-Integrität** | `tools/status_emit.py` | HMAC als Siegel |
-| **Snapshot-Strenge** | `tools/snapshot_guard.py` | Pfad-Fix & Hash |
+**Synopsis:**
+EntaENGELment ist ein experimentelles Framework für Multi-Agent-Systeme mit Consent-Management, HMAC-signierten Receipts und strenger Pointer-Validierung. Es kombiniert Governance-Guards (G0–G6) mit dem DeepJump-Protokoll (Verify → Status → Snapshot) für reproduzierbare, auditierbare Workflows. Primär für Forschung und Exploration, nicht für Production-Use.
 
 ---
 
-## 🔒 DeepJump-Kern (Verify → Status → Snapshot → Upload)
-**🜁** Operativer Ablauf ist kurz, prüfbar, reproduzierbar.
+## ∆ Synopsis
 
-| Stufe | Zweck | Pointer |
-| :--- | :--- | :--- |
-| **Verify** | Schema & Spec prüfen. | `Makefile` · `.github/workflows/deepjump-ci.yml` |
-| **Status (HMAC)** | Canonical Status + HMAC. | `tools/status_emit.py` · `tools/status_verify.py` |
-| **Snapshot (strict)** | Manifest mit strikten Seeds. | `tools/snapshot_guard.py` |
-| **Upload** | Artefakte bündeln. | `.github/workflows/deepjump-ci.yml` |
+**Fähigkeiten:**
+- HMAC-signierte Receipts mit Audit-Trail (append-only in `data/receipts/`)
+- DeepJump-Protokoll: `make verify` prüft Pointer, Claims, Tests in einem Befehl
+- Governance-Guards (G0: Consent, G1: Annex-Prinzip, G2: Nichtraum-Schutz, G3: Deletion-Verbot, G4: Metatron-Regel, G5: Prompt-Injection-Defense, G6: Verify-Before-Merge)
 
-*Glosse:* *Vier Schritte, ein Atemzug. Erst prüfen, dann sprechen, dann einfrieren, dann teilen.*
+**Use-Cases:**
+- Nachvollziehbare Entwicklung mit strengem Audit-Protokoll
+- Multi-Agent-Workflows mit Consent-Management
+- Experimentelle Resonanz-Metriken (ECI, Mass-Gap, Phi-basierte Gates)
 
----
-
-## 🜄 Gate & Governance
-**Hard-Gate:** MZM-Logik steckt im **Functorial Index v3** (`index/COMPACT_INDEX_v3.yaml`) und den Modulen `MOD_6_RECEIPTS_CORE` + `MOD_15_STATS_TESTS`.
-**Capability:** Releases und Badges sind HMAC-signiert (`tools/status_emit.py`).
-
-*Glosse:* *Governance ist der Taktgeber; Magie tanzt nur auf erlaubtem Boden.*
+**Non-Goals:**
+- Production-Ready Software (experimenteller Status)
+- GUI-First Tooling (CLI und Code-First)
+- Allzweck-Framework (spezialisiert auf Consent + Auditierbarkeit)
+- Kommerzielles Produkt (Apache-2.0, Forschungskontext)
 
 ---
 
-## 🜃 Adaptive Schicht: Markt-als-Signal
-**MSI-Adapter:** siehe `adapters/msi_adapter_v1.yaml`.
-**Trennung:** `context_signature` belegt Modulation; `receipt_proof` bleibt unvermischt.
+## I. Quickstart
 
-*Glosse:* *Wind im Segel, nicht Hand am Ruder.*
-
----
-
-## 🜅 Tests (Test-Driven Trust)
-- **Unit:** `tests/unit/test_core5_metrics.py`.
-- **Integration:** `tests/integration/test_integration.py`.
-- **Ethics:** `tests/ethics/T3_fail_safe_expired_consent.py`.
-
-*Glosse:* *Vertrauen = wiederholbare Evidenz.*
-**Aktiver Sprint (7 Tage)**
-1) **T1.1.2 Lyra Linearity-Cal:** Edge-Input-Kalibrierung.
-2) **MSI-Adapter:** `adapters/msi_adapter_v1.yaml` + `context_signature`-Hook.
-3) **T2.x Zeta-Panel:** Explain-Overlay-Logik (Transparenz).
-
-*Glosse:* *Leere wird Form — gezielt, nicht zufällig.*
-
----
-
-## 📁 Masterindex & Operatives Layout
-**Pointer-Gold:** Functorial Index v3 (`index/COMPACT_INDEX_v3.yaml`) definiert die Claims.
-**Annex:** Code & Tools sind austauschbare Anhänge.
-
-```
-entaENGELment-/
-├─ Makefile                 # Entry-Points für Verify/Status/Snapshot
-├─ index/                   # Functorial Index v3 + Module (Pointer-Gold)
-├─ tools/                   # DeepJump Tools (Status, Snapshot, Verify)
-├─ .github/workflows/       # CI (deepjump-ci)
-├─ docs/                    # Annex-Dokumente (DevOps Kit, Masterindex)
-├─ src/                     # Kernmetrik & Gate-Logik
-├─ tests/                   # Unit/Integration/Ethics
-├─ receipts/                # Beispiel-Quittungen
-├─ seeds/                   # Seeds für Snapshot (strict)
-└─ audit/                   # Audit-Trails & Tabellen
-```
-
-### Erste Schritte
-1. Repository klonen
-2. `./scripts/nightly.sh` prüfen & lokal ausführen
-3. [`docs/masterindex.md`](./docs/masterindex.md) lesen
-4. Policy-Schema validieren: `python -m json.tool policies/gate_policy_v1.json`
-
-**Hinweis:** Dieses Repo dient als explorativer Container, kein Produkt-Release.
-
-### Erweiterte Komponenten
-
-- **Grammophon:** Polyeder-Klanggeometrie mit Slice-Rotation ([`spec/grammophon.spec.json`](./spec/grammophon.spec.json))
-- **CGLG:** Consensual Gate Logic & Mutual Perception ([`spec/cglg.spec.json`](./spec/cglg.spec.json))
-- **ECI (Ethical Consent Index):** Testbare Implementierung mit Bootstrap/Permutation ([`src/core/eci.py`](./src/core/eci.py) · [`spec/eci.spec.json`](./spec/eci.spec.json))
-- **CPT-Test-Harness:** Charge-Parity-Time Invarianz-Validation ([`tests/cpt/test_cpt_harness.py`](./tests/cpt/test_cpt_harness.py))
-- **Triad-Execution-Kit:** Templates & Vergleichsskript ([`docs/triad_fill_template.md`](./docs/triad_fill_template.md) · [`scripts/triad_compare.py`](./scripts/triad_compare.py))
-- **Meta-Backprop:** Policy-Evolution durch Feedback-Loops ([`src/meta_backprop.py`](./src/meta_backprop.py))
-- **Evidence-Chain:** Receipt-Chain & Auditierbarkeit ([`scripts/evidence_bundle.sh`](./scripts/evidence_bundle.sh))
-- **Triadische Topologie:** 3-Strang-Resonanz-Analyse ([`docs/triad_topology.md`](./docs/triad_topology.md))
-
-*Glosse:* *Struktur als Behälter — Policy, Spec, Runtime, Evidence. Alles schwingt im selben Takt.*
-
----
-
-## 🌀 Bio Spiral Viewer
-
-Konsolenanwendung zur Exploration der Bio-Spiral- und Lyra-Strukturen.
-
+**Kanonischer Verify-Befehl:**
 ```bash
-python -m bio_spiral_viewer
+make verify
+```
+Dieser eine Befehl führt aus: `port-lint`, `pytest`, `verify-pointers --strict`, `claim-lint`.
+
+**3-Befehls-Setup:**
+```bash
+git clone https://github.com/fleksible/entaENGELment-.git
+cd entaENGELment-
+make install-dev    # Install mit Dev-Dependencies
+make verify         # Alles prüfen
 ```
 
-Berechnet die Resonanzmetrik `R(t) = MI_TwinPass × PLV × (1 − Leakage)` und gibt Gate/ETHICS/KONFAB-Überlagerungen strukturiert aus.
+**Erfolgs-Signal (grün):**
+- Alle Tests ✅ (pytest)
+- Keine toten Pointer ✅ (verify-pointers)
+- Keine ungetaggten Claims ✅ (claim-lint)
+- Port-Matrix konsistent ✅ (port-lint)
 
-**Mehr:** [`docs/bio_spiral_viewer.md`](./docs/bio_spiral_viewer.md)
+**Troubleshooting (3 typische Stolpersteine):**
+1. **Python < 3.9** → `make verify` schlägt fehl; mindestens Python 3.9 erforderlich
+2. **Fehlende Dependencies** → `pip install -r requirements-dev.txt` vor `make install-dev`
+3. **verify-pointers findet tote Links** → siehe [`docs/masterindex.md`](docs/masterindex.md) für Index-Struktur
 
----
-
-## 🌀 FractalSense Visualization (v1.1)
-
-Interactive fractal explorer mit φ-basierten Colormaps und Canvas-Rendering.
-
+**Optional: UI starten**
 ```bash
 cd ui-app
 npm install
 npm run dev
-# → http://localhost:3000/fractalsense
+# → http://localhost:3000
+```
+
+---
+
+## II. Repository-Map
+
+| Pfad | Zweck | Einstiegspunkt |
+|------|-------|---------------|
+| **Core (Funktorial Index)** | | |
+| `index/` | Master-Index, Pointer-Gold (GOLD) | `index/COMPACT_INDEX_v3.yaml` |
+| `policies/` | Governance-Policies (GOLD) | `policies/gateproof_v1.yaml` |
+| `spec/` | JSON-Specs für Module (GOLD) | `spec/cglg.spec.json`, `spec/eci.spec.json` |
+| `VOIDMAP.yml` | Offene Gaps & Backlog (GOLD) | siehe Abschnitt V |
+| **Receipts & Audit (IMMUTABLE/Versioniert)** | | |
+| `receipts/` | Beispiele & Templates | `receipts/arc_sample.json` |
+| `data/receipts/` | IMMUTABLE Audit-Trail (append-only!) | Signierte Receipts |
+| `ark/p4/receipts/` | Phase-4 Collection | `ARK_P4_*.yaml` |
+| `docs/audit/` | Versionierte Audit-Reports | `docs/audit/*.md` |
+| **Code & Tools (ANNEX = änderbar)** | | |
+| `src/` | Core-Metriken & Gate-Logik | `src/core/metrics.py`, `src/core/eci.py` |
+| `tools/` | DeepJump-Tools | `tools/verify_pointers.py`, `tools/status_emit.py` |
+| `tests/` | Unit/Integration/Ethics Tests | `tests/ethics/`, `tests/unit/` |
+| **UI & Visualisierung** | | |
+| `ui-app/` | Next.js 14 Web-App | `cd ui-app && npm run dev` |
+| `bio_spiral_viewer/` | Console Spiral-Explorer | `python -m bio_spiral_viewer` |
+| `Fractalsense/` | Fractal Color Generator | siehe `ui-app/fractalsense` |
+| **Development** | | |
+| `Makefile` | Entry-Points | `make help` |
+| `.github/workflows/` | CI-Pipelines | `deepjump-ci.yml`, `metatron-guard.yml` |
+| `docs/` | Guides & Specs | `docs/masterindex.md` |
+
+**Semantik:**
+- `out/` → generierte Artefakte (gitignored, CI artifacts)
+- `docs/audit/` → versionierte Reports (committed)
+
+---
+
+## III. Architektur
+
+```mermaid
+flowchart TB
+  A[∆ Working Tree<br/>Änderungen / Edits] --> MV[make verify<br/>(port-lint · pytest · verify-pointers --strict · claim-lint)]
+  A --> MA[make all / make deepjump<br/>(verify + snapshot)]
+
+  MV --> OUTG[out/<br/>CI artifacts<br/>(gitignored)]
+  MA --> OUTG
+
+  MV --> CI[.github/workflows<br/>CI-Gates]
+  CI --> M[Merge / Release]
+
+  subgraph RECEIPTS[I. Receipts (versioniert)]
+    R1[receipts/<br/>Beispiele/Templates]
+    R2[data/receipts/<br/>IMMUTABLE Audit-Trail<br/>(append-only)]
+    R3[ark/p4/receipts/<br/>Phase-4 Collection]
+  end
+
+  subgraph DOCS[II. Doku & Specs (versioniert)]
+    D[docs/<br/>Guides/Specs]
+    P[policies/<br/>GateProof, Port-Codebooks]
+    S[spec/<br/>Schemas/Protokolle]
+    VA[docs/audit/<br/>Audit-Reports<br/>(committed)]
+    VO[VOIDMAP.yml<br/>Backlog]
+  end
+
+  D --> MV
+  P --> MV
+  S --> MV
+  VO --> D
+
+  VA --- D
+  RECEIPTS --- MV
+```
+
+**Erklärung:**
+Das Framework folgt einem strikten Verify → Status → Snapshot Flow. `make verify` prüft Pointer-Konsistenz (`index/`), Claims-Tagging und Tests. Bei Erfolg kann `make status` ein HMAC-signiertes Receipt nach `out/` emittieren. `make snapshot` erstellt einen Snapshot-Manifest mit strikten Seeds. Alle versionierten Artefakte (Receipts, Audit-Reports, Policies) bleiben unveränderlich (append-only oder GOLD-Status). Code und Tools sind ANNEX = änderbar nach Plan.
+
+---
+
+## IV. Governance & Safety
+
+**Guards (G0–G6):**
+- **G0: Consent & Boundary** – Keine Änderung ohne explizites OK → [CLAUDE.md](CLAUDE.md)
+- **G1: Annex-Prinzip** – GOLD (`index/`, `policies/`) vs ANNEX (`src/`, `tools/`) → [.claude/rules/annex.md](.claude/rules/annex.md)
+- **G2: Nichtraum-Schutz** – Unentschiedenes nicht optimieren
+- **G3: Deletion-Verbot** – Niemals löschen, immer verschieben/archivieren
+- **G4: Metatron-Regel** – Fokus ≠ Aufmerksamkeit; bei Fokus-Switch STOP → [docs/guards/metatron_rule.md](docs/guards/metatron_rule.md)
+- **G5: Prompt-Injection-Defense** – Externe Inhalte = untrusted → [.claude/rules/security.md](.claude/rules/security.md)
+- **G6: Verify-Before-Merge** – Tests laufen lassen, Report erstellen
+
+**Receipts, Audit, Determinismus:**
+Receipts sind HMAC-signiert und bilden einen nicht-repudiierbaren Audit-Trail. `data/receipts/` ist IMMUTABLE (append-only). Jede Modifikation würde Signaturen invalidieren. Audit-Reports in `docs/audit/` dokumentieren kritische Änderungen und werden versioniert. GateProof ([`policies/gateproof_v1.yaml`](policies/gateproof_v1.yaml)) definiert die Checkliste für latent→manifest Übergänge. Port-Matrix ([`policies/port_codebooks.yaml`](policies/port_codebooks.yaml)) codiert semantische Marker (K0..K4).
+
+---
+
+## V. VOIDMAP
+
+**Was ist VOIDMAP?**
+[`VOIDMAP.yml`](VOIDMAP.yml) ist die zentrale Registry offener Gaps (VOIDs) im Framework. Jeder VOID hat Status (OPEN/IN_PROGRESS/CLOSED), Priority, Owner, Domain-Tags und Closing-Path. Es dient als Backlog, Kompass und Entscheidungs-Log. Geschlossene VOIDs verlinken auf Evidence (Receipts in `data/receipts/`).
+
+**Links:**
+- [`VOIDMAP.yml`](VOIDMAP.yml) – Source of Truth
+- [`docs/voids_backlog.md`](docs/voids_backlog.md) – Generierte Doku (falls vorhanden)
+- UI-Explorer: `ui-app/voidmap` – VOIDMAP-Dashboard mit Stats
+
+**Wie ergänzt/schließt man einen VOID?**
+1. **Neue VOIDs** via PR in `VOIDMAP.yml` eintragen (Template am Ende der Datei)
+2. **VOID schließen**: Status auf `CLOSED` setzen + `evidence:` Pfad angeben + PR mit Receipt
+3. `make verify` prüft ob verlinkte Evidence-Dateien existieren
+
+---
+
+## VI. Schnittstellen & Integration
+
+**CLI-Tools (wichtigste):**
+- `make verify` – Full Verify (Pointer + Claims + Tests)
+- `make status` – HMAC-Status emittieren
+- `make snapshot` – Snapshot-Manifest erstellen
+- `python -m bio_spiral_viewer` – Spiral-Explorer
+- `tools/verify_pointers.py --strict` – Pointer-Validierung
+- `tools/claim_lint.py --scope index,spec` – Claim-Tagging prüfen
+
+**Integrationspunkte:**
+- GitHub Actions: [`.github/workflows/deepjump-ci.yml`](.github/workflows/deepjump-ci.yml) – Verify + Snapshot
+- Metatron-Guard: [`.github/workflows/metatron-guard.yml`](.github/workflows/metatron-guard.yml) – PR-Fokus-Check
+
+**Beispiele:**
+- Receipt-Beispiel: [`receipts/arc_sample.json`](receipts/arc_sample.json)
+- Policy-Beispiel: [`policies/gateproof_v1.yaml`](policies/gateproof_v1.yaml)
+- Spec-Beispiel: [`spec/eci.spec.json`](spec/eci.spec.json)
+
+---
+
+## VII. UI (ui-app/)
+
+**Was es ist:**
+Next.js 14 Web-App mit mehreren Dashboards und Explorern.
+
+**Wie starten:**
+```bash
+cd ui-app
+npm install
+npm run dev
+# → http://localhost:3000
 ```
 
 **Features:**
-- **7 φ-basierte Colormaps:** `resonant` (Violett→Gold), `harmonic` (Fibonacci), `spectral` (380-750nm), `fractal`, `mereotopological`, `quantum`, `goldenRatio`
-- **3 Fractal-Typen:** Mandelbrot, Julia, Burning Ship
-- **Smooth Coloring Algorithm** mit Canvas-Rendering
-- **Touch/Mouse Pan & Zoom**
+- **FractalSense Visualizer** (`/fractalsense`)
+  φ-basierte Colormaps, Mandelbrot/Julia/Burning Ship, Touch/Mouse Pan & Zoom
+  7 Colormaps: `resonant`, `harmonic`, `spectral`, `fractal`, `mereotopological`, `quantum`, `goldenRatio`
+  Canvas-Rendering mit Smooth Coloring
 
-*TypeScript-Port von `Fractalsense/color_generator.py`*
+- **VOIDMAP Explorer** (`/voidmap`)
+  Dashboard für `VOIDMAP.yml` mit Status-Stats, VoidList, Filter
 
-**Mehr:** [`ui-app/app/fractalsense/page.tsx`](./ui-app/app/fractalsense/page.tsx) · [`ui-app/lib/colormaps.ts`](./ui-app/lib/colormaps.ts)
+- **Guard Dashboard** (`/guards`)
+  Überwachung der G0-G6 Guards aus `CLAUDE.md`
+
+- **Metatron HUD** (`/metatron`)
+  Fokus-Tracking, Aufmerksamkeits-Stream, Fokus-Switch-Alerts (G4)
+
+- **Nichtraum-Zone** (`/nichtraum`)
+  Visualisierung des geschützten Bereichs für Unentschiedenes (G2)
 
 ---
 
-## 🜂 Annex-Prinzip
-- **Index = Pointer-Gold.** Wahrheit liegt im Index (`index/COMPACT_INDEX_v3.yaml`).
-- **Code = Annex.** Anpassbar, solange Pointer bestehen (`docs/devops_tooling_kit_annex.md`).
+## VIII. Contributing
 
-*Glosse:* *Der Sanctum-Text bleibt poetisch, weil jede Aussage am Pointer hängt.*
+**Wie helfen in 15 Minuten (3 Mikro-Tasks):**
+1. **Typo-Fix** – Doku-Typo finden → PR (kein `make verify` nötig)
+2. **VOID ergänzen** – Gap gefunden? → `VOIDMAP.yml` editieren → PR
+3. **Test hinzufügen** – Bestehenden Test erweitern → `make verify` → PR
+
+**Mehr:**
+- [`CONTRIBUTING.md`](CONTRIBUTING.md) – Vollständige Guidelines
+- [`CODEOWNERS`](CODEOWNERS) – Kontakte
+- Commit-Konvention: `type(scope): message` (`feat`, `fix`, `docs`, `test`, `refactor`, `chore`)
 
 ---
 
-**Status:** v1.0 Final (auf Kurs v1.1)
-**Lizenz:** Apache-2.0 (`LICENSE`)
-**Kontakt:** `CODEOWNERS` · `CONTRIBUTING.md`
+## IX. Roadmap
+
+**Now:**
+- DeepJump v1.2 stabilisieren (Verify + Status + Snapshot)
+- Port-Matrix Linter (K0..K4) ausrollen
+- Guards-Integration in CI (Metatron, Annex)
+
+**Next:**
+- Receipt-Viewer mit Signatur-Verifizierung
+- Resonanz-Metriken stabilisieren (VOID-011: MI, PLV, FD)
+- CI-Pipeline Integration (VOID-002)
+
+**Later:**
+- Sensor-Architektur (VOID-013, BOM + Protokoll)
+- Taxonomie & Spektren (VOID-010, Literatur-Scan)
+- Protein-Design Exploration (VOID-014, in-silico only)
+
+**Mehr:**
+- [GitHub Issues](https://github.com/fleksible/entaENGELment-/issues)
+- [`VOIDMAP.yml`](VOIDMAP.yml) für vollständigen Backlog
+
+---
+
+<details>
+<summary>Hermetischer Layer (opt-in)</summary>
+
+**Glyphen-System:**
+🜁 Architektur · 🜄 Governance/Ethik · 🜃 Adaptive Schicht · 🜅 Tests · 🜂 Meta-Poetik
+
+**Mytho-technische Rahmung:**
+Index als "Pointer-Gold", Code als "Annex". Resonanz bleibt Magie, weil jeder Sprung verankert ist. Metatron als Schreiber-Guard. NICHTRAUM als Raum für Unentschiedenes. Receipts als nicht-repudiierbare Quittung. Governance als Judikative.
+
+**Tiefe Docs:**
+- [`docs/devops_tooling_kit_annex.md`](docs/devops_tooling_kit_annex.md)
+- [`docs/guards/metatron_rule.md`](docs/guards/metatron_rule.md)
+- [`REPOSITORY_ESSENZ_ANALYSE.md`](REPOSITORY_ESSENZ_ANALYSE.md)
+
+</details>
+
+---
+
+**Lizenz:** Apache-2.0 ([LICENSE](LICENSE))
+**Kontakt:** [CODEOWNERS](CODEOWNERS) · [CONTRIBUTING.md](CONTRIBUTING.md)
