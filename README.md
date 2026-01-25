@@ -105,27 +105,27 @@ npm run dev
 
 ```mermaid
 flowchart TB
-  A[∆ Working Tree<br/>Änderungen / Edits] --> MV[make verify<br/>(port-lint · pytest · verify-pointers --strict · claim-lint)]
-  A --> MA[make all / make deepjump<br/>(verify + snapshot)]
+  A["∆ Working Tree<br/>Änderungen / Edits"] --> MV["make verify<br/>(port-lint, pytest,<br/>verify-pointers --strict,<br/>claim-lint)"]
+  A --> MA["make all / make deepjump<br/>(verify + snapshot)"]
 
-  MV --> OUTG[out/<br/>CI artifacts<br/>(gitignored)]
+  MV --> OUTG["out/<br/>CI artifacts<br/>(gitignored)"]
   MA --> OUTG
 
-  MV --> CI[.github/workflows<br/>CI-Gates]
-  CI --> M[Merge / Release]
+  MV --> CI[".github/workflows<br/>CI-Gates"]
+  CI --> M["Merge / Release"]
 
-  subgraph RECEIPTS[I. Receipts (versioniert)]
-    R1[receipts/<br/>Beispiele/Templates]
-    R2[data/receipts/<br/>IMMUTABLE Audit-Trail<br/>(append-only)]
-    R3[ark/p4/receipts/<br/>Phase-4 Collection]
+  subgraph RECEIPTS["I. Receipts (versioniert)"]
+    R1["receipts/<br/>Beispiele/Templates"]
+    R2["data/receipts/<br/>IMMUTABLE Audit-Trail<br/>(append-only)"]
+    R3["ark/p4/receipts/<br/>Phase-4 Collection"]
   end
 
-  subgraph DOCS[II. Doku & Specs (versioniert)]
-    D[docs/<br/>Guides/Specs]
-    P[policies/<br/>GateProof, Port-Codebooks]
-    S[spec/<br/>Schemas/Protokolle]
-    VA[docs/audit/<br/>Audit-Reports<br/>(committed)]
-    VO[VOIDMAP.yml<br/>Backlog]
+  subgraph DOCS["II. Doku & Specs (versioniert)"]
+    D["docs/<br/>Guides/Specs"]
+    P["policies/<br/>GateProof, Port-Codebooks"]
+    S["spec/<br/>Schemas/Protokolle"]
+    VA["docs/audit/<br/>Audit-Reports<br/>(committed)"]
+    VO["VOIDMAP.yml<br/>Backlog"]
   end
 
   D --> MV
