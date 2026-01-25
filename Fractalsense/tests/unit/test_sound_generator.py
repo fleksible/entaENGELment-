@@ -23,7 +23,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from sound_generator import SoundGenerator
 
-from tests.conftest import get_dominant_frequency
+from ..conftest import get_dominant_frequency
 
 
 class TestSoundGeneratorInit:
