@@ -105,7 +105,7 @@ Der Audit vom 24.01.2026 hat konkrete Action Items identifiziert:
 2. **DeepJump Protocol:** Verification-Flow mit Receipts, HMAC-Signaturen
 3. **Audit-Trail:** IMMUTABLE Receipts in data/receipts/
 4. **Tool-Suite:** claim_lint, port_lint, receipt_lint, verify_pointers, metatron_check
-5. **Dokumentation:** Umfangreiche Audit-Reports in OUT/ und audit/
+5. **Dokumentation:** Umfangreiche Audit-Reports in docs/audit/ und audit/
 6. **Annex-Prinzip:** Klare Trennung GOLD/ANNEX/IMMUTABLE
 
 ---
@@ -144,7 +144,7 @@ setup:
 ```
 
 ### Addendum B: VOID-012 Template
-Das gateproof_v1.yaml Template ist bereits detailliert in OUT/CONNECTIVITY_FIXLIST.md:116-157 dokumentiert.
+Das gateproof_v1.yaml Template ist bereits detailliert in docs/audit/CONNECTIVITY_FIXLIST.md:116-157 dokumentiert.
 
 ### Addendum C: Pre-Commit Hooks
 Angesichts der Import-Probleme: Ein pre-commit Hook für Import-Validierung wäre sinnvoll.
@@ -163,9 +163,9 @@ Angesichts der Import-Probleme: Ein pre-commit Hook für Import-Validierung wär
 
 ## 9. Artefakte dieser Analyse
 
-- `OUT/AUDIT_SUMMARY.md` (vom 24.01.2026) - Detaillierter Audit
-- `OUT/CONNECTIVITY_FIXLIST.md` - Priorisierte Fix-Liste
-- `OUT/PERF_RECOMMENDATIONS.md` - Performance-Optimierungen
+- `docs/audit/AUDIT_SUMMARY.md` (vom 24.01.2026) - Detaillierter Audit
+- `docs/audit/CONNECTIVITY_FIXLIST.md` - Priorisierte Fix-Liste
+- `docs/audit/PERF_RECOMMENDATIONS.md` - Performance-Optimierungen
 - `VOIDMAP.yml` - Source of Truth für offene Gaps
 
 ---

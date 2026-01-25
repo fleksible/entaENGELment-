@@ -78,10 +78,10 @@ Missing (CORE):     0
 
 ### P1: Governance-Dateien erstellen (3-4h)
 1. **`policies/gateproof_v1.yaml`** erstellen → VOID-012 schließen
-   - Template bereits in `OUT/CONNECTIVITY_FIXLIST.md:93-156`
+   - Template bereits in `docs/audit/CONNECTIVITY_FIXLIST.md:93-156`
 
 2. **`docs/sensors/bom.md`** + **`spec/sensors.spec.json`** erstellen → VOID-013 schließen
-   - Template bereits in `OUT/CONNECTIVITY_FIXLIST.md:196-269`
+   - Template bereits in `docs/audit/CONNECTIVITY_FIXLIST.md:196-269`
 
 ### P2: Performance-Optimierungen (1h)
 1. Regex-Kompilierung in `tools/claim_lint.py`
@@ -100,9 +100,9 @@ Missing (CORE):     0
 
 ## Artefakte
 
-- `OUT/2026-01-25_repo_status_analysis.md` - Vollständige Analyse
-- `OUT/2026-01-25_quickwins_completed.md` - Dieser Report
-- `OUT/CONNECTIVITY_FIXLIST.md` - Templates für fehlende Dateien
+- `docs/audit/2026-01-25_repo_status_analysis.md` - Vollständige Analyse
+- `docs/audit/2026-01-25_quickwins_completed.md` - Dieser Report
+- `docs/audit/CONNECTIVITY_FIXLIST.md` - Templates für fehlende Dateien
 
 ---
 

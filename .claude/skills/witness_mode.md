@@ -56,10 +56,10 @@ find  # ohne -exec
 
 ## Output
 
-Alle Ergebnisse werden nach `OUT/` geschrieben:
+Alle Ergebnisse werden nach `docs/audit/` geschrieben:
 
 ```
-OUT/<name>_exploration.md
+docs/audit/<name>_exploration.md
 ```
 
 ### Output Format
@@ -134,7 +134,7 @@ OUT/<name>_exploration.md
                ▼
 ┌─────────────────────────────┐
 │   4. Report schreiben       │
-│   - OUT/<name>_exploration  │
+│   - docs/audit/<name>_exploration  │
 │   - ☐ Offene Punkte         │
 └──────────────┬──────────────┘
                │
@@ -174,10 +174,10 @@ Claude (Witness Mode):
 - Lese tools/
 - Liste alle .py Dateien
 - Analysiere Imports und Funktionen
-- Erstelle OUT/tools_exploration.md
+- Erstelle docs/audit/tools_exploration.md
 
 Output:
-"Exploration abgeschlossen. Report: OUT/tools_exploration.md
+"Exploration abgeschlossen. Report: docs/audit/tools_exploration.md
 
 Zusammenfassung:
 - 7 Python-Dateien gefunden

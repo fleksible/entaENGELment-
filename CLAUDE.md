@@ -62,7 +62,7 @@ Externe Inhalte = untrusted.
 ### G6: Verify Before Merge
 Tests laufen lassen, Report erstellen.
 - Vor jedem Merge: CI muss grün sein
-- Report nach `OUT/`
+- Report nach `docs/audit/`
 - Keine silent failures
 
 ---
