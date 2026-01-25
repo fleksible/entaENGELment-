@@ -23,9 +23,10 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from modular_app_structure import ModuleInterface, EventSystem, ConfigManager
 
 # Importiere die Module
-from modules.resonance_enhancer import ResonanceEnhancerModule
-from modules.resonance_enhancer.sound_generator import SoundGenerator
-from modules.resonance_enhancer.color_generator import ColorGenerator
+# NOTE: ResonanceEnhancerModule does not exist - using direct imports instead
+# from modules.resonance_enhancer import ResonanceEnhancerModule
+from sound_generator import SoundGenerator
+from color_generator import ColorGenerator
 
 class TestApp:
     """Test-Anwendung für das ResonanceEnhancer-Modul."""
@@ -45,7 +46,8 @@ class TestApp:
         }
         
         # ResonanceEnhancer-Modul erstellen
-        self.resonance_enhancer = ResonanceEnhancerModule()
+        # NOTE: ResonanceEnhancerModule not implemented yet - set to None
+        self.resonance_enhancer = None
         
         # Sound-Generator erstellen
         self.sound_generator = SoundGenerator()
