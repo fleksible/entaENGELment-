@@ -267,7 +267,7 @@ def load_ledger(path: str | Path) -> list[dict[str, Any]]:
     Returns:
         List of event dictionaries
     """
-    events = []
+    events: list[dict[str, Any]] = []
     path = Path(path)
     if not path.exists():
         return events

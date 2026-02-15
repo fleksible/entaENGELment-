@@ -79,9 +79,10 @@ def main() -> None:
     }
 
     files_to_process = build_file_list(repo_root, args.inputs)
-    manifest["files"] = create_manifest(repo_root, files_to_process)
+    file_hashes = create_manifest(repo_root, files_to_process)
+    manifest["files"] = file_hashes
 
-    has_seeds = any(k.startswith("seeds/") for k in manifest["files"].keys())
+    has_seeds = any(k.startswith("seeds/") for k in file_hashes)
     if not has_seeds:
         msg = "[WARN] No seeds/ detected in snapshot! Config drift risk."
         print(msg)

@@ -61,7 +61,8 @@ def load_policy(path: pathlib.Path = POLICY_PATH) -> dict[str, Any]:
         dict: Loaded policy configuration
     """
     with open(path, encoding="utf-8") as f:
-        return json.load(f)
+        data: dict[str, Any] = json.load(f)
+        return data
 
 
 def _first_failure_reason(ctx: Context, policy: dict[str, Any]) -> str | None:

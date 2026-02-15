@@ -34,7 +34,7 @@ class DuplicateKeyError(ValueError):
 class NoDuplicateSafeLoader(yaml.SafeLoader):
     """YAML loader that raises on duplicate mapping keys."""
 
-    def construct_mapping(self, node, deep=False):  # type: ignore[override]
+    def construct_mapping(self, node, deep=False):
         mapping = {}
         for key_node, value_node in node.value:
             key = self.construct_object(key_node, deep=deep)
@@ -81,7 +81,9 @@ def is_legacy_manifest_colon(ref: str) -> bool:
 def lint_file(path: Path, strict: bool) -> list[str]:
     errors: list[str] = []
     try:
-        data = yaml.load(path.read_text(encoding="utf-8"), Loader=NoDuplicateSafeLoader)
+        data = yaml.load(
+            path.read_text(encoding="utf-8"), Loader=NoDuplicateSafeLoader
+        )  # nosec B506 — Loader extends SafeLoader
     except DuplicateKeyError as e:
         errors.append(f"{path}: {e}")
         return errors

@@ -43,7 +43,6 @@ jobs:
       - name: Type check with mypy
         run: |
           mypy src/ tools/
-        continue-on-error: true
 
   # Stage 2: Build - Run Tests with Coverage
   build:
@@ -125,13 +124,11 @@ jobs:
 
       - name: Run bandit security linter
         run: |
-          bandit -r src/ tools/ -f json -o bandit-report.json
-        continue-on-error: true
+          bandit -c .bandit.yaml -r src/ tools/ -f json -o bandit-report.json
 
       - name: Check dependencies for vulnerabilities
         run: |
-          safety check --json
-        continue-on-error: true
+          pip freeze | safety check --stdin --json
 
   # Stage 4: Gate Policy Validation
   gate-policy:
