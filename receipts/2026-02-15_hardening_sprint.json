@@ -1,0 +1,59 @@
+{
+  "receipt_type": "HARDENING_SPRINT",
+  "content_hash": "b0223aadb1970cef41bf21b0bee34a2b16dcff579e10c8a2be77a2c4240f2849",
+  "parameters": {
+    "sprint": "Phase_0_2_Hardening",
+    "scope": "integrity+honesty+benchmark"
+  },
+  "results": {
+    "actions_pinned": true,
+    "coverage_threshold": 50,
+    "hmac_persistent": true,
+    "draft_closures_corrected": 2,
+    "metatron_amnesty_documented": true,
+    "void_ownership_complete": true,
+    "benchmark_replay_exists": true,
+    "void_002_closed": true
+  },
+  "claims": [
+    {
+      "tag": "FACT",
+      "id": "HSPRINT-001",
+      "statement": "All GitHub Actions pinned to commit SHA",
+      "evidence_ref": ".github/workflows/*.yml",
+      "reason_code": "P1-SUPPLY-CHAIN"
+    },
+    {
+      "tag": "FACT",
+      "id": "HSPRINT-002",
+      "statement": "Coverage threshold raised from 20% to 50%",
+      "evidence_ref": ".github/workflows/ci.yml",
+      "reason_code": "P1-CREDIBILITY"
+    },
+    {
+      "tag": "FACT",
+      "id": "HSPRINT-003",
+      "statement": "VOID-012 and VOID-013 reset to IN_PROGRESS",
+      "evidence_ref": "VOIDMAP.yml",
+      "reason_code": "KENOGRAMMATIC-HONESTY"
+    },
+    {
+      "tag": "FACT",
+      "id": "HSPRINT-004",
+      "statement": "All VOIDs assigned owner and target_date",
+      "evidence_ref": "VOIDMAP.yml",
+      "reason_code": "ACCOUNTABILITY"
+    },
+    {
+      "tag": "FACT",
+      "id": "HSPRINT-005",
+      "statement": "VOID-002 closed with blocking CI integration",
+      "evidence_ref": ".github/workflows/deepjump-ci.yml",
+      "reason_code": "CI-COMPLETENESS"
+    }
+  ],
+  "meta": {
+    "generated_by": "hardening_sprint_2026-02-15",
+    "dr_kernel": "v1.5"
+  }
+}
