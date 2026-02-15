@@ -8,7 +8,7 @@ DMI ?= 4.7
 PHI ?= 0.72
 REFRACTORY ?= 120
 
-.PHONY: help install install-dev test test-unit test-integration test-ethics coverage lint format type-check clean gate-test port-lint verify verify-pointers claim-lint verify-json status status-verify snapshot all deepjump
+.PHONY: help install install-dev test test-unit test-integration test-ethics coverage lint format type-check clean gate-test port-lint verify verify-pointers claim-lint verify-json status status-verify snapshot all deepjump benchmark-replay
 
 help:
 	@echo "entaENGELment Framework - Development Commands"
@@ -44,6 +44,9 @@ help:
 	@echo "Legacy DeepJump:"
 	@echo "  make verify-json     Verify JSON receipts"
 	@echo "  make status-verify   Emit and verify status"
+	@echo ""
+	@echo "Benchmark:"
+	@echo "  make benchmark-replay Run deterministic benchmark replay"
 	@echo ""
 	@echo "Cleanup:"
 	@echo "  make clean           Remove build artifacts and cache"
@@ -150,6 +153,14 @@ deepjump: all
 verify-json:
 	@mkdir -p $(OUT)
 	@$(PY) tests/verify_deep_jump.py --receipt $(RECEIPT) --json > $(OUT)/verify.json
+
+# === Benchmark ===
+benchmark-replay:
+	@echo "=== Benchmark Replay: Phasor Determinism ==="
+	python3 tests/benchmark/test_phasor_replay.py
+	@echo "=== Benchmark Replay: Receipt Lint ==="
+	python3 tools/receipt_lint.py receipts/arc_sample.json || true
+	@echo "=== Benchmark PASS ==="
 
 # === Cleanup ===
 clean:
