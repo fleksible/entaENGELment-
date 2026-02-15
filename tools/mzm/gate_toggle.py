@@ -18,6 +18,7 @@ Strict-Mode:
 - When strict=True and gate fails, raises GateBlockedError
 - Exception metric logged to ledger
 """
+
 from __future__ import annotations
 
 import json

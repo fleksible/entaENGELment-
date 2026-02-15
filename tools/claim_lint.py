@@ -62,15 +62,15 @@ NOQA_MARKER = "noqa: claim-lint"
 # Python code-pattern lines to skip (operational code, not epistemic claims)
 PYTHON_CODE_SKIP = [
     r"^\s*(if|elif|else|return|raise|for|while|with|try|except|finally|assert)\b",
-    r"^\s*\w+\s*=[^=]",           # variable assignment
+    r"^\s*\w+\s*=[^=]",  # variable assignment
     r"^\s*(print|logging|sys\.exit|errors?\.append)\s*\(",
-    r"^\s*def\s+",                 # function definition
-    r"^\s*class\s+",               # class definition
-    r'^\s*"required"\s*:',         # JSON-like "required": in any file
-    r"^\s*#",                      # code comments (operational notes)
-    r"^\s*\w+\.\w+\(",            # method calls (e.g. ledger.gate(...))
-    r'^\s*("""|\'\'\')',           # docstring delimiters
-    r'^\s*r["\']',                 # raw string literals (regex patterns)
+    r"^\s*def\s+",  # function definition
+    r"^\s*class\s+",  # class definition
+    r'^\s*"required"\s*:',  # JSON-like "required": in any file
+    r"^\s*#",  # code comments (operational notes)
+    r"^\s*\w+\.\w+\(",  # method calls (e.g. ledger.gate(...))
+    r'^\s*("""|\'\'\')',  # docstring delimiters
+    r'^\s*r["\']',  # raw string literals (regex patterns)
 ]
 
 

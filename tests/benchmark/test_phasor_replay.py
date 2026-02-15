@@ -4,12 +4,14 @@ Benchmark Replay Test — Phasor Determinism
 Runs phasor simulation with fixed seed and parameters,
 verifies output hash matches known-good baseline.
 """
+
 import hashlib
 import json
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
+
 
 def run_phasor_benchmark():
     """Run phasor with fixed parameters, return deterministic output."""
@@ -27,22 +29,25 @@ def run_phasor_benchmark():
     }
 
     # Canonical serialization for hash
-    canonical = json.dumps(params, sort_keys=True, separators=(',', ':'))
+    canonical = json.dumps(params, sort_keys=True, separators=(",", ":"))
     param_hash = hashlib.sha256(canonical.encode()).hexdigest()[:16]
 
     return {
         "param_hash": param_hash,
         "params": params,
         "status": "FRAMEWORK_READY",
-        "note": "Baseline hash TBD after first successful full BETSE run"
+        "note": "Baseline hash TBD after first successful full BETSE run",
     }
+
 
 def test_phasor_params_deterministic():
     """Parameter serialization must be deterministic."""
     r1 = run_phasor_benchmark()
     r2 = run_phasor_benchmark()
-    assert r1["param_hash"] == r2["param_hash"], \
-        f"Non-deterministic: {r1['param_hash']} != {r2['param_hash']}"
+    assert (
+        r1["param_hash"] == r2["param_hash"]
+    ), f"Non-deterministic: {r1['param_hash']} != {r2['param_hash']}"
+
 
 if __name__ == "__main__":
     result = run_phasor_benchmark()
