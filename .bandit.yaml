@@ -1,0 +1,5 @@
+skips: []
+exclude_dirs:
+  - tests
+  - node_modules
+  - .venv
