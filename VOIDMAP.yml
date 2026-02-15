@@ -108,7 +108,7 @@ voids:
 
   - id: VOID-012
     title: "GateProof Checkliste (Governance)"
-    status: CLOSED
+    status: IN_PROGRESS
     priority: critical
     owner: claude-code
     domain: "[DEV]"
@@ -116,14 +116,18 @@ voids:
     closing_path: "policies/gateproof_v1.yaml + negative ethics tests"
     evidence: "policies/gateproof_v1.yaml"
     created: "2026-01-04"
-    closed: "2026-01-25"
+    closed: null
     notes: |
       [META] Governance als Judikative: Lint/Guards/Receipts müssen zusammen geprüft werden.
       [DRAFT] CLOSED with DRAFT placeholder v1.0 - full implementation requires review and integration.
+      [KORREKTUR 2026-02-15] Status von CLOSED auf IN_PROGRESS
+      zurückgesetzt. Grund: Evidence-Dateien sind explizite
+      DRAFT-Placeholder v1.0, kein genuiner Closure.
+      Nächster Schritt: DRAFT zu vollständiger Implementierung ausbauen.
 
   - id: VOID-013
     title: "Sensor-Architektur (BOM & Protokoll)"
-    status: CLOSED
+    status: IN_PROGRESS
     priority: medium
     owner: claude-code
     domain: "[DEV]"
@@ -133,10 +137,14 @@ voids:
       - "docs/sensors/bom.md"
       - "spec/sensors.spec.json"
     created: "2026-01-04"
-    closed: "2026-01-25"
+    closed: null
     notes: |
       [BIO] Nur Komponenten-/Protokollebene, keine riskanten Anleitungen.
       [DRAFT] CLOSED with DRAFT placeholders v1.0 - component-level spec only, no operational procedures.
+      [KORREKTUR 2026-02-15] Status von CLOSED auf IN_PROGRESS
+      zurückgesetzt. Grund: Evidence-Dateien sind explizite
+      DRAFT-Placeholder v1.0, kein genuiner Closure.
+      Nächster Schritt: DRAFT zu vollständiger Implementierung ausbauen.
 
   - id: VOID-014
     title: "Protein-Design (in-silico, safety-bounded)"
