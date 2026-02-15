@@ -4,12 +4,12 @@ version: 1
 controls:
   - id: FIX_PATH_DRIFT
     description: >
-      Snapshot manifest must only include files within repo root using relative
+      [FACT] Snapshot manifest must only include files within repo root using relative
       paths; outside files are skipped with warnings.
     implemented_by: tools/snapshot_guard.py
   - id: FREEZE_SEEDS
     description: >
-      Seed configurations must always be present in manifests; strict mode fails
+      [FACT] Seed configurations must always be present in manifests; strict mode fails
       when missing.
     implemented_by: tools/snapshot_guard.py --strict
 artifacts:

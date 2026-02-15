@@ -1,0 +1,240 @@
+{
+  "version": "1.0",
+  "status": "DRAFT",
+  "title": "Sensor Layer Specification",
+  "description": "Communication protocol and data format for sensor layer integration with entaENGELment framework. This is a DRAFT placeholder created for VOID-013 closure.",
+  "void_reference": "VOIDMAP.yml VOID-013",
+  "created": "2026-01-25",
+  "maintainer": "entaENGELment project",
+
+  "protocol": {
+    "transport": {
+      "primary": "MQTT",
+      "fallback": "HTTP/REST",
+      "notes": "MQTT preferred for real-time streaming, HTTP for polling/batch"
+    },
+    "encoding": "JSON",
+    "rate": {
+      "environmental": "1 Hz baseline",
+      "biosignal": "250 Hz",
+      "notes": "Rates are configurable based on sensor capabilities and bandwidth"
+    },
+    "qos": {
+      "mqtt_qos_level": 1,
+      "notes": "At-least-once delivery for sensor data"
+    }
+  },
+
+  "data_format": {
+    "sensor_reading": {
+      "description": "Generic sensor reading envelope",
+      "schema": {
+        "timestamp": {
+          "type": "string",
+          "format": "ISO8601 UTC",
+          "example": "2026-01-25T12:34:56.789Z",
+          "required": true
+        },
+        "sensor_id": {
+          "type": "string",
+          "description": "Unique identifier for the physical sensor",
+          "example": "eeg-cyton-001",
+          "required": true
+        },
+        "modality": {
+          "type": "string",
+          "enum": ["eeg", "environmental", "motion", "other"],
+          "description": "Type of sensor data",
+          "required": true
+        },
+        "values": {
+          "type": "object",
+          "description": "Modality-specific data payload (see modality schemas below)",
+          "required": true
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Additional context for the reading",
+          "required": false,
+          "schema": {
+            "sampling_rate": {
+              "type": "number",
+              "unit": "Hz",
+              "description": "Actual sampling rate for this reading"
+            },
+            "units": {
+              "type": "object",
+              "description": "Map of channel/field name to unit string",
+              "example": {"temperature": "celsius", "Fp1": "microvolts"}
+            },
+            "quality": {
+              "type": "object",
+              "description": "Signal quality metrics (e.g., electrode impedance)",
+              "example": {"Fp1_impedance_kohm": 5.2}
+            }
+          }
+        }
+      }
+    }
+  },
+
+  "biosignal_channels": {
+    "description": "EEG biosignal channel definitions (example: 8-channel OpenBCI)",
+    "modality": "eeg",
+    "channels": ["Fp1", "Fp2", "C3", "C4", "P3", "P4", "O1", "O2"],
+    "channel_notes": "Example follows 10-20 International System for electrode placement. Actual channels depend on hardware configuration.",
+    "sampling_rate": 250,
+    "sampling_rate_unit": "Hz",
+    "resolution": 24,
+    "resolution_unit": "bits",
+    "value_format": {
+      "type": "array",
+      "description": "Array of floating-point values, one per channel, in order of 'channels' list",
+      "example": [12.3, -5.6, 8.9, 0.1, -2.3, 7.4, -0.5, 3.2],
+      "unit": "microvolts (µV)",
+      "notes": "DRAFT: Actual unit and scaling depend on ADC calibration"
+    },
+    "example_reading": {
+      "timestamp": "2026-01-25T12:34:56.789Z",
+      "sensor_id": "eeg-cyton-001",
+      "modality": "eeg",
+      "values": {
+        "Fp1": 12.3,
+        "Fp2": -5.6,
+        "C3": 8.9,
+        "C4": 0.1,
+        "P3": -2.3,
+        "P4": 7.4,
+        "O1": -0.5,
+        "O2": 3.2
+      },
+      "metadata": {
+        "sampling_rate": 250,
+        "units": {
+          "Fp1": "microvolts",
+          "Fp2": "microvolts",
+          "C3": "microvolts",
+          "C4": "microvolts",
+          "P3": "microvolts",
+          "P4": "microvolts",
+          "O1": "microvolts",
+          "O2": "microvolts"
+        },
+        "quality": {
+          "Fp1_impedance_kohm": 5.2,
+          "Fp2_impedance_kohm": 4.8
+        }
+      }
+    }
+  },
+
+  "environmental": {
+    "description": "Environmental sensor data (example: BME680)",
+    "modality": "environmental",
+    "sensors": {
+      "temperature": {
+        "unit": "celsius",
+        "range": [0, 50],
+        "accuracy": 0.5,
+        "notes": "Typical indoor range; sensor capable of -40 to +85°C"
+      },
+      "humidity": {
+        "unit": "percent",
+        "range": [0, 100],
+        "accuracy": 3.0,
+        "notes": "Relative humidity"
+      },
+      "pressure": {
+        "unit": "hPa",
+        "range": [300, 1100],
+        "accuracy": 0.6,
+        "notes": "Atmospheric pressure in hectopascals"
+      },
+      "gas": {
+        "unit": "air_quality_index",
+        "range": [0, 500],
+        "notes": "VOC-based air quality index (higher = worse quality); sensor-specific calibration required"
+      }
+    },
+    "example_reading": {
+      "timestamp": "2026-01-25T12:34:56.000Z",
+      "sensor_id": "env-bme680-lab-001",
+      "modality": "environmental",
+      "values": {
+        "temperature": 22.5,
+        "humidity": 45.2,
+        "pressure": 1013.25,
+        "gas": 120
+      },
+      "metadata": {
+        "sampling_rate": 1,
+        "units": {
+          "temperature": "celsius",
+          "humidity": "percent",
+          "pressure": "hPa",
+          "gas": "air_quality_index"
+        }
+      }
+    }
+  },
+
+  "motion": {
+    "description": "DRAFT: Placeholder for potential motion/accelerometer data",
+    "modality": "motion",
+    "status": "NOT_IMPLEMENTED",
+    "notes": "Future extension: IMU (accelerometer, gyroscope, magnetometer) for motion context"
+  },
+
+  "safety": {
+    "notice": "This is a data specification only. Hardware assembly, deployment, and use require:",
+    "requirements": [
+      "Qualified supervision (biomedical engineer or equivalent)",
+      "Institutional review board (IRB) approval for human subjects research",
+      "Compliance with local regulations (FDA, CE, etc. if applicable)",
+      "Formal safety and risk assessment",
+      "Proper training for personnel",
+      "Informed consent from human subjects"
+    ],
+    "disclaimer": "No claims are made about fitness for medical, diagnostic, or therapeutic use. Research use only."
+  },
+
+  "integration": {
+    "entanglement_framework": {
+      "resonance_metrics": {
+        "mutual_information": "Computed from EEG channel pairs",
+        "phase_locking_value": "Computed from EEG phase coherence",
+        "fractal_dimension": "Computed from EEG signal complexity"
+      },
+      "context_correlation": {
+        "environmental_state": "Correlate resonance metrics with temperature, humidity, pressure",
+        "notes": "DRAFT: Define correlation algorithms and statistical methods"
+      }
+    },
+    "data_ingestion": {
+      "pipeline": "TBD: Define ingestion layer (MQTT subscriber or HTTP endpoint)",
+      "storage": "TBD: Time-series database or file-based buffering",
+      "processing": "Real-time or batch processing of resonance metrics"
+    }
+  },
+
+  "references": {
+    "bom": "docs/sensors/bom.md",
+    "voidmap": "VOIDMAP.yml VOID-013",
+    "resonance_module": "Fractalsense/ (entaENGELment resonance analysis)",
+    "openbci_docs": "https://docs.openbci.com",
+    "bme680_datasheet": "https://www.bosch-sensortec.com/products/environmental-sensors/gas-sensors/bme680/"
+  },
+
+  "todos": [
+    "Validate JSON schema against actual ingestion pipeline requirements",
+    "Define MQTT topic structure (e.g., sensors/{sensor_id}/{modality})",
+    "Specify error handling and retry logic for unreliable sensors",
+    "Add authentication/authorization for sensor data transmission (if needed)",
+    "Define data retention and privacy policies",
+    "Implement mock sensor data generator for testing",
+    "Create integration tests with entaENGELment backend",
+    "Document calibration procedures for each sensor type",
+    "Specify timestamp synchronization strategy (NTP, PTP, etc.)",
+    "Define alert/alarm thresholds for sensor failures or out-of-range values"
+  ]
+}

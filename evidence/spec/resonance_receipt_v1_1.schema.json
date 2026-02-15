@@ -1,0 +1,166 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://entaengelment.fleksible.io/schemas/resonance_receipt_v1_1.schema.json",
+  "title": "Resonance Receipt v1.1",
+  "description": "Hybrid resonance receipt schema with adiabatic bandwidth shaping and policy enforcement. Supports genesis receipts (prev_receipt_hash = 64 zeros) and normalized decision flow.",
+  "type": "object",
+  "required": [
+    "receipt_id",
+    "version",
+    "timestamp_utc",
+    "gate_decision",
+    "bandwidth_norm",
+    "prev_receipt_hash",
+    "receipt_hash",
+    "signature"
+  ],
+  "properties": {
+    "receipt_id": {
+      "type": "string",
+      "description": "Unique identifier for this receipt (UUID v4 recommended)",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "version": {
+      "type": "string",
+      "const": "1.1",
+      "description": "Receipt schema version"
+    },
+    "timestamp_utc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 UTC timestamp of receipt generation"
+    },
+    "gate_decision": {
+      "type": "string",
+      "enum": ["REJECTED", "REFLECTED", "COOLED", "TUNNEL_GRANTED"],
+      "description": "Gate decision flow: REJECTED (core fail), COOLED (bandwidth < min), REFLECTED (policy violation), TUNNEL_GRANTED (all pass)"
+    },
+    "bandwidth_norm": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Normalized bandwidth metric computed via adiabatic shaping (0=minimal, higher=more capacity)"
+    },
+    "prev_receipt_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{64}$",
+      "description": "SHA-256 hash of previous receipt. Genesis receipts use 64 zeros: '0000000000000000000000000000000000000000000000000000000000000000'"
+    },
+    "receipt_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{64}$",
+      "description": "SHA-256 hash of this receipt (canonical RFC8785 serialization)"
+    },
+    "signature": {
+      "type": "string",
+      "description": "ED25519 signature over receipt_hash"
+    },
+    "verification_reasons": {
+      "type": "array",
+      "description": "Normalized verification reasons with privacy protection - NO raw nonces, tokens, user_id, or IP addresses",
+      "items": {
+        "type": "object",
+        "required": ["code"],
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Verification reason code (e.g., AMPLITUDE_CHECK, KENOSIS_CHECK, PHASE_CHECK, BW_BELOW_MIN)"
+          },
+          "value": {
+            "type": "number",
+            "description": "Optional measured value"
+          },
+          "threshold": {
+            "type": "number",
+            "description": "Optional threshold for comparison"
+          },
+          "nonce_hmac": {
+            "type": "string",
+            "description": "Optional HMAC-SHA-256 of nonce (privacy-preserving)"
+          }
+        },
+        "patternProperties": {
+          "^x_": {
+            "description": "Extension fields prefixed with x_"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "policy_flags": {
+      "type": "object",
+      "description": "Policy compliance flags - NO is_verified field",
+      "required": ["is_amplitude_compliant", "is_kenosis_sufficient", "is_phase_aligned"],
+      "properties": {
+        "is_amplitude_compliant": {
+          "type": "boolean",
+          "description": "Amplitude (omega) within policy limits"
+        },
+        "is_kenosis_sufficient": {
+          "type": "boolean",
+          "description": "Kenosis (emptying) meets minimum threshold"
+        },
+        "is_phase_aligned": {
+          "type": "boolean",
+          "description": "Phase (phi) alignment within tolerance"
+        }
+      },
+      "patternProperties": {
+        "^x_": {
+          "description": "Extension flags prefixed with x_"
+        }
+      },
+      "additionalProperties": false
+    },
+    "core_metrics": {
+      "type": "object",
+      "description": "Core resonance metrics",
+      "properties": {
+        "omega": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1.0,
+          "description": "Amplitude (frequency/energy), normalized to [0,1]"
+        },
+        "kenosis": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1.0,
+          "description": "Emptying/reduction metric"
+        },
+        "phi": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1.0,
+          "description": "Phase alignment"
+        }
+      }
+    },
+    "bandwidth_shaping": {
+      "type": "object",
+      "description": "Adiabatic bandwidth shaping parameters",
+      "properties": {
+        "B_current": {
+          "type": "number",
+          "description": "Current bandwidth capacity"
+        },
+        "BW_norm": {
+          "type": "number",
+          "description": "Normalized bandwidth metric"
+        },
+        "heat": {
+          "type": "number",
+          "description": "Accumulated heat from rejections"
+        },
+        "alpha": {
+          "type": "number",
+          "description": "Cooling exponent"
+        }
+      }
+    },
+    "extensions": {
+      "type": "object",
+      "description": "Optional extensions (preserves forward compatibility)"
+    }
+  },
+  "additionalProperties": false
+}

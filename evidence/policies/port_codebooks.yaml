@@ -1,0 +1,52 @@
+# Port Matrix Codebooks (K0..K4)
+# Semipermeability markers for docs/policies/tools.
+version: "1.0"
+updated: "2026-01-13"
+markers:
+  K0_NEbel:
+    marker: "K0::NEBEL"
+    meaning: "Unklarheit/Pre-Concept; Nebelzone. Hinweis statt Claim."
+    do:
+      - "Kenogramm-Placeholder erzeugen"
+      - "Scope-Tags setzen (MICRO/MESO/MACRO)"
+    dont:
+      - "als Fakt/Mechanismus ausgeben"
+  K1_Faden:
+    marker: "K1::FADEN"
+    meaning: "Faden/Consent/Permission—explizite Einwilligung, kein Mind-Reading."
+    do:
+      - "Consent explizit loggen"
+      - "Kill-Switch Dominanz respektieren"
+    dont:
+      - "Consent inferieren ohne Protokoll"
+  K2_Port:
+    marker: "K2::PORT?"
+    meaning: "Port/Übergang — Brücke zwischen Kontexten, mit 1-Edge Pflicht."
+    do:
+      - "Bridge-Tags setzen"
+      - "Reason-Codes/Transform-Refs angeben"
+    dont:
+      - "ungekennzeichnete Kontextsprünge"
+  K3_Leak:
+    marker: "K3::LEAK"
+    meaning: "Leakage-Risiko — Warnmarker, Guard tighten oder VOID erzeugen."
+    do:
+      - "Guard-Fail Typ definieren"
+      - "VOID loggen statt kaschieren"
+    dont:
+      - "Pseudo-Physik/Overreach"
+  K4_Pass:
+    marker: "K4::PASS"
+    meaning: "Audit-PASS — Claim/Bridge mit Testpfad/Receipt abgesichert."
+    do:
+      - "Test-Idee oder Receipt-Ref angeben"
+      - "Kanonisierung/Replay beachten"
+    dont:
+      - "PASS ohne Nachweis"
+defaults:
+  scan_exts:
+    - ".md"
+    - ".txt"
+    - ".yaml"
+    - ".yml"
+    - ".json"

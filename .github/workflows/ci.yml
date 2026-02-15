@@ -98,8 +98,7 @@ jobs:
 
       - name: Check coverage threshold
         run: |
-          coverage report --fail-under=20
-        continue-on-error: true
+          coverage report --fail-under=50
 
   # Stage 3: Security - Security Scan
   security:
