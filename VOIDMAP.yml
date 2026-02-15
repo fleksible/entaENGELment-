@@ -15,7 +15,7 @@ description: >
 
 metadata:
   maintainer: entaENGELment
-  last_updated: "2026-01-04"
+  last_updated: "2026-02-15"
   generated_doc: docs/voids_backlog.md
 
 voids:
@@ -37,7 +37,8 @@ voids:
     title: "CI Pipeline Integration"
     status: OPEN
     priority: high
-    owner: null
+    owner: "claude-code"
+    target_date: "2026-03-01"
     domain: "[DEV]"
     symptom: "CI does not run full verify/status/snapshot flow"
     closing_path: "Update deepjump-ci.yml with verify_pointers and claim_lint steps"
@@ -51,7 +52,8 @@ voids:
     title: "Status Emit Receipt Format"
     status: OPEN
     priority: medium
-    owner: null
+    owner: "claude-code"
+    target_date: "2026-03-01"
     domain: "[DEV]"
     symptom: "status_emit.py does not emit full receipt format per protocol"
     closing_path: "Update status_emit.py with --claim, --tag, --module options"
@@ -82,7 +84,8 @@ voids:
     title: "Taxonomie & Spektren (Empirie)"
     status: OPEN
     priority: high
-    owner: null
+    owner: "fleks"
+    target_date: "2026-03-15"
     domain: "[PHYS]"
     symptom: "Spektrale Zuordnung ohne belastbare Literatur-/Datenbasis"
     closing_path: "Literatur-Scan + zitierte Tabelle (CSV) + Evidence-Bundle"
@@ -96,7 +99,8 @@ voids:
     title: "Metriken der Resonanz (MI, PLV, FD)"
     status: OPEN
     priority: high
-    owner: null
+    owner: "fleks"
+    target_date: "2026-03-15"
     domain: "[MATH]"
     symptom: "MI/FD sind aktuell Minimal-Stubs; keine Toy-Simulation als Proof"
     closing_path: "Option B: toy_resonance_dataset + robuste Implementierung + Tests"
@@ -110,7 +114,8 @@ voids:
     title: "GateProof Checkliste (Governance)"
     status: IN_PROGRESS
     priority: critical
-    owner: claude-code
+    owner: "claude-code"
+    target_date: "2026-03-01"
     domain: "[DEV]"
     symptom: "Keine einheitliche, testbare Checkliste für latent→manifest Übergänge"
     closing_path: "policies/gateproof_v1.yaml + negative ethics tests"
@@ -129,7 +134,8 @@ voids:
     title: "Sensor-Architektur (BOM & Protokoll)"
     status: IN_PROGRESS
     priority: medium
-    owner: claude-code
+    owner: "claude-code"
+    target_date: "2026-03-01"
     domain: "[DEV]"
     symptom: "Kein BOM/Protokoll für Sensorik, falls Messschicht gebaut wird"
     closing_path: "docs/sensors/bom.md + spec/sensors.spec.json"
@@ -150,7 +156,8 @@ voids:
     title: "Protein-Design (in-silico, safety-bounded)"
     status: OPEN
     priority: medium
-    owner: null
+    owner: "fleks"
+    target_date: "2026-03-15"
     domain: "[BIO]"
     symptom: "Exploration gewünscht, aber hohes Risiko bei operativen Laboranleitungen"
     closing_path: "High-level Tool/Literatur-Übersicht + nicht-operative Demos"
@@ -200,6 +207,8 @@ voids:
     layer: EXPLAIN
     status: OPEN
     priority: low
+    owner: "claude-code"
+    target_date: "2026-03-01"
     symptom: "Scope-Tags nicht überall konsistent"
     closing_path: null
     evidence: null
