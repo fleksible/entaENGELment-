@@ -36,7 +36,7 @@ jobs:
         run: python3 tools/verify_pointers.py --strict
 
       - name: Claim Lint (blocking)
-        run: python3 tools/claim_lint.py --scope index,spec,receipts,tools
+        run: python3 tools/claim_lint.py --scope index,spec,receipts,tools --strict
 
       - name: Port Lint (blocking)
         run: python3 tools/port_lint.py

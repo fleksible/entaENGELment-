@@ -159,7 +159,7 @@ benchmark-replay:
 	@echo "=== Benchmark Replay: Phasor Determinism ==="
 	python3 tests/benchmark/test_phasor_replay.py
 	@echo "=== Benchmark Replay: Receipt Lint ==="
-	python3 tools/receipt_lint.py receipts/arc_sample.json || true
+	python3 tools/receipt_lint.py receipts/arc_sample.json
 	@echo "=== Benchmark PASS ==="
 
 # === Cleanup ===
