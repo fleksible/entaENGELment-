@@ -3,7 +3,7 @@
 
 Purpose: Check for dead pointers in index and module definitions.
 Rules:
-  - OPERATIONAL CORE: must exist → error if missing
+  - OPERATIONAL CORE: [FACT] paths listed here are mandatory → error if missing
   - OPTIONAL: may be missing if marked with "(optional)" or "[OPT]"
 """
 

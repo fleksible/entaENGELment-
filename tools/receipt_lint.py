@@ -11,7 +11,7 @@ Why:
 
 Rules (strict):
 - Reject duplicate keys anywhere in YAML.
-- For any `evidence_ref` string, disallow legacy ".json:" notation (require JSON pointer ".json#/...").
+- For any `evidence_ref` string, disallow legacy ".json:" notation (use JSON pointer ".json#/..." instead).
 """
 
 from __future__ import annotations

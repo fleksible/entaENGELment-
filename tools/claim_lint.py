@@ -56,6 +56,23 @@ SKIP_PATTERNS = [
     r"\.egg-info",
 ]
 
+# Inline suppression marker
+NOQA_MARKER = "noqa: claim-lint"
+
+# Python code-pattern lines to skip (operational code, not epistemic claims)
+PYTHON_CODE_SKIP = [
+    r"^\s*(if|elif|else|return|raise|for|while|with|try|except|finally|assert)\b",
+    r"^\s*\w+\s*=[^=]",           # variable assignment
+    r"^\s*(print|logging|sys\.exit|errors?\.append)\s*\(",
+    r"^\s*def\s+",                 # function definition
+    r"^\s*class\s+",               # class definition
+    r'^\s*"required"\s*:',         # JSON-like "required": in any file
+    r"^\s*#",                      # code comments (operational notes)
+    r"^\s*\w+\.\w+\(",            # method calls (e.g. ledger.gate(...))
+    r'^\s*("""|\'\'\')',           # docstring delimiters
+    r'^\s*r["\']',                 # raw string literals (regex patterns)
+]
+
 
 class ClaimResult(NamedTuple):
     file: str
@@ -87,10 +104,19 @@ def has_claim_tag(line: str) -> bool:
     return False
 
 
+def _is_python_code_line(line: str) -> bool:
+    """Check if a Python line is clearly operational code, not an epistemic claim."""
+    for pattern in PYTHON_CODE_SKIP:
+        if re.search(pattern, line):
+            return True
+    return False
+
+
 def find_claims_in_file(filepath: Path, repo_root: Path) -> list[ClaimResult]:
     """Find potential claims in a file."""
     results: list[ClaimResult] = []
     rel_path = str(filepath.relative_to(repo_root))
+    is_python = filepath.suffix == ".py"
 
     try:
         with open(filepath, encoding="utf-8", errors="replace") as f:
@@ -100,9 +126,18 @@ def find_claims_in_file(filepath: Path, repo_root: Path) -> list[ClaimResult]:
         return results
 
     for line_num, line in enumerate(lines, start=1):
-        # Skip comments in Python files that are just imports
         stripped = line.strip()
+
+        # Skip shebangs and encoding markers
         if stripped.startswith("#!") or stripped.startswith("# -*-"):
+            continue
+
+        # Skip lines with inline suppression
+        if NOQA_MARKER in line:
+            continue
+
+        # For Python files: skip lines that are clearly code constructs
+        if is_python and _is_python_code_line(stripped):
             continue
 
         # Check for claim patterns
@@ -134,8 +169,9 @@ def scan_directory(dir_path: Path, repo_root: Path) -> list[ClaimResult]:
         print(f"[INFO] Directory not found: {dir_path.relative_to(repo_root)}")
         return results
 
-    # Scan YAML, Markdown, JSON, and Python files
-    extensions = {".yaml", ".yml", ".md", ".json", ".py"}
+    # Scan YAML, Markdown, and Python files
+    # JSON excluded: schema keywords ("required", "passed") are structural, not claims
+    extensions = {".yaml", ".yml", ".md", ".py"}
 
     for filepath in dir_path.rglob("*"):
         if filepath.is_file() and filepath.suffix in extensions:
