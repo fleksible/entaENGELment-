@@ -1,4 +1,10 @@
-skips: []
+skips:
+  # False positives for this codebase — reviewed and justified:
+  - B105  # hardcoded_password_string: SVG color codes (#4c1) flagged as passwords
+  - B311  # random: used for toy/demo data generation, not cryptographic purposes
+  - B404  # import_subprocess: subprocess import needed for git operations
+  - B603  # subprocess_without_shell: all calls use hardcoded git commands, no user input
+  - B607  # start_process_with_partial_path: standard git binary invocations
 exclude_dirs:
   - tests
   - node_modules

@@ -124,11 +124,11 @@ jobs:
 
       - name: Run bandit security linter
         run: |
-          bandit -r src/ tools/ -f json -o bandit-report.json
+          bandit -c .bandit.yaml -r src/ tools/ -f json -o bandit-report.json
 
       - name: Check dependencies for vulnerabilities
         run: |
-          safety check --json
+          pip freeze | safety check --stdin --json
 
   # Stage 4: Gate Policy Validation
   gate-policy:
