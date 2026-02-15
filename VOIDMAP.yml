@@ -35,18 +35,20 @@ voids:
 
   - id: VOID-002
     title: "CI Pipeline Integration"
-    status: OPEN
+    status: CLOSED
     priority: high
     owner: "claude-code"
     target_date: "2026-03-01"
     domain: "[DEV]"
     symptom: "CI does not run full verify/status/snapshot flow"
     closing_path: "Update deepjump-ci.yml with verify_pointers and claim_lint steps"
-    evidence: null
+    evidence: ".github/workflows/deepjump-ci.yml"
     created: "2026-01-04"
-    closed: null
+    closed: "2026-02-15"
     notes: |
       [TODO] Needs CI workflow update to include new tools.
+      [CLOSED 2026-02-15] verify_pointers, claim_lint, port_lint now run
+      as blocking CI steps in deepjump-ci.yml (no continue-on-error).
 
   - id: VOID-003
     title: "Status Emit Receipt Format"
