@@ -1,0 +1,162 @@
+# GateProof Checklist v1.0 - DRAFT
+# VOID-012: Governance checklist for latent→manifest transitions
+# Status: DRAFT - Placeholder for governance framework
+# Created: 2026-01-25
+
+version: "1.0"
+status: DRAFT
+description: |
+  GateProof checklist for latent→manifest transitions.
+  Provides testable criteria for governance, ethics, and technical validation
+  before allowing state transitions in the entaENGELment framework.
+
+  TODO: This is a DRAFT placeholder created to close VOID-012.
+  Full implementation requires:
+  - Review of all governance requirements
+  - Integration with existing gate_policy_v1.json
+  - Validation of verification tool paths
+  - Expansion of ethics checklist
+  - Definition of transition triggers and outcomes
+
+# Checklist organized by domain
+checklist:
+  governance:
+    - id: GP-001
+      check: "Consent obtained and documented"
+      required: true
+      evidence: "receipt with consent_timestamp"
+      status: DRAFT
+      notes: "TODO: Define consent documentation format"
+
+    - id: GP-002
+      check: "HMAC signature valid"
+      required: true
+      verification: "tools/status_verify.py"
+      status: DRAFT
+      notes: "Verify HMAC signature on status receipts"
+
+    - id: GP-003
+      check: "All pointers verified"
+      required: true
+      verification: "make verify-pointers"
+      status: DRAFT
+      notes: "Ensure no dead pointers in index/modules"
+
+    - id: GP-004
+      check: "Claim lint passes"
+      required: true
+      verification: "make claim-lint"
+      status: DRAFT
+      notes: "Detect untagged claims in core artifacts"
+
+    - id: GP-005
+      check: "Port-Matrix K0..K4 validated"
+      required: true
+      verification: "make port-lint"
+      status: DRAFT
+      notes: "Validate port-matrix markers (K0-K4)"
+
+  ethics:
+    - id: GP-E01
+      check: "Negative ethics tests pass"
+      required: true
+      test_path: "tests/ethics/"
+      status: DRAFT
+      notes: "Run all fail-safe tests in tests/ethics/"
+
+    - id: GP-E02
+      check: "No expired consent used"
+      required: true
+      test_file: "tests/ethics/test_fail_safe_expired_consent.py"
+      status: DRAFT
+      notes: "Verify consent has not expired"
+
+    - id: GP-E03
+      check: "Boundary guards respected"
+      required: true
+      status: DRAFT
+      notes: |
+        TODO: Define boundary guard validation.
+        Should include:
+        - G0: Consent & Boundary (CLAUDE.md)
+        - G1: Annex-Prinzip (no GOLD file changes without consent)
+        - G3: Deletion-Verbot (no deletions, only moves)
+        - G5: Prompt-Injection Defense
+
+  technical:
+    - id: GP-T01
+      check: "Snapshot manifest generated"
+      required: true
+      artifact: "out/snapshot_manifest.json"
+      status: DRAFT
+      notes: "TODO: Verify snapshot manifest format"
+
+    - id: GP-T02
+      check: "Status receipt valid"
+      required: true
+      artifact: "out/status/deepjump_status.json"
+      status: DRAFT
+      notes: "Verify status receipt structure and signature"
+
+    - id: GP-T03
+      check: "All tests pass"
+      required: true
+      verification: "make test"
+      status: DRAFT
+      notes: "Full test suite must pass (unit + integration + ethics)"
+
+# Transition definitions (placeholder)
+transitions:
+  latent_to_manifest:
+    description: "Transition from latent state (planning/draft) to manifest state (execution/publication)"
+    trigger: "User consent + context validation"
+    guards:
+      - "All governance checks pass"
+      - "All ethics checks pass"
+      - "All technical checks pass"
+    outcome:
+      success: "Transition allowed, receipt generated"
+      failure: "Transition blocked, log reason"
+    status: DRAFT
+    notes: |
+      TODO: Define precise trigger conditions and guard implementation.
+      This should integrate with existing gate_policy_v1.json phi thresholds.
+
+# Integration points
+integration:
+  gate_policy: "policies/gate_policy_v1.json"
+  deepjump_protocol: "Makefile (make verify, make all)"
+  notes: |
+    TODO: Define how gateproof_v1.yaml interacts with:
+    - gate_policy_v1.json (phi thresholds, MZM constraints)
+    - DeepJump Protocol v1.2 (verify → status → snapshot flow)
+    - CLAUDE.md guards (G0-G6)
+
+# Verification command
+verification:
+  command: "make verify"
+  description: "Run full verification: port-lint + test + verify-pointers + claim-lint"
+  expected_outcome: "All checks pass before latent→manifest transition"
+
+# References
+references:
+  - "VOIDMAP.yml VOID-012"
+  - "CLAUDE.md (Guards G0-G6)"
+  - "policies/gate_policy_v1.json"
+  - "Makefile (DeepJump Protocol)"
+  - "tools/verify_pointers.py"
+  - "tools/status_verify.py"
+  - "tools/port_lint.py"
+  - "tools/claim_lint.py"
+
+# TODO List for full implementation
+todos:
+  - "Review and validate all check IDs and descriptions"
+  - "Define consent documentation format (GP-001)"
+  - "Specify boundary guard validation logic (GP-E03)"
+  - "Verify snapshot manifest format requirements (GP-T01)"
+  - "Define precise transition triggers and guard implementation"
+  - "Integrate with gate_policy_v1.json phi thresholds"
+  - "Add negative ethics tests for all governance checks"
+  - "Document rollback procedures for failed transitions"
+  - "Create automated validation script (tools/gateproof_validate.py?)"
