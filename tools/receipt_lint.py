@@ -34,7 +34,7 @@ class DuplicateKeyError(ValueError):
 class NoDuplicateSafeLoader(yaml.SafeLoader):
     """YAML loader that raises on duplicate mapping keys."""
 
-    def construct_mapping(self, node, deep=False):  # type: ignore[override]
+    def construct_mapping(self, node, deep=False):
         mapping = {}
         for key_node, value_node in node.value:
             key = self.construct_object(key_node, deep=deep)

@@ -79,7 +79,7 @@ def get_git_info() -> tuple[str, str, list[str]]:
             .strip()
         )
     except Exception:
-        commit = None
+        commit = "unknown"
 
     try:
         # Get staged and unstaged changed files

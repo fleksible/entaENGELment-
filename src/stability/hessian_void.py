@@ -41,7 +41,8 @@ def compute_hessian_numerical(
 
             H[i, j] = (f_pp - f_p0 - f_0p + f_00) / (eps * eps)
 
-    return (H + H.T) / 2  # Symmetrisierung
+    result: np.ndarray = (H + H.T) / 2  # Symmetrisierung
+    return result
 
 
 def classify_stability(hessian: np.ndarray, threshold: float = 1e-6) -> tuple[str, np.ndarray]:
@@ -82,4 +83,4 @@ def rosenbrock(x: np.ndarray, a: float = 1.0, b: float = 100.0) -> float:
 
     Standard-Testfunktion mit globalem Minimum bei (a, a²).
     """
-    return (a - x[0]) ** 2 + b * (x[1] - x[0] ** 2) ** 2
+    return float((a - x[0]) ** 2 + b * (x[1] - x[0] ** 2) ** 2)
