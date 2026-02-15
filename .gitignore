@@ -41,6 +41,9 @@ htmlcov/
 .tox/
 .hypothesis/
 
+# Security scan reports (generated in CI)
+bandit-report.json
+
 # Node.js
 node_modules/
 
