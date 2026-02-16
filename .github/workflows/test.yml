@@ -34,7 +34,7 @@ jobs:
         run: npm run test:js:coverage
 
       - name: Upload JS coverage report
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f  # v6.0.0
         with:
           name: js-coverage-report
           path: coverage/js/
@@ -70,7 +70,7 @@ jobs:
           python -m pytest --cov --cov-report=xml --cov-report=html
 
       - name: Upload Python coverage report
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f  # v6.0.0
         with:
           name: python-coverage-report-${{ matrix.python-version }}
           path: Fractalsense/htmlcov/
