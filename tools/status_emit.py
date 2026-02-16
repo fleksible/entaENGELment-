@@ -39,7 +39,7 @@ def get_secret() -> str:
     secret = os.environ.get("ENTA_HMAC_SECRET") or os.environ.get("CI_SECRET")
     if not secret:
         if os.environ.get("CI"):
-            raise EnvironmentError(
+            raise OSError(
                 "ENTA_HMAC_SECRET is not set. "
                 "Unsigned receipts are not permitted in CI."
             )
