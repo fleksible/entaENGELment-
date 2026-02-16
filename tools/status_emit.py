@@ -35,8 +35,16 @@ VALID_TAGS = {"[FACT]", "[HYP]", "[MET]", "[TODO]", "[RISK]"}
 
 
 def get_secret() -> str:
-    """Get HMAC secret from environment."""
-    return os.environ.get("ENTA_HMAC_SECRET") or os.environ.get("CI_SECRET") or ""
+    """Get HMAC secret from environment. Fails if not set."""
+    secret = os.environ.get("ENTA_HMAC_SECRET") or os.environ.get("CI_SECRET")
+    if not secret:
+        if os.environ.get("CI"):
+            raise OSError(
+                "ENTA_HMAC_SECRET is not set. " "Unsigned receipts are not permitted in CI."
+            )
+        print("WARNING: No ENTA_HMAC_SECRET set. Local-only mode.", file=sys.stderr)
+        return ""
+    return secret
 
 
 def canonical_json(payload: dict) -> str:

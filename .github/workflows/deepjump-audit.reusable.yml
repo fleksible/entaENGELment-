@@ -9,7 +9,7 @@ on:
         default: "3.11"
     secrets:
       ENTA_HMAC_SECRET:
-        required: false
+        required: true
 
 jobs:
   deepjump-audit:
@@ -30,13 +30,6 @@ jobs:
           pip install pyyaml pytest
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Set HMAC Secret (fallback to ephemeral)
-        run: |
-          if [ -z "$ENTA_HMAC_SECRET" ]; then
-            echo "ENTA_HMAC_SECRET=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
-            echo "::warning::No ENTA_HMAC_SECRET set. Using ephemeral secret."
-          fi
-
       - name: Mask HMAC secret
         shell: bash
         run: |
@@ -52,10 +45,9 @@ jobs:
 
       - name: "Phase 1: Claim Lint"
         run: python3 tools/claim_lint.py --scope index,spec,receipts,tools
-        continue-on-error: true
 
       - name: "Phase 1: Run Tests"
-        run: pytest tests/ -v --tb=short || echo "::warning::Some tests failed"
+        run: pytest tests/ -v --tb=short
 
       - name: "Phase 2: Emit & Verify Status"
         run: make status-verify STATUS=PASS H=0.85 DMI=4.8 PHI=0.75
@@ -64,8 +56,7 @@ jobs:
         run: make snapshot SNAPSHOT_INPUTS='"seeds/*.yaml" "audit/*.yaml" "index/*.yaml"'
 
       - name: "Legacy: Verify JSON Receipts"
-        run: make verify-json || echo "::warning::Legacy verify-json failed"
-        continue-on-error: true
+        run: make verify-json
 
       - name: Upload Audit Artifacts
         if: ${{ always() }}

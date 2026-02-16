@@ -35,10 +35,19 @@ def main() -> None:
     parser.add_argument("--secret", help="HMAC secret (ENV preferred)")
     args = parser.parse_args()
 
-    secret = os.environ.get("CI_SECRET") or os.environ.get("ENTA_HMAC_SECRET") or args.secret
+    secret = os.environ.get("ENTA_HMAC_SECRET") or os.environ.get("CI_SECRET") or args.secret
     if not secret:
-        print("[ERR] Cannot verify: No secret provided.")
-        sys.exit(2)
+        if os.environ.get("CI"):
+            print(
+                "[ERR] Cannot verify: ENTA_HMAC_SECRET is not set. "  # noqa: claim-lint
+                "Unsigned verification is not permitted in CI."
+            )
+            sys.exit(2)
+        print(
+            "[WARN] No ENTA_HMAC_SECRET set. Skipping verification (local-only mode).",
+            file=sys.stderr,
+        )
+        sys.exit(0)
 
     with open(args.json_file) as f:
         data = json.load(f)
