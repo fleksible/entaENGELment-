@@ -1,0 +1,62 @@
+{
+  "receipt_type": "INFRASTRUCTURE_SPRINT",
+  "content_hash": "47ccaa9571ae44ffb77b65cf0c2d11503c954185bac72a2f9d0c78d2fe6849ff",
+  "parameters": {
+    "sprint": "Infrastructure_Autonomy",
+    "scope": "materialized_ethics_as_cicd",
+    "guards_operationalized": ["G1", "G3", "G5", "G6", "G8"]
+  },
+  "results": {
+    "security_blocking": true,
+    "dependabot_configured": true,
+    "sbom_workflow": true,
+    "notice_file": true,
+    "release_workflow": true,
+    "changelog_exists": true,
+    "void_sync_workflow": true,
+    "branch_cleanup_script": true,
+    "precommit_hooks": true
+  },
+  "claims": [
+    {
+      "tag": "FACT",
+      "id": "INFSPRINT-001",
+      "statement": "Security checks (bandit, safety, mypy) now blocking in CI",
+      "evidence_ref": ".github/workflows/ci.yml",
+      "reason_code": "G5-MATERIALIZED"
+    },
+    {
+      "tag": "FACT",
+      "id": "INFSPRINT-002",
+      "statement": "Dependabot monitors pip, npm, and github-actions weekly",
+      "evidence_ref": ".github/dependabot.yml",
+      "reason_code": "SUPPLY-CHAIN-IMMUNITY"
+    },
+    {
+      "tag": "FACT",
+      "id": "INFSPRINT-003",
+      "statement": "Release workflow enforces all gate checks before creating release",
+      "evidence_ref": ".github/workflows/release.yml",
+      "reason_code": "G5-RELEASE-GATE"
+    },
+    {
+      "tag": "FACT",
+      "id": "INFSPRINT-004",
+      "statement": "VOID deadline monitor creates issues for overdue VOIDs weekly",
+      "evidence_ref": ".github/workflows/void-sync.yml",
+      "reason_code": "KENOGRAMMATIC-ACCOUNTABILITY"
+    },
+    {
+      "tag": "FACT",
+      "id": "INFSPRINT-005",
+      "statement": "Pre-commit hook blocks invalid receipts before they enter the chain",
+      "evidence_ref": ".githooks/pre-commit",
+      "reason_code": "G3-LOCAL-ENFORCEMENT"
+    }
+  ],
+  "meta": {
+    "generated_by": "infrastructure_autonomy_sprint_2026-02-16",
+    "dr_kernel": "v1.5",
+    "principle": "materialized_ethics_as_cicd"
+  }
+}

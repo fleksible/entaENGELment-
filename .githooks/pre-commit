@@ -1,3 +1,44 @@
+#!/usr/bin/env bash
+# Pre-commit hook: validate receipts before they enter the chain (G3)
+#
+# Ensures all staged receipt files pass receipt_lint before commit.
+# Install via: make install-hooks
+
+set -euo pipefail
+
+RECEIPT_DIRS="receipts data/receipts"
+LINT_CMD="python3 tools/receipt_lint.py"
+
+staged_receipts=()
+for dir in $RECEIPT_DIRS; do
+    while IFS= read -r file; do
+        [ -n "$file" ] && staged_receipts+=("$file")
+    done < <(git diff --cached --name-only --diff-filter=ACM -- "$dir/" 2>/dev/null || true)
+done
+
+if [ ${#staged_receipts[@]} -eq 0 ]; then
+    exit 0
+fi
+
+echo "=== Pre-commit: Validating ${#staged_receipts[@]} receipt(s) ==="
+
+fail=0
+for f in "${staged_receipts[@]}"; do
+    if ! $LINT_CMD "$f"; then
+        echo "FAIL: $f did not pass receipt lint"
+        fail=1
+    fi
+done
+
+if [ $fail -ne 0 ]; then
+    echo ""
+    echo "Commit blocked: invalid receipts detected (G3 enforcement)."
+    echo "Fix the issues above and try again."
+    exit 1
+fi
+
+echo "=== Pre-commit: All receipts valid ==="
+exit 0
 #!/bin/bash
 # EntaENGELment Pre-Commit Hook
 # Guards: G1 (Nachvollziehbarkeit), G3 (Receipt-Integrität)
