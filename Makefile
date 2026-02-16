@@ -8,7 +8,7 @@ DMI ?= 4.7
 PHI ?= 0.72
 REFRACTORY ?= 120
 
-.PHONY: help install install-dev test test-unit test-integration test-ethics coverage lint format type-check clean gate-test port-lint verify verify-pointers claim-lint verify-json status status-verify snapshot all deepjump benchmark-replay
+.PHONY: help install install-dev install-hooks test test-unit test-integration test-ethics coverage lint format type-check clean gate-test port-lint verify verify-pointers claim-lint verify-json status status-verify snapshot all deepjump benchmark-replay
 
 help:
 	@echo "entaENGELment Framework - Development Commands"
@@ -58,6 +58,10 @@ install:
 install-dev:
 	pip install -r requirements-dev.txt
 	pip install -e .
+
+install-hooks:
+	git config core.hooksPath .githooks
+	@echo "Git hooks installed from .githooks/"
 
 # === Testing ===
 test:
