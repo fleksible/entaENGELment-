@@ -1,0 +1,118 @@
+name: Release Gate
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  gate-check:
+    name: Release Gate Verification
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install -e ".[dev]" || pip install -e . || true
+          pip install pyyaml
+
+      - name: Gate 1 — Pointer Integrity
+        run: python3 tools/verify_pointers.py --strict
+
+      - name: Gate 2 — Claim Lint
+        run: python3 tools/claim_lint.py --scope index,spec,receipts,tools
+
+      - name: Gate 3 — Port Lint
+        run: python3 tools/port_lint.py
+
+      - name: Gate 4 — Receipt Lint
+        run: |
+          for f in receipts/*.json; do
+            echo "Linting $f..."
+            python3 tools/receipt_lint.py "$f"
+          done
+
+      - name: Gate 5 — No ownerless VOIDs
+        run: |
+          python3 -c "
+          import yaml
+          with open('VOIDMAP.yml') as f:
+              data = yaml.safe_load(f)
+          ownerless = [v['id'] for v in data.get('voids', [])
+                       if v.get('status') in ('OPEN','IN_PROGRESS')
+                       and not v.get('owner')]
+          if ownerless:
+              print(f'FAIL: Ownerless VOIDs: {ownerless}')
+              exit(1)
+          print('PASS: All active VOIDs have owners')
+          "
+
+      - name: Gate 6 — Tests
+        run: pytest tests/ -x --tb=short
+
+      - name: Gate 7 — No stub metrics
+        run: |
+          count=$(grep -r "return 0.5" src/core/ 2>/dev/null | wc -l)
+          if [ "$count" -gt 0 ]; then
+            echo "FAIL: Stub metrics found"
+            exit 1
+          fi
+          echo "PASS: No stub metrics"
+
+  create-release:
+    name: Create GitHub Release
+    needs: gate-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate Release Notes
+        id: notes
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          if [ -z "$PREV_TAG" ]; then
+            COMMITS=$(git log --oneline --no-merges)
+          else
+            COMMITS=$(git log --oneline --no-merges ${PREV_TAG}..${TAG})
+          fi
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          {
+            echo "notes<<EOF"
+            echo "## EntaENGELment $TAG"
+            echo ""
+            echo "### Changes"
+            echo "$COMMITS"
+            echo ""
+            echo "### Gate Status"
+            echo "All release gates PASSED."
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea  # v7
+        with:
+          script: |
+            await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: '${{ steps.notes.outputs.tag }}',
+              name: 'EntaENGELment ${{ steps.notes.outputs.tag }}',
+              body: `${{ steps.notes.outputs.notes }}`,
+              draft: false,
+              prerelease: '${{ steps.notes.outputs.tag }}'.includes('-rc')
+            });
