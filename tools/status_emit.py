@@ -40,11 +40,9 @@ def get_secret() -> str:
     if not secret:
         if os.environ.get("CI"):
             raise OSError(
-                "ENTA_HMAC_SECRET is not set. "
-                "Unsigned receipts are not permitted in CI."
+                "ENTA_HMAC_SECRET is not set. " "Unsigned receipts are not permitted in CI."
             )
-        print("WARNING: No ENTA_HMAC_SECRET set. Local-only mode.",
-              file=sys.stderr)
+        print("WARNING: No ENTA_HMAC_SECRET set. Local-only mode.", file=sys.stderr)
         return ""
     return secret
 

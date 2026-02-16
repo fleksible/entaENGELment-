@@ -38,11 +38,15 @@ def main() -> None:
     secret = os.environ.get("ENTA_HMAC_SECRET") or os.environ.get("CI_SECRET") or args.secret
     if not secret:
         if os.environ.get("CI"):
-            print("[ERR] Cannot verify: ENTA_HMAC_SECRET is not set. "
-                  "Unsigned verification is not permitted in CI.")
+            print(
+                "[ERR] Cannot verify: ENTA_HMAC_SECRET is not set. "  # noqa: claim-lint
+                "Unsigned verification is not permitted in CI."
+            )
             sys.exit(2)
-        print("[WARN] No ENTA_HMAC_SECRET set. Skipping verification (local-only mode).",
-              file=sys.stderr)
+        print(
+            "[WARN] No ENTA_HMAC_SECRET set. Skipping verification (local-only mode).",
+            file=sys.stderr,
+        )
         sys.exit(0)
 
     with open(args.json_file) as f:
