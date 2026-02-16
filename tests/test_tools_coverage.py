@@ -14,6 +14,8 @@ import sys
 from pathlib import Path
 from unittest import mock
 
+import pytest
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -288,10 +290,20 @@ class TestStatusEmitImport:
 
     def test_get_secret_fallback(self):
         se = self._import()
-        env = {k: v for k, v in os.environ.items() if k not in ("ENTA_HMAC_SECRET", "CI_SECRET")}
+        env = {
+            k: v for k, v in os.environ.items() if k not in ("ENTA_HMAC_SECRET", "CI_SECRET", "CI")
+        }
         with mock.patch.dict(os.environ, env, clear=True):
             secret = se.get_secret()
             assert secret == ""
+
+    def test_get_secret_raises_in_ci(self):
+        se = self._import()
+        env = {k: v for k, v in os.environ.items() if k not in ("ENTA_HMAC_SECRET", "CI_SECRET")}
+        env["CI"] = "true"
+        with mock.patch.dict(os.environ, env, clear=True):
+            with pytest.raises(OSError, match="ENTA_HMAC_SECRET is not set"):
+                se.get_secret()
 
 
 # ===========================================================================
