@@ -80,3 +80,9 @@ Das Framework folgt strengen Invarianten:
 ## Fragen?
 
 Siehe [`./CODEOWNERS`](./CODEOWNERS) für Kontakte.
+
+## Local Guard Enforcement
+
+Run `make install-hooks` to enable pre-commit guards.
+This enforces Receipt-Lint (blocking) and Claim-Lint (warning)
+before every commit. Receipt-lint failures prevent the commit.
