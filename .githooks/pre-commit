@@ -39,3 +39,35 @@ fi
 
 echo "=== Pre-commit: All receipts valid ==="
 exit 0
+#!/bin/bash
+# EntaENGELment Pre-Commit Hook
+# Guards: G1 (Nachvollziehbarkeit), G3 (Receipt-Integrität)
+
+set -euo pipefail
+
+echo "=== EntaENGELment Pre-Commit Guard ==="
+
+# Guard G1: Claim-Lint auf geänderte Dateien
+CHANGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(py|md|yaml|yml|json)$' || true)
+
+if [ -n "$CHANGED_FILES" ]; then
+    echo "Checking claims in staged files..."
+    python3 tools/claim_lint.py --scope index,spec,receipts,tools 2>/dev/null || {
+        echo "Claim-lint warnings detected (non-blocking)"
+    }
+fi
+
+# Guard G3: Receipt-Lint auf geänderte Receipts — BLOCKING
+CHANGED_RECEIPTS=$(git diff --cached --name-only --diff-filter=ACM | grep 'receipts/.*\.json$' || true)
+
+if [ -n "$CHANGED_RECEIPTS" ]; then
+    echo "Linting staged receipts..."
+    for f in $CHANGED_RECEIPTS; do
+        python3 tools/receipt_lint.py "$f" || {
+            echo "Receipt lint FAILED for $f"
+            exit 1
+        }
+    done
+fi
+
+echo "=== Pre-Commit Guard PASS ==="

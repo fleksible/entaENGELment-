@@ -16,6 +16,7 @@ help:
 	@echo "Setup:"
 	@echo "  make install         Install package"
 	@echo "  make install-dev     Install package with dev dependencies"
+	@echo "  make install-hooks   Install pre-commit guard hooks"
 	@echo ""
 	@echo "Testing:"
 	@echo "  make test            Run all tests"
@@ -62,6 +63,10 @@ install-dev:
 install-hooks:
 	git config core.hooksPath .githooks
 	@echo "Git hooks installed from .githooks/"
+# === Hooks ===
+install-hooks:
+	git config core.hooksPath .githooks
+	@echo "Pre-commit hooks installed."
 
 # === Testing ===
 test:
