@@ -1,0 +1,116 @@
+# DEC-BETSE-001 — BETSE Integration Decision Record
+
+id: DEC-BETSE-001
+title: "BETSE pipeline integration and provenance chain materialisation"
+status: PROPOSED
+approval_required: true
+approver: Fleks
+created: "2026-03-06"
+author: claude/add-documentation-commits-6uGfk
+
+---
+
+## context
+
+`data/metrics/framework_metrics_v2_populated.csv` materialises BP-06/07/08
+values (spatial_stability, kuramoto_r_bar, type_ii_fraction, spearman_rho)
+transcribed from `EntaENGELment_Status_Roadmap_v1.docx`.
+
+The sidecar `data/metrics/framework_metrics_v2_populated.meta.json` references
+three pipeline scripts that are **not currently present** in the repository:
+
+| script | role | status |
+|--------|------|--------|
+| `generate_synthetic_betse_patched.py` | synthetic BETSE run generator | MISSING |
+| `betse_to_framework_bridge_v2.py` | BETSE output → framework metric bridge | MISSING |
+| `betse_josephson_analysis.py` | Josephson / Kuramoto analysis | MISSING |
+
+Until these scripts are present and runnable, the provenance chain is
+**non-executable**: `claim_tag: SIMULATION_PROXY` is correctly set, but
+anyone attempting to reproduce or audit the CSV cannot run the documented
+pipeline.
+
+This decision record gates any downstream use of the metrics as baselines
+or verification evidence until the gap is resolved.
+
+---
+
+## decision
+
+Pending Fleks approval, the following actions are proposed:
+
+1. **Locate or recreate** the three missing scripts from local BETSE runs or
+   the Roadmap working directory.
+2. **Commit** them under `tools/betse/` (ANNEX path) with their own provenance
+   headers.
+3. **Create** `EVIDENCE_CHAIN_BETSE.yml` (linked below) documenting the
+   canonical seed, run environment, and output hashes.
+4. **Update** `data/metrics/framework_metrics_v2_populated.meta.json`:
+   - set `seed` to canonical value (currently `null`)
+   - add `evidence_chain: EVIDENCE_CHAIN_BETSE.yml`
+5. **Optionally** re-run the pipeline to confirm CSV values match Roadmap
+   figures; if discrepancies exist, create a new versioned CSV rather than
+   overwriting.
+
+---
+
+## artifacts
+
+```
+data/metrics/framework_metrics_v2_populated.csv       # proxy values — SIMULATION_PROXY
+data/metrics/framework_metrics_v2_populated.meta.json # provenance descriptor
+EVIDENCE_CHAIN_BETSE.yml                              # PROPOSED — does not exist yet
+tools/betse/generate_synthetic_betse_patched.py       # MISSING — to be added
+tools/betse/betse_to_framework_bridge_v2.py           # MISSING — to be added
+tools/betse/betse_josephson_analysis.py               # MISSING — to be added
+```
+
+---
+
+## constraints
+
+- `data/metrics/` is ANNEX — scripts should land in `tools/betse/` (also ANNEX).
+- `data/receipts/` remains IMMUTABLE; no receipt is created by this DEC.
+- Do **not** remove or overwrite `framework_metrics_v2_populated.csv` until
+  a replacement with verified values is ready (G3: deletion-verbot).
+- Claim tags must remain `SIMULATION_PROXY` until a biological BETSE run
+  provides empirical values.
+
+---
+
+## blocking conditions
+
+This DEC blocks:
+
+- Using BP-06/07/08 metrics as hard thresholds in CI gates.
+- Closing any VOID that cites these values as primary evidence.
+- Treating `kuramoto_r_bar = 0.980` or `spearman_rho = -0.798/-0.910` as
+  empirically confirmed results.
+
+---
+
+## approval gate
+
+```
+status: PROPOSED
+approval_required: true
+approver: Fleks
+auto_close: false
+```
+
+To advance to `ACCEPTED`:
+- Approver reviews and confirms the three scripts are recoverable.
+- Approver specifies canonical seed or marks seed as intentionally null.
+- Approver signs off on `EVIDENCE_CHAIN_BETSE.yml` path.
+
+To advance to `REJECTED`:
+- Approver determines scripts are irrecoverable; metrics must be re-generated
+  from scratch or removed from the provenance chain.
+
+---
+
+## related
+
+- `data/metrics/framework_metrics_v2_populated.meta.json`
+- `docs/framework/THEORETICAL_LINEAGE.md` (Kaehr §3 — kenogrammatic provenance)
+- `VOIDMAP.yml` — check for open VOID referencing BETSE runs
