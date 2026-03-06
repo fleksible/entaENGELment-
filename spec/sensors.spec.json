@@ -1,10 +1,11 @@
 {
   "version": "1.0",
-  "status": "DRAFT",
+  "status": "v1",
   "title": "Sensor Layer Specification",
-  "description": "Communication protocol and data format for sensor layer integration with entaENGELment framework. This is a DRAFT placeholder created for VOID-013 closure.",
+  "description": "Communication protocol and data format for sensor layer integration with entaENGELment framework.",
   "void_reference": "VOIDMAP.yml VOID-013",
   "created": "2026-01-25",
+  "finalized": "2026-03-06",
   "maintainer": "entaENGELment project",
 
   "protocol": {

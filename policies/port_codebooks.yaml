@@ -43,6 +43,27 @@ markers:
       - "Kanonisierung/Replay beachten"
     dont:
       - "PASS ohne Nachweis"
+scope_tags:
+  description: "Scope-Tags for MICRO/MESO/MACRO scale classification (VOID-023)"
+  updated: "2026-03-06"
+  tags:
+    MICRO:
+      marker: "[MICRO]"
+      meaning: "Component/element scale — single module, function, or data structure."
+      example: "A single receipt field, one sensor channel, one guard rule."
+    MESO:
+      marker: "[MESO]"
+      meaning: "System/framework scale — interactions between modules or subsystems."
+      example: "The DeepJump protocol flow, GateProof checklist, CI pipeline."
+    MACRO:
+      marker: "[MACRO]"
+      meaning: "Project/ecosystem scale — cross-system or architectural concerns."
+      example: "VOIDMAP topology, governance model, orbital roadmap."
+  usage:
+    - "Attach to claim-tags: [FACT][MESO], [HYP][MICRO], etc."
+    - "Required in Canon documents alongside claim-tags (ROADMAP_ORBITAL_v1.md)."
+    - "K0::NEBEL contexts must always carry a scope-tag (port_codebooks.yaml K0)."
+
 defaults:
   scan_exts:
     - ".md"
