@@ -1,0 +1,10 @@
+{
+  "artifact_path": "data/metrics/framework_metrics_v2_populated.csv",
+  "claim_tag": "SIMULATION_PROXY",
+  "generator": "generate_synthetic_betse_patched.py",
+  "bridge_script": "betse_to_framework_bridge_v2.py",
+  "analysis_script": "betse_josephson_analysis.py",
+  "run_date": "2026-03-06",
+  "seed": null,
+  "provenance_note": "Values transcribed from EntaENGELment_Status_Roadmap_v1.docx. Cross-check against canonical local outputs before treating as final."
+}

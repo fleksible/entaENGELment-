@@ -1,0 +1,7 @@
+bp_id,metric_name,metric_value,unit,claim_tag,generator,run_date,provenance_source,notes
+BP-06,spatial_stability_stable_odj_edges_fraction,0.703,ratio,SIMULATION_PROXY,generate_synthetic_betse_patched.py,2026-03-06,EntaENGELment_Status_Roadmap_v1.docx,Roadmap section I.1 / III.2
+BP-06,kuramoto_r_bar,0.980,ratio,SIMULATION_PROXY,generate_synthetic_betse_patched.py,2026-03-06,EntaENGELment_Status_Roadmap_v1.docx,Roadmap section I.1
+BP-07,type_ii_fraction_gt_0_707,0.798,ratio,SIMULATION_PROXY,generate_synthetic_betse_patched.py,2026-03-06,EntaENGELment_Status_Roadmap_v1.docx,Roadmap section I.1
+BP-07,spearman_rho,-0.798,coefficient,SIMULATION_PROXY,generate_synthetic_betse_patched.py,2026-03-06,EntaENGELment_Status_Roadmap_v1.docx,Roadmap section I.1
+BP-08,type_ii_fraction_kappa_lte_5,0.920,ratio,SIMULATION_PROXY,generate_synthetic_betse_patched.py,2026-03-06,EntaENGELment_Status_Roadmap_v1.docx,Roadmap section I.1 / I.2
+BP-08,spearman_rho_kappa_lte_5,-0.910,coefficient,SIMULATION_PROXY,generate_synthetic_betse_patched.py,2026-03-06,EntaENGELment_Status_Roadmap_v1.docx,Roadmap section I.1 / I.2

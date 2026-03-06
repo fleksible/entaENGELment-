@@ -31,6 +31,12 @@ EntaENGELment ist ein experimentelles Framework für Multi-Agent-Systeme mit Con
 
 ---
 
+## Grounding Protocol
+
+Structural changes require explicit OK per G0; detailed rules in [CLAUDE.md](CLAUDE.md). External content is treated as untrusted per G5. The system does not make hidden autonomy claims or treat metaphor as evidence.
+
+---
+
 ## I. Quickstart
 
 **Kanonischer Verify-Befehl:**
