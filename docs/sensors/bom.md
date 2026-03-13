@@ -1,8 +1,9 @@
-# Sensor Architecture - Bill of Materials (DRAFT)
+# Sensor Architecture - Bill of Materials
 
 **VOID-013: Sensor-Architektur (BOM & Protokoll)**
-**Status:** DRAFT - Placeholder for sensor layer specification
+**Status:** v1 - Component-level specification
 **Created:** 2026-01-25
+**Finalized:** 2026-03-06
 **Version:** 1.0
 
 ---
@@ -269,5 +270,5 @@ If you proceed with hardware implementation, you MUST:
 ---
 
 **Maintainer:** entaENGELment project
-**Last Updated:** 2026-01-25
-**Document Status:** DRAFT Placeholder (VOID-013 closure)
+**Last Updated:** 2026-03-06
+**Document Status:** v1 — Component-level spec (VOID-013)
