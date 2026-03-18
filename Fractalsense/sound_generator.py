@@ -8,7 +8,10 @@ import threading
 import time
 
 import numpy as np
-import pygame
+try:
+    import pygame
+except ImportError:  # pragma: no cover - optional for non-audio test environments
+    pygame = None
 
 
 class SoundGenerator:
@@ -375,6 +378,9 @@ class SoundGenerator:
 
         # Sound erstellen und abspielen
         try:
+            if pygame is None:
+                raise RuntimeError("pygame ist nicht installiert")
+
             sound = pygame.mixer.Sound(buffer=wave_int16)
             sound.play()
 
@@ -403,5 +409,6 @@ class SoundGenerator:
 
     def stop_sound(self) -> None:
         """Stoppt den aktuell abgespielten Sound."""
-        pygame.mixer.stop()
+        if pygame is not None:
+            pygame.mixer.stop()
         self.is_playing = False

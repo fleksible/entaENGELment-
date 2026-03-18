@@ -4,11 +4,19 @@ FractalSense EntaENGELment - Beispielmodul für Fraktalvisualisierung
 Dieses Modul implementiert die Fraktalvisualisierung für die FractalSense EntaENGELment App.
 """
 
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_agg import FigureCanvasAgg
 import time
+from typing import Any, Optional
+
+import numpy as np
+
+try:
+    import matplotlib.pyplot as plt
+    from matplotlib.backends.backend_agg import FigureCanvasAgg
+    from matplotlib.figure import Figure
+except ImportError:  # pragma: no cover - exercised in lightweight test environments
+    plt = None
+    Figure = Any
+    FigureCanvasAgg = Any
 
 # Optional numba import for performance optimization
 try:
@@ -19,8 +27,6 @@ except ImportError:
         def decorator(func):
             return func
         return decorator
-from typing import Any, Optional
-
 # Importiere das Modul-Interface
 from modular_app_structure import ModuleInterface
 
@@ -61,6 +67,10 @@ class FractalVisualizationModule(ModuleInterface):
             bool: True, wenn die Initialisierung erfolgreich war, sonst False
         """
         try:
+            if plt is None:
+                print("Fehler: matplotlib ist nicht installiert; Fraktal-Visualisierung nicht verfügbar.")
+                return False
+
             # Event-System aus dem App-Kontext holen
             self._event_system = app_context.get("event_system")
             if self._event_system is None:

@@ -6,14 +6,43 @@ Dieses Modul erweitert die Farbfunktionalität des ResonanceEnhancer-Moduls mit 
 
 import colorsys
 
-import matplotlib as mpl
-import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.colors import LinearSegmentedColormap
+try:
+    import matplotlib as mpl
+    import matplotlib.pyplot as plt
+    from matplotlib.colors import LinearSegmentedColormap
+except ImportError:  # pragma: no cover - fallback for lightweight environments
+    mpl = None
+    plt = None
+
+    class LinearSegmentedColormap:  # type: ignore[override]
+        """Minimal fallback replacement used when matplotlib is unavailable."""
+
+        def __init__(self, name: str, colors: list[tuple[float, float, float]]):
+            self.name = name
+            self._colors = list(colors)
+
+        @classmethod
+        def from_list(
+            cls, name: str, colors: list[tuple[float, float, float]]
+        ) -> "LinearSegmentedColormap":
+            return cls(name, colors)
+
+        def __call__(self, value: float) -> tuple[float, float, float, float]:
+            if not self._colors:
+                return (0.0, 0.0, 0.0, 1.0)
+
+            clamped = min(1.0, max(0.0, float(value)))
+            index = int(round(clamped * (len(self._colors) - 1)))
+            r, g, b = self._colors[index]
+            return (float(r), float(g), float(b), 1.0)
 
 
 def _register_colormap(name: str, cmap) -> None:
     """Register a colormap with matplotlib (compatible with old and new API)."""
+    if mpl is None:
+        return
+
     try:
         # New API (matplotlib >= 3.9)
         mpl.colormaps.register(cmap, name=name, force=True)
