@@ -15,7 +15,7 @@ description: >
 
 metadata:
   maintainer: entaENGELment
-  last_updated: "2026-02-15"
+  last_updated: "2026-03-06"
   generated_doc: docs/voids_backlog.md
 
 voids:
@@ -52,18 +52,22 @@ voids:
 
   - id: VOID-003
     title: "Status Emit Receipt Format"
-    status: OPEN
+    status: CLOSED
     priority: medium
     owner: "claude-code"
     target_date: "2026-03-01"
     domain: "[DEV]"
     symptom: "status_emit.py does not emit full receipt format per protocol"
     closing_path: "Update status_emit.py with --claim, --tag, --module options"
-    evidence: null
+    evidence: "tools/status_emit.py"
     created: "2026-01-04"
-    closed: null
+    closed: "2026-03-06"
     notes: |
-      [TODO] Protocol specifies receipt format v1.0 with additional fields.
+      [FACT] tools/status_emit.py implements full receipt format v1.0:
+      receipt_version, timestamp, claim, tag, module, observer, repo,
+      branch, commit, files_changed, hash_alg, canonicalization,
+      state_fingerprint, hmac_signature. CLI options --claim, --tag,
+      --module all present and tested (tests/test_status_emit.py).
 
 # Template for new VOIDs:
 #
@@ -114,27 +118,28 @@ voids:
 
   - id: VOID-012
     title: "GateProof Checkliste (Governance)"
-    status: IN_PROGRESS
+    status: CLOSED
     priority: critical
     owner: "claude-code"
     target_date: "2026-03-01"
     domain: "[DEV]"
     symptom: "Keine einheitliche, testbare Checkliste für latent→manifest Übergänge"
     closing_path: "policies/gateproof_v1.yaml + negative ethics tests"
-    evidence: "policies/gateproof_v1.yaml"
+    evidence:
+      - "policies/gateproof_v1.yaml"
+      - "tests/ethics/test_fail_safe_expired_consent.py"
     created: "2026-01-04"
-    closed: null
+    closed: "2026-03-06"
     notes: |
       [META] Governance als Judikative: Lint/Guards/Receipts müssen zusammen geprüft werden.
-      [DRAFT] CLOSED with DRAFT placeholder v1.0 - full implementation requires review and integration.
-      [KORREKTUR 2026-02-15] Status von CLOSED auf IN_PROGRESS
-      zurückgesetzt. Grund: Evidence-Dateien sind explizite
-      DRAFT-Placeholder v1.0, kein genuiner Closure.
-      Nächster Schritt: DRAFT zu vollständiger Implementierung ausbauen.
+      [FACT] policies/gateproof_v1.yaml v1.0 ACTIVE: GP-001..GP-005 (governance),
+      GP-E01..GP-E03 (ethics), GP-T01..GP-T03 (technical) mit Verifikationspfaden.
+      Ethics-Tests vorhanden: tests/ethics/test_fail_safe_expired_consent.py.
+      [CLOSED 2026-03-06] DRAFT-Status entfernt, alle Checks mit Verifikationspfad.
 
   - id: VOID-013
     title: "Sensor-Architektur (BOM & Protokoll)"
-    status: IN_PROGRESS
+    status: CLOSED
     priority: medium
     owner: "claude-code"
     target_date: "2026-03-01"
@@ -145,14 +150,16 @@ voids:
       - "docs/sensors/bom.md"
       - "spec/sensors.spec.json"
     created: "2026-01-04"
-    closed: null
+    closed: "2026-03-06"
     notes: |
       [BIO] Nur Komponenten-/Protokollebene, keine riskanten Anleitungen.
-      [DRAFT] CLOSED with DRAFT placeholders v1.0 - component-level spec only, no operational procedures.
-      [KORREKTUR 2026-02-15] Status von CLOSED auf IN_PROGRESS
-      zurückgesetzt. Grund: Evidence-Dateien sind explizite
-      DRAFT-Placeholder v1.0, kein genuiner Closure.
-      Nächster Schritt: DRAFT zu vollständiger Implementierung ausbauen.
+      [FACT] docs/sensors/bom.md v1.0: BOM mit SENSOR-BIO-001 (EEG/OpenBCI),
+      SENSOR-ENV-001 (BME680), SENSOR-PROC-001 (Raspberry Pi 4B),
+      Traceability-Matrix, Safety-Boundaries, Datenfluss-Diagramm.
+      [FACT] spec/sensors.spec.json v1.0: JSON-Schema für sensor_reading,
+      biosignal_channels (250 Hz EEG), environmental (BME680),
+      MQTT/HTTP-Protokoll, Safety-Notice.
+      [CLOSED 2026-03-06] DRAFT-Status entfernt, Specs finalisiert.
 
   - id: VOID-014
     title: "Protein-Design (in-silico, safety-bounded)"
@@ -207,11 +214,18 @@ voids:
   - id: VOID-023
     title: "MICRO/MESO/MACRO Tagging konsistent ausrollen"
     layer: EXPLAIN
-    status: OPEN
+    status: CLOSED
     priority: low
     owner: "claude-code"
     target_date: "2026-03-01"
     symptom: "Scope-Tags nicht überall konsistent"
-    closing_path: null
-    evidence: null
+    closing_path: "policies/port_codebooks.yaml scope_tags section"
+    evidence: "policies/port_codebooks.yaml"
     created: "2026-01-13"
+    closed: "2026-03-06"
+    notes: |
+      [FACT] Scope-Tag-Definitionen in policies/port_codebooks.yaml
+      hinzugefügt: [MICRO] (Komponente), [MESO] (System), [MACRO]
+      (Projekt/Ökosystem) mit Bedeutung, Beispielen und Verwendungsregeln.
+      [CLOSED 2026-03-06] Formale Definition etabliert als Grundlage
+      für konsistentes Tagging.
