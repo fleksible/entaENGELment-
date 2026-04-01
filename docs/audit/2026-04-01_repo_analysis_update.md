@@ -32,9 +32,12 @@ Das Repository ist ein reifer Forschungsprototyp mit starker Governance-Schicht 
 - Coverage-Widerspruch: CONTRIBUTING.md sagt 70%, CI erzwingt 50%
 
 **Neu identifiziert:**
+- ui-app/package.json hat doppelte Keys (next, react, react-dom) — JSON-Spec: letzter Key gewinnt, aeltere Version ueberschreibt neuere
+- .githooks/pre-commit enthaelt zwei Skripte (zwei Shebangs) — zweites Skript (G1 claim-lint) wird nie ausgefuehrt
 - Next.js Major-Upgrade 14 zu 16 ohne Build-Check in CI
-- @types/node Major-Upgrade 20 zu 25
-- adapters/ weiterhin Stub-only
+- Makefile hat doppeltes install-hooks Target
+- 4 CI-Workflows fuehren ueberlappend Python-Tests aus
+- 36 Dependabot-Vulnerabilities auf Default-Branch (2 critical, 18 high)
 
 ---
 
@@ -179,31 +182,50 @@ NICHTRAUM/quarantine/quarantine_log.md        (neu, leeres Template)
 
 ## 3. Neue Befunde (seit Maerz 2026)
 
-### N-01: Next.js Major-Upgrade 14 zu 16 (P2)
+### N-01: ui-app/package.json doppelte Keys (P0, build)
 
-**Evidenz:** Commit `1364c6d` — next von 14.2.21 auf 16.1.6 via Dependabot
+**Evidenz:** `ui-app/package.json` Zeilen 12-17:
+```
+"next": "16.1.6",       ← wird ueberschrieben
+"react": "^19.2.4",     ← wird ueberschrieben
+"react-dom": "^19.2.4", ← wird ueberschrieben
+"next": "14.2.21",      ← gewinnt (letzter Key)
+"react": "^18.3.1",     ← gewinnt
+"react-dom": "^18.3.1", ← gewinnt
+```
+Ursache: Mehrere Dependabot-PRs gemergt ohne Duplikat-Pruefung.
 
-**Auswirkung:** Major-Version-Sprung mit potenziellen Breaking Changes (App Router, Middleware, API Routes). Kein `next build` Check in CI (s. N-03).
+**Auswirkung:** JSON-Spec sagt letzter Key gewinnt. next resolves zu 14.2.21 statt 16.1.6 — der Dependabot-Upgrade wird stillschweigend rueckgaengig gemacht. `npm install` erzeugt inkompatiblen Dependency-Tree.
 
-**Empfehlung:** Smoke-Test (`next build`) in CI hinzufuegen; Breaking Changes pruefen.
+**Empfehlung:** Duplikate entfernen. Entscheidung treffen: React 19 + Next 16 (forward) oder React 18 + Next 14 (stable).
 
 ---
 
-### N-02: @types/node Major-Upgrade 20 zu 25 (P2)
+### N-02: .githooks/pre-commit zwei Shebangs (P1, tooling)
 
-**Evidenz:** Commit `7adf634` — @types/node von 20.19.30 auf 25.2.3
+**Evidenz:** `.githooks/pre-commit` hat Shebangs auf Zeile 1 (`#!/usr/bin/env bash`) und Zeile 42 (`#!/bin/bash`). Das erste Skript enthaelt `set -euo pipefail` und endet mit `exit 0`, wodurch das zweite Skript (G1 claim-lint Guard) nie ausgefuehrt wird.
 
-**Auswirkung:** Potenziell inkompatible Type-Definitionen, insbesondere wenn Node.js Runtime noch auf v20 laeuft.
+**Auswirkung:** Der claim-lint Pre-Commit-Guard ist toter Code. G1-Enforcement auf Pre-Commit-Ebene funktioniert nicht.
 
-**Empfehlung:** TypeScript-Kompatibilitaet pruefen; test.yml nutzt Node 20 — Version-Mismatch.
+**Empfehlung:** Beide Skripte zu einem zusammenfuehren. Claim-lint Block vor `exit 0` verschieben.
 
 ---
 
-### N-03: Kein ui-app CI-Test fuer Next.js Build (P2)
+### N-03: Next.js Major-Upgrade 14 zu 16 (P2, deps)
+
+**Evidenz:** Commit `1364c6d` — next von 14.2.21 auf 16.1.6 via Dependabot. Aber wegen N-01 (Duplikat-Bug) ist effektiv 14.2.21 aktiv.
+
+**Auswirkung:** Major-Version-Sprung mit potenziellen Breaking Changes. Upgrade ist faktisch nicht aktiv wegen N-01. Kein `next build` Check in CI.
+
+**Empfehlung:** Erst N-01 fixen, dann entscheiden welche Version, dann Build-Check in CI.
+
+---
+
+### N-04: Kein ui-app CI-Test fuer Next.js Build (P2, CI)
 
 **Evidenz:** `.github/workflows/test.yml` testet JavaScript via Jest, fuehrt aber keinen `next build` aus.
 
-**Auswirkung:** Build-Fehler in ui-app/ werden nicht erkannt, besonders kritisch nach Major-Upgrade (N-01).
+**Auswirkung:** Build-Fehler in ui-app/ werden nicht erkannt.
 
 **Empfehlung:**
 ```yaml
@@ -215,7 +237,47 @@ NICHTRAUM/quarantine/quarantine_log.md        (neu, leeres Template)
 
 ---
 
-### N-04: adapters/ ist Stub (P3)
+### N-05: 4 CI-Workflows mit ueberlappenden Python-Tests (P2, CI)
+
+**Evidenz:**
+- `ci.yml`: pytest tests/unit/ + tests/integration/ + tests/ethics/ + pytest --cov
+- `ci-smoke.yml`: pytest tests/unit/ + tests/integration/ + tests/ethics/
+- `test.yml`: pytest (Fractalsense-only)
+- `deepjump-ci.yml`: pytest tests/ (via reusable Workflow)
+
+**Auswirkung:** Verschwendete CI-Minuten. Unklar welcher Workflow autoritativ ist.
+
+**Empfehlung:** Konsolidieren: ci.yml = Haupt-Pipeline, test.yml = JS/Fractalsense, deepjump-ci.yml = Protokoll-Verifikation. ci-smoke.yml entweder entfernen oder als Fast-Path-Subset definieren.
+
+---
+
+### N-06: test.yml referenziert nicht-existente Branches (P3, CI)
+
+**Evidenz:** `test.yml` triggert auf `develop` und `master` Branches. Das Repository nutzt `main`.
+
+**Empfehlung:** Branch-Trigger auf `main` bereinigen.
+
+---
+
+### N-07: Makefile doppeltes install-hooks Target (P3, build)
+
+**Evidenz:** `grep -c "^install-hooks:" Makefile` = 2. Make nutzt letzte Definition.
+
+**Empfehlung:** Duplikat entfernen.
+
+---
+
+### N-08: 36 Dependabot-Vulnerabilities (P1, security)
+
+**Evidenz:** GitHub Push-Remote meldet: "GitHub found 36 vulnerabilities on fleksible/entaENGELment-'s default branch (2 critical, 18 high, 11 moderate, 5 low)."
+
+**Auswirkung:** 2 kritische Vulnerabilities erfordern sofortige Aufmerksamkeit.
+
+**Empfehlung:** Dependabot-Security-Alerts unter github.com/fleksible/entaENGELment-/security/dependabot pruefen und priorisieren.
+
+---
+
+### N-09: adapters/ ist Stub (P3, tech-debt)
 
 **Evidenz:** `adapters/msi_adapter_v1.yaml` ist einzige Datei, keine Implementierung.
 
@@ -304,16 +366,28 @@ NICHTRAUM/quarantine/quarantine_log.md        (neu, leeres Template)
 
 ## 8. Naechste sinnvolle Updates (priorisiert)
 
-1. **P0: NICHTRAUM/ materialisieren** — 15min, rein additiv, kein Risiko
-2. **P0: annex_map.yaml + annex_check.py** — 2-3h, G1-Enforcement
-3. **P1: Coverage-Widerspruch aufloesen** — 5min, CI oder Docs anpassen
-4. **P1: v0.1.0-rc1 Dry-Run** — 30min, Release-Workflow erstmals testen
-5. **P1: VOID-010 Deadline-Entscheidung** — Verlaengern oder Literatur ergaenzen
-6. **P2: Metatron Merge-Commit-Exemption** — 15min, Regex in metatron-guard.yml
-7. **P2: Next.js Build-Check in CI** — 15min, `next build` Step in test.yml
-8. **P2: make demo Target** — 1h, emit-verify Zyklus
-9. **P2: Regex-Compilation in tools/** — 30min, Performance-Quick-Win (aus Jan-Audit)
-10. **P4: VOID-014 als SUSPENDED markieren** — 5min, VOIDMAP.yml Update
+**Sofort (P0, zusammen ca. 30min):**
+1. **ui-app/package.json Duplikate entfernen** (N-01) — 5min, kritischer Build-Bug
+2. **NICHTRAUM/ materialisieren** (F-01) — 15min, rein additiv
+3. **.githooks/pre-commit zusammenfuehren** (N-02) — 10min, toter Code entfernen
+
+**Kurzfristig (P1, zusammen ca. 3-4h):**
+4. **annex_map.yaml + annex_check.py** (F-02) — 2-3h, G1-Enforcement
+5. **Coverage-Widerspruch aufloesen** (F-03) — 5min, CI oder Docs anpassen
+6. **Dependabot-Vulnerabilities pruefen** (N-08) — 30min, 2 critical alerts
+7. **v0.1.0-rc1 Dry-Run** (F-04) — 30min, Release-Workflow erstmals testen
+8. **VOID-010 Deadline-Entscheidung** (F-05) — Verlaengern oder Literatur ergaenzen
+
+**Mittelfristig (P2, zusammen ca. 3h):**
+9. **Metatron Merge-Commit-Exemption** (F-07) — 15min, Regex in metatron-guard.yml
+10. **Next.js Build-Check in CI** (N-04) — 15min, `next build` Step in test.yml
+11. **CI-Workflow-Overlap konsolidieren** (N-05) — 1h, Scope klar trennen
+12. **make demo Target** (F-08) — 1h, emit-verify Zyklus
+
+**Spaeter (P3-P4):**
+13. **Makefile Duplikat entfernen** (N-07) — 2min
+14. **test.yml Branch-Trigger bereinigen** (N-06) — 2min
+15. **VOID-014 als SUSPENDED markieren** (F-10) — 5min
 
 ---
 
