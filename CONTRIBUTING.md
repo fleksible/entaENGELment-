@@ -37,7 +37,8 @@ Das Framework hat drei Test-Kategorien:
 - **Integration Tests**: `make test-integration` - Komponenten-Zusammenspiel
 - **Ethics Tests**: `make test-ethics` - Fail-Safes und Consent-Management
 
-Alle Tests müssen bestehen und Coverage >= 70% sein.
+Alle Tests müssen bestehen. In CI gilt als minimale Overall-Coverage-Baseline `50%` (`coverage report --fail-under=50`).
+Für JavaScript gelten zusätzlich die Jest-Schwellen: `branches: 50` sowie `functions/lines/statements: 60`.
 
 ## Commit-Konventionen
 

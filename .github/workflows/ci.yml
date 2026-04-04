@@ -95,7 +95,7 @@ jobs:
           name: codecov-${{ matrix.python-version }}
         continue-on-error: true
 
-      - name: Check coverage threshold
+      - name: Check minimal overall coverage baseline (50%)
         run: |
           coverage report --fail-under=50
 
