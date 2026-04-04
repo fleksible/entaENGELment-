@@ -60,9 +60,6 @@ install-dev:
 	pip install -r requirements-dev.txt
 	pip install -e .
 
-install-hooks:
-	git config core.hooksPath .githooks
-	@echo "Git hooks installed from .githooks/"
 # === Hooks ===
 install-hooks:
 	git config core.hooksPath .githooks
