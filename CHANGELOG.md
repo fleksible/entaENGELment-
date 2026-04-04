@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Release Prep
+- Added a concrete RC preflight checklist for `v0.1.0-rc1` in `docs/release/RC_PRECHECK_v0.1.0-rc1.md`.
+- Clarified release process documentation for RC tags (`-rc`) and pre-release behavior.
+
 ### Added
 - Release workflow with integrated gate checks (INF-4)
 - Dependabot for automated dependency monitoring (INF-2)
@@ -28,7 +32,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.0] — 2026-02-15
 
-Initial tagged release after hardening sprint.
+> Note: This entry documents planned/reported `0.1.0` contents. In this repository clone, no `v0.1.0` git tag is present.
+
+Documented 0.1.0 release baseline after hardening sprint (tag/publication status must be verified against the canonical remote).
 
 ### Foundation
 - DR-KERNEL v1.5 governance framework
