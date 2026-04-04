@@ -245,6 +245,8 @@ npm run dev
 **Mehr:**
 - [`CONTRIBUTING.md`](CONTRIBUTING.md) – Vollständige Guidelines
 - [`CODEOWNERS`](CODEOWNERS) – Kontakte
+- [`docs/governance/RELEASE_PROCESS.md`](docs/governance/RELEASE_PROCESS.md) – Release-Ablauf inkl. RC-Hinweis
+- [`docs/release/RC_PRECHECK_v0.1.0-rc1.md`](docs/release/RC_PRECHECK_v0.1.0-rc1.md) – Konservative RC-Preflight-Checkliste
 - Commit-Konvention: `type(scope): message` (`feat`, `fix`, `docs`, `test`, `refactor`, `chore`)
 
 ---
