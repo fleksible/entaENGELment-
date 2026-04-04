@@ -15,7 +15,7 @@ description: >
 
 metadata:
   maintainer: entaENGELment
-  last_updated: "2026-03-06"
+  last_updated: "2026-04-04"
   generated_doc: docs/voids_backlog.md
 
 voids:
@@ -88,10 +88,10 @@ voids:
 
   - id: VOID-010
     title: "Taxonomie & Spektren (Empirie)"
-    status: OPEN
+    status: IN_PROGRESS
     priority: high
     owner: "fleks"
-    target_date: "2026-03-15"
+    target_date: "2026-06-01"
     domain: "[PHYS]"
     symptom: "Spektrale Zuordnung ohne belastbare Literatur-/Datenbasis"
     closing_path: "Literatur-Scan + zitierte Tabelle (CSV) + Evidence-Bundle"
@@ -100,21 +100,30 @@ voids:
     closed: null
     notes: |
       [BIO][PHYS] Empirie-Bridge für MOD_18/Taxonomie.
+      [2026-04-04] Deadline verlängert von 2026-03-15 auf 2026-06-01.
+      Begründung: Forschungs-VOID, Literatur-Scan erfordert Zeit.
+      Nächster Schritt: CSV-Tabelle mit >=5 zitierten Quellen erstellen.
 
   - id: VOID-011
     title: "Metriken der Resonanz (MI, PLV, FD)"
-    status: OPEN
+    status: IN_PROGRESS
     priority: high
     owner: "fleks"
-    target_date: "2026-03-15"
+    target_date: "2026-06-01"
     domain: "[MATH]"
-    symptom: "MI/FD sind aktuell Minimal-Stubs; keine Toy-Simulation als Proof"
+    symptom: "MI/FD waren Minimal-Stubs; Toy-Simulation als Proof noch ausstehend"
     closing_path: "Option B: toy_resonance_dataset + robuste Implementierung + Tests"
-    evidence: null
+    evidence:
+      - "src/core/metrics.py"
     created: "2026-01-04"
     closed: null
     notes: |
       [COMP] Siehe src/tools/toy_resonance_dataset.py und docs/voids/VOID-011_resonance_metrics.md
+      [2026-04-04] MI (histogram-basiert) und FD (Higuchi-Methode) sind implementiert
+      in src/core/metrics.py (Commit d213e97). PLV war bereits implementiert.
+      Symptom aktualisiert: Stubs sind behoben, toy_resonance_dataset-Erweiterung
+      und SIMULATION_PROXY-Claim-Tagging stehen noch aus.
+      Deadline verlängert von 2026-03-15 auf 2026-06-01.
 
   - id: VOID-012
     title: "GateProof Checkliste (Governance)"
@@ -163,10 +172,10 @@ voids:
 
   - id: VOID-014
     title: "Protein-Design (in-silico, safety-bounded)"
-    status: OPEN
+    status: SUSPENDED
     priority: medium
     owner: "fleks"
-    target_date: "2026-03-15"
+    target_date: null
     domain: "[BIO]"
     symptom: "Exploration gewünscht, aber hohes Risiko bei operativen Laboranleitungen"
     closing_path: "High-level Tool/Literatur-Übersicht + nicht-operative Demos"
@@ -175,6 +184,10 @@ voids:
     closed: null
     notes: |
       [SAFETY] Nur computational exploration; keine Nasslabor-Protokolle.
+      [2026-04-04] Status auf SUSPENDED gesetzt. Begründung: Kein aktiver
+      Fortschritt, kein Code in src/, Scope "safety-bounded" ohne explizites
+      Label. Schwebender Scope kostet Aufmerksamkeit ohne Ertrag.
+      Kann bei Bedarf auf OPEN zurückgesetzt werden.
 
   - id: VOID-020
     title: "Port-Matrix Suite (K0..K4) fehlt"
