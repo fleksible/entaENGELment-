@@ -1,8 +1,12 @@
 name: Tests
 
+# Scope: This workflow covers Fractalsense (Python) and root JS tests.
+# ui-app (Next.js) is covered by the ui-build job below.
+# Core framework tests (tests/unit, tests/integration, tests/ethics) run in ci.yml.
+
 on:
   push:
-    branches: [main]
+    branches: [main, "claude/**"]
   pull_request:
     branches: [main]
 
@@ -93,7 +97,7 @@ jobs:
 
       - name: Install UI dependencies
         working-directory: ui-app
-        run: npm install
+        run: npm ci
 
       - name: Build UI
         working-directory: ui-app

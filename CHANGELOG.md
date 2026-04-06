@@ -5,11 +5,27 @@ All notable changes to EntaENGELment will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [Unreleased] → v0.1.0-rc1
 
 ### Release Prep
 - Added a concrete RC preflight checklist for `v0.1.0-rc1` in `docs/release/RC_PRECHECK_v0.1.0-rc1.md`.
+- RC Preflight Gate-Checks durchgeführt (2026-04-06): 7/7 Gates grün, 160 Tests bestanden.
 - Clarified release process documentation for RC tags (`-rc`) and pre-release behavior.
+- **Offene Blocker:** CHANGELOG RC-Markierung (A1), Risikodokumentation (A3), Branch-Merge (C3).
+
+### Security
+- Fix CVE-2026-32274: black 24.10.0 → >=26.3.1 in requirements-dev.txt.
+- Replace deprecated `safety check --stdin` with `pip-audit` in CI security stage.
+
+### CI/CD
+- ci.yml: codecov-action v5.5.2 → v6.0.0 (node24 support).
+- test.yml: Stale trigger-Branches `master`/`develop` entfernt; `claude/**` ergänzt.
+- test.yml: `ui-build` Job hinzugefügt (`next build` in ui-app/).
+- test.yml: Scope-Kommentar für Fractalsense vs. ci.yml Abgrenzung.
+
+### Governance
+- VOIDMAP.yml: Status `SUSPENDED` als gültiger Status im Header dokumentiert.
+- VOIDMAP.yml: `last_updated` aktualisiert (2026-04-06).
 
 ### Added
 - Release workflow with integrated gate checks (INF-4)
