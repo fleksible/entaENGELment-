@@ -67,19 +67,19 @@ install-hooks:
 
 # === Testing ===
 test:
-	pytest -v
+	$(PY) -m pytest -v
 
 test-unit:
-	pytest tests/unit/ -v
+	$(PY) -m pytest tests/unit/ -v
 
 test-integration:
-	pytest tests/integration/ -v
+	$(PY) -m pytest tests/integration/ -v
 
 test-ethics:
-	pytest tests/ethics/ -v
+	$(PY) -m pytest tests/ethics/ -v
 
 coverage:
-	pytest --cov --cov-report=html --cov-report=term
+	$(PY) -m pytest --cov --cov-report=html --cov-report=term
 	@echo ""
 	@echo "Coverage report generated in htmlcov/index.html"
 
