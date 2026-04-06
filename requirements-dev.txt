@@ -3,7 +3,7 @@
 
 pytest>=7.0
 pytest-cov>=4.0
-black==24.10.0
+black>=26.3.1  # CVE-2026-32274 fix: 24.10.0 vulnerable, patched in 26.3.1
 ruff>=0.1.0
 mypy>=1.0
 types-PyYAML>=6.0
@@ -11,4 +11,4 @@ jsonschema>=4.0
 
 # Security scanning tools
 bandit>=1.7.0
-safety>=2.3.0
+pip-audit>=2.0.0  # Replaces deprecated safety check --stdin (see ci.yml Stage 3)
