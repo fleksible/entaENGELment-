@@ -7,6 +7,10 @@ on:
         required: false
         type: string
         default: "3.11"
+      allow-unsigned-status-skip:
+        required: false
+        type: boolean
+        default: false
     secrets:
       ENTA_HMAC_SECRET:
         required: false
@@ -37,15 +41,22 @@ jobs:
             echo "::add-mask::$ENTA_HMAC_SECRET"
           fi
 
-      - name: Check HMAC secret availability
+      - name: Check HMAC availability
         id: hmac
         shell: bash
         run: |
           if [ -n "${ENTA_HMAC_SECRET:-}" ]; then
             echo "available=true" >> "$GITHUB_OUTPUT"
+            echo "skip_allowed=false" >> "$GITHUB_OUTPUT"
+          elif [ "${{ inputs.allow-unsigned-status-skip }}" = "true" ]; then
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "skip_allowed=true" >> "$GITHUB_OUTPUT"
+            echo "::notice title=DeepJump HMAC skipped::HMAC signing key unavailable in dependency/fork PR context."
           else
             echo "available=false" >> "$GITHUB_OUTPUT"
-            echo "::notice title=DeepJump HMAC skipped::ENTA_HMAC_SECRET unavailable for this run; skipping signed status emit/verify."
+            echo "skip_allowed=false" >> "$GITHUB_OUTPUT"
+            echo "::error title=DeepJump HMAC missing::HMAC signing key is required for trusted audit runs."
+            false
           fi
 
       - name: "Phase 1: Verify Pointers"
@@ -65,14 +76,14 @@ jobs:
         run: make status-verify STATUS=PASS H=0.85 DMI=4.8 PHI=0.75
 
       - name: "Phase 2: Record unsigned status skip"
-        if: ${{ steps.hmac.outputs.available != 'true' }}
+        if: ${{ steps.hmac.outputs.skip_allowed == 'true' }}
         shell: bash
         run: |
           mkdir -p out/status out/badges
           cat > out/status/deepjump_status_skipped.json <<'JSON'
           {
             "status": "SKIPPED",
-            "reason": "ENTA_HMAC_SECRET unavailable; signed status emit/verify skipped for this run.",
+            "reason": "HMAC signing key unavailable in dependency/fork PR context; signed status emit/verify skipped.",
             "signature_type": "hmac-sha256",
             "signed": false
           }
