@@ -93,7 +93,7 @@ jobs:
 
       - name: Install UI dependencies
         working-directory: ui-app
-        run: npm install
+        run: npm ci
 
       - name: Build UI
         working-directory: ui-app
