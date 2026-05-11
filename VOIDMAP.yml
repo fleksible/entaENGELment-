@@ -4,7 +4,7 @@
 # This file tracks open gaps (VOIDs) in the entaENGELment framework.
 # Each VOID represents a known gap that needs to be addressed.
 #
-# Status: OPEN | IN_PROGRESS | CLOSED
+# Status: OPEN | IN_PROGRESS | CLOSED | SUSPENDED
 # Priority: critical | high | medium | low
 # Domain tags: [BIO], [MATH], [PHYS], [CHEM], [COMP], [META], [DEV]
 
