@@ -84,10 +84,29 @@ def test_met_alias_normalizes_to_myth_archetype_as_info_event():
     assert "FAIL" not in severities(result)
 
 
-def test_trigger_term_under_non_matching_frame_warns_only():
+def test_trigger_term_under_non_matching_frame_warns_when_not_counterfactual():
     item = {
         "claim_id": "CLAIM-FRAME-TRIGGER-001",
         "receipt_id": "REC-FRAME-005",
+        "claim_tag": "HYPOTHESE",
+        "text": "Josephson remains a model candidate for the BETSE bridge.",
+        "operative_frame": {
+            "frame_id": "BIO_VMEM",
+            "frame_reason": "RC_TEST",
+            "counterfactual_frame": "GOV_AUDIT",
+        },
+    }
+
+    result = frame_lint.lint_item(item, TAXONOMY)
+
+    assert "RC_G4_FRAME_TRIGGER_WARN_001" in reason_codes(result)
+    assert "FAIL" not in severities(result)
+
+
+def test_trigger_term_under_declared_counterfactual_frame_infos_only():
+    item = {
+        "claim_id": "CLAIM-BETSE-JOSEPHSON-001",
+        "receipt_id": "REC-FRAME-005B",
         "claim_tag": "HYPOTHESE",
         "text": "Josephson remains a model candidate for the BETSE bridge.",
         "operative_frame": {
@@ -99,7 +118,8 @@ def test_trigger_term_under_non_matching_frame_warns_only():
 
     result = frame_lint.lint_item(item, TAXONOMY)
 
-    assert "RC_G4_FRAME_TRIGGER_WARN_001" in reason_codes(result)
+    assert "RC_G4_FRAME_TRIGGER_INFO_001" in reason_codes(result)
+    assert "RC_G4_FRAME_TRIGGER_WARN_001" not in reason_codes(result)
     assert "FAIL" not in severities(result)
 
 
@@ -156,5 +176,23 @@ def test_voluntary_fact_frame_is_validated_against_declared_frame():
 
     result = frame_lint.lint_item(item, TAXONOMY)
 
-    assert "RC_G4_FRAME_CONTENT_001" in reason_codes(result)
+    assert "RC_G8_MYTH_EVIDENCE_001" in reason_codes(result)
+    assert result.failed
+
+
+def test_myth_as_fact_pilot_hard_fail_path():
+    item = {
+        "claim_id": "CLAIM-MYTH-AS-FACT-001",
+        "receipt_id": "REC-FRAME-009",
+        "claim_tag": "FAKT",
+        "text": "The mythic frame proves the operational fact.",
+        "operative_frame": {
+            "frame_id": "MYTH_ARCHETYPE",
+            "frame_reason": "RC_TEST",
+        },
+    }
+
+    result = frame_lint.lint_item(item, TAXONOMY)
+
+    assert "RC_G8_MYTH_EVIDENCE_001" in reason_codes(result)
     assert result.failed
