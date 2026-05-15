@@ -1,3 +1,4 @@
+# ruff: noqa: I001
 import tools.frame_lint as frame_lint
 
 
