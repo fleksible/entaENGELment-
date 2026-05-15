@@ -1,16 +1,7 @@
-import importlib.util
-from pathlib import Path
+from tools import frame_lint
 
-ROOT = Path(__file__).resolve().parents[2]
-FRAME_LINT_PATH = ROOT / "tools" / "frame_lint.py"
 
-spec = importlib.util.spec_from_file_location("frame_lint", FRAME_LINT_PATH)
-assert spec is not None
-assert spec.loader is not None
-frame_lint = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(frame_lint)
-
-TAXONOMY = frame_lint.load_yaml(ROOT / "policies" / "frame_taxonomy_v0_1_1.yml")
+TAXONOMY = frame_lint.load_yaml(frame_lint.DEFAULT_TAXONOMY)
 
 
 def severities(result):
