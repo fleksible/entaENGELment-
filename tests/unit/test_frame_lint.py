@@ -1,4 +1,4 @@
-from tools import frame_lint
+import tools.frame_lint as frame_lint
 
 
 TAXONOMY = frame_lint.load_yaml(frame_lint.DEFAULT_TAXONOMY)
