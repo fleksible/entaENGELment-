@@ -33,6 +33,10 @@ implementation_contract:
 
   lint_result_policy:
     fail_semantics: ACCUMULATE_WITH_ITEM_SHORT_CIRCUIT
+    severity_levels:
+      - FAIL
+      - WARN
+      - INFO
     finding_shape:
       - severity
       - rule_id
@@ -46,22 +50,30 @@ implementation_contract:
       - DECL failures are fatal for the current item
       - CONTENT pass is skipped if DECL failed
       - lint run continues across other items
+      - INFO findings are audit events and never affect exit status
 
   audit_events:
     RC_G6_FRAME_ALIAS_001:
       level: INFO
       event: FRAME_ALIAS_NORMALIZED
       description: Frame alias was normalized before validation; not a FAIL or WARN.
+    RC_G4_FRAME_TRIGGER_INFO_001:
+      level: INFO
+      event: TRIGGER_FRAME_DECLARED_AS_COUNTERFACTUAL
+      description: Trigger term suggested another frame and that frame was explicitly declared as counterfactual_frame.
 
   trigger_terms_policy:
     status: POLICY_SOURCE
-    implementation_status: PARTIAL_WARN_ONLY_IN_CONTENT_PASS
+    implementation_status: PARTIAL_WARN_OR_INFO_ONLY_IN_CONTENT_PASS
+    trigger_index_generation: RUNTIME_INVERSION_OF_FRAMES_TRIGGER_TERMS
     authority_relation: >
       trigger_terms_policy is normative. LINT_FRAME_CONTENT_01 is the implementation
       reference and must be updated if the two diverge.
     v0_1_1_scope:
       - Evaluate only when claim.text exists
-      - Emit WARN for mismatch unless metadata proves hard violation
+      - Build the trigger index at runtime by inverting frames[*].trigger_terms
+      - Emit INFO when the suggested frame equals counterfactual_frame
+      - Emit WARN when a trigger suggests another frame and no matching counterfactual_frame is declared
     deferred_void: VOID-FRAME-CONTENT-PARSE-001
 
 normalization:
@@ -104,6 +116,7 @@ lint_rules:
     reason_codes:
       forbidden_tag: RC_G4_FRAME_CONTENT_001
       trigger_warn: RC_G4_FRAME_TRIGGER_WARN_001
+      trigger_info: RC_G4_FRAME_TRIGGER_INFO_001
       counterfactual_warn: RC_G4_FRAME_WARN_001
       myth_as_evidence: RC_G8_MYTH_EVIDENCE_001
       simulation_proxy_fact: RC_G4_SIM_PROXY_FACT_001
