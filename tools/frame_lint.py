@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """EntaENGELment Frame Lint v0.1.1.
 
-Validates operative_frame declarations for claims/receipts using
+Checks operative_frame declarations for claims/receipts using
 policies/frame_taxonomy_v0_1_1.yml.
 
 v0.1.1 scope:
@@ -22,16 +22,16 @@ from __future__ import annotations
 import argparse
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 try:
     import yaml
 except ImportError as e:  # pragma: no cover
-    raise SystemExit("PyYAML is required. Install with: pip install pyyaml") from e
+    raise SystemExit("PyYAML is needed. Install with: pip install pyyaml") from e
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_TAXONOMY = REPO_ROOT / "policies" / "frame_taxonomy_v0_1_1.yml"
-TriggerIndex = Dict[str, List[Tuple[str, str]]]
+TriggerIndex = dict[str, list[tuple[str, str]]]
 
 
 @dataclass
@@ -40,19 +40,19 @@ class Finding:
     rule_id: str
     reason_code: str
     message: str
-    claim_id: Optional[str] = None
-    receipt_id: Optional[str] = None
-    frame_id: Optional[str] = None
-    canonical_frame_id: Optional[str] = None
+    claim_id: str | None = None
+    receipt_id: str | None = None
+    frame_id: str | None = None
+    canonical_frame_id: str | None = None
 
 
 @dataclass
 class LintResult:
-    claim_id: Optional[str] = None
-    receipt_id: Optional[str] = None
-    frame_id: Optional[str] = None
-    canonical_frame_id: Optional[str] = None
-    findings: List[Finding] = field(default_factory=list)
+    claim_id: str | None = None
+    receipt_id: str | None = None
+    frame_id: str | None = None
+    canonical_frame_id: str | None = None
+    findings: list[Finding] = field(default_factory=list)
 
     def add(self, severity: str, rule_id: str, reason_code: str, message: str) -> None:
         self.findings.append(
@@ -86,10 +86,10 @@ def load_yaml(path: Path) -> Any:
     return yaml.safe_load(path.read_text(encoding="utf-8"))
 
 
-def canonical_tag_map(taxonomy: Dict[str, Any]) -> Dict[str, str]:
+def canonical_tag_map(taxonomy: dict[str, Any]) -> dict[str, str]:
     config = taxonomy.get("normalization", {}).get("claim_tag_normalization", {})
     tags = config.get("canonical_tags", {})
-    mapping: Dict[str, str] = {}
+    mapping: dict[str, str] = {}
     for canonical, data in tags.items():
         mapping[str(canonical).upper()] = str(canonical)
         for alias in data.get("aliases", []) or []:
@@ -97,25 +97,25 @@ def canonical_tag_map(taxonomy: Dict[str, Any]) -> Dict[str, str]:
     return mapping
 
 
-def normalize_claim_tag(tag: Optional[str], taxonomy: Dict[str, Any]) -> Optional[str]:
+def normalize_claim_tag(tag: str | None, taxonomy: dict[str, Any]) -> str | None:
     if tag is None:
         return None
     return canonical_tag_map(taxonomy).get(str(tag).upper(), str(tag))
 
 
-def resolve_alias(frame_id: Optional[str], taxonomy: Dict[str, Any]) -> Optional[str]:
+def resolve_alias(frame_id: str | None, taxonomy: dict[str, Any]) -> str | None:
     if frame_id is None:
         return None
     aliases = taxonomy.get("normalization", {}).get("alias_resolution", {}).get("aliases", {})
     return aliases.get(frame_id, frame_id)
 
 
-def required_tags(taxonomy: Dict[str, Any]) -> set:
+def required_tags(taxonomy: dict[str, Any]) -> set[str]:
     policy = taxonomy.get("implementation_contract", {}).get("requires_frame_policy", {})
     return {str(tag) for tag in policy.get("required_canonical_tags", []) or []}
 
 
-def build_trigger_index(taxonomy: Dict[str, Any]) -> TriggerIndex:
+def build_trigger_index(taxonomy: dict[str, Any]) -> TriggerIndex:
     """Invert frames[*].trigger_terms once per run.
 
     The returned mapping is lower-case trigger term -> [(frame_id, original_term)].
@@ -130,7 +130,7 @@ def build_trigger_index(taxonomy: Dict[str, Any]) -> TriggerIndex:
     return index
 
 
-def _item_get(item: Dict[str, Any], *keys: str) -> Any:
+def _item_get(item: dict[str, Any], *keys: str) -> Any:
     for key in keys:
         if key in item:
             return item[key]
@@ -138,7 +138,7 @@ def _item_get(item: Dict[str, Any], *keys: str) -> Any:
 
 
 def check_custom_required_fields(
-    frame: Dict[str, Any], taxonomy: Dict[str, Any], result: LintResult
+    frame: dict[str, Any], taxonomy: dict[str, Any], result: LintResult
 ) -> bool:
     policy = taxonomy.get("custom_frame_policy", {})
     ok = True
@@ -147,7 +147,7 @@ def check_custom_required_fields(
             result.fail(
                 "LINT_FRAME_DECL_01",
                 "RC_G6_FRAME_CUSTOM_001",
-                f"CUSTOM frame missing required field: {field_name}",
+                f"CUSTOM frame missing field: {field_name}",
             )
             ok = False
     for field_name in policy.get("warn_required_fields", []) or []:
@@ -160,7 +160,7 @@ def check_custom_required_fields(
     return ok
 
 
-def check_allowed_claim_tag(tag: Optional[str], frame_spec: Dict[str, Any], result: LintResult) -> None:
+def check_allowed_claim_tag(tag: str | None, frame_spec: dict[str, Any], result: LintResult) -> None:
     if tag is None:
         return
     perms = frame_spec.get("epistemic_permissions", {})
@@ -177,7 +177,7 @@ def check_allowed_claim_tag(tag: Optional[str], frame_spec: Dict[str, Any], resu
         )
 
 
-def check_forbidden_claim_tag(tag: Optional[str], frame_spec: Dict[str, Any], result: LintResult) -> None:
+def check_forbidden_claim_tag(tag: str | None, frame_spec: dict[str, Any], result: LintResult) -> None:
     if tag is None:
         return
     perms = frame_spec.get("epistemic_permissions", {})
@@ -193,7 +193,7 @@ def check_forbidden_claim_tag(tag: Optional[str], frame_spec: Dict[str, Any], re
         )
 
 
-def check_counterfactual_warn(tag: Optional[str], frame: Dict[str, Any], result: LintResult) -> None:
+def check_counterfactual_warn(tag: str | None, frame: dict[str, Any], result: LintResult) -> None:
     if tag == "HYPOTHESE" and not frame.get("counterfactual_frame"):
         result.warn(
             "LINT_FRAME_CONTENT_01",
@@ -203,7 +203,7 @@ def check_counterfactual_warn(tag: Optional[str], frame: Dict[str, Any], result:
 
 
 def check_trigger_terms(
-    item: Dict[str, Any], taxonomy: Dict[str, Any], result: LintResult, trigger_index: TriggerIndex
+    item: dict[str, Any], taxonomy: dict[str, Any], result: LintResult, trigger_index: TriggerIndex
 ) -> None:
     text = str(item.get("text") or "")
     if not text:
@@ -235,7 +235,7 @@ def check_trigger_terms(
 
 
 def lint_item(
-    item: Dict[str, Any], taxonomy: Dict[str, Any], trigger_index: Optional[TriggerIndex] = None
+    item: dict[str, Any], taxonomy: dict[str, Any], trigger_index: TriggerIndex | None = None
 ) -> LintResult:
     if trigger_index is None:
         trigger_index = build_trigger_index(taxonomy)
@@ -253,7 +253,7 @@ def lint_item(
         result.fail(
             "LINT_FRAME_DECL_01",
             "RC_G6_FRAME_001",
-            f"Claim tag {tag!r} requires operative_frame",
+            f"Claim tag {tag!r} needs operative_frame",
         )
         decl_ok = False
 
@@ -297,7 +297,7 @@ def lint_item(
     return result
 
 
-def extract_items(data: Any) -> List[Dict[str, Any]]:
+def extract_items(data: Any) -> list[dict[str, Any]]:
     if isinstance(data, list):
         return [x for x in data if isinstance(x, dict)]
     if isinstance(data, dict):
@@ -316,7 +316,7 @@ def extract_items(data: Any) -> List[Dict[str, Any]]:
     return []
 
 
-def lint_path(path: Path, taxonomy: Dict[str, Any], trigger_index: TriggerIndex) -> List[LintResult]:
+def lint_path(path: Path, taxonomy: dict[str, Any], trigger_index: TriggerIndex) -> list[LintResult]:
     data = load_yaml(path)
     return [lint_item(item, taxonomy, trigger_index) for item in extract_items(data)]
 
@@ -329,7 +329,7 @@ def main() -> int:
 
     taxonomy = load_yaml(Path(args.taxonomy))
     trigger_index = build_trigger_index(taxonomy)
-    results: List[LintResult] = []
+    results: list[LintResult] = []
     for raw_path in args.paths:
         results.extend(lint_path(Path(raw_path), taxonomy, trigger_index))
 
