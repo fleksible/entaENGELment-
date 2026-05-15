@@ -1,0 +1,182 @@
+# EntaENGELment Frame Taxonomy v0.1.1
+# Status: DRAFT
+# VOID: VOID-FRAME-OPERATOR-001
+# Purpose: controlled vocabulary and implementation contract for operative_frame.
+
+version: "0.1.1"
+status: DRAFT
+
+governance:
+  void_id: VOID-FRAME-OPERATOR-001
+  legacy_note: >
+    Historical VOID-016 remains reserved for the τ-Kernel in legacy Drive specs.
+    GitHub uses VOID-FRAME-OPERATOR-001 for the Frame Operator namespace.
+  gate: FRAME_DECLARATION_GATE
+  lint_rules:
+    - LINT_FRAME_DECL_01
+    - LINT_FRAME_CONTENT_01
+
+implementation_contract:
+  version: "0.1.1"
+  linter_target: tools/frame_lint.py
+
+  requires_frame_policy:
+    mode: TAG_ONLY
+    required_canonical_tags:
+      - INFERENZ
+      - HYPOTHESE
+    explicitly_not_implemented_in_v0_1_1:
+      - claim body trigger_terms scan as frame-requirement
+      - context-boundary detection
+      - release / closure / PASS / FAIL / evidence-role detection
+    deferred_void: VOID-FRAME-CONTENT-PARSE-001
+
+  lint_result_policy:
+    fail_semantics: ACCUMULATE_WITH_ITEM_SHORT_CIRCUIT
+    finding_shape:
+      - severity
+      - rule_id
+      - reason_code
+      - message
+      - claim_id
+      - receipt_id
+      - frame_id
+      - canonical_frame_id
+    behavior:
+      - DECL failures are fatal for the current item
+      - CONTENT pass is skipped if DECL failed
+      - lint run continues across other items
+
+  audit_events:
+    RC_G6_FRAME_ALIAS_001:
+      level: INFO
+      event: FRAME_ALIAS_NORMALIZED
+      description: Frame alias was normalized before validation; not a FAIL or WARN.
+
+  trigger_terms_policy:
+    status: POLICY_SOURCE
+    implementation_status: PARTIAL_WARN_ONLY_IN_CONTENT_PASS
+    authority_relation: >
+      trigger_terms_policy is normative. LINT_FRAME_CONTENT_01 is the implementation
+      reference and must be updated if the two diverge.
+    v0_1_1_scope:
+      - Evaluate only when claim.text exists
+      - Emit WARN for mismatch unless metadata proves hard violation
+    deferred_void: VOID-FRAME-CONTENT-PARSE-001
+
+normalization:
+  alias_resolution:
+    enabled: true
+    stage: pre_validation
+    preserve_original_frame_id: true
+    aliases:
+      MET: MYTH_ARCHETYPE
+
+  claim_tag_normalization:
+    enabled: true
+    stage: pre_validation
+    canonical_tags:
+      FAKT:
+        aliases: ["[FACT]", FACT]
+      INFERENZ:
+        aliases: ["[INF]", INFERENCE]
+      HYPOTHESE:
+        aliases: ["[HYP]", HYP]
+      METAPHER:
+        aliases: ["[MET]", METAPHOR]
+      TODO:
+        aliases: ["[TODO]"]
+      RISK:
+        aliases: ["[RISK]"]
+      SIMULATION_PROXY:
+        aliases: ["[SIMULATION_PROXY]"]
+
+lint_rules:
+  LINT_FRAME_DECL_01:
+    purpose: Frame declaration and taxonomy validity
+    reason_codes:
+      missing_frame: RC_G6_FRAME_001
+      wrong_taxonomy: RC_G6_FRAME_002
+      custom_invalid: RC_G6_FRAME_CUSTOM_001
+
+  LINT_FRAME_CONTENT_01:
+    purpose: Frame-content coherence
+    reason_codes:
+      forbidden_tag: RC_G4_FRAME_CONTENT_001
+      trigger_warn: RC_G4_FRAME_TRIGGER_WARN_001
+      counterfactual_warn: RC_G4_FRAME_WARN_001
+      myth_as_evidence: RC_G8_MYTH_EVIDENCE_001
+      simulation_proxy_fact: RC_G4_SIM_PROXY_FACT_001
+      custom_patch_warn: RC_G6_FRAME_CUSTOM_WARN_001
+
+custom_frame_policy:
+  fail_required_fields:
+    - custom_frame_id
+    - custom_frame_reason
+    - validation_rule
+  warn_required_fields:
+    - proposed_taxonomy_patch
+
+bridge_examples_policy:
+  status: DOCUMENTATION_ONLY
+  operationalization_void: VOID-FRAME-BRIDGE-RULES-001
+
+fact_frame_policy:
+  default: frame_recommended_not_required
+  voluntary_frame_policy: >
+    If a frame is voluntarily declared for FAKT or other non-required tags,
+    the item is still validated against the declared frame.
+  require_frame_if_deferred_to: VOID-FRAME-CONTENT-PARSE-001
+
+closure_conditions:
+  - DEC-VOID-016-NAMESPACE.yml exists and records legacy VOID-016 separation
+  - policies/frame_taxonomy_v0_1_1.yml exists
+  - tools/frame_lint.py implements LINT_FRAME_DECL_01
+  - tools/frame_lint.py implements LINT_FRAME_CONTENT_01 baseline
+  - tests/unit/test_frame_lint.py contains core fixtures
+  - at least one GOV_AUDIT item with operative_frame passes lint
+
+frames:
+  GOV_AUDIT:
+    layer: GOVERNANCE
+    description: Audit, ledger, replay, traceability, receipt validity, gate decisions, release criteria.
+    epistemic_permissions:
+      allowed_claim_tags: [FAKT, INFERENZ, HYPOTHESE, TODO, RISK, SIMULATION_PROXY]
+      forbidden_claim_tags: [METAPHER_AS_EVIDENCE, MYTH_AS_EVIDENCE]
+    validation_requirements: [claim_id, reason_code, transform_id, input_ref]
+    trigger_terms: [PASS, FAIL, Gate, Receipt, Ledger, Audit, Release]
+
+  MYTH_ARCHETYPE:
+    layer: MYTH_SYMBOLIC
+    description: Symbolic, archetypal, poetic or narrative resonance frame; never evidence for factual claims.
+    epistemic_permissions:
+      allowed_claim_tags: [METAPHER]
+      forbidden_claim_tags: [FAKT, MYTH_AS_EVIDENCE, METAPHER_AS_FACT]
+    validation_requirements: [symbolic_mapping, explicit_non_evidence_marker]
+    trigger_terms: [Archetyp, Engel, Mythos, Torus, Ritual, Schwelle, Nebel]
+
+  PHYS:
+    layer: PHYSICS
+    description: Physical or mathematical physics claims with strict distinction between measurement, model, analogy and metaphor.
+    epistemic_permissions:
+      allowed_claim_tags: [FAKT, INFERENZ, HYPOTHESE, RISK]
+      forbidden_claim_tags: [METAPHER_AS_FACT, MYTH_AS_EVIDENCE]
+    validation_requirements: [formal_definition_or_source, measurement_or_derivation_path, counter_hypothesis, scope_limit]
+    trigger_terms: [Josephson, Quantenfeld, Kohärenz, Phase, Symmetrie, D6, "O(2)", Abrikosov, Minkowski, Klein_22]
+
+  BIO_VMEM:
+    layer: BIOELECTRIC
+    description: Bioelectric morphology frame including Vmem, membrane potential patterns, BETSE, or related simulation outputs.
+    epistemic_permissions:
+      allowed_claim_tags: [FAKT, INFERENZ, HYPOTHESE, SIMULATION_PROXY]
+      forbidden_claim_tags: [PHYSICS_FACT_WITHOUT_BIO_DATA]
+    validation_requirements: [data_source_or_simulation_ref, claim_tag, provenance_status, counter_hypothesis]
+    trigger_terms: [Vmem, bioelectric, morphogenesis, BETSE, Planaria, membrane potential, gap junction]
+
+  CUSTOM:
+    layer: CUSTOM
+    description: Explicit escape hatch for frames not yet in taxonomy.
+    epistemic_permissions:
+      allowed_claim_tags: [INFERENZ, HYPOTHESE, METAPHER, TODO, RISK]
+      forbidden_claim_tags: [UNSCOPED_FACT]
+    validation_requirements: [custom_frame_id, custom_frame_reason, validation_rule]
