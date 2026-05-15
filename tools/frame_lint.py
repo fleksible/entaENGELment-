@@ -160,7 +160,9 @@ def check_custom_required_fields(
     return ok
 
 
-def check_allowed_claim_tag(tag: str | None, frame_spec: dict[str, Any], result: LintResult) -> None:
+def check_allowed_claim_tag(
+    tag: str | None, frame_spec: dict[str, Any], result: LintResult
+) -> None:
     if tag is None:
         return
     perms = frame_spec.get("epistemic_permissions", {})
@@ -177,7 +179,9 @@ def check_allowed_claim_tag(tag: str | None, frame_spec: dict[str, Any], result:
         )
 
 
-def check_forbidden_claim_tag(tag: str | None, frame_spec: dict[str, Any], result: LintResult) -> None:
+def check_forbidden_claim_tag(
+    tag: str | None, frame_spec: dict[str, Any], result: LintResult
+) -> None:
     if tag is None:
         return
     perms = frame_spec.get("epistemic_permissions", {})
@@ -193,7 +197,9 @@ def check_forbidden_claim_tag(tag: str | None, frame_spec: dict[str, Any], resul
         )
 
 
-def check_counterfactual_warn(tag: str | None, frame: dict[str, Any], result: LintResult) -> None:
+def check_counterfactual_warn(
+    tag: str | None, frame: dict[str, Any], result: LintResult
+) -> None:
     if tag == "HYPOTHESE" and not frame.get("counterfactual_frame"):
         result.warn(
             "LINT_FRAME_CONTENT_01",
@@ -203,7 +209,10 @@ def check_counterfactual_warn(tag: str | None, frame: dict[str, Any], result: Li
 
 
 def check_trigger_terms(
-    item: dict[str, Any], taxonomy: dict[str, Any], result: LintResult, trigger_index: TriggerIndex
+    item: dict[str, Any],
+    taxonomy: dict[str, Any],
+    result: LintResult,
+    trigger_index: TriggerIndex,
 ) -> None:
     text = str(item.get("text") or "")
     if not text:
@@ -223,13 +232,15 @@ def check_trigger_terms(
                 result.info(
                     "LINT_FRAME_CONTENT_01",
                     "RC_G4_FRAME_TRIGGER_INFO_001",
-                    f"Trigger term {original_term!r} suggests frame {frame_id!r}; counterfactual_frame declares it",
+                    f"Trigger term {original_term!r} suggests frame {frame_id!r}; "
+                    "counterfactual_frame declares it",
                 )
             else:
                 result.warn(
                     "LINT_FRAME_CONTENT_01",
                     "RC_G4_FRAME_TRIGGER_WARN_001",
-                    f"Trigger term {original_term!r} suggests frame {frame_id!r}; active frame is {active_frame!r}",
+                    f"Trigger term {original_term!r} suggests frame {frame_id!r}; "
+                    f"active frame is {active_frame!r}",
                 )
             return
 
@@ -316,7 +327,9 @@ def extract_items(data: Any) -> list[dict[str, Any]]:
     return []
 
 
-def lint_path(path: Path, taxonomy: dict[str, Any], trigger_index: TriggerIndex) -> list[LintResult]:
+def lint_path(
+    path: Path, taxonomy: dict[str, Any], trigger_index: TriggerIndex
+) -> list[LintResult]:
     data = load_yaml(path)
     return [lint_item(item, taxonomy, trigger_index) for item in extract_items(data)]
 
