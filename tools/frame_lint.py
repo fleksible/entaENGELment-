@@ -9,7 +9,7 @@ v0.1.1 scope:
 - alias normalization (e.g. MET -> MYTH_ARCHETYPE)
 - declaration validation with item-level short-circuit
 - allowed/forbidden canonical claim tag checks
-- optional trigger-term WARN when item.text is available
+- optional trigger-term INFO/WARN when item.text is available
 - CUSTOM fail/warn field checks
 
 This tool intentionally does not infer frame requirements from prose body,
@@ -147,6 +147,10 @@ def check_allowed_claim_tag(tag: str | None, frame_spec: dict[str, Any], result:
         return
     perms = frame_spec.get("epistemic_permissions", {})
     allowed = set(perms.get("allowed_claim_tags", []) or [])
+    forbidden = set(perms.get("forbidden_claim_tags", []) or [])
+    # Forbidden tags are handled by check_forbidden_claim_tag so the result is not duplicated.
+    if tag in forbidden:
+        return
     if allowed and tag not in allowed:
         result.fail(
             "LINT_FRAME_CONTENT_01",
@@ -161,9 +165,12 @@ def check_forbidden_claim_tag(tag: str | None, frame_spec: dict[str, Any], resul
     perms = frame_spec.get("epistemic_permissions", {})
     forbidden = set(perms.get("forbidden_claim_tags", []) or [])
     if tag in forbidden:
+        reason_code = "RC_G4_FRAME_CONTENT_001"
+        if result.canonical_frame_id == "MYTH_ARCHETYPE" and tag == "FAKT":
+            reason_code = "RC_G8_MYTH_EVIDENCE_001"
         result.fail(
             "LINT_FRAME_CONTENT_01",
-            "RC_G4_FRAME_CONTENT_001",
+            reason_code,
             f"Claim tag {tag!r} is forbidden for frame {result.canonical_frame_id!r}",
         )
 
@@ -177,22 +184,31 @@ def check_counterfactual_warn(tag: str | None, frame: dict[str, Any], result: Li
         )
 
 
-def check_trigger_terms_warn_only(item: dict[str, Any], taxonomy: dict[str, Any], result: LintResult) -> None:
+def check_trigger_terms(item: dict[str, Any], taxonomy: dict[str, Any], result: LintResult) -> None:
     text = str(item.get("text") or "")
     if not text:
         return
     text_lower = text.lower()
     active_frame = result.canonical_frame_id
+    frame = item.get("operative_frame") or {}
+    counterfactual_frame = resolve_alias(frame.get("counterfactual_frame"), taxonomy)
     for frame_id, frame_spec in (taxonomy.get("frames", {}) or {}).items():
         if frame_id == active_frame:
             continue
         for term in frame_spec.get("trigger_terms", []) or []:
             if str(term).lower() in text_lower:
-                result.warn(
-                    "LINT_FRAME_CONTENT_01",
-                    "RC_G4_FRAME_TRIGGER_WARN_001",
-                    f"Trigger term {term!r} suggests frame {frame_id!r}; active frame is {active_frame!r}",
-                )
+                if counterfactual_frame == frame_id:
+                    result.info(
+                        "LINT_FRAME_CONTENT_01",
+                        "RC_G4_FRAME_TRIGGER_INFO_001",
+                        f"Trigger term {term!r} suggests frame {frame_id!r}; counterfactual_frame declares it",
+                    )
+                else:
+                    result.warn(
+                        "LINT_FRAME_CONTENT_01",
+                        "RC_G4_FRAME_TRIGGER_WARN_001",
+                        f"Trigger term {term!r} suggests frame {frame_id!r}; active frame is {active_frame!r}",
+                    )
                 return
 
 
@@ -249,7 +265,7 @@ def lint_item(item: dict[str, Any], taxonomy: dict[str, Any]) -> LintResult:
         check_forbidden_claim_tag(tag, frame_spec, result)
         check_counterfactual_warn(tag, frame, result)
         if item.get("text"):
-            check_trigger_terms_warn_only(item, taxonomy, result)
+            check_trigger_terms(item, taxonomy, result)
 
     return result
 
