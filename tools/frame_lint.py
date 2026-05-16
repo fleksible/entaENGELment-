@@ -107,7 +107,7 @@ def resolve_alias(frame_id: str | None, taxonomy: dict[str, Any]) -> str | None:
     if frame_id is None:
         return None
     aliases = taxonomy.get("normalization", {}).get("alias_resolution", {}).get("aliases", {})
-    return aliases.get(frame_id, frame_id)
+    return str(aliases.get(frame_id, frame_id))
 
 
 def required_tags(taxonomy: dict[str, Any]) -> set[str]:
