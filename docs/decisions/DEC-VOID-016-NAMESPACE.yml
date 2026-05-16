@@ -1,0 +1,60 @@
+# DEC-VOID-016-NAMESPACE — Frame Operator Namespace Decision
+
+id: DEC-VOID-016-NAMESPACE
+title: "Separate legacy VOID-016 τ-Kernel from GitHub Frame Operator namespace"
+status: ACCEPTED
+created: "2026-05-15"
+decision_owner: Fleks
+
+---
+
+## context
+
+Legacy Drive specifications used `VOID-016` for the τ-Kernel / process-retention
+without time archive. The Frame Operator workstream introduced a new operator that
+makes the operative frame of a claim explicit before inference/hypothesis logging.
+
+Using `VOID-016` for both meanings in GitHub would create an ambiguous ledger key.
+
+---
+
+## decision
+
+- `VOID-016` remains a legacy identifier for the τ-Kernel in historical Drive context.
+- The GitHub repository instantiates the new Frame Operator as:
+
+```yaml
+void_id: VOID-FRAME-OPERATOR-001
+```
+
+- All new implementation artifacts use `VOID-FRAME-OPERATOR-001`.
+- Any migration note may reference legacy VOID-016, but must not reuse it as a
+  current GitHub VOID id for the Frame Operator.
+
+---
+
+## implementation artifacts
+
+- `policies/frame_taxonomy_v0_1_1.yml`
+- `tools/frame_lint.py`
+- `tests/unit/test_frame_lint.py`
+
+---
+
+## closure conditions
+
+VOID-FRAME-OPERATOR-001 may close when:
+
+1. taxonomy file exists and is lint-readable;
+2. frame_lint implements declaration and content baseline checks;
+3. unit tests cover VALID, MISSING_FRAME, WRONG_TAXONOMY, MET_ALIAS,
+   TRIGGER_WARN, CUSTOM_VALID, CUSTOM_MISSING_REQUIRED;
+4. at least one GOV_AUDIT claim/receipt passes frame lint;
+5. deferred content-aware parsing remains tracked as `VOID-FRAME-CONTENT-PARSE-001`.
+
+---
+
+## related
+
+- `VOID-FRAME-CONTENT-PARSE-001`
+- `VOID-FRAME-BRIDGE-RULES-001`
