@@ -106,16 +106,12 @@ def normalize_claim_tag(tag: str | None, taxonomy: dict[str, Any]) -> str | None
 def resolve_alias(frame_id: str | None, taxonomy: dict[str, Any]) -> str | None:
     if frame_id is None:
         return None
-    aliases = (
-        taxonomy.get("normalization", {}).get("alias_resolution", {}).get("aliases", {})
-    )
+    aliases = taxonomy.get("normalization", {}).get("alias_resolution", {}).get("aliases", {})
     return aliases.get(frame_id, frame_id)
 
 
 def required_tags(taxonomy: dict[str, Any]) -> set[str]:
-    policy = taxonomy.get("implementation_contract", {}).get(
-        "requires_frame_policy", {}
-    )
+    policy = taxonomy.get("implementation_contract", {}).get("requires_frame_policy", {})
     return {str(tag) for tag in policy.get("required_canonical_tags", []) or []}
 
 
@@ -201,9 +197,7 @@ def check_forbidden_claim_tag(
         )
 
 
-def check_counterfactual_warn(
-    tag: str | None, frame: dict[str, Any], result: LintResult
-) -> None:
+def check_counterfactual_warn(tag: str | None, frame: dict[str, Any], result: LintResult) -> None:
     if tag == "HYPOTHESE" and not frame.get("counterfactual_frame"):
         result.warn(
             "LINT_FRAME_CONTENT_01",
@@ -343,9 +337,7 @@ def lint_path(
 def main() -> int:
     parser = argparse.ArgumentParser(description="Lint operative_frame declarations")
     parser.add_argument("paths", nargs="+", help="YAML claim/receipt files to lint")
-    parser.add_argument(
-        "--taxonomy", default=str(DEFAULT_TAXONOMY), help="Frame taxonomy YAML"
-    )
+    parser.add_argument("--taxonomy", default=str(DEFAULT_TAXONOMY), help="Frame taxonomy YAML")
     args = parser.parse_args()
 
     taxonomy = load_yaml(Path(args.taxonomy))
