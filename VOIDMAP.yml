@@ -15,7 +15,7 @@ description: >
 
 metadata:
   maintainer: entaENGELment
-  last_updated: "2026-04-04"
+  last_updated: "2026-05-17"
   generated_doc: docs/voids_backlog.md
 
 voids:
@@ -242,3 +242,22 @@ voids:
       (Projekt/Ökosystem) mit Bedeutung, Beispielen und Verwendungsregeln.
       [CLOSED 2026-03-06] Formale Definition etabliert als Grundlage
       für konsistentes Tagging.
+
+  - id: VOID-LOGZN-001
+    title: "LOG-ZN Orbit als Windungs-Gedächtnisoperator"
+    status: OPEN
+    priority: high
+    owner: "fleks"
+    target_date: null
+    domain: "[MATH][META]"
+    symptom: "Der entwickelte Winkel / log(z)-Orbit ist als neuer RZT-Operator erkannt, aber noch nicht in Tests, Metrics oder Receipts verankert."
+    closing_path: "docs/rzt/LOG_ZN_ORBIT_001.md + docs/tesser3takt/S4_LOGZN_bridge.md + Claim-Tags + optionaler Visual-/Replay-Test"
+    evidence:
+      - "docs/rzt/LOG_ZN_ORBIT_001.md"
+      - "docs/tesser3takt/S4_LOGZN_bridge.md"
+    created: "2026-05-17"
+    closed: null
+    notes: |
+      [FACT] Der komplexe Logarithmus entwickelt einen scheinbar geschlossenen Orbit über die Windungszahl k.
+      [MODEL] Sichtbare Wiederkehr modulo 2π ist nicht identisch mit entwickelter Windungsgeschichte.
+      [INFERENCE] Anschluss an RZT-0, Nektar-Maturation, A4-Reentry und tesser3TAKT/S4 ist prüfbar, aber nicht als Identitätsbehauptung zu lesen.
