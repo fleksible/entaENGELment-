@@ -8,7 +8,7 @@ DMI ?= 4.7
 PHI ?= 0.72
 REFRACTORY ?= 120
 
-.PHONY: help install install-dev install-hooks test test-unit test-integration test-ethics coverage lint format type-check clean gate-test port-lint frame-lint verify verify-pointers claim-lint verify-json status status-verify snapshot all deepjump benchmark-replay
+.PHONY: help install install-dev install-hooks test test-unit test-integration test-ethics coverage lint format type-check clean gate-test port-lint frame-lint voids-backlog voids-backlog-check verify verify-pointers claim-lint verify-json status status-verify snapshot all deepjump benchmark-replay
 
 help:
 	@echo "entaENGELment Framework - Development Commands"
@@ -52,6 +52,10 @@ help:
 	@echo ""
 	@echo "Cleanup:"
 	@echo "  make clean           Remove build artifacts and cache"
+	@echo ""
+	@echo "Docs:"
+	@echo "  make voids-backlog       Regenerate docs/voids_backlog.md from VOIDMAP.yml"
+	@echo "  make voids-backlog-check Verify docs/voids_backlog.md is in sync (exit 1 on drift)"
 
 # === Setup ===
 install:
@@ -147,6 +151,14 @@ verify-pointers:
 claim-lint:
 	@echo "=== CLAIM LINT ==="
 	@$(PY) tools/claim_lint.py --scope index,spec,receipts,tools
+
+# Docs generator: regenerate docs/voids_backlog.md from VOIDMAP.yml.
+# Not wired into `verify` — opt-in. Use `voids-backlog-check` for drift detection.
+voids-backlog:
+	@$(PY) tools/voids_backlog_gen.py
+
+voids-backlog-check:
+	@$(PY) tools/voids_backlog_gen.py --check
 
 # Phase 2: STATUS (HMAC Receipt)
 status:
