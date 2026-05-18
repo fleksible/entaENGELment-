@@ -1,7 +1,7 @@
 {
   "name": "user",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
     "test": "npm run test:js && npm run test:py",
     "test:js": "jest",
