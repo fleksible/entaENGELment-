@@ -8,7 +8,7 @@ DMI ?= 4.7
 PHI ?= 0.72
 REFRACTORY ?= 120
 
-.PHONY: help install install-dev install-hooks test test-unit test-integration test-ethics coverage lint format type-check clean gate-test port-lint verify verify-pointers claim-lint verify-json status status-verify snapshot all deepjump benchmark-replay
+.PHONY: help install install-dev install-hooks test test-unit test-integration test-ethics coverage lint format type-check clean gate-test port-lint frame-lint verify verify-pointers claim-lint verify-json status status-verify snapshot all deepjump benchmark-replay
 
 help:
 	@echo "entaENGELment Framework - Development Commands"
@@ -29,6 +29,7 @@ help:
 	@echo "  make lint            Run linting (ruff)"
 	@echo "  make format          Format code (black)"
 	@echo "  make type-check      Run type checking (mypy)"
+	@echo "  make frame-lint      Run Frame Operator lint v0.1.1 (scope TBD; set FRAME_LINT_PATHS)"
 	@echo ""
 	@echo "Gate Policy:"
 	@echo "  make gate-test       Test gate toggle functionality"
@@ -90,6 +91,25 @@ lint:
 port-lint:
 	@echo "🔍 Running Port-Matrix linter (K0..K4)..."
 	@python3 tools/port_lint.py
+
+# Frame Operator Lint (v0.1.1) — see tools/frame_lint.py and
+# policies/frame_taxonomy_v0_1_1.yml.
+#
+# NOTE: input scope is not yet fixed. The tool expects YAML paths as positional
+# arguments (claim/receipt files with `operative_frame`). Until a canonical
+# scope is agreed (e.g. ark/p4/receipts/*.yaml, receipts/*.json), this target
+# is NOT wired into `verify`. Override FRAME_LINT_PATHS to run it locally,
+# e.g.: `make frame-lint FRAME_LINT_PATHS="ark/p4/receipts/*.yaml"`.
+FRAME_LINT_PATHS ?=
+frame-lint:
+	@echo "🔍 Running Frame Operator linter (v0.1.1)..."
+	@if [ -z "$(FRAME_LINT_PATHS)" ]; then \
+		echo "frame-lint: no FRAME_LINT_PATHS set; scope to be defined."; \
+		echo "Usage: make frame-lint FRAME_LINT_PATHS=\"path/to/file.yaml ...\""; \
+		python3 tools/frame_lint.py --help >/dev/null 2>&1 || true; \
+	else \
+		python3 tools/frame_lint.py $(FRAME_LINT_PATHS); \
+	fi
 
 format:
 	black src/ tools/ tests/
