@@ -17,23 +17,40 @@ Einen klar nachvollziehbaren `v0.1.0-rc1`-Kandidaten vorbereiten, sodass ein sp�
 ## Preflight-Checkliste
 
 ### A) Inhalt & Dokumentation
-- [ ] `CHANGELOG.md` unter `Unreleased` enthält einen klaren RC-Hinweis und die erwarteten Punkte für `v0.1.0-rc1`.
+- [x] `CHANGELOG.md` unter `Unreleased` enthält einen klaren RC-Hinweis und die erwarteten Punkte für `v0.1.0-rc1`.
 - [ ] `README.md` verweist auf den Release-Prozess bzw. dieses RC-Preflight-Dokument.
-- [ ] Offene Risiken/Unsicherheiten für den RC sind benannt (keine impliziten Annahmen).
+- [x] Offene Risiken/Unsicherheiten für den RC sind benannt (keine impliziten Annahmen).
 
 ### B) Technische Release-Gates (lokal prüfbar)
-- [ ] `python3 tools/verify_pointers.py --strict`
-- [ ] `python3 tools/claim_lint.py --scope index,spec,receipts,tools`
-- [ ] `python3 tools/port_lint.py`
-- [ ] `for f in receipts/*.json; do python3 tools/receipt_lint.py "$f"; done`
-- [ ] `pytest tests/ -x --tb=short`
-- [ ] `grep -r "return 0.5" src/core/` liefert keine Stub-Metriken.
-- [ ] `VOIDMAP.yml` enthält keine ownerlosen `OPEN`/`IN_PROGRESS`-VOIDs.
+- [x] `python3 tools/verify_pointers.py --strict` — WARN: core pointers valid; 4 optional `out/*` artifacts missing.
+- [x] `python3 tools/claim_lint.py --scope index,spec,receipts,tools`
+- [x] `python3 tools/port_lint.py`
+- [x] `for f in receipts/*.json; do python3 tools/receipt_lint.py "$f"; done`
+- [x] `pytest tests/ -x --tb=short`
+- [x] `grep -r "return 0.5" src/core/` liefert keine Stub-Metriken.
+- [x] `VOIDMAP.yml` enthält keine ownerlosen `OPEN`/`IN_PROGRESS`-VOIDs.
 
 ### C) Workflow-Readiness
-- [ ] `.github/workflows/release.yml` bleibt tag-getrieben (`v*.*.*`) und unverändert bzgl. RC-Logik.
-- [ ] RC-Tag-Konvention bestätigt: `v0.1.0-rc1` (führt zu `prerelease=true` wegen `-rc` im Tag).
+- [x] `.github/workflows/release.yml` bleibt tag-getrieben (`v*.*.*`) und unverändert bzgl. RC-Logik.
+- [x] RC-Tag-Konvention bestätigt: `v0.1.0-rc1` (führt zu `prerelease=true` wegen `-rc` im Tag).
 - [ ] Keine lokalen Änderungen mehr offen, die nicht in den RC sollen.
+
+## Evidence Snapshot — 2026-05-18
+
+Evidence file: [`docs/release/evidence/RC_PREFLIGHT_v0.1.0-rc1_2026-05-18.md`](evidence/RC_PREFLIGHT_v0.1.0-rc1_2026-05-18.md)
+
+Summary:
+
+- Technical gates completed with PASS except `verify_pointers --strict`, which is PASS/WARN: all core pointers are valid, but 4 optional `out/*` artifacts are missing.
+- `CHANGELOG.md` already contains an `Unreleased` / `Release Prep` entry for this RC preflight path.
+- Release workflow remains tag-triggered and treats `-rc` tags as prereleases.
+- No tag, release trigger, workflow edit, UI/dependency edit, or `data/receipts/` change is part of this evidence pass.
+
+Open items before an actual RC tag:
+
+- README does not yet explicitly link the release process or this RC preflight document.
+- `git status --short` was not captured as a dedicated evidence gate, so local clean-state remains unchecked in this snapshot.
+- The pointer WARN should remain visible unless the optional `out/*` artifacts are generated or deliberately accepted as non-blocking for RC.
 
 ## Explizite Nicht-Ziele in diesem Schritt
 
