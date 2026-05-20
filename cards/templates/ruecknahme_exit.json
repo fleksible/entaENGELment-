@@ -1,0 +1,12 @@
+{
+  "card_type": "ruecknahme_exit",
+  "timestamp": "2026-05-20T17:55:00",
+  "fields": {
+    "exit_gesture": "",
+    "sediment_action": "discard_or_explicit_export",
+    "released_state": true,
+    "no_trace": true,
+    "post_exit_claim": "none",
+    "boundary": "The system may shape the threshold. It must not possess what happens beyond it."
+  }
+}
