@@ -1,0 +1,24 @@
+{
+  "card_type": "synthosia_scope",
+  "timestamp": "2026-05-20T16:21:42",
+  "fields": {
+    "gate": "inner_frame_only",
+    "included_concepts": [
+      "7x9 matrix",
+      "Hopf spirals",
+      "central resonance point",
+      "phase gate",
+      "vertigo mirror",
+      "moss-mycelium navigation",
+      "re-entry echo",
+      "third presence"
+    ],
+    "forbidden_actions": [
+      "XR build",
+      "bio-feed integration",
+      "live steering",
+      "production control"
+    ],
+    "go_condition": "stable Inner-GO evidence before implementation"
+  }
+}
