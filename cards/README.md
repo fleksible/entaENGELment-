@@ -13,8 +13,21 @@ python3 tools/verify_cards.py cards/templates
 Expected signal:
 
 ```text
-VERIFY CARDS: PASS (5 cards)
+VERIFY CARDS: PASS (6 cards)
 ```
+
+## Card types
+
+- `ack_triade`
+- `nectar_attune`
+- `rubedo_stop`
+- `synthosia_scope`
+- `reentry_vector`
+- `ruecknahme_exit`
+
+## Rücknahme invariant
+
+For `ruecknahme_exit`, `fields.no_trace` must be `true`. This means the release state is successful without post-exit telemetry or persistent binding.
 
 ## Boundary
 
