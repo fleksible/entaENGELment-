@@ -194,12 +194,23 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Generate docs/voids_backlog.md from VOIDMAP.yml (deterministic).",
     )
-    parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE,
-                        help=f"Source VOIDMAP file (default: {DEFAULT_SOURCE.relative_to(REPO_ROOT)})")
-    parser.add_argument("--out", type=Path, default=DEFAULT_OUT,
-                        help=f"Output Markdown file (default: {DEFAULT_OUT.relative_to(REPO_ROOT)})")
-    parser.add_argument("--check", action="store_true",
-                        help="Compare current output against existing file; exit 1 on drift.")
+    parser.add_argument(
+        "--source",
+        type=Path,
+        default=DEFAULT_SOURCE,
+        help=f"Source VOIDMAP file (default: {DEFAULT_SOURCE.relative_to(REPO_ROOT)})",
+    )
+    parser.add_argument(
+        "--out",
+        type=Path,
+        default=DEFAULT_OUT,
+        help=f"Output Markdown file (default: {DEFAULT_OUT.relative_to(REPO_ROOT)})",
+    )
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="Compare current output against existing file; exit 1 on drift.",
+    )
     args = parser.parse_args(argv)
 
     source: Path = args.source
