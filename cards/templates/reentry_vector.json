@@ -1,0 +1,10 @@
+{
+  "card_type": "reentry_vector",
+  "timestamp": "2026-05-20T16:21:42",
+  "fields": {
+    "status": "GO_conservative_hold_50",
+    "current_hold": "Attach save-state cards without importing full upload patch or building XR.",
+    "next_action": "Run verify_cards and then decide VOIDMAP collision handling.",
+    "source_doc": "docs/analysis/reentry_save_state_v1.md"
+  }
+}

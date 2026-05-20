@@ -1,0 +1,11 @@
+{
+  "card_type": "rubedo_stop",
+  "timestamp": "2026-05-20T16:21:42",
+  "fields": {
+    "marker": "",
+    "hue_load": 0,
+    "abx_stress": 0,
+    "hold_reason": "",
+    "next_safe_action": ""
+  }
+}
