@@ -1,0 +1,13 @@
+{
+  "card_type": "ack_triade",
+  "timestamp": "2026-05-20T16:21:42",
+  "fields": {
+    "ack_me": "",
+    "ack_mensch": "",
+    "ack_sys": "",
+    "body_signal": "",
+    "rationale": "",
+    "mode_from": "",
+    "mode_to": ""
+  }
+}
