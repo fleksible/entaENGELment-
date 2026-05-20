@@ -6,7 +6,8 @@
     "sediment_action": "discard_or_explicit_export",
     "released_state": true,
     "no_trace": true,
+    "future_contact_policy": "user_initiated_fresh_consent",
     "post_exit_claim": "none",
-    "boundary": "The system may shape the threshold. It must not possess what happens beyond it."
+    "boundary": "No trace does not mean no contact. Future contact is possible only as user-initiated fresh consent."
   }
 }

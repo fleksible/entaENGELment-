@@ -16,7 +16,30 @@ R↓(session, sediment, consent_exit) -> released_state + no_trace
 
 `no_trace` is not an error state. `no_trace` is PASS.
 
+`no_trace` also does not mean `no_contact`. It means no involuntary trace, no hidden tether, and no server-side identity continuation after the exit threshold.
+
 The operator closes the loop by turning the system's post-exit non-knowledge into the strongest ethical confirmation: after the threshold, the application does not monitor, measure, infer, or retain the person's resonance.
+
+## Contact continuity
+
+Future contact remains possible by design. It must happen as a voluntary new entry, not as a hidden continuation of the previous session.
+
+Allowed continuity:
+
+- user-initiated return
+- fresh consent at the new threshold
+- optional explicit re-import of a user-held export
+- no automatic follow-up
+- no background reminder, re-engagement hook, or inferred identity bridge
+
+In short:
+
+```text
+no_trace != no_contact
+future_contact == user_initiated + fresh_consent
+```
+
+The tool may remain available as a door. It must not behave like a leash.
 
 ## Inputs
 
@@ -32,11 +55,13 @@ The operator closes the loop by turning the system's post-exit non-knowledge int
 4. close the local session
 5. create no server-side continuation
 6. perform no post-exit telemetry
+7. allow later return only as user-initiated fresh consent
 
 ## Output
 
 - `released_state`
 - `no_trace: true`
+- `future_contact_policy: user_initiated_fresh_consent`
 
 ## Non-goals
 
@@ -45,6 +70,7 @@ The operator closes the loop by turning the system's post-exit non-knowledge int
 - no claim that unmediated resonance is measured by the system
 - no hidden identity continuation
 - no post-exit reminders or re-engagement hooks unless separately and explicitly requested
+- no forced rupture of future contact
 
 ## Technical boundary
 
@@ -52,15 +78,18 @@ The system may shape the threshold. It must not possess what happens beyond it.
 
 In implementation terms, success is represented by local release plus absence of persistent binding. The application should be able to record that an exit gesture occurred only inside the local closing flow; it must not convert the after-exit silence into a surveillance problem.
 
+If later contact happens, it is modeled as a new entrance with fresh consent. Any continuity must be carried by the person, for example through an explicit local export, not silently retained by the system.
+
 ## Card mapping
 
 The machine-checkable working artifact is:
 
 - `cards/templates/ruecknahme_exit.json`
 
-Required invariant:
+Required invariants:
 
 - `fields.no_trace` must be `true`
+- `fields.future_contact_policy` must be `user_initiated_fresh_consent`
 
 ## Review note
 

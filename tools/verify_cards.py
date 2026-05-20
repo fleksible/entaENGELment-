@@ -58,6 +58,7 @@ REQUIRED_FIELDS: dict[str, set[str]] = {
         "sediment_action",
         "released_state",
         "no_trace",
+        "future_contact_policy",
         "post_exit_claim",
         "boundary",
     },
@@ -81,7 +82,7 @@ def validate_ruecknahme_exit(path: Path, fields: dict[str, Any]) -> list[str]:
     """Validate Rücknahme-specific release semantics.
 
     For this card type, `no_trace: true` is the invariant. It represents a
-    successful release state, not a telemetry target.
+    successful release state, not a telemetry target and not contact rupture.
     """
     errors: list[str] = []
 
@@ -90,6 +91,12 @@ def validate_ruecknahme_exit(path: Path, fields: dict[str, Any]) -> list[str]:
 
     if fields.get("released_state") is not True:
         errors.append(f"{path}: ruecknahme_exit requires fields.released_state to be true")
+
+    if fields.get("future_contact_policy") != "user_initiated_fresh_consent":
+        errors.append(
+            f"{path}: ruecknahme_exit requires future_contact_policy "
+            "to be 'user_initiated_fresh_consent'"
+        )
 
     if fields.get("post_exit_claim") not in ("none", ""):
         errors.append(
