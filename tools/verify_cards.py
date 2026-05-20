@@ -53,6 +53,14 @@ REQUIRED_FIELDS: dict[str, set[str]] = {
         "next_action",
         "source_doc",
     },
+    "ruecknahme_exit": {
+        "exit_gesture",
+        "sediment_action",
+        "released_state",
+        "no_trace",
+        "post_exit_claim",
+        "boundary",
+    },
 }
 
 
@@ -67,6 +75,28 @@ def load_json(path: Path) -> tuple[dict[str, Any] | None, list[str]]:
     if not isinstance(data, dict):
         return None, [f"{path}: top-level JSON value must be an object"]
     return data, []
+
+
+def validate_ruecknahme_exit(path: Path, fields: dict[str, Any]) -> list[str]:
+    """Validate Rücknahme-specific release semantics.
+
+    For this card type, `no_trace: true` is the invariant. It represents a
+    successful release state, not a telemetry target.
+    """
+    errors: list[str] = []
+
+    if fields.get("no_trace") is not True:
+        errors.append(f"{path}: ruecknahme_exit requires fields.no_trace to be true")
+
+    if fields.get("released_state") is not True:
+        errors.append(f"{path}: ruecknahme_exit requires fields.released_state to be true")
+
+    if fields.get("post_exit_claim") not in ("none", ""):
+        errors.append(
+            f"{path}: ruecknahme_exit post_exit_claim must be 'none' or empty"
+        )
+
+    return errors
 
 
 def validate_card(path: Path) -> list[str]:
@@ -107,6 +137,9 @@ def validate_card(path: Path) -> list[str]:
         if isinstance(value, (dict, list, str, int, float, bool)) or value is None:
             continue
         errors.append(f"{path}: field {field_name!r} has unsupported type")
+
+    if card_type == "ruecknahme_exit":
+        errors.extend(validate_ruecknahme_exit(path, fields))
 
     return errors
 
