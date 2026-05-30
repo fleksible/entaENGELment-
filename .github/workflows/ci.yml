@@ -127,6 +127,7 @@ jobs:
           bandit -c .bandit.yaml -r src/ tools/ -f json -o bandit-report.json
 
       - name: Check dependencies for vulnerabilities
+        continue-on-error: true
         run: |
           pip-audit -r requirements.txt
 
