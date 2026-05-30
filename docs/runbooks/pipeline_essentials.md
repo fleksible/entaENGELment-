@@ -6,6 +6,8 @@
 
 Die Pipeline bleibt dreistufig: **Verify → Status → Snapshot**. Neue Checks werden zuerst als beobachtende Essentials sichtbar gemacht, danach mit klarer Scope-Definition in `make verify` oder CI gehärtet.
 
+Der Scanner ist bewusst beobachtend. Er dokumentiert Ausbauoptionen, verändert aber keine bestehenden Gates.
+
 ## Schneller Lage-Scan
 
 ```bash
