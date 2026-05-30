@@ -1,0 +1,102 @@
+name: Claim correction
+about: Flag a claim that may be too strong, stale, unclear, or missing status
+labels: [claim-discipline, docs]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template when a statement needs sharper claim status, weaker wording, or better evidence.
+
+  - type: input
+    id: location
+    attributes:
+      label: Location
+      description: File path, section, line, PR, or issue where the claim appears.
+      placeholder: README.md#governance--safety
+    validations:
+      required: true
+
+  - type: textarea
+    id: current_claim
+    attributes:
+      label: Current claim
+      description: Paste the relevant sentence or summarize the claim precisely.
+      placeholder: "Receipts are ..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: current_status
+    attributes:
+      label: Current claim status, if stated
+      options:
+        - Not stated
+        - FAKT
+        - INFERENZ
+        - MODELL
+        - HYPOTHESE
+        - METAPHER
+        - CLAIM
+        - POESIE
+        - SPEC
+        - EXECUTED
+        - Unknown / mixed
+    validations:
+      required: true
+
+  - type: dropdown
+    id: suggested_status
+    attributes:
+      label: Suggested claim status
+      options:
+        - FAKT
+        - INFERENZ
+        - MODELL
+        - HYPOTHESE
+        - METAPHER
+        - CLAIM
+        - POESIE
+        - SPEC
+        - EXECUTED
+        - Needs maintainer decision
+    validations:
+      required: true
+
+  - type: textarea
+    id: issue
+    attributes:
+      label: What is the problem?
+      description: Explain whether the issue is overclaiming, missing evidence, stale wording, ambiguity, pseudo-physics risk, or another boundary problem.
+      placeholder: The wording currently sounds stronger than the evidence supports because ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence or references
+      description: Link repo evidence, receipts, tests, docs, issues, papers, or note that evidence is missing.
+      placeholder: Related PR, receipt, test output, or source link.
+    validations:
+      required: false
+
+  - type: textarea
+    id: proposed_wording
+    attributes:
+      label: Proposed wording
+      description: Offer a weaker or clearer replacement sentence if possible.
+      placeholder: "Receipts are HMAC-signed and provide a tamper-evident audit trail within documented assumptions."
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Boundary checks
+      options:
+        - label: I am not using metaphor as evidence.
+          required: true
+        - label: I chose the weaker status when unsure.
+          required: true
+        - label: I did not include secrets, credentials, private keys, or unrelated personal data.
+          required: true
