@@ -4,6 +4,8 @@ entaENGELment is an experimental research and governance framework. It is not pr
 
 This policy defines how security-relevant findings should be reported and how the project treats safety boundaries.
 
+General claim-status corrections should use the Claim correction issue template. Security-sensitive findings should follow this policy first.
+
 ## Supported scope
 
 Security-relevant reports may include:
