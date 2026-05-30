@@ -8,6 +8,8 @@ Die Pipeline bleibt dreistufig: **Verify → Status → Snapshot**. Neue Checks 
 
 Der Scanner ist bewusst beobachtend. Er dokumentiert Ausbauoptionen, verändert aber keine bestehenden Gates.
 
+Die aktuelle Workflow-/Rechtekarte steht in [`docs/ci/WORKFLOW_MAP.md`](../ci/WORKFLOW_MAP.md).
+
 ## Schneller Lage-Scan
 
 ```bash
