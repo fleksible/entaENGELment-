@@ -102,9 +102,7 @@ def build_results(root: Path) -> tuple[bool, list[str]]:
     """Run the check and return (ok, report_lines)."""
     workflows = find_workflows(root)
     map_path = root / WORKFLOW_MAP_REL
-    workflow_map_text = (
-        map_path.read_text(encoding="utf-8") if map_path.exists() else ""
-    )
+    workflow_map_text = map_path.read_text(encoding="utf-8") if map_path.exists() else ""
 
     lines: list[str] = ["# Workflow Posture Check", ""]
     if not workflows:
