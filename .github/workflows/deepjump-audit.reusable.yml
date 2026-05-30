@@ -15,6 +15,13 @@ on:
       ENTA_HMAC_SECRET:
         required: false
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   deepjump-audit:
     runs-on: ubuntu-latest
