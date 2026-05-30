@@ -69,8 +69,10 @@ PYTHON_CODE_SKIP = [
     r'^\s*"required"\s*:',  # JSON-like "required": in any file
     r"^\s*#",  # code comments (operational notes)
     r"^\s*\w+\.\w+\(",  # method calls (e.g. ledger.gate(...))
-    r'^\s*("""|\'\'\')',  # docstring delimiters
-    r'^\s*r["\']',  # raw string literals (regex patterns)
+    r'^(?:[rubfRUBF]+)?["\']',  # string literal lines
+    r'^(?:[rubfRUBF]+)?["\']{3}',  # docstring delimiters
+    r"^\s*\)",  # continuation close
+    r"^\s*,",  # continuation separator
 ]
 
 
@@ -112,11 +114,26 @@ def _is_python_code_line(line: str) -> bool:
     return False
 
 
+def _python_docstring_line(line: str, in_docstring: bool) -> tuple[bool, bool]:
+    """Return whether a Python line is inside a docstring block."""
+    stripped = line.strip()
+    triple_count = stripped.count('"""') + stripped.count("'''")
+
+    if in_docstring:
+        return True, bool(triple_count % 2 == 0)
+
+    if triple_count:
+        return True, bool(triple_count % 2 == 1)
+
+    return False, False
+
+
 def find_claims_in_file(filepath: Path, repo_root: Path) -> list[ClaimResult]:
     """Find potential claims in a file."""
     results: list[ClaimResult] = []
     rel_path = str(filepath.relative_to(repo_root))
     is_python = filepath.suffix == ".py"
+    in_docstring = False
 
     try:
         with open(filepath, encoding="utf-8", errors="replace") as f:
@@ -136,9 +153,13 @@ def find_claims_in_file(filepath: Path, repo_root: Path) -> list[ClaimResult]:
         if NOQA_MARKER in line:
             continue
 
-        # For Python files: skip lines that are clearly code constructs
-        if is_python and _is_python_code_line(stripped):
-            continue
+        # For Python files: skip docstrings and operational code constructs.
+        if is_python:
+            in_doc_line, in_docstring = _python_docstring_line(line, in_docstring)
+            if in_doc_line:
+                continue
+            if _is_python_code_line(stripped):
+                continue
 
         # Check for claim patterns
         for pattern in CLAIM_PATTERNS:

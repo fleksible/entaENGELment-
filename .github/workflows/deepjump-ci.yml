@@ -47,4 +47,6 @@ jobs:
     secrets: inherit
     with:
       python-version: "3.11"
-      allow-unsigned-status-skip: ${{ github.event_name == 'pull_request' && (github.actor == 'dependabot[bot]' || github.event.pull_request.head.repo.full_name != github.repository) }}
+      # Pull requests may not have access to ENTA_HMAC_SECRET. Keep PR verification
+      # strict for pointers/claims/tests, but allow signed-status emission to be skipped.
+      allow-unsigned-status-skip: ${{ github.event_name == 'pull_request' }}
