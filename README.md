@@ -1,6 +1,8 @@
 # entaENGELment Framework
 
-> Consent-First Framework für resonante Systeme mit auditier­barem Proof-Protokoll
+> Consent-First Framework für resonante Systeme mit auditierbarem Proof-Protokoll
+
+> New here? Start with [WELCOME.md](WELCOME.md) for a gentle orientation.
 
 ![DeepJump CI](https://github.com/fleksible/entaENGELment-/actions/workflows/deepjump-ci.yml/badge.svg)
 ![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)
@@ -21,7 +23,7 @@ EntaENGELment ist ein experimentelles Framework für Multi-Agent-Systeme mit Con
 **Use-Cases:**
 - Nachvollziehbare Entwicklung mit strengem Audit-Protokoll
 - Multi-Agent-Workflows mit Consent-Management
-- Experimentelle Resonanz-Metriken (ECI, Mass-Gap, Phi-basierte Gates)
+- Experimentelle Resonanz-Metriken (ECI, Mass-Gap, Phi-basierte Gates) als Modell-/Metrik-Proxies
 
 **Non-Goals:**
 - Production-Ready Software (experimenteller Status)
@@ -67,7 +69,7 @@ make verify         # Alles prüfen
 **Optional: UI starten**
 ```bash
 cd ui-app
-npm install
+npm ci
 npm run dev
 # → http://localhost:3000
 ```
@@ -93,7 +95,7 @@ npm run dev
 | `tools/` | DeepJump-Tools | `tools/verify_pointers.py`, `tools/status_emit.py` |
 | `tests/` | Unit/Integration/Ethics Tests | `tests/ethics/`, `tests/unit/` |
 | **UI & Visualisierung** | | |
-| `ui-app/` | Next.js 14 Web-App | `cd ui-app && npm run dev` |
+| `ui-app/` | Next.js Web-App | `cd ui-app && npm run dev` |
 | `bio_spiral_viewer/` | Console Spiral-Explorer | `python -m bio_spiral_viewer` |
 | `Fractalsense/` | Fractal Color Generator | siehe `ui-app/fractalsense` |
 | **Development** | | |
@@ -160,7 +162,7 @@ Das Framework folgt einem strikten Verify → Status → Snapshot Flow. `make ve
 - **G6: Verify-Before-Merge** – Tests laufen lassen, Report erstellen
 
 **Receipts, Audit, Determinismus:**
-Receipts sind HMAC-signiert und bilden einen nicht-repudiierbaren Audit-Trail. `data/receipts/` ist IMMUTABLE (append-only). Jede Modifikation würde Signaturen invalidieren. Audit-Reports in `docs/audit/` dokumentieren kritische Änderungen und werden versioniert. GateProof ([`policies/gateproof_v1.yaml`](policies/gateproof_v1.yaml)) definiert die Checkliste für latent→manifest Übergänge. Port-Matrix ([`policies/port_codebooks.yaml`](policies/port_codebooks.yaml)) codiert semantische Marker (K0..K4).
+Receipts sind HMAC-signiert und bilden einen manipulationserschwerten, nachvollziehbaren Audit-Trail. `data/receipts/` ist IMMUTABLE (append-only). Jede Modifikation würde Signaturen invalidieren. Audit-Reports in `docs/audit/` dokumentieren kritische Änderungen und werden versioniert. GateProof ([`policies/gateproof_v1.yaml`](policies/gateproof_v1.yaml)) definiert die Checkliste für latent→manifest Übergänge. Port-Matrix ([`policies/port_codebooks.yaml`](policies/port_codebooks.yaml)) codiert semantische Marker (K0..K4).
 
 ---
 
@@ -205,12 +207,12 @@ Receipts sind HMAC-signiert und bilden einen nicht-repudiierbaren Audit-Trail. `
 ## VII. UI (ui-app/)
 
 **Was es ist:**
-Next.js 14 Web-App mit mehreren Dashboards und Explorern.
+Next.js Web-App mit mehreren Dashboards und Explorern.
 
 **Wie starten:**
 ```bash
 cd ui-app
-npm install
+npm ci
 npm run dev
 # → http://localhost:3000
 ```
@@ -281,7 +283,7 @@ npm run dev
 🜁 Architektur · 🜄 Governance/Ethik · 🜃 Adaptive Schicht · 🜅 Tests · 🜂 Meta-Poetik
 
 **Mytho-technische Rahmung:**
-Index als "Pointer-Gold", Code als "Annex". Resonanz bleibt Magie, weil jeder Sprung verankert ist. Metatron als Schreiber-Guard. NICHTRAUM als Raum für Unentschiedenes. Receipts als nicht-repudiierbare Quittung. Governance als Judikative.
+Index als "Pointer-Gold", Code als "Annex". Resonanz bleibt Magie, weil jeder Sprung verankert ist. Metatron als Schreiber-Guard. NICHTRAUM als Raum für Unentschiedenes. Receipts als signierte Quittung. Governance als Judikative.
 
 **Tiefe Docs:**
 - [`docs/devops_tooling_kit_annex.md`](docs/devops_tooling_kit_annex.md)
