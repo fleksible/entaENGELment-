@@ -1,5 +1,6 @@
 name: VOID entry
-about: Propose or refine an unresolved gap, risk, or open system question
+description: Propose or refine an unresolved gap, risk, or open system question
+title: "VOID: "
 labels: [void, governance]
 body:
   - type: markdown
