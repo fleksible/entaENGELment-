@@ -15,6 +15,8 @@ It combines three layers:
 
 This repository is not production-ready software. It is a research and governance framework in active formation.
 
+This guide is intentionally lightweight. Authoritative rules remain in `README.md`, `CLAUDE.md`, policies, tests, and CI gates.
+
 ## Start here
 
 For a fast technical check:
