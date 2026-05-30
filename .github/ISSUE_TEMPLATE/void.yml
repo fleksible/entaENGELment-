@@ -1,0 +1,94 @@
+name: VOID entry
+about: Propose or refine an unresolved gap, risk, or open system question
+labels: [void, governance]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template for gaps that should be tracked deliberately instead of being hidden, rushed, or overclaimed.
+
+  - type: input
+    id: title
+    attributes:
+      label: VOID title
+      description: Short human-readable title.
+      placeholder: Claim status drift in onboarding docs
+    validations:
+      required: true
+
+  - type: dropdown
+    id: domain
+    attributes:
+      label: Domain
+      options:
+        - governance
+        - security
+        - documentation
+        - ui
+        - ci
+        - evidence
+        - metrics
+        - conceptual model
+        - other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - P1 critical
+        - P2 high
+        - P3 medium
+        - P4 low
+        - undecided
+    validations:
+      required: true
+
+  - type: textarea
+    id: gap
+    attributes:
+      label: Gap / unresolved question
+      description: What is missing, unstable, ambiguous, or unsafe to assume?
+      placeholder: The repo currently implies ..., but the evidence boundary is ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: risk
+    attributes:
+      label: Risk if left unmarked
+      description: What could go wrong if this remains implicit?
+      placeholder: This could create false safety, stale documentation, drift, or merge confusion.
+    validations:
+      required: true
+
+  - type: textarea
+    id: closing_path
+    attributes:
+      label: Closing path
+      description: What evidence, PR, test, receipt, or decision would close this VOID?
+      placeholder: Add a docs patch, test, receipt, or ADR that ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: related
+    attributes:
+      label: Related files, issues, PRs, or receipts
+      placeholder: VOIDMAP.yml, PR #..., docs/..., data/receipts/...
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Boundary checks
+      options:
+        - label: This issue marks uncertainty rather than pretending it is solved.
+          required: true
+        - label: This issue does not include secrets, credentials, private keys, or unrelated personal data.
+          required: true
+        - label: This issue does not use live biological, medical, or sensor data.
+          required: true
