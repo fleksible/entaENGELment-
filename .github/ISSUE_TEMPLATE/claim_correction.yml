@@ -1,5 +1,6 @@
 name: Claim correction
-about: Flag a claim that may be too strong, stale, unclear, or missing status
+description: Flag a claim that may be too strong, stale, unclear, or missing status
+title: "Claim correction: "
 labels: [claim-discipline, docs]
 body:
   - type: markdown
