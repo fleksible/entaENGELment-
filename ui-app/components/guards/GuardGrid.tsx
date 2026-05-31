@@ -6,16 +6,23 @@ import { GuardStatusCard } from './GuardStatus';
 import { getGuardsWithStatus } from '@/lib/guard-definitions';
 
 export function GuardGrid() {
-  const [guards, setGuards] = useState<Guard[]>(() => getGuardsWithStatus());
+  const [guards, setGuards] = useState<Guard[]>([]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  // Simulate real-time updates (every 10 seconds)
+  // Keep SSR hydration deterministic; simulated statuses begin only after mount.
   useEffect(() => {
+    const initialRefresh = setTimeout(() => {
+      setGuards(getGuardsWithStatus());
+    }, 0);
+
     const interval = setInterval(() => {
       setGuards(getGuardsWithStatus());
     }, 10000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearTimeout(initialRefresh);
+      clearInterval(interval);
+    };
   }, []);
 
   // Count statuses
