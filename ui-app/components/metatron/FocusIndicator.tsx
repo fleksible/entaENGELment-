@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { FocusState } from '@/types';
 
 interface FocusIndicatorProps {
@@ -9,8 +10,18 @@ interface FocusIndicatorProps {
 export function FocusIndicator({ focusState }: FocusIndicatorProps) {
   const { current, since, switchPending, proposedSwitch } = focusState;
 
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setNow(Date.now());
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   // Calculate duration
-  const durationMs = Date.now() - since.getTime();
+  const durationMs = now - since.getTime();
   const durationMin = Math.floor(durationMs / 60000);
   const durationHrs = Math.floor(durationMin / 60);
 
