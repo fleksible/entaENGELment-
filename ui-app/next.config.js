@@ -6,6 +6,10 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  // Keep Turbopack scoped to the UI app when the repository root also has a lockfile.
+  turbopack: {
+    root: __dirname,
+  },
 }
 
 module.exports = nextConfig
