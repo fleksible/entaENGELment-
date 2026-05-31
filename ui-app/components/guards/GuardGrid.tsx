@@ -6,16 +6,18 @@ import { GuardStatusCard } from './GuardStatus';
 import { getGuardsWithStatus } from '@/lib/guard-definitions';
 
 export function GuardGrid() {
-  const [guards, setGuards] = useState<Guard[]>(() => getGuardsWithStatus());
+  const [guards, setGuards] = useState<Guard[]>([]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  // Simulate real-time updates (every 10 seconds)
   useEffect(() => {
-    const interval = setInterval(() => {
-      setGuards(getGuardsWithStatus());
-    }, 10000);
+    const refreshGuards = () => setGuards(getGuardsWithStatus());
+    const hydrationTick = setTimeout(refreshGuards, 0);
+    const interval = setInterval(refreshGuards, 10000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearTimeout(hydrationTick);
+      clearInterval(interval);
+    };
   }, []);
 
   // Count statuses

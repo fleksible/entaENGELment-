@@ -20,8 +20,8 @@ export function FocusIndicator({ focusState }: FocusIndicatorProps) {
     return () => clearInterval(interval);
   }, []);
 
-  // Calculate duration
-  const durationMs = now - since.getTime();
+  // Clamp future timestamps so operator displays never show negative elapsed time.
+  const durationMs = Math.max(0, now - since.getTime());
   const durationMin = Math.floor(durationMs / 60000);
   const durationHrs = Math.floor(durationMin / 60);
 
