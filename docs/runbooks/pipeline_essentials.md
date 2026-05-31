@@ -18,6 +18,14 @@ make pipeline-essentials
 
 Der Befehl ruft `tools/pipeline_essentials.py` auf und erzeugt einen statischen Markdown-Report zu vorhandenen Essentials und nächsten Ausbauoptionen.
 
+## Workflow-Posture-Drift prüfen
+
+```bash
+make workflow-posture-check
+```
+
+Der Befehl ruft `tools/workflow_posture_check.py` auf und prüft read-only, ob jede Datei unter `.github/workflows/` einen expliziten `permissions`-Block sowie einen `concurrency`-Block mit `cancel-in-progress: true` deklariert. Berechtigungen, die breiter als `contents: read` sind, müssen in [`docs/ci/WORKFLOW_MAP.md`](../ci/WORKFLOW_MAP.md) als Ausnahme dokumentiert sein (der Workflow-Dateiname muss dort genannt werden). Der Check verändert keine Dateien, braucht kein Netzwerk und endet bei Drift mit Exit-Code 1.
+
 ## Konkrete Ausbau-Möglichkeiten
 
 | ID | Möglichkeit | Nutzen | Nächster Schritt |

@@ -38,3 +38,5 @@ Exception: `release.yml` keeps `contents: write` because it creates GitHub Relea
 ## Maintenance rule
 
 [FACT] New workflows must document any permission broader than `contents: read` in this file. The reason should be action-specific, not symbolic or implied.
+
+[FACT] `make workflow-posture-check` (`tools/workflow_posture_check.py`) verifies this contract locally: every workflow must declare explicit `permissions` and a `concurrency` block with `cancel-in-progress: true`, and any permission broader than `contents: read` must be named in this file. The check is read-only and deterministic.

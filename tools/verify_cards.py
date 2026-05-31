@@ -99,9 +99,7 @@ def validate_ruecknahme_exit(path: Path, fields: dict[str, Any]) -> list[str]:
         )
 
     if fields.get("post_exit_claim") not in ("none", ""):
-        errors.append(
-            f"{path}: ruecknahme_exit post_exit_claim must be 'none' or empty"
-        )
+        errors.append(f"{path}: ruecknahme_exit post_exit_claim must be 'none' or empty")
 
     return errors
 
