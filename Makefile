@@ -8,7 +8,7 @@ DMI ?= 4.7
 PHI ?= 0.72
 REFRACTORY ?= 120
 
-.PHONY: help install install-dev install-hooks test test-unit test-integration test-ethics coverage lint format type-check clean gate-test port-lint frame-lint voids-backlog voids-backlog-check pipeline-essentials verify verify-pointers claim-lint verify-json status status-verify snapshot all deepjump benchmark-replay
+.PHONY: help install install-dev install-hooks test test-unit test-integration test-ethics coverage lint format type-check clean gate-test port-lint frame-lint voids-backlog voids-backlog-check pipeline-essentials workflow-posture-check verify verify-pointers claim-lint verify-json status status-verify snapshot all deepjump benchmark-replay
 
 help:
 	@echo "entaENGELment Framework - Development Commands"
@@ -57,6 +57,7 @@ help:
 	@echo "  make voids-backlog       Regenerate docs/voids_backlog.md from VOIDMAP.yml"
 	@echo "  make voids-backlog-check Verify docs/voids_backlog.md is in sync (exit 1 on drift)"
 	@echo "  make pipeline-essentials  Report pipeline essentials and next expansion options"
+	@echo "  make workflow-posture-check Verify workflows declare permissions + concurrency (exit 1 on drift)"
 
 # === Setup ===
 install:
@@ -163,6 +164,10 @@ voids-backlog-check:
 
 pipeline-essentials:
 	@$(PY) tools/pipeline_essentials.py
+
+# CI/CD posture drift check: verify workflows declare permissions + concurrency.
+workflow-posture-check:
+	@$(PY) tools/workflow_posture_check.py
 
 # Phase 2: STATUS (HMAC Receipt)
 status:
