@@ -1,0 +1,7 @@
+# EntaENGELment — pnpm workspace
+# Additive JS/TS membrane over the existing islands. The Python domain
+# (src/, tools/, tests/, bio_spiral_viewer/) remains sovereign and is NOT
+# a workspace member — see SYNTHBIOSIS.md.
+packages:
+  - "ui-app"
+  - "packages/*"

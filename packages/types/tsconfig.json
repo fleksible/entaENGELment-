@@ -1,0 +1,7 @@
+{
+  "extends": "@enta/tsconfig/base.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": ["src"]
+}

@@ -47,6 +47,10 @@ bandit-report.json
 # Node.js
 node_modules/
 
+# Turborepo / Next.js (JS/TS workspace)
+.turbo/
+.next/
+
 # Coverage reports
 coverage/
 

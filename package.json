@@ -2,6 +2,7 @@
   "name": "user",
   "version": "1.0.0",
   "main": "main.js",
+  "packageManager": "pnpm@10.33.0",
   "scripts": {
     "test": "npm run test:js && npm run test:py",
     "test:js": "jest",
@@ -10,7 +11,11 @@
     "test:py": "cd Fractalsense && python -m pytest",
     "test:py:coverage": "cd Fractalsense && python -m pytest --cov --cov-report=html",
     "start": "electron .",
-    "dist": "electron-builder"
+    "dist": "electron-builder",
+    "turbo:build": "turbo run build",
+    "turbo:lint": "turbo run lint",
+    "turbo:typecheck": "turbo run typecheck",
+    "turbo:test": "turbo run test"
   },
   "keywords": [],
   "author": "",
@@ -20,7 +25,8 @@
     "electron-builder": "^26.8.1",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^30.4.1",
-    "@testing-library/jest-dom": "^6.4.0"
+    "@testing-library/jest-dom": "^6.4.0",
+    "turbo": "2.5.8"
   },
   "build": {
     "appId": "EntaENGELment",
