@@ -6,16 +6,19 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "next": "16.2.6",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "@tanstack/react-query": "^5.100.14",
+    "@enta/types": "workspace:*",
     "yaml": "^2.9.0"
   },
   "devDependencies": {
+    "@enta/tsconfig": "workspace:*",
     "@tailwindcss/postcss": "^4.2.1",
     "@types/node": "^25.9.1",
     "@types/react": "^19.2.15",

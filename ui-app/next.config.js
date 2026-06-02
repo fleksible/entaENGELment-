@@ -1,3 +1,5 @@
+const path = require('path')
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Enable static export for simple deployment
@@ -6,9 +8,11 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Keep Turbopack scoped to the UI app when the repository root also has a lockfile.
+  // Point Turbopack at the pnpm workspace root: in a pnpm monorepo the virtual
+  // store (node_modules/.pnpm) lives at the repo root, so `next` and friends are
+  // only resolvable when the root encompasses it.
   turbopack: {
-    root: __dirname,
+    root: path.join(__dirname, '..'),
   },
 }
 

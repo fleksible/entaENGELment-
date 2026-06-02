@@ -1,0 +1,22 @@
+{
+  "name": "@enta/types",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Single source of truth for EntaENGELment domain types (VOIDMAP, Guards, Metatron). Type-only ANNEX building block, mirrors the GOLD VOIDMAP.yml schema as a read-only consumer.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@enta/tsconfig": "workspace:*",
+    "typescript": "^6.0.3"
+  }
+}
