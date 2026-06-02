@@ -18,10 +18,15 @@ on:
 permissions:
   contents: read
 
-# NOTE: No `concurrency` here. As a reusable workflow, `github.workflow` resolves
-# to the CALLER's workflow name, so a concurrency group defined here collides with
-# the caller's group (deepjump-ci.yml) and, with cancel-in-progress, cancels the
-# very parent run that invokes this workflow. Concurrency is owned by the caller.
+concurrency:
+  # Use a literal, reusable-specific group prefix — NOT `github.workflow`.
+  # In a reusable workflow `github.workflow` resolves to the CALLER
+  # (deepjump-ci.yml), so reusing it collides with the caller's group and, with
+  # cancel-in-progress, cancels the very parent run that invokes this workflow.
+  # A distinct group satisfies the workflow-posture contract (top-level
+  # concurrency + cancel-in-progress) without the self-cancellation deadlock.
+  group: deepjump-audit-reusable-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   deepjump-audit:
