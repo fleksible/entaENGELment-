@@ -76,7 +76,7 @@ CHECKS: tuple[EssentialCheck, ...] = (
         id="ESS-008",
         title="Pinned GitHub Actions",
         path=".github/workflows/ci.yml",
-        needles=("actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",),
+        needles=("actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10",),
         recommendation="Keep action SHAs pinned and rotate them through reviewable dependency PRs.",
     ),
 )
