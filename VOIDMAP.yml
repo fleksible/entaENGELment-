@@ -15,7 +15,7 @@ description: >
 
 metadata:
   maintainer: entaENGELment
-  last_updated: "2026-05-17"
+  last_updated: "2026-06-11"
   generated_doc: docs/voids_backlog.md
 
 voids:
@@ -91,11 +91,12 @@ voids:
     status: IN_PROGRESS
     priority: high
     owner: "fleks"
-    target_date: "2026-06-01"
+    target_date: "2026-07-15"
     domain: "[PHYS]"
     symptom: "Spektrale Zuordnung ohne belastbare Literatur-/Datenbasis"
     closing_path: "Literatur-Scan + zitierte Tabelle (CSV) + Evidence-Bundle"
-    evidence: null
+    evidence:
+      - "docs/voids/VOID-010_taxonomy_and_spectra.md"
     created: "2026-01-04"
     closed: null
     notes: |
@@ -103,18 +104,24 @@ voids:
       [2026-04-04] Deadline verlängert von 2026-03-15 auf 2026-06-01.
       Begründung: Forschungs-VOID, Literatur-Scan erfordert Zeit.
       Nächster Schritt: CSV-Tabelle mit >=5 zitierten Quellen erstellen.
+      [2026-06-11] Re-baselined after issue #240. VOID remains IN_PROGRESS:
+      the conceptual taxonomy is allowed to stay open, but the next verifier
+      boundary is now a sources-first CSV/schema bundle rather than prose.
 
   - id: VOID-011
     title: "Metriken der Resonanz (MI, PLV, FD)"
     status: IN_PROGRESS
     priority: high
     owner: "fleks"
-    target_date: "2026-06-01"
+    target_date: "2026-07-15"
     domain: "[MATH]"
-    symptom: "MI/FD waren Minimal-Stubs; Toy-Simulation als Proof noch ausstehend"
-    closing_path: "Option B: toy_resonance_dataset + robuste Implementierung + Tests"
+    symptom: "MI/FD implementation exists; evidence boundary needs simulation receipt and claim-tagged metric export"
+    closing_path: "Option B: toy_resonance_dataset + robust implementation + tests + SIMULATION_PROXY evidence receipt"
     evidence:
       - "src/core/metrics.py"
+      - "src/tools/toy_resonance_dataset.py"
+      - "tests/unit/test_toy_resonance_dataset.py"
+      - "docs/voids/VOID-011_resonance_metrics.md"
     created: "2026-01-04"
     closed: null
     notes: |
@@ -124,6 +131,9 @@ voids:
       Symptom aktualisiert: Stubs sind behoben, toy_resonance_dataset-Erweiterung
       und SIMULATION_PROXY-Claim-Tagging stehen noch aus.
       Deadline verlängert von 2026-03-15 auf 2026-06-01.
+      [2026-06-11] Re-baselined after issue #240. Code/test evidence exists;
+      do not close until a deterministic metrics export/receipt carries the
+      SIMULATION_PROXY boundary explicitly.
 
   - id: VOID-012
     title: "GateProof Checkliste (Governance)"
