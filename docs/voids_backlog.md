@@ -2,7 +2,7 @@
 
 > Auto-generated from `VOIDMAP.yml`. Do not edit by hand.
 > Regenerate via: `python3 tools/voids_backlog_gen.py`
-> Source `last_updated`: 2026-05-17
+> Source `last_updated`: 2026-06-11
 
 ## Summary
 
@@ -24,8 +24,8 @@
 
 | ID | Title | Priority | Owner | Domain | Target | Symptom |
 |---|---|---|---|---|---|---|
-| VOID-010 | Taxonomie & Spektren (Empirie) | high | fleks | [PHYS] | 2026-06-01 | Spektrale Zuordnung ohne belastbare Literatur-/Datenbasis |
-| VOID-011 | Metriken der Resonanz (MI, PLV, FD) | high | fleks | [MATH] | 2026-06-01 | MI/FD waren Minimal-Stubs; Toy-Simulation als Proof noch ausstehend |
+| VOID-010 | Taxonomie & Spektren (Empirie) | high | fleks | [PHYS] | 2026-07-15 | Spektrale Zuordnung ohne belastbare Literatur-/Datenbasis |
+| VOID-011 | Metriken der Resonanz (MI, PLV, FD) | high | fleks | [MATH] | 2026-07-15 | MI/FD implementation exists; evidence boundary needs simulation receipt and claim-tagged metric export |
 
 ## SUSPENDED
 
