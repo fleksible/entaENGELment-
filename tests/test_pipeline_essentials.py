@@ -22,7 +22,7 @@ def test_build_report_lists_all_essentials(tmp_path: Path) -> None:
     workflows.mkdir(parents=True)
     (workflows / "release.yml").write_text("tools/receipt_lint.py", encoding="utf-8")
     (workflows / "ci.yml").write_text(
-        "pip-audit\nactions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "pip-audit\nactions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10",
         encoding="utf-8",
     )
 
