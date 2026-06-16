@@ -119,3 +119,44 @@ python tools/intake_add.py \
 
 Der Helper **kopiert** (löscht nie), aktualisiert `INDEX.md`, legt optional einen
 Record an — und schreibt **nie** nach canon/spec/VOIDMAP/glossary/roadmap.
+
+## 12. Automatic Shadow Copy / Briefkasten-Hook
+
+> [FAKT] Ein optionaler Claude-Code **PostToolUse-Hook** legt automatisch eine
+> *Shadow-Copy* dokumentartiger Dateien ab, damit nichts vergessen wird, bevor es
+> bewusst abgelegt ist. *Der Briefkasten soll schneller sein als das Vergessen,
+> aber langsamer als die Wahrheit.*
+
+**Was automatisch passiert:** Nach jedem `Write`/`Edit`/`MultiEdit` ruft Claude Code
+`tools/intake_shadow_copy.py` **async** (im Hintergrund) auf. Bei dokumentartigen,
+nicht ausgeschlossenen Dateien wird eine **Kopie** nach
+`docs/intake/raw/auto/<YYYY-MM-DD>/` gelegt und eine Zeile in `_shadow_log.jsonl`
+geschrieben.
+
+**Erfasste Dateitypen:** `.md` · `.txt` · `.docx` · `.pdf` · `.json` · `.yml` · `.yaml`.
+
+**Ausgeschlossen:** `docs/intake/**`, `.git/**`, `node_modules/**`, `.venv|venv/**`,
+`dist/**`, `build/**`, `__pycache__/**`, `.pytest_cache/**`, Lockfiles
+(`package-lock.json`, `pnpm-lock.yaml`, `yarn.lock`, `poetry.lock`, `uv.lock`),
+Temp-/Scratch-Dateien — **und** GOLD/Kanon (`VOIDMAP.yml`, `index/`, `spec/`,
+`policies/`, `seeds/`, `docs/spec|specs|canon|glossary|roadmap/`), denn Kanon hat
+bereits ein Zuhause; der Briefkasten ist für das Heimatlose.
+
+**Es ist nur eine Kopie:** Quelldateien werden **nie** verschoben oder gelöscht (G3).
+Bei gleichem Inhalt (Content-Hash) wird **nicht** erneut kopiert (Dedupe).
+
+**Intake bleibt kein Kanon:** Der Hook setzt nur Status `raw/auto`. Keine semantische
+Deutung, kein Claim-Status, keine Migration. Die **kuratierte** `INDEX.md` und
+`records/` werden vom Hook **nicht** angefasst — dafür gibt es das separate
+`_shadow_log.jsonl`-Ledger. Spätere Triage bleibt **menschlich**.
+
+**Fail-soft:** Der Hook läuft async und beendet sich immer mit Exit 0; Fehler
+blockieren den Claude-Code-Flow nie.
+
+**Deaktivieren:** Den `PostToolUse`-Block in `.claude/settings.json` entfernen oder
+auskommentieren (bzw. die Datei löschen). Lokale Overrides gehen in
+`.claude/settings.local.json`.
+
+**Manuell weiterhin möglich:** Für bewusste Ablage mit Titel/Quelle weiterhin
+`make intake …` bzw. `tools/intake_add.py` nutzen (schreibt in die kuratierte
+`INDEX.md`/`records/`).

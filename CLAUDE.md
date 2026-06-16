@@ -116,6 +116,12 @@ entstehen und KEIN expliziter kanonischer Zielpfad genannt wurde:
 2. Niemals automatisch nach canon/spec/VOIDMAP/glossary/roadmap migrieren
 3. Ablegen ist erlaubt; Kanonisierung nur nach menschlichem Review
 → Details: docs/intake/README.md
+
+Hinweis Shadow-Copy-Hook: Ist der PostToolUse-Hook aktiv (.claude/settings.json),
+muss der Agent den Flow NICHT unterbrechen, um Intake aktiv auszuführen — der Hook
+legt async eine Kopie dokumentartiger Dateien nach docs/intake/raw/auto/. Der Agent
+darf dennoch bewusst `make intake` nutzen, wenn ein Dokument mit Titel/Quelle in die
+kuratierte INDEX.md eingetragen werden soll.
 ```
 
 ---
