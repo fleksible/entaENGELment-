@@ -8,4 +8,4 @@
 
 | ID | Datum | Titel | Quelle | Status | Möglicher Zielort | Reviewbedarf |
 |----|-------|-------|--------|--------|-------------------|--------------|
-| _(noch keine Einträge)_ | — | — | — | — | — | — |
+| INTAKE-2026-06-16-001 | 2026-06-16 | Thalamus / Außen-Gating (äußerer Thalamus-Schatten) | Session-Reflexion | triaged | exchange_archive? (offen) · tesser3takt nur als Kartierung | ja — human review, do_not_canonize_before |
