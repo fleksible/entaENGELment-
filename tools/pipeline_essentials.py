@@ -83,14 +83,22 @@ CHECKS: tuple[EssentialCheck, ...] = (
         id="ESS-009",
         title="Local JS/TS workspace verifier",
         path="Makefile",
-        needles=("verify-js:", "pnpm install --frozen-lockfile", "JS_VERIFY_CMD ?= pnpm turbo run typecheck lint build"),
+        needles=(
+            "verify-js:",
+            "pnpm install --frozen-lockfile",
+            "JS_VERIFY_CMD ?= pnpm turbo run typecheck lint build",
+        ),
         recommendation="Use `make verify-js` before merging UI/package dependency PRs so package changes do not get a Python-only OK.",
     ),
     EssentialCheck(
         id="ESS-010",
         title="Blocking JS/TS workspace PR gate",
         path=".github/workflows/ci-js-workspace.yml",
-        needles=("pnpm install --frozen-lockfile", "pnpm turbo run typecheck lint build", "node-version: 22"),
+        needles=(
+            "pnpm install --frozen-lockfile",
+            "pnpm turbo run typecheck lint build",
+            "node-version: 22",
+        ),
         recommendation="Keep UI dependency PRs bound to frozen-lockfile install plus typecheck/lint/build.",
     ),
     EssentialCheck(
