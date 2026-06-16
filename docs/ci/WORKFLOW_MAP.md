@@ -25,6 +25,7 @@ Exception: `release.yml` keeps `contents: write` because it creates GitHub Relea
 |---------------|---------|-------------|-------------|
 | `.github/workflows/ci.yml` | Legacy/advisory CI plus non-PR verify/build/security/gate-policy jobs | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
 | `.github/workflows/ci-evidence-bundle.yml` | Evidence bundle generation | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
+| `.github/workflows/ci-js-workspace.yml` | JS/TS workspace membrane: frozen pnpm install plus Turbo typecheck/lint/build for UI/package changes | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
 | `.github/workflows/ci-policy-lint.yml` | Policy JSON lint | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
 | `.github/workflows/ci-smoke.yml` | Python smoke tests | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
 | `.github/workflows/deepjump-audit.reusable.yml` | Reusable DeepJump audit core | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
