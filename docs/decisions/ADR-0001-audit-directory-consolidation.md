@@ -38,6 +38,17 @@ Alle neuen Audit-Deliverables (Auditbericht, Ergebnisbericht) werden in das
 Reine Verzeichnis-/Ablageentscheidung. Keine inhaltliche Umdeutung, kein
 Kanon-Begriff berührt. Claim-Disziplin und symbolische Architektur unverändert.
 
+## Update 2026-06-16 (Follow-up nach PR #252)
+
+- [FAKT] `docs/audit/` bleibt vorerst der **bestätigte** kanonische Audit-Pfad.
+  Eine spätere Pluralisierung (`docs/audits/`) wäre Gegenstand einer eigenen ADR.
+- [FAKT] Die `.gitignore`-Regel `audit/` (erfasste auch `docs/audit/` und erzwang
+  `git add -f`) wurde auf Root-Ebene eingegrenzt: `/audit/` (inkl. anker-korrekter
+  Negationen `!/audit/…`). Neue Reports unter `docs/audit/` sind jetzt ohne `-f`
+  trackbar; top-level `audit/`-Verhalten bleibt identisch.
+- [FAKT] Rein struktureller Safe Patch — kein Kanon-, Spec-, VOID-, Claim- oder
+  Roadmap-Inhalt verändert.
+
 ## Linked VOID / Spec / Claim
 
 - Audit: `docs/audit/revolutionary_repo_audit_2026-06-16.md` §4, §8, §10
