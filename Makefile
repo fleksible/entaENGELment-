@@ -9,7 +9,7 @@ PHI ?= 0.72
 REFRACTORY ?= 120
 JS_VERIFY_CMD ?= pnpm turbo run typecheck lint build
 
-.PHONY: help install install-dev install-hooks test test-unit test-integration test-ethics coverage lint format type-check clean gate-test port-lint frame-lint voids-backlog voids-backlog-check pipeline-essentials workflow-posture-check verify verify-core verify-governance verify-js verify-all verify-pointers claim-lint verify-json status status-verify snapshot all deepjump benchmark-replay
+.PHONY: help install install-dev install-hooks test test-unit test-integration test-ethics coverage lint format type-check clean gate-test port-lint frame-lint voids-backlog voids-backlog-check pipeline-essentials workflow-posture-check verify verify-core verify-governance verify-js verify-all verify-pointers claim-lint verify-json status status-verify snapshot all deepjump benchmark-replay intake
 
 help:
 	@echo "entaENGELment Framework - Development Commands"
@@ -63,6 +63,10 @@ help:
 	@echo "  make voids-backlog-check Verify docs/voids_backlog.md is in sync (exit 1 on drift)"
 	@echo "  make pipeline-essentials  Report pipeline essentials and next expansion options"
 	@echo "  make workflow-posture-check Verify workflows declare permissions + concurrency (exit 1 on drift)"
+	@echo ""
+	@echo "Intake (Calm Intake Layer):"
+	@echo "  make intake FILE=<path> TITLE=\"<title>\" SOURCE=\"<source>\""
+	@echo "                       Capture a document into docs/intake/raw/ (no canonisation)"
 
 # === Setup ===
 install:
@@ -196,6 +200,15 @@ pipeline-essentials:
 # CI/CD posture drift check: verify workflows declare permissions + concurrency.
 workflow-posture-check:
 	@$(PY) tools/workflow_posture_check.py
+
+# Calm Intake Layer: capture a document into docs/intake/raw/ (no canonisation).
+# Thin wrapper around tools/intake_add.py. See docs/intake/README.md.
+intake:
+	@if [ -z "$(FILE)" ] || [ -z "$(TITLE)" ] || [ -z "$(SOURCE)" ]; then \
+		echo "Usage: make intake FILE=<path> TITLE=\"<title>\" SOURCE=\"<source>\""; \
+		exit 2; \
+	fi
+	@$(PY) tools/intake_add.py --file "$(FILE)" --title "$(TITLE)" --source "$(SOURCE)"
 
 # Phase 2: STATUS (HMAC Receipt)
 status:
