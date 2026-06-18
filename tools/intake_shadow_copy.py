@@ -135,7 +135,7 @@ def run(payload: dict) -> None:
     root = Path(payload.get("cwd") or os.getcwd()).resolve()
     src = Path(raw_path)
     if not src.is_absolute():
-        src = (root / src)
+        src = root / src
     src = src.resolve()
 
     if not src.is_file():
@@ -188,7 +188,7 @@ def main() -> None:
             return
         payload = json.loads(data)
         run(payload)
-    except Exception:  # noqa: BLE001 - advisory hook must never raise
+    except Exception:  # noqa: BLE001 - advisory hook must never raise  # nosec B110
         pass
     finally:
         sys.exit(0)

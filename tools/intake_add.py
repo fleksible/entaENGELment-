@@ -22,7 +22,6 @@ import argparse
 import datetime as _dt
 import re
 import shutil
-import sys
 from pathlib import Path
 
 INTAKE_REL = Path("docs/intake")
@@ -99,8 +98,9 @@ def _append_index_row(index_path: Path, row: str) -> None:
     index_path.write_text("\n".join(kept) + "\n", encoding="utf-8")
 
 
-def _write_record(records_dir: Path, intake_id: str, title: str, source: str,
-                  date_str: str, raw_rel: str) -> Path:
+def _write_record(
+    records_dir: Path, intake_id: str, title: str, source: str, date_str: str, raw_rel: str
+) -> Path:
     """Write a minimal intake record stub."""
     record_path = records_dir / f"{intake_id}.md"
     body = (
@@ -161,16 +161,12 @@ def main() -> None:
     shutil.copy2(source_file, dest_path)  # copy, never move/delete (G3)
 
     raw_rel = rel_dest.as_posix()
-    row = (
-        f"| {intake_id} | {date_str} | {args.title} | {args.source} "
-        f"| raw | (offen) | ja |"
-    )
+    row = f"| {intake_id} | {date_str} | {args.title} | {args.source} " f"| raw | (offen) | ja |"
     _append_index_row(index_path, row)
 
     record_msg = "(no record)"
     if not args.no_record:
-        rec = _write_record(records_dir, intake_id, args.title, args.source,
-                            date_str, raw_rel)
+        rec = _write_record(records_dir, intake_id, args.title, args.source, date_str, raw_rel)
         _assert_inside_intake(rec, intake_root)
         record_msg = rec.relative_to(root).as_posix()
 
