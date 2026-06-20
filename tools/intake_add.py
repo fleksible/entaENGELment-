@@ -22,7 +22,6 @@ import argparse
 import datetime as _dt
 import re
 import shutil
-import sys
 from pathlib import Path
 
 INTAKE_REL = Path("docs/intake")
