@@ -153,5 +153,49 @@ löschbar. `codex/review-open-...` (GOLD/VOIDMAP) und `#245` (Dependabot) bleibe
 
 **Kein Schnitt ausgeführt** — reine Sichtung. Löschung weiterhin nur nach explizitem Go.
 
+---
+
+## Addendum — Go A: Re-Verifikation + Ausführungs-Blocker (2026-06-20)
+
+**Human-Go erhalten:** 14 Branches löschen, `phase0/foundation-pack` separat lassen,
+GOLD-Branch + Dependabot #245 unangetastet.
+
+### Re-Verifikation (unmittelbar vor geplanter Löschung, gegen main @ 158712d)
+- **10/10** `SUPERSEDED_NO_DIFF`-Branches: Drei-Punkt-Diff **leer** bestätigt.
+- **3/4** Review-Branches: alle berührten Dateien in main vorhanden → kein Verlust.
+- **1/4 HOLD** — `codex/beheben-von-fehlern-beim-mergen`: einzige Nicht-main-Datei ist
+  `ui-app/package-lock.json` (obsolet durch npm→pnpm-Migration; das eigentliche
+  Signatur-Material Guard/Focus ist in main). Zurückgestellt für separaten Nicken.
+
+### Ausführungs-Blocker (HARTER STOP)
+Branch-Löschung ist in dieser Umgebung **nicht möglich**:
+- `git push origin --delete <branch>` → **HTTP 403** (Git-Proxy verbietet Ref-Deletion).
+- GitHub-MCP bietet **kein** delete-branch/delete-ref-Werkzeug.
+
+→ **0 Branches gelöscht. Repo-Stand vollständig intakt.** Kein Force-Push, kein Merge,
+kein Rebase. Die Löschung muss dort ausgeführt werden, wo Ref-Deletion erlaubt ist
+(GitHub Branch-UI oder CLI/Token mit Delete-Recht).
+
+### Verifizierte Löschliste — 13 sofort löschbar (1 HOLD)
+```sh
+# 10x SUPERSEDED_NO_DIFF (0 net diff vs main)
+git push origin --delete claude/align-coverage-policy
+git push origin --delete claude/analyze-repo-essence-LKgK4
+git push origin --delete claude/refactor-codebase-011CV4t3cQACpBAxqgu1MX1D
+git push origin --delete claude/repo-audit-analysis-oiW6K
+git push origin --delete claude/repo-maintenance-consolidation-LA2ek
+git push origin --delete claude/sleepy-dirac-sgsjk0
+git push origin --delete codex/update-markdown-file-in-repository
+git push origin --delete codex/update-readme-for-deepjump-integration
+git push origin --delete dependabot/github_actions/actions/setup-node-6.4.0
+git push origin --delete fix/ci-security-pip-audit-171
+# 3x Review-Branches (superseded; alle Dateien in main)
+git push origin --delete claude/repo-maintenance-audit-mnZVm
+git push origin --delete codex/find-more-ways-to-enhance-pipeline-management
+git push origin --delete claude/ui-lint-flat-config
+# HOLD (separater Nicken): codex/beheben-von-fehlern-beim-mergen  (obsoletes package-lock.json)
+# NICHT löschen: phase0/foundation-pack | codex/review-open-prs-and-issues-for-merge (GOLD) | dependabot/.../eslint-10.5.0 (#245 offen)
+```
+
 ## Artefakte
 - `OUT/branch_hygiene_report.md`
