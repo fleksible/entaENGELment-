@@ -188,7 +188,7 @@ def main() -> None:
             return
         payload = json.loads(data)
         run(payload)
-    except Exception:  # noqa: BLE001 - advisory hook must never raise
+    except Exception:  # noqa: BLE001 - advisory hook must never raise  # nosec B110
         pass
     finally:
         sys.exit(0)
