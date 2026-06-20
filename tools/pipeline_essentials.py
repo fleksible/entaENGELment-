@@ -27,8 +27,8 @@ CHECKS: tuple[EssentialCheck, ...] = (
         id="ESS-001",
         title="Canonical local verify entrypoint",
         path="Makefile",
-        needles=("verify: port-lint test verify-pointers claim-lint",),
-        recommendation="Keep `make verify` as the single local pre-merge command.",
+        needles=("verify: verify-core", "verify-core: port-lint test verify-pointers claim-lint"),
+        recommendation="Keep `make verify` as the stable core pre-merge command and name additional membranes explicitly.",
     ),
     EssentialCheck(
         id="ESS-002",
@@ -78,6 +78,42 @@ CHECKS: tuple[EssentialCheck, ...] = (
         path=".github/workflows/ci.yml",
         needles=("actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10",),
         recommendation="Keep action SHAs pinned and rotate them through reviewable dependency PRs.",
+    ),
+    EssentialCheck(
+        id="ESS-009",
+        title="Local JS/TS workspace verifier",
+        path="Makefile",
+        needles=(
+            "verify-js:",
+            "pnpm install --frozen-lockfile",
+            "JS_VERIFY_CMD ?= pnpm turbo run typecheck lint build",
+        ),
+        recommendation="Use `make verify-js` before merging UI/package dependency PRs so package changes do not get a Python-only OK.",
+    ),
+    EssentialCheck(
+        id="ESS-010",
+        title="Blocking JS/TS workspace PR gate",
+        path=".github/workflows/ci-js-workspace.yml",
+        needles=(
+            "pnpm install --frozen-lockfile",
+            "pnpm turbo run typecheck lint build",
+            "node-version: 22",
+        ),
+        recommendation="Keep UI dependency PRs bound to frozen-lockfile install plus typecheck/lint/build.",
+    ),
+    EssentialCheck(
+        id="ESS-011",
+        title="Workflow map includes JS workspace membrane",
+        path="docs/ci/WORKFLOW_MAP.md",
+        needles=(".github/workflows/ci-js-workspace.yml", "JS/TS workspace membrane"),
+        recommendation="Keep the workflow map synchronized when verifier membranes are added or split.",
+    ),
+    EssentialCheck(
+        id="ESS-012",
+        title="JS test workflow uses the workspace Node major",
+        path=".github/workflows/test.yml",
+        needles=("node-version: '22'",),
+        recommendation="Avoid split-brain JS verification by using the same Node major for workspace and UI build checks.",
     ),
 )
 

@@ -1,7 +1,6 @@
 # ruff: noqa: I001
 import tools.frame_lint as frame_lint
 
-
 TAXONOMY = frame_lint.load_yaml(frame_lint.DEFAULT_TAXONOMY)
 
 

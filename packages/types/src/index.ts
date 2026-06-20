@@ -12,7 +12,7 @@
 // -----------------------------------------------------------------------------
 // VOIDMAP Types (mirror of VOIDMAP.yml)
 // -----------------------------------------------------------------------------
-export type VoidStatus = 'OPEN' | 'IN_PROGRESS' | 'CLOSED';
+export type VoidStatus = 'OPEN' | 'IN_PROGRESS' | 'SUSPENDED' | 'CLOSED';
 export type VoidPriority = 'critical' | 'high' | 'medium' | 'med' | 'low';
 export type VoidDomain = '[BIO]' | '[MATH]' | '[PHYS]' | '[CHEM]' | '[COMP]' | '[META]' | '[DEV]';
 
