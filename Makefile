@@ -9,7 +9,7 @@ PHI ?= 0.72
 REFRACTORY ?= 120
 JS_VERIFY_CMD ?= pnpm turbo run typecheck lint build
 
-.PHONY: help install install-dev install-hooks test test-unit test-integration test-ethics coverage lint format type-check clean gate-test port-lint frame-lint voids-backlog voids-backlog-check voidmap-ui-drift-check pipeline-essentials workflow-posture-check verify verify-core verify-governance verify-js verify-all verify-pointers claim-lint verify-json status status-verify snapshot all deepjump benchmark-replay intake
+.PHONY: help install install-dev install-hooks test test-unit test-integration test-ethics coverage lint format type-check clean gate-test port-lint frame-lint voids-backlog voids-backlog-check voidmap-ui-drift-check pipeline-essentials workflow-posture-check verify verify-core verify-governance verify-js verify-all verify-pointers claim-lint verify-json status status-verify snapshot all deepjump benchmark-replay intake demo
 
 help:
 	@echo "entaENGELment Framework - Development Commands"
@@ -51,6 +51,9 @@ help:
 	@echo "Legacy DeepJump:"
 	@echo "  make verify-json     Verify JSON receipts"
 	@echo "  make status-verify   Emit and verify status"
+	@echo ""
+	@echo "Demo:"
+	@echo "  make demo            Run minimal receipt cycle (emit + verify)"
 	@echo ""
 	@echo "Benchmark:"
 	@echo "  make benchmark-replay Run deterministic benchmark replay"
@@ -214,6 +217,21 @@ intake:
 		exit 2; \
 	fi
 	@$(PY) tools/intake_add.py --file "$(FILE)" --title "$(TITLE)" --source "$(SOURCE)"
+
+# Demo: Minimal receipt cycle (emit → verify)
+demo:
+	@echo "=== EntaENGELment Demo: Receipt Cycle ==="
+	@mkdir -p $(OUT)/demo
+	@echo "Step 1: Emitting HMAC-signed status receipt..."
+	@$(PY) tools/status_emit.py \
+		--outdir $(OUT)/demo \
+		--status PASS \
+		--H $(H) --dmi $(DMI) --phi $(PHI) --refractory $(REFRACTORY)
+	@echo ""
+	@echo "Step 2: Verifying receipt signature..."
+	@$(PY) tools/status_verify.py $(OUT)/demo/status/deepjump_status.json
+	@echo ""
+	@echo "=== Demo PASS: Receipt emitted and verified ==="
 
 # Phase 2: STATUS (HMAC Receipt)
 status:
