@@ -98,6 +98,11 @@ out/
 # Claude local config
 CLAUDE.local.md
 
+# Intake shadow-copy auto-dump: transient hook output, only .gitkeep is tracked.
+# (PostToolUse shadow-copy hook async-mirrors doc-like files here; not for canon.)
+docs/intake/raw/auto/**
+!docs/intake/raw/auto/.gitkeep
+
 # Audit reports (temporary) — root-level only, so docs/audit/ stays tracked.
 /audit/
 !/audit/METATRON_COMPLIANCE_BACKLOG.md
