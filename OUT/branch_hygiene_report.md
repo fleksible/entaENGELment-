@@ -128,5 +128,30 @@ Close ohne Human-Go.
 No branches were deleted. No branches were force-pushed. No PRs were merged.
 No PRs were closed. Only read-only inventory + this report were produced.
 
+---
+
+## Addendum — Go B: Sichtung der 4 Review-Branches (2026-06-20, read-only)
+
+Tiefenprüfung der als „needs-review" markierten Branches. Methodik: Zwei-Punkt-Tip-Diff
+(`main..branch`) + Existenz-/Identitätsprüfung der Signatur-Dateien in `main`.
+
+**Kernbefund:** Alle 4 Branch-Tips liegen **−13.000 bis −15.000 Zeilen hinter main**
+(Stand vor dem Monorepo/pnpm-Umbau). Ihr jeweiliger Drei-Punkt-„Eigenanteil" (ein Tool /
+Fix) ist in `main` **bereits vorhanden, in neuerer Form**. `DIFFERENT` = Branch ist die
+ältere Variante, nicht „Branch hat Material, das main fehlt".
+
+| Branch | Signatur | In main? | Verdikt |
+|--------|----------|----------|---------|
+| `claude/repo-maintenance-audit-mnZVm` | `voids_backlog_gen.py` + Make-Targets + doc | Ja (Make-Targets present, Tool+Doc existieren) | superseded |
+| `codex/find-more-...-pipeline-management` | `tools/pipeline_essentials.py` + Test + Runbook | Ja (neuere Variante) | superseded |
+| `codex/beheben-von-fehlern-beim-mergen` | ui-app Guard/Focus | Ja (`FocusIndicator.tsx` absorbiert) | superseded |
+| `claude/ui-lint-flat-config` | `ui-app/tsconfig.json` flat-config | PR #222 **merged**; main neuer (#223/#224) | superseded (merged) |
+
+**Folge für die Klassifikation:** Diese 4 rücken von „needs-review" → „superseded,
+kein Verlust bei Löschung". Damit wären nach Human-Go bis zu **15** Branches gefahrlos
+löschbar. `codex/review-open-...` (GOLD/VOIDMAP) und `#245` (Dependabot) bleiben **separat**.
+
+**Kein Schnitt ausgeführt** — reine Sichtung. Löschung weiterhin nur nach explizitem Go.
+
 ## Artefakte
 - `OUT/branch_hygiene_report.md`
