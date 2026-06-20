@@ -61,7 +61,7 @@ help:
 	@echo "Docs:"
 	@echo "  make voids-backlog       Regenerate docs/voids_backlog.md from VOIDMAP.yml"
 	@echo "  make voids-backlog-check Verify docs/voids_backlog.md is in sync (exit 1 on drift)"
-	@echo "  make voidmap-ui-drift-check Verify ui-app VOIDMAP mirror matches VOIDMAP.yml"
+	@echo "  make voidmap-ui-drift-check Verify ui-app VOIDMAP mirror (status/priority/title) matches VOIDMAP.yml"
 	@echo "  make pipeline-essentials  Report pipeline essentials and next expansion options"
 	@echo "  make workflow-posture-check Verify workflows declare permissions + concurrency (exit 1 on drift)"
 	@echo ""

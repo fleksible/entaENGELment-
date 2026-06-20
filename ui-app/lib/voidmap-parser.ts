@@ -10,10 +10,11 @@ import { Void, VoidMap, VoidStatus, VoidPriority } from '@/types';
 // `VOIDMAP.yml` — never edit a VOID's meaning here, only mirror what the GOLD
 // file already says.
 //
-// Drift between this file and `VOIDMAP.yml` is detected by
-// `tools/voidmap_ui_drift_check.py` (run via `make voidmap-ui-drift-check`).
-// If that check fails, re-sync the `status` (and other) fields below to match
-// `VOIDMAP.yml`.
+// Drift in the verbatim-mirrored fields (`status`, `priority`, `title`) is
+// detected by `tools/voidmap_ui_drift_check.py` (run via
+// `make voidmap-ui-drift-check`). The free-form `notes` field is intentionally
+// abridged here for display and is NOT byte-compared. If the check fails,
+// re-sync the affected fields below to match `VOIDMAP.yml`.
 // =============================================================================
 export const VOIDMAP_DATA: VoidMap = {
   version: '1.0',
