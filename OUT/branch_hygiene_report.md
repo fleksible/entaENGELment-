@@ -197,5 +197,49 @@ git push origin --delete claude/ui-lint-flat-config
 # NICHT löschen: phase0/foundation-pack | codex/review-open-prs-and-issues-for-merge (GOLD) | dependabot/.../eslint-10.5.0 (#245 offen)
 ```
 
+---
+
+## FINALE BRANCH-KARTE (2026-06-20) — Entscheidungen bestätigt
+
+Diese Umgebung hat **kein Branch-Delete-Recht** (Ref-Deletion → 403). Bewusster
+Guardrail. **Kein weiterer mutierender Versuch hier.** #262 ist die Draft-Arbeitskarte;
+der externe Schnitt erfolgt in GitHub-UI / CLI mit Delete-Recht.
+
+### A) 13 sofort löschbar (re-verifiziert)
+```sh
+git push origin --delete claude/align-coverage-policy
+git push origin --delete claude/analyze-repo-essence-LKgK4
+git push origin --delete claude/refactor-codebase-011CV4t3cQACpBAxqgu1MX1D
+git push origin --delete claude/repo-audit-analysis-oiW6K
+git push origin --delete claude/repo-maintenance-consolidation-LA2ek
+git push origin --delete claude/sleepy-dirac-sgsjk0
+git push origin --delete codex/update-markdown-file-in-repository
+git push origin --delete codex/update-readme-for-deepjump-integration
+git push origin --delete dependabot/github_actions/actions/setup-node-6.4.0
+git push origin --delete fix/ci-security-pip-audit-171
+git push origin --delete claude/repo-maintenance-audit-mnZVm
+git push origin --delete codex/find-more-ways-to-enhance-pipeline-management
+git push origin --delete claude/ui-lint-flat-config
+```
+
+### B) +1 delete-candidate after final human confirmation
+- `codex/beheben-von-fehlern-beim-mergen`
+  **Verifiziert:** einzige Datei, die main komplett fehlt = `ui-app/package-lock.json`
+  (npm-Lockfile, `lockfileVersion: 3`). main hat kein package-lock.json mehr und nutzt
+  `pnpm-lock.yaml` → Altlast, keine Wertspur. Inhaltlich löschbar; **finaler menschlicher
+  Bestätigungs-Klick vor Löschung.**
+  ```sh
+  git push origin --delete codex/beheben-von-fehlern-beim-mergen   # erst nach Final-OK
+  ```
+
+### C) Bewusst gehaltene Restknoten (NICHT löschen)
+- `phase0/foundation-pack` — separat stehen lassen (Name „foundational", eigene Entscheidung)
+- `codex/review-open-prs-and-issues-for-merge` — **GOLD** (ändert `VOIDMAP.yml`), unangetastet
+- `dependabot/npm_and_yarn/ui-app/eslint-10.5.0` — **#245 offen**, als Dependency-PR separat
+
+### Zielbild
+17 (+1 Arbeitskarte) → nach Schnitt ~**3–4 bewusste Restknoten**.
+Nicht „alles weg", sondern Rauschen raus, Ursprungsknoten bewusst halten.
+
 ## Artefakte
 - `OUT/branch_hygiene_report.md`
