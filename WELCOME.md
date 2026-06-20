@@ -31,9 +31,9 @@ make verify
 For the optional UI:
 
 ```bash
-cd ui-app
-npm ci
-npm run dev
+corepack enable
+pnpm install --frozen-lockfile
+pnpm --filter entaengelment-ui dev
 ```
 
 Then open:

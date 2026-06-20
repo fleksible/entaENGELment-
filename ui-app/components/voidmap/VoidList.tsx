@@ -38,7 +38,7 @@ export function VoidList() {
   // Sort: Open first, then by priority
   const sortedVoids = useMemo(() => {
     const priorityOrder = { critical: 0, high: 1, medium: 2, med: 2, low: 3 };
-    const statusOrder = { OPEN: 0, IN_PROGRESS: 1, CLOSED: 2 };
+    const statusOrder = { OPEN: 0, IN_PROGRESS: 1, SUSPENDED: 2, CLOSED: 3 };
 
     return [...filteredVoids].sort((a, b) => {
       // First by status

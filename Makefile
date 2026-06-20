@@ -9,7 +9,7 @@ PHI ?= 0.72
 REFRACTORY ?= 120
 JS_VERIFY_CMD ?= pnpm turbo run typecheck lint build
 
-.PHONY: help install install-dev install-hooks test test-unit test-integration test-ethics coverage lint format type-check clean gate-test port-lint frame-lint voids-backlog voids-backlog-check pipeline-essentials workflow-posture-check verify verify-core verify-governance verify-js verify-all verify-pointers claim-lint verify-json status status-verify snapshot all deepjump benchmark-replay intake
+.PHONY: help install install-dev install-hooks test test-unit test-integration test-ethics coverage lint format type-check clean gate-test port-lint frame-lint voids-backlog voids-backlog-check voidmap-ui-drift-check pipeline-essentials workflow-posture-check verify verify-core verify-governance verify-js verify-all verify-pointers claim-lint verify-json status status-verify snapshot all deepjump benchmark-replay intake
 
 help:
 	@echo "entaENGELment Framework - Development Commands"
@@ -61,6 +61,7 @@ help:
 	@echo "Docs:"
 	@echo "  make voids-backlog       Regenerate docs/voids_backlog.md from VOIDMAP.yml"
 	@echo "  make voids-backlog-check Verify docs/voids_backlog.md is in sync (exit 1 on drift)"
+	@echo "  make voidmap-ui-drift-check Verify ui-app VOIDMAP mirror (status/priority/title) matches VOIDMAP.yml"
 	@echo "  make pipeline-essentials  Report pipeline essentials and next expansion options"
 	@echo "  make workflow-posture-check Verify workflows declare permissions + concurrency (exit 1 on drift)"
 	@echo ""
@@ -162,7 +163,7 @@ verify: verify-core
 verify-core: port-lint test verify-pointers claim-lint
 	@echo "✅ Core: ports, tests, pointers, and claims checked"
 
-verify-governance: workflow-posture-check voids-backlog-check
+verify-governance: workflow-posture-check voids-backlog-check voidmap-ui-drift-check
 	@echo "✅ Governance membrane checked"
 
 verify-js:
@@ -193,6 +194,10 @@ voids-backlog:
 
 voids-backlog-check:
 	@$(PY) tools/voids_backlog_gen.py --check
+
+# Drift check: ensure ui-app/lib/voidmap-parser.ts mirrors VOIDMAP.yml statuses.
+voidmap-ui-drift-check:
+	@$(PY) tools/voidmap_ui_drift_check.py
 
 pipeline-essentials:
 	@$(PY) tools/pipeline_essentials.py

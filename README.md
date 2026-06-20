@@ -68,9 +68,9 @@ make verify         # Alles prüfen
 
 **Optional: UI starten**
 ```bash
-cd ui-app
-npm ci
-npm run dev
+corepack enable
+pnpm install --frozen-lockfile
+pnpm --filter entaengelment-ui dev
 # → http://localhost:3000
 ```
 
@@ -95,7 +95,7 @@ npm run dev
 | `tools/` | DeepJump-Tools | `tools/verify_pointers.py`, `tools/status_emit.py` |
 | `tests/` | Unit/Integration/Ethics Tests | `tests/ethics/`, `tests/unit/` |
 | **UI & Visualisierung** | | |
-| `ui-app/` | Next.js Web-App | `cd ui-app && npm run dev` |
+| `ui-app/` | Next.js Web-App | `pnpm --filter entaengelment-ui dev` |
 | `bio_spiral_viewer/` | Console Spiral-Explorer | `python -m bio_spiral_viewer` |
 | `Fractalsense/` | Fractal Color Generator | siehe `ui-app/fractalsense` |
 | **Development** | | |
@@ -211,9 +211,9 @@ Next.js Web-App mit mehreren Dashboards und Explorern.
 
 **Wie starten:**
 ```bash
-cd ui-app
-npm ci
-npm run dev
+corepack enable
+pnpm install --frozen-lockfile
+pnpm --filter entaengelment-ui dev
 # → http://localhost:3000
 ```
 
