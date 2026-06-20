@@ -9,6 +9,7 @@ interface VoidFilterProps {
     total: number;
     open: number;
     inProgress: number;
+    suspended: number;
     closed: number;
   };
 }
@@ -17,6 +18,7 @@ const STATUS_OPTIONS: { value: VoidStatus | 'ALL'; label: string; icon: string }
   { value: 'ALL', label: 'Alle', icon: '○' },
   { value: 'OPEN', label: 'Open', icon: '☐' },
   { value: 'IN_PROGRESS', label: 'In Progress', icon: '🔄' },
+  { value: 'SUSPENDED', label: 'Suspended', icon: '⏸' },
   { value: 'CLOSED', label: 'Closed', icon: '✓' },
 ];
 
@@ -38,6 +40,7 @@ export function VoidFilter({ filters, onFilterChange, stats }: VoidFilterProps) 
           const count = option.value === 'ALL' ? stats.total
             : option.value === 'OPEN' ? stats.open
             : option.value === 'IN_PROGRESS' ? stats.inProgress
+            : option.value === 'SUSPENDED' ? stats.suspended
             : stats.closed;
 
           return (
