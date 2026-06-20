@@ -135,7 +135,7 @@ def run(payload: dict) -> None:
     root = Path(payload.get("cwd") or os.getcwd()).resolve()
     src = Path(raw_path)
     if not src.is_absolute():
-        src = (root / src)
+        src = root / src
     src = src.resolve()
 
     if not src.is_file():
