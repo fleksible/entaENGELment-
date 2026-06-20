@@ -20,7 +20,7 @@ export default function VoidMapPage() {
       </header>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-4 gap-2 md:gap-4">
+      <div className="grid grid-cols-5 gap-2 md:gap-4">
         <div className="bg-zinc-900/30 rounded-lg p-3 md:p-4 text-center">
           <div className="text-xl md:text-2xl font-bold text-zinc-100">
             {stats.total}
@@ -38,6 +38,12 @@ export default function VoidMapPage() {
             {stats.inProgress}
           </div>
           <div className="text-[10px] md:text-xs text-blue-500/70">Progress</div>
+        </div>
+        <div className="bg-violet-500/10 rounded-lg p-3 md:p-4 text-center border border-violet-500/20">
+          <div className="text-xl md:text-2xl font-bold text-violet-400">
+            {stats.suspended}
+          </div>
+          <div className="text-[10px] md:text-xs text-violet-500/70">Suspended</div>
         </div>
         <div className="bg-green-500/10 rounded-lg p-3 md:p-4 text-center border border-green-500/20">
           <div className="text-xl md:text-2xl font-bold text-green-400">
