@@ -258,9 +258,14 @@ make all        # = make deepjump: verify + test + snapshot — OHNE status (s. 
 
 > **HMAC-Secret:** `make status` ist nur dann HMAC-signiert, wenn `ENTA_HMAC_SECRET`
 > (oder `CI_SECRET`) gesetzt ist. Ohne Secret läuft `status_emit.py` lokal im
-> `UNSIGNED`-Modus (Receipt trägt `"hmac": "UNSIGNED"`, untrusted) — in CI ist ein
-> fehlendes Secret hingegen ein harter Fehler. Für signierte Evidence-Artefakte
-> lokal das Secret exportieren.
+> `UNSIGNED`-Modus (Receipt trägt `"hmac": "UNSIGNED"`, untrusted). Das Script selbst
+> bricht zwar mit Fehler ab, wenn `CI` gesetzt **und** kein Secret vorhanden ist —
+> die DeepJump-Pipeline ([`deepjump-audit.reusable.yml`](.github/workflows/deepjump-audit.reusable.yml))
+> ruft den Signing-Schritt aber nur bei vorhandenem Secret auf: fehlt es, wird der
+> Status-Schritt **graceful übersprungen** (`out/status/deepjump_status_skipped.json`,
+> `signed:false`, Job bleibt grün), während alle übrigen Verify-Phasen (Pointer,
+> Receipts, Claims, Tests, Snapshot) weiterhin gaten. CI erzwingt also **keine**
+> signierte Evidence — für signierte Artefakte das Secret als Repo-Secret/lokal setzen.
 >
 > **Achtung `make all`:** führt `verify test snapshot` aus, aber **nicht** `make status`.
 > Für den vollen Verify → Status → Snapshot-Evidence-Flow `make status` (bzw.
