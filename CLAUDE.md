@@ -224,7 +224,7 @@ make verify-governance  # workflow-posture + VOID-backlog-drift + voidmap-ui-dri
 make verify-js       # ui-app/packages via pnpm (frozen lockfile) + Turbo
 make verify-all      # Kern + Governance + JS/TS
 
-make test            # pytest -v  (alle Tests)
+make test            # pytest -v  (nur tests/ — siehe Hinweis unten)
 make test-unit       # tests/unit/
 make test-integration# tests/integration/
 make test-ethics     # tests/ethics/  (Fail-Safe / Guard-Tests)
@@ -241,14 +241,30 @@ pytest tests/unit/test_<name>.py::Test<Class>::test_<fn> -v
 pytest -k "<keyword>" -v
 ```
 
+> Hinweis: `make test`/`pytest` deckt nur `tests/` ab (`pyproject.toml` →
+> `testpaths = ["tests"]`). Die separaten Suiten für `Fractalsense/` und die
+> Jest-getesteten JS-Dateien laufen über npm-Scripts:
+> `npm run test:py` (Fractalsense-pytest) bzw. `npm run test:js` (Jest) —
+> bei Änderungen dort zusätzlich ausführen.
+
 ### DeepJump-Protokoll v1.2 (Verify → Status → Snapshot)
 
 ```bash
 make verify     # Phase 1: prüfen (s. oben)
-make status     # Phase 2: HMAC-signiertes Status-Receipt nach out/ emittieren
+make status     # Phase 2: Status-Receipt nach out/ emittieren (HMAC nur mit Secret, s. u.)
 make snapshot   # Phase 3: Snapshot-Manifest (--strict) erzeugen
-make all        # Voller Flow (= make deepjump): verify + test + snapshot
+make all        # = make deepjump: verify + test + snapshot — OHNE status (s. u.)
 ```
+
+> **HMAC-Secret:** `make status` ist nur dann HMAC-signiert, wenn `ENTA_HMAC_SECRET`
+> (oder `CI_SECRET`) gesetzt ist. Ohne Secret läuft `status_emit.py` lokal im
+> `UNSIGNED`-Modus (Receipt trägt `"hmac": "UNSIGNED"`, untrusted) — in CI ist ein
+> fehlendes Secret hingegen ein harter Fehler. Für signierte Evidence-Artefakte
+> lokal das Secret exportieren.
+>
+> **Achtung `make all`:** führt `verify test snapshot` aus, aber **nicht** `make status`.
+> Für den vollen Verify → Status → Snapshot-Evidence-Flow `make status` (bzw.
+> `make status-verify`) separat aufrufen.
 
 ### JS/TS-Toolchain (UI & Packages)
 
@@ -261,7 +277,9 @@ pnpm --filter entaengelment-ui dev      # Next.js UI → http://localhost:3000
 pnpm turbo run typecheck lint build     # = der JS_VERIFY_CMD aus verify-js
 ```
 
-> Wichtig: PRs, die `pnpm-lock.yaml`, `ui-app/` oder `packages/` berühren, sind
+> Wichtig: PRs, die das JS/TS-Workspace-Wiring berühren — `ui-app/`, `packages/`,
+> `pnpm-lock.yaml`, `pnpm-workspace.yaml`, `package.json`, `turbo.json` oder
+> `tsconfig.base.json` (= der `paths`-Filter von `ci-js-workspace.yml`) — sind
 > **nicht** von einem reinen Python-`make verify` abgedeckt → zusätzlich `make verify-js`.
 
 ### Pre-Commit Hook (`.githooks/pre-commit`)
