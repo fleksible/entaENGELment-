@@ -8,22 +8,37 @@
 # Priority: critical | high | medium | low
 # Domain tags: [BIO], [MATH], [PHYS], [CHEM], [COMP], [META], [DEV]
 
-version: "1.0"
+version: "1.1"
 description: >
   Central registry for tracking open voids (gaps) in the entaENGELment
-  framework. Updated via DeepJump protocol.
+  framework. Updated via DeepJump protocol. This version reconciles the
+  active repository registry with a user-supplied legacy import sheet
+  for VOID-013..VOID-017 and the 2026-06-24 tesser3TAKT HUD/SailObservation
+  analysis.
 
 metadata:
   maintainer: entaENGELment
-  last_updated: "2026-06-11"
+  last_updated: "2026-06-24"
   generated_doc: docs/voids_backlog.md
+  reconciliation_notes: |
+    [SPEC] 2026-06-24 consolidation:
+    - Existing canonical repository IDs were preserved.
+    - Legacy import-sheet IDs VOID-013 and VOID-014 collided with existing
+      repository entries and were remapped to VOID-024 and VOID-025.
+    - Legacy import-sheet IDs VOID-015, VOID-016, and VOID-017 were imported
+      directly because the current registry had no canonical entries for them.
+    - New tesser3TAKT HUD/SailObservation work begins at VOID-026.
+    - Legacy import contents remain SPEC-level: they define how checks should
+      be performed, not that they are already running.
+    - No statement about "universal breathing @ 10 Hz" is treated as a
+      physical fact claim without an external measurement path.
 
 voids:
   - id: VOID-001
     title: "DeepJump Protocol Implementation"
     status: CLOSED
     priority: critical
-    owner: claude-code
+    owner: "claude-code"
     domain: "[DEV]"
     symptom: "No standardized verification flow for changes"
     closing_path: "Implement verify_pointers.py, claim_lint.py, and update Makefile"
@@ -85,7 +100,6 @@ voids:
 #    notes: |
 #      [TAG] Additional context...
 
-
   - id: VOID-010
     title: "Taxonomie & Spektren (Empirie)"
     status: IN_PROGRESS
@@ -134,6 +148,8 @@ voids:
       [2026-06-11] Re-baselined after issue #240. Code/test evidence exists;
       do not close until a deterministic metrics export/receipt carries the
       SIMULATION_PROXY boundary explicitly.
+      [2026-06-24] Related calibration pressure: VOID-028 covers the
+      tesser3TAKT-specific EFS/MVI Grüneisen-axis normalization.
 
   - id: VOID-012
     title: "GateProof Checkliste (Governance)"
@@ -179,6 +195,8 @@ voids:
       biosignal_channels (250 Hz EEG), environmental (BME680),
       MQTT/HTTP-Protokoll, Safety-Notice.
       [CLOSED 2026-03-06] DRAFT-Status entfernt, Specs finalisiert.
+      [2026-06-24] Legacy import-sheet VOID-013 was not imported under this
+      ID because this canonical entry already exists. See VOID-024.
 
   - id: VOID-014
     title: "Protein-Design (in-silico, safety-bounded)"
@@ -198,12 +216,106 @@ voids:
       Fortschritt, kein Code in src/, Scope "safety-bounded" ohne explizites
       Label. Schwebender Scope kostet Aufmerksamkeit ohne Ertrag.
       Kann bei Bedarf auf OPEN zurückgesetzt werden.
+      [2026-06-24] Legacy import-sheet VOID-014 was not imported under this
+      ID because this canonical entry already exists. See VOID-025.
+
+  - id: VOID-015
+    title: "Explain-Overlay Lint"
+    status: OPEN
+    priority: high
+    owner: "fleks"
+    target_date: null
+    domain: "[META][DEV]"
+    layer: EXPLAIN
+    legacy_id: "VOID-015"
+    legacy_source: "VOID Spezifikation 013–017 (Import-Sheet) — v1.0"
+    symptom: "Narrative overlays can replace rather than supplement reasoning unless trigger terms are tied back to Reason/Transform/Input and context tags."
+    closing_path: >-
+      Implement explain-overlay lint rules for trigger keywords, reason-code
+      density, bridge-tag presence, and pseudo-physics guards; add tests and
+      a receipt showing coverage.
+    evidence: null
+    created: "2026-06-24"
+    closed: null
+    notes: |
+      [SPEC] Narrativ ergänzt, ersetzt nie.
+      [SPEC] Claim → Reason → Transform → Input is required for non-trivial
+      trigger terms such as Frequenz, Resonanz, Schwingung, Scanner, Pump,
+      Spike, Interferenz, Kohärenz, Verschränkung, Torus, Kristall, Plasma.
+      [SPEC] Polykontexturality requires context tags on first relevant use,
+      e.g. [QUANT] [BIO] [TECH] [ART] [MYTH].
+      [SPEC] "Quantenfeld von X" is allowed only when formally defined or
+      explicitly marked as METAPHER with immediate TECH mapping.
+      [TARGET] Coverage >= 95% of trigger keywords with Reason/Transform/Input;
+      Reason-Code Density >= 0.8; bridge-tag presence within two sentences of
+      a context switch.
+
+  - id: VOID-016
+    title: "Prozess-Erhalt ohne Zeit-Archiv (τ-Kernel)"
+    status: OPEN
+    priority: high
+    owner: "fleks"
+    target_date: null
+    domain: "[META][COMP]"
+    layer: CONTROL
+    legacy_id: "VOID-016"
+    legacy_source: "VOID Spezifikation 013–017 (Import-Sheet) — v1.0"
+    symptom: "Surprise in the present must be preserved while reconstructable essence survives and non-essential details remain autophagic."
+    closing_path: >-
+      Specify τ_fast/τ_mid/τ_long retention rules, autophagy extraction,
+      V+ sediment interaction, and receipts proving detail deletion without
+      essence loss.
+    evidence: null
+    created: "2026-06-24"
+    closed: null
+    notes: |
+      [SPEC] τ_fast (session): reason-codes, bridge-tags, metrics such as
+      PLV/spectrum.
+      [SPEC] τ_mid (cycle): interference fields and error-correction rules.
+      [SPEC] τ_long (essence): core invariants, ethics, and torus/model
+      invariants.
+      [SPEC] Autophagy rule: IF information is older than τ_level AND not
+      essence AND not actively referenced THEN extract pattern; IF pattern
+      becomes principle, integrate into essence and delete details; ELSE delete
+      after grace period.
+      [MODEL] This entry is directly related to V+ sediment and HOLD
+      transformation in VOID-026.
+
+  - id: VOID-017
+    title: "Kippung-statt-Peak Operator (Δ-Detektor)"
+    status: OPEN
+    priority: high
+    owner: "fleks"
+    target_date: null
+    domain: "[MATH][META]"
+    layer: CONTROL
+    legacy_id: "VOID-017"
+    legacy_source: "VOID Spezifikation 013–017 (Import-Sheet) — v1.0"
+    symptom: "Events risk being misread as maxima or peaks rather than frame changes / tipping transitions."
+    closing_path: >-
+      Specify semantic drift, interference-field activation, polycontext
+      expansion, and torus-cycle completion as Δ-components; test that a
+      tipping event is not triggered by quantitative increase alone.
+    evidence: null
+    created: "2026-06-24"
+    closed: null
+    notes: |
+      [SPEC] Δ-components: semantic drift (embedding shift), interference-field
+      activation, polycontext expansion, torus-cycle completion.
+      [SPEC] Kippung criterion: Δ > Threshold_kipp AND NOT only quantitative
+      increase AND new interference fields active.
+      [SPEC] τ-integration: Kippung triggers Pump (τ_fast→τ_mid), marks old
+      details for autophagy, extracts essence, and creates a new frame.
+      [MODEL] This entry constrains Apex language in tesser3TAKT: Apex marks a
+      pull/reading point; the event itself is the tipping/frame change.
 
   - id: VOID-020
     title: "Port-Matrix Suite (K0..K4) fehlt"
     layer: GUARD
     status: CLOSED
     priority: high
+    owner: null
+    domain: "[DEV][META]"
     symptom: "Kein Port-Linter / keine Marker-Operationalisierung"
     closing_path: "tools/port_lint.py"
     evidence:
@@ -216,7 +328,9 @@ voids:
     title: "Port-Codebooks fehlen"
     layer: GUARD
     status: CLOSED
-    priority: med
+    priority: medium
+    owner: null
+    domain: "[META]"
     symptom: "Semantik/Marker nicht zentral dokumentiert"
     closing_path: "policies/port_codebooks.yaml"
     evidence: "policies/port_codebooks.yaml"
@@ -227,7 +341,9 @@ voids:
     title: "Flood-Guard Threshold fehlt (MAX_CLAIMS_PER_RECEIPT)"
     layer: GUARD
     status: CLOSED
-    priority: med
+    priority: medium
+    owner: null
+    domain: "[DEV][META]"
     symptom: "Keine harte Grenze gegen Receipt-Überflutung"
     closing_path: "tools/port_lint.py"
     evidence: "tools/port_lint.py"
@@ -241,6 +357,7 @@ voids:
     priority: low
     owner: "claude-code"
     target_date: "2026-03-01"
+    domain: "[META]"
     symptom: "Scope-Tags nicht überall konsistent"
     closing_path: "policies/port_codebooks.yaml scope_tags section"
     evidence: "policies/port_codebooks.yaml"
@@ -252,6 +369,182 @@ voids:
       (Projekt/Ökosystem) mit Bedeutung, Beispielen und Verwendungsregeln.
       [CLOSED 2026-03-06] Formale Definition etabliert als Grundlage
       für konsistentes Tagging.
+
+  - id: VOID-024
+    title: "Audio-Bridge-Policy"
+    status: OPEN
+    priority: high
+    owner: "fleks"
+    target_date: null
+    domain: "[DEV][META]"
+    layer: GUARD
+    legacy_id: "VOID-013"
+    legacy_source: "VOID Spezifikation 013–017 (Import-Sheet) — v1.0"
+    symptom: "Audio output needs a consent-bound, explainable, parameterized policy to prevent hidden influence or pseudo-physiological claims."
+    closing_path: >-
+      Implement an audio-bridge policy document and lint/receipt checks for
+      consent, parameter bounds, reason codes, kill-switch behavior, and
+      safe text fallback.
+    evidence: null
+    created: "2026-06-24"
+    closed: null
+    notes: |
+      [SPEC] Frequency/resonance window 8–12 Hz is a framework heuristic, not
+      a physical fact claim.
+      [SPEC] Safe-range boundary: 0.5–50 Hz.
+      [SPEC] Spectral check: no peaks outside 0.5–50 Hz above -40 dB.
+      [SPEC] PLV @ 10 Hz target proxy: 0.25–0.35 (30% ± 5%).
+      [SPEC] Kill-switch triggers: explicit STOP, spectral-check FAIL,
+      PLV drift > 5% from target range, or missing reason-codes.
+      [SPEC] Kill-switch action: BLOCKED + safe text alternative + receipt
+      containing guard decision, reason-code, and measured values.
+      [SAFETY] No subliminal influence without awareness and consent; no
+      asymmetric information; no out-of-range frequency content.
+
+  - id: VOID-025
+    title: "Multi-Media Canonicalization"
+    status: OPEN
+    priority: high
+    owner: "fleks"
+    target_date: null
+    domain: "[DEV][META]"
+    layer: GUARD
+    legacy_id: "VOID-014"
+    legacy_source: "VOID Spezifikation 013–017 (Import-Sheet) — v1.0"
+    symptom: "Text, image, and audio artifacts need stable receipts despite modality shifts and autophagic detail loss."
+    closing_path: >-
+      Define canonical fields for text/image/audio, deterministic graph
+      serialization, multimedia hash bases, autophagy-compatible invariants,
+      and receipt fixtures.
+    evidence: null
+    created: "2026-06-24"
+    closed: null
+    notes: |
+      [SPEC] Text canonicalization: UTF-8 NFC and claim/reason-codes for
+      non-trivial statements.
+      [SPEC] Image/kenogram/graph canonicalization: nodes, edges, cycles/markers,
+      deterministic traversal order such as DFS, and SHA256(nodes||edges||cycles).
+      [SPEC] Audio canonicalization: dominant frequency, bandwidth, modulation
+      schema, PLV @ 10 Hz.
+      [SPEC] Identity thresholds are heuristics: spectrum ±5%, PLV ±0.05,
+      same schema.
+      [SPEC] Autophagy compatibility: details may expire (τ_fast/τ_mid), while
+      essence remains reconstructable via invariants, ethics, interference-field
+      tags, and bridge-tags.
+
+  - id: VOID-026
+    title: "tesser3TAKT Core Layout / SailObservation Gate"
+    status: OPEN
+    priority: high
+    owner: "fleks"
+    target_date: null
+    domain: "[COMP][META]"
+    layer: CONTROL
+    symptom: >-
+      tesser3TAKT lacks a canonical core layout and indirect sail-observation
+      gate; the process manager risks direct truth-claiming without a
+      SailObservation boundary.
+    closing_path: >-
+      ADR + src/tesser3takt/models.py + kraehennest.py + tests + receipt;
+      SailObservation must precede KraehennestObservation.
+    evidence: null
+    created: "2026-06-24"
+    closed: null
+    notes: |
+      [SPEC] SailObservation is the indirect reading surface; Krähennest reads
+      membrane movement, not wind.
+      [SPEC] EFS means Epistemic Friction Score. MVI means Membrane Violation
+      Index.
+      [SPEC] High MVI pressure is a HOLD alarm; high EFS can be protective
+      friction and is not an automatic HOLD trigger.
+      [SPEC-WIP] HOLD transformation: HOLD != COMMIT and HOLD != DELETE;
+      HOLD = REFLECT + SEDIMENT + DISSIPATE.
+      [MODEL] Related legacy entries: VOID-016 (τ-Kernel) and VOID-017
+      (Kippung-statt-Peak Operator).
+      [GUARD] Apex is pull, not truth. Periphery is ambiguity, not noise.
+
+  - id: VOID-027
+    title: "tesser3TAKT HUD Projection Layer"
+    status: OPEN
+    priority: high
+    owner: "fleks"
+    target_date: null
+    domain: "[COMP][META]"
+    layer: EXPLAIN
+    symptom: >-
+      Matrix, 1xn slice, Multiwaygraph, SailObservation, GitHub artifacts, and
+      Airtable status need a read-only HUD projection without turning the UI
+      into an oracle.
+    closing_path: >-
+      Implement a read-only HUD fixture and UI demo that renders a
+      TesserTickFrame with 7x9 matrix, 1xn slice, Apex marker, periphery,
+      EFS/MVI axis, decision bar, and receipt link, with explicit projection
+      labels.
+    evidence: null
+    created: "2026-06-24"
+    closed: null
+    notes: |
+      [SPEC] HUD is projection, not proof.
+      [SPEC] 7x9 matrix = unfolded event space; 1xn slice = visible traversal;
+      Multiwaygraph = possible continuations.
+      [SPEC] Haus-des-Nikolaus Rückspiegel-Slice is a visual projection mode,
+      not the origin geometry.
+      [SPEC] GitHub remains KRISTALL/artifact source; Airtable remains
+      governance/status membrane; Human remains commit point.
+      [GUARD] No autonomous merge/close/claim-upgrade from the HUD.
+
+  - id: VOID-028
+    title: "EFS/MVI Grüneisen-Axis Calibration"
+    status: OPEN
+    priority: high
+    owner: "fleks"
+    target_date: null
+    domain: "[MATH][COMP]"
+    layer: CONTROL
+    symptom: >-
+      The proposed Grüneisen-like x-axis between ΔEFS and ΔMVI risks false
+      precision unless both metrics are normalized and fixture-tested.
+    closing_path: >-
+      Define normalized delta metrics, calibration factors, thresholds,
+      three minimal fixtures (EFS-high/MVI-low, MVI-high/EFS-low, both-high),
+      and a SIMULATION_PROXY receipt linked to VOID-011.
+    evidence: null
+    created: "2026-06-24"
+    closed: null
+    notes: |
+      [SPEC-WIP] Candidate reading: x_apex = tanh(mu * norm(ΔMVI) -
+      epsilon * norm(ΔEFS)).
+      [SPEC] Right-critical x means dangerous MVI overcoupling / claim-collapse
+      risk. Left-critical x means possible stalling or protective friction.
+      [SPEC] EFS-left is a warning/review signal unless separately specified;
+      it does not automatically trigger HOLD.
+      [MODEL] The axis can act as an epistemic-responsivity meter only after
+      calibration. Until then it is SIMULATION_PROXY.
+
+  - id: VOID-029
+    title: "Cross-Instance Receipt for tesser3TAKT HUD Work"
+    status: OPEN
+    priority: medium
+    owner: "fleks"
+    target_date: null
+    domain: "[META][DEV]"
+    layer: GUARD
+    symptom: >-
+      tesser3TAKT HUD and HOLD-transformation material includes cross-instance
+      contributions that need explicit receipt scope and human-commit marking.
+    closing_path: >-
+      Add a cross-instance receipt template/instance recording source poles,
+      imported claims, protected-origin notes, human_commit_required=true,
+      and allowed reuse scope for ADR and code skeleton work.
+    evidence: null
+    created: "2026-06-24"
+    closed: null
+    notes: |
+      [SPEC] Cross-instance material is allowed as input, but not as unilateral
+      canon.
+      [SPEC] Gemini/other-model text must be marked as cross-instance input.
+      [SPEC] Human commit remains required before repo merge, claim-status
+      upgrade, or public-facing artifact use.
 
   - id: VOID-LOGZN-001
     title: "LOG-ZN Orbit als Windungs-Gedächtnisoperator"
