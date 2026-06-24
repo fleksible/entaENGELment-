@@ -22,14 +22,17 @@ export interface Void {
   status: VoidStatus;
   priority: VoidPriority;
   owner: string | null;
+  target_date?: string | null;
   domain: string;
+  layer?: string;
+  legacy_id?: string;
+  legacy_source?: string;
   symptom: string;
   closing_path: string | null;
   evidence: string | string[] | null;
   created: string;
   closed: string | null;
   notes?: string;
-  layer?: string;
 }
 
 export interface VoidMap {
@@ -39,6 +42,7 @@ export interface VoidMap {
     maintainer: string;
     last_updated: string;
     generated_doc: string;
+    reconciliation_notes?: string;
   };
   voids: Void[];
 }
