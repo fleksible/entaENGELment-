@@ -44,6 +44,18 @@ existiert bereits ein `pnpm.overrides`-Block für genau dieses Muster (form-data
 postcss, js-yaml). Ein Eintrag `"undici@<6.27.0": ">=6.27.0"` + `pnpm install`
 (Lockfile-Regen) + `make verify-js` sollte den Audit grün machen. Separater Fix-PR empfohlen.
 
+**[FACT] Finding — `ci.yml` „Verify (Lint & Type Check) (3.12)" auf `main` rot (Nachtrag):**
+Der Push-Run auf `main` (fe0a4e6, 2026-07-04) failt im mypy-Step des 3.12-Legs:
+`numpy/__init__.pyi:737: error: Type statement is only supported in Python 3.12 and greater`.
+Ursache: `pyproject.toml` pinnte mypy auf `python_version = "3.10"`; der 3.12-Runner
+installiert numpy 2.5.1 (ungepinnt), dessen Stubs PEP-695-`type`-Statements enthalten —
+mit Target 3.10 ein Parse-Fehler. 3.10/3.11-Legs sind grün, weil dort ältere
+numpy-Versionen aufgelöst werden. Gleiche Klasse wie das undici-Finding: Umgebungs-Drift
+durch ungepinnte Dependencies, nicht durch Repo-Änderungen ausgelöst.
+**Fix in diesem Pass:** `python_version`-Pin entfernt; jedes Matrix-Leg prüft gegen die
+eigene Interpreter-Version, der 3.10-Floor bleibt durch das 3.10-Leg erzwungen.
+Lokal verifiziert: `mypy src/ tools/` grün unter Targets 3.10, 3.11, 3.12 und 3.13.
+
 **[FACT] Struktur-Finding — Dependabot-npm-PRs failen systematisch:**
 `.github/dependabot.yml` setzt für npm `directory: "/ui-app"`, der pnpm-Lockfile
 liegt aber im Repo-Root. Dependabot bumped nur `ui-app/package.json`, der Root-Lockfile
@@ -146,6 +158,7 @@ Löschung nur nach explizitem OK.
 - [x] `docs/voids_backlog.md` regeneriert via `python3 tools/voids_backlog_gen.py` (sanktionierter Weg)
 - [x] `ui-app/lib/voidmap-parser.ts` mechanisch re-synct: 9 fehlende VOIDs gespiegelt (Wortlaut 1:1 aus `VOIDMAP.yml`), `med`→`medium` bei VOID-021/022, `last_updated` 2026-06-24
 - [x] WELCOME.md: 1 Zeile CONTRIBUTING-Link ergänzt
+- [x] `pyproject.toml`: mypy-`python_version`-Pin entfernt (Nachtrag; behebt roten 3.12-Verify auf `main`, lokal über Targets 3.10–3.13 verifiziert)
 - [x] Dieser Report
 
 Verifikation nach den Änderungen: `make verify` ✅, `make verify-governance` ✅, `make verify-js` ✅.
