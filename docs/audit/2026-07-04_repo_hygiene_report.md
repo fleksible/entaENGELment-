@@ -143,6 +143,7 @@ identisch mit merge-base bzw. vollständig in main enthalten):
 | voidmap-ui-drift Detail | 9 VOIDs (015–017, 024–029) fehlen im UI-Mirror `ui-app/lib/voidmap-parser.ts`; 2 Priority-Drifts (VOID-021/022: `medium` vs. `med`) [FACT] | `tools/voidmap_ui_drift_check.py` |
 | CI-Verdrahtung | [FACT] `verify-governance`/`voids_backlog`-Checks sind in **keinem** Workflow unter `.github/workflows/` referenziert — Governance-Drift gated CI nicht | grep über Workflows |
 | Security Audit (main) | **FAIL** seit 2026-06-22 (Scheduled Runs 06-22 & 06-29 rot; letzter grüner Lauf 06-16) [FACT] | `pnpm audit --audit-level=high`: 4 Vulns (2 low, 1 moderate, **1 high**) — **undici < 6.27.0**, DoS via Fragment-Count-Bypass (GHSA-vxpw-j846-p89q), transitiv über `electron-builder → app-builder-lib → @electron/rebuild → node-gyp → undici` |
+| `ci.yml` verify-Job (Push-Runs) | **FAIL auf main** — die letzten 3 Push-Runs (fe0a4e6 vom 07-04, 9d38d77 vom 07-04, e7e0a08 vom 06-24) sind alle `failure` [FACT] | mypy bricht ab: `numpy/__init__.pyi:737: Type statement is only supported in Python 3.12 and greater` — ungepinnte neueste numpy-Stubs nutzen PEP-695-`type`-Statements, mypy läuft mit `python_version = "3.10"`; der Override `follow_imports = "skip"` (aus PR #271) verhindert das Parsen der Stubs nicht. Der Job läuft nur bei Push-Events (`if: github.event_name != 'pull_request'`) und ist daher auf PR-Checks unsichtbar — **stiller roter Zustand** |
 | `make verify-js` | nicht lokal ausgeführt (kein JS in diesem Pass geändert); auf den grünen PRs #267/#272 lief `workspace` erfolgreich → Workspace-Wiring auf main intakt (Einschätzung auf CI-Basis) | ci-js-workspace Checks |
 | HMAC-Status | nicht geprüft (kein Secret in dieser Umgebung); Verhalten wie in CLAUDE.md dokumentiert (UNSIGNED-Modus lokal) | — |
 
@@ -150,6 +151,11 @@ identisch mit merge-base bzw. vollständig in main enthalten):
 
 ## Risks
 
+0. **P0/P1 — Push-CI auf main still rot**: der `ci.yml`-verify-Job (ruff+mypy) schlägt
+   auf jedem Push fehl (mypy vs. neueste numpy-Stubs, s. §5) und ist auf PRs per
+   Design ausgeblendet — Regressionen im Lint/Type-Gate fallen derzeit nicht auf.
+   Fix-Kandidaten (separater Mini-PR): numpy in `requirements-dev.txt` pinnen
+   **oder** mypy-Override für numpy auf `ignore_errors`/`--exclude` erweitern.
 1. **P1 — undici-High-Vuln** hält den Security-Audit-Workflow auf main dauerhaft rot
    und maskiert künftige echte Findings. Fix: `pnpm.overrides` für `undici >= 6.27.0`
    oder electron-builder-Kette aktualisieren (separater, getesteter PR).
@@ -197,8 +203,10 @@ identisch mit merge-base bzw. vollständig in main enthalten):
 ## Recommended Next Steps
 
 **P0:**
-- Keine akuten Blocker auf main: Kern-Verify grün, Push-CI grün. Einziger dauerhaft
-  roter Gate ist der (scheduled) Security-Audit → undici-Fix zeitnah einplanen.
+- `ci.yml`-verify-Job (Push) auf main entröten: mypy/numpy-Stub-Konflikt fixen
+  (numpy-Pin oder mypy-Override erweitern; Mini-PR). Kern-Membran `make verify`
+  ist davon unabhängig und lokal grün — aber ein still roter Push-Gate maskiert
+  echte Lint-/Type-Regressionen.
 
 **P1:**
 1. Mini-PR: `dependabot.yml` npm-Ökosystem auf `directory: "/"` → 4 npm-PRs recreaten.
@@ -214,9 +222,10 @@ identisch mit merge-base bzw. vollständig in main enthalten):
 
 ## Final Status
 
-**WARN** — Kern ist stabil (make verify grün, main-Push-CI grün, Onboarding-Docs
-sauber und ohne Überclaims), aber: Security-Audit auf main rot (undici high),
-4 Dependabot-PRs strukturell unmergebar (Konfig-Mismatch), VOIDMAP-UI-Drift offen.
+**WARN** — Kern ist stabil (lokales `make verify` grün, PR-Gating-Workflows grün,
+Onboarding-Docs sauber und ohne Überclaims), aber: `ci.yml`-Push-Verify auf main
+still rot (mypy/numpy), Security-Audit auf main rot (undici high), 4 Dependabot-PRs
+strukturell unmergebar (Konfig-Mismatch), VOIDMAP-UI-Drift offen.
 Alles Genannte ist mit kleinen, getrennten PRs behebbar.
 
 ## Artefakte
