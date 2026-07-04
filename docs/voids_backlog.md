@@ -2,22 +2,31 @@
 
 > Auto-generated from `VOIDMAP.yml`. Do not edit by hand.
 > Regenerate via: `python3 tools/voids_backlog_gen.py`
-> Source `last_updated`: 2026-06-11
+> Source `last_updated`: 2026-06-24
 
 ## Summary
 
 | Status | Count |
 |--------|-------|
-| OPEN | 1 |
+| OPEN | 10 |
 | IN_PROGRESS | 2 |
 | SUSPENDED | 1 |
 | CLOSED | 9 |
-| **Total** | **13** |
+| **Total** | **22** |
 
 ## OPEN
 
 | ID | Title | Priority | Owner | Domain | Target | Symptom |
 |---|---|---|---|---|---|---|
+| VOID-015 | Explain-Overlay Lint | high | fleks | [META][DEV] | — | Narrative overlays can replace rather than supplement reasoning unless trigger terms are tied back to Reason/Transform/Input and context tags. |
+| VOID-016 | Prozess-Erhalt ohne Zeit-Archiv (τ-Kernel) | high | fleks | [META][COMP] | — | Surprise in the present must be preserved while reconstructable essence survives and non-essential details remain autophagic. |
+| VOID-017 | Kippung-statt-Peak Operator (Δ-Detektor) | high | fleks | [MATH][META] | — | Events risk being misread as maxima or peaks rather than frame changes / tipping transitions. |
+| VOID-024 | Audio-Bridge-Policy | high | fleks | [DEV][META] | — | Audio output needs a consent-bound, explainable, parameterized policy to prevent hidden influence or pseudo-physiological claims. |
+| VOID-025 | Multi-Media Canonicalization | high | fleks | [DEV][META] | — | Text, image, and audio artifacts need stable receipts despite modality shifts and autophagic detail loss. |
+| VOID-026 | tesser3TAKT Core Layout / SailObservation Gate | high | fleks | [COMP][META] | — | tesser3TAKT lacks a canonical core layout and indirect sail-observation gate; the process manager risks direct truth-claiming without a SailObservation boundary. |
+| VOID-027 | tesser3TAKT HUD Projection Layer | high | fleks | [COMP][META] | — | Matrix, 1xn slice, Multiwaygraph, SailObservation, GitHub artifacts, and Airtable status need a read-only HUD projection without turning the UI into an oracle. |
+| VOID-028 | EFS/MVI Grüneisen-Axis Calibration | high | fleks | [MATH][COMP] | — | The proposed Grüneisen-like x-axis between ΔEFS and ΔMVI risks false precision unless both metrics are normalized and fixture-tested. |
+| VOID-029 | Cross-Instance Receipt for tesser3TAKT HUD Work | medium | fleks | [META][DEV] | — | tesser3TAKT HUD and HOLD-transformation material includes cross-instance contributions that need explicit receipt scope and human-commit marking. |
 | VOID-LOGZN-001 | LOG-ZN Orbit als Windungs-Gedächtnisoperator | high | fleks | [MATH][META] | — | Der entwickelte Winkel / log(z)-Orbit ist als neuer RZT-Operator erkannt, aber noch nicht in Tests, Metrics oder Receipts verankert. |
 
 ## IN_PROGRESS
