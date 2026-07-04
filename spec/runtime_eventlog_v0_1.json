@@ -1,0 +1,63 @@
+{
+  "schema_version": "runtime_eventlog.v0.1",
+  "status": "draft",
+  "claim_status": "[SPEC-WIP]",
+  "updated": "2026-07-04",
+  "purpose": "Define a draft runtime event vocabulary for claim, VOID, guard, evidence, and withdrawal state changes.",
+  "principles": [
+    "The eventlog records state changes; it does not make claims true.",
+    "Events should be append-only and tamper-evident within documented assumptions.",
+    "Public exports must be reduced and non-reconstructive unless explicitly reviewed."
+  ],
+  "event_types": {
+    "CLAIM_CREATED": {
+      "required_fields": ["event_id", "timestamp", "actor", "claim_id", "claim_text", "claim_tag"],
+      "visibility": "private_or_reduced"
+    },
+    "CLAIM_RETAGGED": {
+      "required_fields": ["event_id", "timestamp", "actor", "claim_id", "from_tag", "to_tag", "reason"],
+      "visibility": "private_or_reduced"
+    },
+    "VOID_OPENED": {
+      "required_fields": ["event_id", "timestamp", "actor", "void_id", "scope", "reason"],
+      "visibility": "public_reduced_allowed"
+    },
+    "VOID_CLOSED": {
+      "required_fields": ["event_id", "timestamp", "actor", "void_id", "evidence_ref", "closure_reason"],
+      "visibility": "public_reduced_allowed"
+    },
+    "GUARD_DRILL_RUN": {
+      "required_fields": ["event_id", "timestamp", "actor", "guard_id", "drill_id", "result", "receipt_ref"],
+      "visibility": "public_reduced_allowed"
+    },
+    "R_DOWN_APPLIED": {
+      "required_fields": ["event_id", "timestamp", "actor", "scope", "reason", "future_contact_policy"],
+      "visibility": "private_or_reduced"
+    },
+    "VERIFY_PASS": {
+      "required_fields": ["event_id", "timestamp", "actor", "scope", "commit_sha"],
+      "visibility": "public_reduced_allowed"
+    },
+    "VERIFY_PASS_UNSIGNED": {
+      "required_fields": ["event_id", "timestamp", "actor", "scope", "commit_sha", "reason"],
+      "visibility": "public_reduced_allowed"
+    },
+    "SIGNED_EVIDENCE_PASS": {
+      "required_fields": ["event_id", "timestamp", "actor", "scope", "commit_sha", "signature_ref"],
+      "visibility": "public_reduced_allowed"
+    },
+    "SIGNED_EVIDENCE_SKIPPED": {
+      "required_fields": ["event_id", "timestamp", "actor", "scope", "commit_sha", "reason"],
+      "visibility": "public_reduced_allowed"
+    },
+    "SIGNED_EVIDENCE_FAIL": {
+      "required_fields": ["event_id", "timestamp", "actor", "scope", "commit_sha", "failure_reason"],
+      "visibility": "public_reduced_allowed"
+    }
+  },
+  "hashing_notes": {
+    "canonicalization": "stable JSON serialization required before hashing",
+    "chain_field": "prev_hash",
+    "truth_boundary": "hashes support integrity checking, not truth claims"
+  }
+}

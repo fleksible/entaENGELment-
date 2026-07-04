@@ -1,0 +1,91 @@
+version: "0.2"
+status: "draft"
+claim_status: "[SPEC-WIP]"
+updated: "2026-07-04"
+purpose: >
+  Define an expanded claim-tag canon for epistemic hygiene, recovery intake,
+  anti-capture use, and future runtime event validation.
+
+anti_capture_principles:
+  partial_use_allowed: true
+  no_framework_adoption_required: true
+  rejection_without_exclusion: true
+  ladder_is_not_value_hierarchy: true
+  metaphor_is_not_evidence: true
+  void_is_not_failure: true
+
+global_rules:
+  - id: sot_not_truth_maker
+    rule: "Claim tags make epistemic status traceable; they do not make claims true."
+  - id: partial_use_allowed
+    rule: "Using individual tags or transitions does not require adoption of the full framework, vocabulary, or symbolic layer."
+  - id: rejection_without_exclusion
+    rule: "An artifact, tag, or claim may be rejected, adapted, or used locally without implying exclusion or personal rejection."
+  - id: ladder_not_value_hierarchy
+    rule: "The claim ladder is not a value hierarchy. Higher tags mean narrower status under documented assumptions, not higher truth for external users."
+  - id: metaphor_not_evidence
+    rule: "Metaphor, analogy, and inspiration can motivate inquiry but are never sufficient evidence for inference, model, spec, or canon status."
+  - id: void_not_failure
+    rule: "A claim may remain [VOID] indefinitely; this can mark a boundary, open question, or unresolved difference rather than failure."
+  - id: provenance_inversion_guard
+    rule: "Receipts, chat traces, and material pointers show provenance or influence; they are not automatic proof of the claim."
+  - id: intake_first
+    rule: "New claims and recovered chat solutions start as ROHSEDIMENT unless a stronger status is explicitly justified."
+
+tags:
+  ROHSEDIMENT:
+    description: "Raw incoming material, trace, intuition, or recovered fragment before review."
+    allowed_next: ["[METAPHER]", "[HYPOTHESE]", "[VOID]", "[CONTEXT]", "[ANNEX]"]
+  "[METAPHER]":
+    description: "Figurative, analogical, aesthetic, or Rosetta-language framing; not evidence by itself."
+    allowed_next: ["[HYPOTHESE]", "[VOID]", "[ROSETTA]"]
+  "[HYPOTHESE]":
+    description: "Testable or reviewable claim that needs evidence, falsification path, or scoped validation."
+    allowed_next: ["[INFERENZ]", "[MODEL]", "[VOID]", "[SPEC-WIP]"]
+  "[INFERENZ]":
+    description: "Reasoned inference from stated evidence or sources, with assumptions still visible."
+    allowed_next: ["[MODEL]", "[SPEC-WIP]", "[VOID]"]
+  "[MODEL]":
+    description: "Structured representation or explanatory model under documented assumptions."
+    allowed_next: ["[SPEC-WIP]", "[SPEC]", "[VOID]"]
+  "[FACT]":
+    description: "Externally sourced or directly verified factual claim with source or measurement pointer."
+    allowed_next: ["[SPEC-WIP]", "[SPEC]", "[VOID]"]
+  "[SPEC-WIP]":
+    description: "Draft specification not yet fully enforced, reviewed, or stabilized."
+    allowed_next: ["[SPEC]", "[VOID]", "[ANNEX]"]
+  "[SPEC]":
+    description: "Reviewed specification with clear scope and implementation expectations."
+    allowed_next: ["[CANON]", "[VOID]", "[SPEC-WIP]"]
+  "[CANON]":
+    description: "Accepted canon within this repository scope; still revisable through explicit review."
+    allowed_next: ["[VOID]", "[SPEC-WIP]"]
+  "[VOID]":
+    description: "Known boundary, unresolved gap, contradiction, or intentionally open question. Not a defect by default."
+    allowed_next: ["ROHSEDIMENT", "[HYPOTHESE]", "[SPEC-WIP]"]
+  "[ROSETTA]":
+    description: "Translation layer, metaphorical bridge, or symbol-to-operation map. It may explain but not prove."
+    allowed_next: ["[ANNEX]", "[HYPOTHESE]", "[VOID]"]
+  "[ANNEX]":
+    description: "Supplementary material that informs the framework without becoming A-core policy."
+    allowed_next: ["[SPEC-WIP]", "[ROSETTA]", "[VOID]"]
+  "[CONTEXT]":
+    description: "Contextual framing, background, or ethical/cultural note without direct claim force."
+    allowed_next: ["[MODEL]", "[ANNEX]", "[VOID]"]
+  "[BRIDGE-WIP]":
+    description: "Draft bridge to external disciplines or collaborators; no partnership or validation claim implied."
+    allowed_next: ["[CONTEXT]", "[MODEL]", "[VOID]"]
+  "[UI-LAB]":
+    description: "Prototype, visualization, or interaction experiment; not a source of truth by itself."
+    allowed_next: ["[ANNEX]", "[MODEL]", "[VOID]"]
+  SIMULATION_PROXY:
+    description: "Simulation or proxy result. It can inform models but does not directly establish real-world fact status."
+    allowed_next: ["[MODEL]", "[HYPOTHESE]", "[VOID]"]
+
+compatibility_notes:
+  current_claim_lint: "Existing tooling may only enforce a narrower tag set. This policy is a draft expansion and needs tool alignment before hard enforcement."
+  spelling_aliases:
+    "[FAKT]": "[FACT]"
+    "[HYP]": "[HYPOTHESE]"
+    "[MET]": "[METAPHER]"
+    "[MODELL]": "[MODEL]"

@@ -1,0 +1,28 @@
+version: "0.1"
+status: "draft"
+claim_status: "[SPEC-WIP]"
+updated: "2026-07-04"
+purpose: "Document expected repository review posture as policy-as-code. This file does not prove that settings are active."
+
+branch: "main"
+expected:
+  pull_request_review: true
+  include_admins: true
+  required_checks:
+    - "Verify Pointers & Lint"
+    - "DeepJump Verify"
+    - "Claim-Lint"
+    - "Receipt-Lint"
+  future_checks:
+    - "Guard-Check-Lint"
+    - "Branch-State-Drift-Check"
+  signed_evidence_status:
+    distinguish:
+      - "VERIFY_PASS"
+      - "VERIFY_PASS_UNSIGNED"
+      - "SIGNED_EVIDENCE_PASS"
+      - "SIGNED_EVIDENCE_SKIPPED"
+      - "SIGNED_EVIDENCE_FAIL"
+
+notes:
+  - "This file describes target posture and must be compared to live repository settings before enforcement is claimed."
