@@ -194,7 +194,7 @@ If you are exploring the conceptual layer, start with:
 
 ## Contribution style
 
-Small, focused pull requests are preferred.
+Small, focused pull requests are preferred. Full guidelines live in [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 Good PRs usually do one thing:
 
