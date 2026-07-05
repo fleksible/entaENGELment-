@@ -12,8 +12,11 @@ updates:
       - "security"
     open-pull-requests-limit: 5
 
+  # directory muss auf den pnpm-Workspace-Root zeigen (pnpm-lock.yaml liegt dort);
+  # mit "/ui-app" bumpte Dependabot nur ui-app/package.json, der Root-Lockfile
+  # blieb stehen und jeder npm-PR failte an pnpm install --frozen-lockfile.
   - package-ecosystem: "npm"
-    directory: "/ui-app"
+    directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"

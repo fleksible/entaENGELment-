@@ -21,7 +21,7 @@ export const VOIDMAP_DATA: VoidMap = {
   description: 'Central registry for tracking open voids (gaps) in the entaENGELment framework.',
   metadata: {
     maintainer: 'entaENGELment',
-    last_updated: '2026-06-11',
+    last_updated: '2026-06-24',
     generated_doc: 'docs/voids_backlog.md',
   },
   voids: [
@@ -143,6 +143,51 @@ export const VOIDMAP_DATA: VoidMap = {
       notes: '[SAFETY] Nur computational exploration; keine Nasslabor-Protokolle. [2026-04-04] Status auf SUSPENDED gesetzt. Kann bei Bedarf auf OPEN zurückgesetzt werden.',
     },
     {
+      id: 'VOID-015',
+      title: 'Explain-Overlay Lint',
+      status: 'OPEN',
+      priority: 'high',
+      owner: 'fleks',
+      domain: '[META][DEV]',
+      symptom:
+        'Narrative overlays can replace rather than supplement reasoning unless trigger terms are tied back to Reason/Transform/Input and context tags.',
+      closing_path:
+        'Implement explain-overlay lint rules for trigger keywords, reason-code density, bridge-tag presence, and pseudo-physics guards; add tests and a receipt showing coverage.',
+      evidence: null,
+      created: '2026-06-24',
+      closed: null,
+    },
+    {
+      id: 'VOID-016',
+      title: 'Prozess-Erhalt ohne Zeit-Archiv (τ-Kernel)',
+      status: 'OPEN',
+      priority: 'high',
+      owner: 'fleks',
+      domain: '[META][COMP]',
+      symptom:
+        'Surprise in the present must be preserved while reconstructable essence survives and non-essential details remain autophagic.',
+      closing_path:
+        'Specify τ_fast/τ_mid/τ_long retention rules, autophagy extraction, V+ sediment interaction, and receipts proving detail deletion without essence loss.',
+      evidence: null,
+      created: '2026-06-24',
+      closed: null,
+    },
+    {
+      id: 'VOID-017',
+      title: 'Kippung-statt-Peak Operator (Δ-Detektor)',
+      status: 'OPEN',
+      priority: 'high',
+      owner: 'fleks',
+      domain: '[MATH][META]',
+      symptom:
+        'Events risk being misread as maxima or peaks rather than frame changes / tipping transitions.',
+      closing_path:
+        'Specify semantic drift, interference-field activation, polycontext expansion, and torus-cycle completion as Δ-components; test that a tipping event is not triggered by quantitative increase alone.',
+      evidence: null,
+      created: '2026-06-24',
+      closed: null,
+    },
+    {
       id: 'VOID-020',
       title: 'Port-Matrix Suite (K0..K4) fehlt',
       status: 'CLOSED',
@@ -160,7 +205,7 @@ export const VOIDMAP_DATA: VoidMap = {
       id: 'VOID-021',
       title: 'Port-Codebooks fehlen',
       status: 'CLOSED',
-      priority: 'med',
+      priority: 'medium',
       owner: null,
       domain: '',
       symptom: 'Semantik/Marker nicht zentral dokumentiert',
@@ -174,7 +219,7 @@ export const VOIDMAP_DATA: VoidMap = {
       id: 'VOID-022',
       title: 'Flood-Guard Threshold fehlt (MAX_CLAIMS_PER_RECEIPT)',
       status: 'CLOSED',
-      priority: 'med',
+      priority: 'medium',
       owner: null,
       domain: '',
       symptom: 'Keine harte Grenze gegen Receipt-Überflutung',
@@ -198,6 +243,96 @@ export const VOIDMAP_DATA: VoidMap = {
       closed: '2026-03-06',
       layer: 'EXPLAIN',
       notes: '[FACT] Scope-Tag-Definitionen [MICRO]/[MESO]/[MACRO] in policies/port_codebooks.yaml. [CLOSED 2026-03-06] Formale Definition etabliert.',
+    },
+    {
+      id: 'VOID-024',
+      title: 'Audio-Bridge-Policy',
+      status: 'OPEN',
+      priority: 'high',
+      owner: 'fleks',
+      domain: '[DEV][META]',
+      symptom:
+        'Audio output needs a consent-bound, explainable, parameterized policy to prevent hidden influence or pseudo-physiological claims.',
+      closing_path:
+        'Implement an audio-bridge policy document and lint/receipt checks for consent, parameter bounds, reason codes, kill-switch behavior, and safe text fallback.',
+      evidence: null,
+      created: '2026-06-24',
+      closed: null,
+    },
+    {
+      id: 'VOID-025',
+      title: 'Multi-Media Canonicalization',
+      status: 'OPEN',
+      priority: 'high',
+      owner: 'fleks',
+      domain: '[DEV][META]',
+      symptom:
+        'Text, image, and audio artifacts need stable receipts despite modality shifts and autophagic detail loss.',
+      closing_path:
+        'Define canonical fields for text/image/audio, deterministic graph serialization, multimedia hash bases, autophagy-compatible invariants, and receipt fixtures.',
+      evidence: null,
+      created: '2026-06-24',
+      closed: null,
+    },
+    {
+      id: 'VOID-026',
+      title: 'tesser3TAKT Core Layout / SailObservation Gate',
+      status: 'OPEN',
+      priority: 'high',
+      owner: 'fleks',
+      domain: '[COMP][META]',
+      symptom:
+        'tesser3TAKT lacks a canonical core layout and indirect sail-observation gate; the process manager risks direct truth-claiming without a SailObservation boundary.',
+      closing_path:
+        'ADR + src/tesser3takt/models.py + kraehennest.py + tests + receipt; SailObservation must precede KraehennestObservation.',
+      evidence: null,
+      created: '2026-06-24',
+      closed: null,
+    },
+    {
+      id: 'VOID-027',
+      title: 'tesser3TAKT HUD Projection Layer',
+      status: 'OPEN',
+      priority: 'high',
+      owner: 'fleks',
+      domain: '[COMP][META]',
+      symptom:
+        'Matrix, 1xn slice, Multiwaygraph, SailObservation, GitHub artifacts, and Airtable status need a read-only HUD projection without turning the UI into an oracle.',
+      closing_path:
+        'Implement a read-only HUD fixture and UI demo that renders a TesserTickFrame with 7x9 matrix, 1xn slice, Apex marker, periphery, EFS/MVI axis, decision bar, and receipt link, with explicit projection labels.',
+      evidence: null,
+      created: '2026-06-24',
+      closed: null,
+    },
+    {
+      id: 'VOID-028',
+      title: 'EFS/MVI Grüneisen-Axis Calibration',
+      status: 'OPEN',
+      priority: 'high',
+      owner: 'fleks',
+      domain: '[MATH][COMP]',
+      symptom:
+        'The proposed Grüneisen-like x-axis between ΔEFS and ΔMVI risks false precision unless both metrics are normalized and fixture-tested.',
+      closing_path:
+        'Define normalized delta metrics, calibration factors, thresholds, three minimal fixtures (EFS-high/MVI-low, MVI-high/EFS-low, both-high), and a SIMULATION_PROXY receipt linked to VOID-011.',
+      evidence: null,
+      created: '2026-06-24',
+      closed: null,
+    },
+    {
+      id: 'VOID-029',
+      title: 'Cross-Instance Receipt for tesser3TAKT HUD Work',
+      status: 'OPEN',
+      priority: 'medium',
+      owner: 'fleks',
+      domain: '[META][DEV]',
+      symptom:
+        'tesser3TAKT HUD and HOLD-transformation material includes cross-instance contributions that need explicit receipt scope and human-commit marking.',
+      closing_path:
+        'Add a cross-instance receipt template/instance recording source poles, imported claims, protected-origin notes, human_commit_required=true, and allowed reuse scope for ADR and code skeleton work.',
+      evidence: null,
+      created: '2026-06-24',
+      closed: null,
     },
     {
       id: 'VOID-LOGZN-001',
