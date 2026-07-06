@@ -14,8 +14,7 @@
       "Bash(git push:*)",
       "Bash(git fetch:*)",
       "Bash(git pull:*)",
-      "Bash(git commit:*)",
-      "mcp__Claude_Code_Remote__send_later"
+      "Bash(git commit:*)"
     ]
   }
 }
