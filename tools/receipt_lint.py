@@ -81,9 +81,11 @@ def is_legacy_manifest_colon(ref: str) -> bool:
 def lint_file(path: Path, strict: bool) -> list[str]:
     errors: list[str] = []
     try:
-        data = yaml.load(
+        # NoDuplicateSafeLoader extends yaml.SafeLoader, so this is not an
+        # unsafe load despite bandit's B506 heuristic.
+        data = yaml.load(  # nosec B506
             path.read_text(encoding="utf-8"), Loader=NoDuplicateSafeLoader
-        )  # nosec B506 — Loader extends SafeLoader
+        )
     except DuplicateKeyError as e:
         errors.append(f"{path}: {e}")
         return errors

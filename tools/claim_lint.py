@@ -56,8 +56,12 @@ SKIP_PATTERNS = [
     r"\.egg-info",
 ]
 
-# Inline suppression marker
-NOQA_MARKER = "noqa: claim-lint"
+# Inline suppression markers. Both forms are honored; prefer
+# "claim-lint: ignore" in real Python comments because "noqa: claim-lint" is
+# also parsed by ruff as a (malformed) noqa directive and triggers a warning.
+NOQA_MARKER = "noqa: claim-lint"  # legacy form, kept for backward compatibility
+CLAIM_LINT_IGNORE_MARKER = "claim-lint: ignore"
+SUPPRESSION_MARKERS = (NOQA_MARKER, CLAIM_LINT_IGNORE_MARKER)
 
 # Python code-pattern lines to skip (operational code, not epistemic claims)
 PYTHON_CODE_SKIP = [
@@ -149,8 +153,8 @@ def find_claims_in_file(filepath: Path, repo_root: Path) -> list[ClaimResult]:
         if stripped.startswith("#!") or stripped.startswith("# -*-"):
             continue
 
-        # Skip lines with inline suppression
-        if NOQA_MARKER in line:
+        # Skip lines with inline suppression (either marker form)
+        if any(marker in line for marker in SUPPRESSION_MARKERS):
             continue
 
         # For Python files: skip docstrings and operational code constructs.

@@ -15,13 +15,19 @@ from typing import Union
 
 
 def eci(signal: list[Union[int, float]]) -> float:
-    """Ethical Consent Index - Misst aktiven, bewussten Consent.
+    """[HYP] ECI-Proxy — geklemmter Mittelwert eines Signals in [0.0, 1.0].
+
+    ACHTUNG (Claim-Ehrlichkeit, vgl. EPISTEMIC_HYGIENE.md): Dies ist KEIN
+    validiertes Consent-Maß, sondern nur ``clamp01(mean(signal))`` als
+    Test-/Demo-Stub. Der gewichtete, dokumentierte Ethical-Consent-Index
+    (likert/behavior/physio) lebt in :func:`src.core.eci.compute_eci`; für
+    reale Auswertungen diese Funktion nutzen, nicht diese hier.
 
     Args:
         signal: Liste von Signal-Werten zur Analyse
 
     Returns:
-        float: ECI-Wert zwischen 0.0 und 1.0
+        float: Mittelwert, geklemmt auf [0.0, 1.0]
     """
     if not signal:
         return 0.0

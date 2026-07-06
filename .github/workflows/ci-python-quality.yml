@@ -1,0 +1,47 @@
+name: Python Quality
+
+# Blocking Python lint/format/type/SAST gate for pull requests.
+#
+# Rationale: the legacy `ci.yml` verify/security jobs are gated to non-PR events
+# (`if: github.event_name != 'pull_request'`), so ruff/black/mypy/bandit did not
+# run on pull requests — a change could pass all PR checks and only fail after
+# merge to main. This workflow closes that gap by running the same gates on every
+# pull request (and on push to main / claude/** for symmetry).
+on:
+  push:
+    branches: ["main", "claude/**"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python-quality:
+    name: Lint · Format · Types · SAST
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6.3.0
+        with:
+          python-version: "3.11"
+          cache: 'pip'
+      - name: Install dev dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+          pip install -e .
+      - name: Lint with ruff
+        run: ruff check src/ tools/ tests/
+      - name: Format check with black
+        run: black --check src/ tools/ tests/
+      - name: Type check with mypy
+        run: mypy src/ tools/
+      - name: Security lint with bandit
+        run: bandit -c .bandit.yaml -r src/ tools/

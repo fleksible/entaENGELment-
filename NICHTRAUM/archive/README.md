@@ -14,3 +14,25 @@ Turborepo relies on for reproducible builds and dependency-graph inference.
 
 They are retained here for provenance and reversibility only — do not restore
 them while pnpm is the active package manager.
+
+## uv.lock (archived 2026-07-06)
+
+- `uv.lock` — was `/uv.lock`
+
+**Reason:** The Python domain builds via **setuptools + pip** (`pyproject.toml`,
+`requirements*.txt`); no CI/build step references `uv`. The committed `uv.lock`
+(~390 KB) was a stale, unused second lockfile that could silently drift from the
+active dependency set. Archived for provenance; restore only if the project
+formally adopts `uv`.
+
+## Fractalsense build artifacts (archived 2026-07-06)
+
+- `fractalsense/*.zip` (4 files) — were `Fractalsense/*.zip`
+- `fractalsense/*.min.js` (5 files) — were `Fractalsense/*.min.js`
+
+**Reason:** The `.zip` files are packaged build outputs and the `.min.js` files
+are minified bundles with **zero inbound references** (`Fractalsense/index.html`
+loads the non-minified `app.js`; Jest coverage explicitly excludes `*.min.js`).
+Generated/minified artifacts do not belong in version control. The
+human-readable sources (`*.js`) remain in `Fractalsense/`. Restore only if a
+no-build deploy of the minified bundles is reintroduced.

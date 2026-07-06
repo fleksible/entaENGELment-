@@ -284,6 +284,45 @@ def load_ledger(path: str | Path) -> list[dict[str, Any]]:
     return events
 
 
+def verify_chain_from_file(path: str | Path) -> bool:
+    """Verify the hash-chain integrity of a persisted ledger file.
+
+    Unlike :meth:`Ledger.verify_chain` (which checks in-memory events), this
+    reloads the events from disk and re-verifies both the ``prev_hash`` linkage
+    and that each stored ``hash`` matches a freshly computed hash of its content.
+    A non-existent or empty file is treated as a valid (empty) chain.
+
+    Args:
+        path: Path to the JSONL ledger file.
+
+    Returns:
+        True if the on-disk chain is intact, False otherwise.
+    """
+    events = load_ledger(path)
+    prev_hash: str | None = None
+    for event in events:
+        if event.get("prev_hash") != prev_hash:
+            return False
+        recomputed = hashlib.sha256(
+            json.dumps(
+                {
+                    "type": event.get("type"),
+                    "payload": event.get("payload"),
+                    "timestamp": event.get("timestamp"),
+                    "event_id": event.get("event_id"),
+                    "span_id": event.get("span_id"),
+                    "prev_hash": event.get("prev_hash"),
+                },
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        ).hexdigest()
+        if event.get("hash") != recomputed:
+            return False
+        prev_hash = event.get("hash")
+    return True
+
+
 def create_ledger_from_env() -> Ledger | None:
     """Create a ledger from environment variables.
 

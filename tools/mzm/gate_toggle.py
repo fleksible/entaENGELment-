@@ -167,16 +167,21 @@ def main(argv: list[str]) -> int:
         )
         return 2
 
-    phi = float(argv[1])
-
     def parse_bool(s: str) -> bool:
         return s.lower() in {"1", "true", "yes", "y", "on"}
+
+    try:
+        phi = float(argv[1])
+        m_norm_l2 = float(argv[4])
+    except ValueError as e:
+        print(f"error: phi and m_norm_l2 must be numeric ({e})", file=sys.stderr)
+        return 2
 
     ctx = Context(
         phi=phi,
         rcc_ec=parse_bool(argv[2]),
         non_overlap=parse_bool(argv[3]),
-        m_norm_l2=float(argv[4]),
+        m_norm_l2=m_norm_l2,
         psi_lock=parse_bool(argv[5]),
     )
 
