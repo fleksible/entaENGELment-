@@ -66,7 +66,7 @@ offenen npm-PRs.
 | # | Titel | Kategorie | Status | Empfehlung |
 |---|-------|-----------|--------|------------|
 | #278 | Follow-up: align recovery governance drafts after PR #277 | Documentation / Governance | **actionable now** — alle referenzierten Dateien existieren in main [FACT] | Als eigener kleiner Cleanup-PR abarbeiten (P2); gut gescopte Checkliste |
-| #240 | Overdue VOIDs: VOID-010, VOID-011 | Governance / Backlog | **needs human decision** — beide VOIDs stehen weiterhin auf `IN_PROGRESS` in `VOIDMAP.yml` [FACT], Target 2026-06-01 überschritten | Offen lassen; Owner entscheidet: Re-Dating oder Teilschließung mit Evidence |
+| #240 | Overdue VOIDs: VOID-010, VOID-011 | Governance / Backlog | **überholt** — [CORRECTION 2026-07-05, aus Codex-Review auf PR #279] Die ursprüngliche Fassung dieser Zeile übernahm das Target „2026-06-01" ungeprüft aus dem Issue-Text (Stand 2026-06-08). `VOIDMAP.yml` führte beide VOIDs bereits am Report-Datum mit `target_date: "2026-07-15"` und Status `IN_PROGRESS` [FACT] — am 2026-07-04 waren sie also **nicht** überfällig; das Re-Dating hatte bereits stattgefunden | Issue #240 als überholt schließen (mit Verweis auf das erfolgte Re-Dating); Human OK |
 | #226 | Repo Re-Entry Notes: Wochenend-Audit Nachlauf | Governance / Notizen | **stale but valuable** — Kernpunkte inzwischen erledigt: #214 ist nicht mehr offen [FACT]; #225 (eslint 10.4.1) ist nicht mehr offen und durch #245 ersetzt (Dependabot-Supersede, Einschätzung); voids_backlog-Drift in diesem Pass behoben; Grimm-2-Narrative weiterhin nur `_template.md` [FACT] | Schließen mit Verweis auf diesen Report (Human OK) oder bewusst als Marker offen lassen |
 
 Keine Issues geschlossen, keine neuen Issues erstellt.
