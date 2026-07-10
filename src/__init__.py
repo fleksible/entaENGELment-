@@ -1,9 +1,9 @@
 """entaENGELment Framework - Resonanz-Kernel für verkörperte Mensch-KI-Interaktion.
 
-Version: 1.0 (Hardened Kernel 0·β)
+Version: 0.1.0 (Alpha)
 """
 
-__version__ = "1.0.0"
+__version__ = "0.1.0"
 __author__ = "fleksible"
 
 # Expose wichtige Komponenten auf Package-Ebene
