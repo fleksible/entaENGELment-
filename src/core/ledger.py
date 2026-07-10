@@ -18,7 +18,7 @@ import json
 import os
 import time
 import uuid
-from collections.abc import Iterator
+from collections.abc import Iterator, Mapping
 from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass, field
@@ -27,6 +27,61 @@ from typing import Any, TextIO
 
 # Context variable for current span
 _current_span: ContextVar[str | None] = ContextVar("current_span", default=None)
+
+_SERIALIZED_EVENT_REQUIRED_KEYS = frozenset(
+    {"type", "payload", "timestamp", "event_id", "hash"}
+)
+_SERIALIZED_EVENT_ALLOWED_KEYS = _SERIALIZED_EVENT_REQUIRED_KEYS | {
+    "span_id",
+    "prev_hash",
+}
+
+
+def _canonical_event_content(event: Mapping[str, Any]) -> dict[str, Any]:
+    """Return the exact event fields covered by the ledger hash."""
+    return {
+        "type": event["type"],
+        "payload": event["payload"],
+        "timestamp": event["timestamp"],
+        "event_id": event["event_id"],
+        "span_id": event.get("span_id"),
+        "prev_hash": event.get("prev_hash"),
+    }
+
+
+def _is_valid_serialized_event(event: object) -> bool:
+    """Validate the closed on-disk event schema before integrity verification."""
+    if not isinstance(event, dict):
+        return False
+
+    keys = set(event)
+    if not _SERIALIZED_EVENT_REQUIRED_KEYS.issubset(keys):
+        return False
+    if not keys.issubset(_SERIALIZED_EVENT_ALLOWED_KEYS):
+        return False
+
+    timestamp = event["timestamp"]
+    return all(
+        (
+            isinstance(event["type"], str),
+            isinstance(event["payload"], dict),
+            isinstance(timestamp, (int, float)) and not isinstance(timestamp, bool),
+            isinstance(event["event_id"], str),
+            event.get("span_id") is None or isinstance(event["span_id"], str),
+            event.get("prev_hash") is None or isinstance(event["prev_hash"], str),
+            isinstance(event["hash"], str),
+        )
+    )
+
+
+def _hash_event_content(event: Mapping[str, Any]) -> str:
+    """Hash the canonical stored event representation."""
+    content = json.dumps(
+        _canonical_event_content(event),
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    return hashlib.sha256(content.encode("utf-8")).hexdigest()
 
 
 @dataclass
@@ -59,7 +114,7 @@ class LedgerEvent:
 
     def compute_hash(self) -> str:
         """Compute SHA-256 hash of event content."""
-        content = json.dumps(
+        return _hash_event_content(
             {
                 "type": self.type,
                 "payload": self.payload,
@@ -67,11 +122,8 @@ class LedgerEvent:
                 "event_id": self.event_id,
                 "span_id": self.span_id,
                 "prev_hash": self.prev_hash,
-            },
-            sort_keys=True,
-            separators=(",", ":"),
+            }
         )
-        return hashlib.sha256(content.encode("utf-8")).hexdigest()
 
 
 class Ledger:
@@ -261,6 +313,9 @@ class Ledger:
 def load_ledger(path: str | Path) -> list[dict[str, Any]]:
     """Load events from a ledger file.
 
+    This general-purpose reader remains tolerant for exploratory recovery use.
+    Integrity-sensitive callers must use :func:`verify_chain_from_file`.
+
     Args:
         path: Path to JSONL ledger file
 
@@ -285,41 +340,36 @@ def load_ledger(path: str | Path) -> list[dict[str, Any]]:
 
 
 def verify_chain_from_file(path: str | Path) -> bool:
-    """Verify the hash-chain integrity of a persisted ledger file.
+    """Verify a persisted ledger strictly and fail closed on malformed input.
 
-    Unlike :meth:`Ledger.verify_chain` (which checks in-memory events), this
-    reloads the events from disk and re-verifies both the ``prev_hash`` linkage
-    and that each stored ``hash`` matches a freshly computed hash of its content.
-    A non-existent or empty file is treated as a valid (empty) chain.
-
-    Args:
-        path: Path to the JSONL ledger file.
-
-    Returns:
-        True if the on-disk chain is intact, False otherwise.
+    A non-existent or empty file is treated as a valid empty chain. Any unreadable
+    JSONL line, non-object record, unknown field, missing required field, broken
+    link, or hash mismatch makes the verification fail.
     """
-    events = load_ledger(path)
+    path = Path(path)
+    if not path.exists():
+        return True
+
     prev_hash: str | None = None
-    for event in events:
-        if event.get("prev_hash") != prev_hash:
-            return False
-        recomputed = hashlib.sha256(
-            json.dumps(
-                {
-                    "type": event.get("type"),
-                    "payload": event.get("payload"),
-                    "timestamp": event.get("timestamp"),
-                    "event_id": event.get("event_id"),
-                    "span_id": event.get("span_id"),
-                    "prev_hash": event.get("prev_hash"),
-                },
-                sort_keys=True,
-                separators=(",", ":"),
-            ).encode("utf-8")
-        ).hexdigest()
-        if event.get("hash") != recomputed:
-            return False
-        prev_hash = event.get("hash")
+    try:
+        with path.open(encoding="utf-8") as handle:
+            for raw_line in handle:
+                line = raw_line.strip()
+                if not line:
+                    continue
+
+                event = json.loads(line)
+                if not _is_valid_serialized_event(event):
+                    return False
+                if event.get("prev_hash") != prev_hash:
+                    return False
+                if event["hash"] != _hash_event_content(event):
+                    return False
+
+                prev_hash = event["hash"]
+    except (OSError, UnicodeError, json.JSONDecodeError, TypeError, ValueError):
+        return False
+
     return True
 
 
