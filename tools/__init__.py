@@ -6,4 +6,4 @@ Enthält Hilfs-Tools und Utilities für:
 - Debugging und Monitoring
 """
 
-__version__ = "1.0.0"
+__version__ = "0.1.0"

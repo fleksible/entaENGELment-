@@ -1,8 +1,14 @@
 {
-  "name": "user",
-  "version": "1.0.0",
+  "name": "entaengelment",
+  "version": "0.1.0",
+  "description": "Consent-First Framework für resonante Multi-Agent-Systeme mit auditierbarem Proof-Protokoll (DeepJump) und Governance-Guards (G0–G6). Experimentell — kein Production-Use.",
+  "author": "fleksible",
+  "license": "Apache-2.0",
   "main": "main.js",
   "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
     "test": "npm run test:js && npm run test:py",
     "test:js": "jest",
@@ -18,10 +24,8 @@
     "turbo:test": "turbo run test"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "devDependencies": {
+    "electron": "43.1.0",
     "electron-builder": "^26.8.1",
     "jest": "^30.4.2",
     "jest-environment-jsdom": "^30.4.1",
@@ -41,9 +45,9 @@
     "win": {
       "target": "nsis"
     },
-"mac": {
-  "target": "dmg"
-},
+    "mac": {
+      "target": "dmg"
+    },
     "linux": {
       "target": "AppImage"
     }

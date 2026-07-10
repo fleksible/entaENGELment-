@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "entaengelment"
-version = "1.0.0"
+version = "0.1.0"
 description = "Hardened Kernel für verkörperte Mensch-KI-Interaktion mit physikalisch erzwungener Resonanz"
 authors = [
     {name = "fleksible"}
@@ -13,7 +13,7 @@ readme = "README.md"
 license = {text = "Apache-2.0"}
 requires-python = ">=3.9"
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: Apache Software License",
@@ -127,10 +127,6 @@ strict_equality = true
 module = ["numpy", "numpy.*"]
 follow_imports = "skip"
 ignore_missing_imports = true
-
-[[tool.mypy.overrides]]
-module = "tests.*"
-disallow_untyped_defs = false
 
 [tool.coverage.run]
 source = ["src", "tools"]

@@ -3,6 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <!-- Content-Security-Policy: restrict script origins to self + the two pinned
+       CDNs (see SRI hashes on the <script> tags below), forbid plugins/base-uri
+       and block remote connections. Combined with the hardened Electron
+       webPreferences (nodeIntegration:false, contextIsolation:true,
+       sandbox:true) this closes the remote-code-execution surface even if a
+       CDN were compromised. -->
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'">
   <title>Fraktale Explorer mit Chaos-Klang-Turing-Maschine</title>
   <style>
     /* Basis-CSS */
@@ -241,10 +249,21 @@
   
   <!-- Skript-Bibliotheken -->
   <!-- Verwende alternative CDN-Links, die als klassische Skripte verfügbar sind -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-  <script src="https://unpkg.com/three@0.128.0/examples/js/utils/BufferGeometryUtils.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.37/Tone.js"></script>
+  <!-- Pinned CDN scripts with Subresource Integrity (SRI). If a delivered file
+       does not match the sha384 hash it is rejected by the browser, preventing
+       tampered/MITM'd CDN payloads from executing. -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
+          integrity="sha384-CI3ELBVUz9XQO+97x6nwMDPosPR5XvsxW2ua7N1Xeygeh1IxtgqtCkGfQY9WWdHu"
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"
+          integrity="sha384-wagZhIFgY4hD+7awjQjR4e2E294y6J2HSnd8eTNc15ZubTeQeVRZwhQJ+W6hnBsf"
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://unpkg.com/three@0.128.0/examples/js/utils/BufferGeometryUtils.js"
+          integrity="sha384-uODMim89BXiZh5nBix93duPujeInVvBbLHhqzNTebL4d10Kwpv21B1jYO9M3uOji"
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.37/Tone.js"
+          integrity="sha384-2OhOf7lX4h3ggqdPYIzgdRvmCZ/uMb+7KYNSQv9lRVlK8ykBiC/9Mzyrxgc3Dkm9"
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   
   <script>
     // Hilfsfunktion, um NaN-Werte in Arrays zu ersetzen

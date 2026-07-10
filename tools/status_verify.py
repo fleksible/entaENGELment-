@@ -39,7 +39,7 @@ def main() -> None:
     if not secret:
         if os.environ.get("CI"):
             print(
-                "[ERR] Cannot verify: ENTA_HMAC_SECRET is not set. "  # noqa: claim-lint
+                "[ERR] Cannot verify: ENTA_HMAC_SECRET is not set. "  # claim-lint: ignore
                 "Unsigned verification is not permitted in CI."
             )
             sys.exit(2)
