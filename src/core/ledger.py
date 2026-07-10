@@ -28,9 +28,7 @@ from typing import Any, TextIO
 # Context variable for current span
 _current_span: ContextVar[str | None] = ContextVar("current_span", default=None)
 
-_SERIALIZED_EVENT_REQUIRED_KEYS = frozenset(
-    {"type", "payload", "timestamp", "event_id", "hash"}
-)
+_SERIALIZED_EVENT_REQUIRED_KEYS = frozenset({"type", "payload", "timestamp", "event_id", "hash"})
 _SERIALIZED_EVENT_ALLOWED_KEYS = _SERIALIZED_EVENT_REQUIRED_KEYS | {
     "span_id",
     "prev_hash",
