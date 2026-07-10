@@ -13,8 +13,8 @@
     "test:js:coverage": "jest --coverage",
     "test:py": "cd Fractalsense && python -m pytest",
     "test:py:coverage": "cd Fractalsense && python -m pytest --cov --cov-report=html",
-    "start": "npx electron .",
-    "dist": "npx electron-builder",
+    "start": "electron .",
+    "dist": "electron-builder",
     "turbo:build": "turbo run build",
     "turbo:lint": "turbo run lint",
     "turbo:typecheck": "turbo run typecheck",
@@ -22,6 +22,7 @@
   },
   "keywords": [],
   "devDependencies": {
+    "electron": "43.1.0",
     "electron-builder": "^26.8.1",
     "jest": "^30.4.2",
     "jest-environment-jsdom": "^30.4.1",
