@@ -1,5 +1,9 @@
 name: CI — JS/TS Workspace
 
+# Runs the Turborepo pipeline (typecheck, lint, build) for the JS/TS membrane.
+# Independent of the Python CI workflows. The `paths` filter covers the whole
+# workspace membrane so changes to the wiring (lockfile, workspace globs, turbo
+# config, shared tsconfig) can never bypass this job.
 on:
   push:
     paths:
@@ -34,16 +38,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+
+      # Use the pnpm version pinned in package.json#packageManager via Corepack.
+      - name: Enable Corepack
+        run: corepack enable
+
       - uses: actions/setup-node@v6
         with:
           node-version: 22
-      - name: Enable Corepack
-        run: corepack enable
-      - name: Refresh lockfile without install scripts
-        run: pnpm install --lockfile-only --ignore-scripts
-      - name: Upload refreshed lockfile
-        uses: actions/upload-artifact@v4
-        with:
-          name: refreshed-pnpm-lock
-          path: pnpm-lock.yaml
-          if-no-files-found: error
+          cache: pnpm
+
+      - name: Install (frozen lockfile)
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck · Lint · Build
+        run: pnpm turbo run typecheck lint build
