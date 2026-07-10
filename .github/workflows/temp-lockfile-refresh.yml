@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: temp-lockfile-${{ github.ref }}
@@ -21,6 +21,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          ref: "claude/repo-quality-audit-n8mp31"
       - uses: actions/setup-node@v6
         with:
           node-version: 22
@@ -28,9 +30,14 @@ jobs:
         run: corepack enable
       - name: Refresh lockfile only
         run: pnpm install --lockfile-only --ignore-scripts
-      - name: Upload generated lockfile
-        uses: actions/upload-artifact@v4
-        with:
-          name: refreshed-pnpm-lock
-          path: pnpm-lock.yaml
-          if-no-files-found: error
+      - name: Commit refreshed lockfile
+        run: |
+          if git diff --quiet -- pnpm-lock.yaml; then
+            echo "Lockfile already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pnpm-lock.yaml
+          git commit -m "fix(deps): refresh pnpm lockfile for Electron 43.1.0"
+          git push origin HEAD:claude/repo-quality-audit-n8mp31
