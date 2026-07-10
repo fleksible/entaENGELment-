@@ -1,8 +1,8 @@
 # Masterindex — Seed
 
-**Version:** 1.0.0
-**Stand:** 2026-01-13
-**Letzte Prüfung:** Alignment mit Functorial Index v3
+**Version:** 1.1.0  
+**Stand:** 2026-07-10  
+**Letzte Prüfung:** Projektkonstellation ergänzt; keine Kanonisierung
 
 Startpunkt des Masterindex. Enthält Struktur, narrative Einordnung und Links zu Canvas-Dokumenten.
 
@@ -12,6 +12,12 @@ Startpunkt des Masterindex. Enthält Struktur, narrative Einordnung und Links zu
 - `docs/ROADMAP_ORBITAL_v1.md` — Roadmap (Orbit-basiert)
 - `docs/bridgecards/BC_consent_as_transit.md` — Consent als Transit-Brücke
 - `docs/validation/VALIDATION_DEMO_v1.md` — Replizierbare Demo, kein Studienclaim
+
+## Aktuelle Projektkonstellation (ANNEX)
+
+- `docs/PROJECT_CONSTELLATION_MAP_v0_1.md` — dünne projektübergreifende Lagekarte zu Repo-Ankern, Status, Abhängigkeiten und sichtbaren Lücken
+
+Die Konstellationskarte ergänzt die Navigation, ohne `index/`, `VOIDMAP.yml`, Policies, Specs, Receipts oder Governance-Entwürfe hochzustufen. Sie trennt Repository-Präsenz von Authority-Status und markiert repository-lagging Knoten ausdrücklich als Review- oder Intake-Bedarf.
 
 ## Verzeichnisstruktur
 
