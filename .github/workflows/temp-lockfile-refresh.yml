@@ -1,0 +1,36 @@
+name: Temporary Lockfile Refresh
+
+on:
+  push:
+    branches:
+      - "claude/repo-quality-audit-n8mp31"
+    paths:
+      - "package.json"
+      - ".github/workflows/temp-lockfile-refresh.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: temp-lockfile-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - name: Enable Corepack
+        run: corepack enable
+      - name: Refresh lockfile only
+        run: pnpm install --lockfile-only --ignore-scripts
+      - name: Upload generated lockfile
+        uses: actions/upload-artifact@v4
+        with:
+          name: refreshed-pnpm-lock
+          path: pnpm-lock.yaml
+          if-no-files-found: error
