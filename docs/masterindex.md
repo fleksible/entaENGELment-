@@ -1,8 +1,8 @@
 # Masterindex — Seed
 
-**Version:** 1.1.1  
+**Version:** 1.1.2  
 **Stand:** 2026-07-14  
-**Letzte Prüfung:** Projektkonstellation und privacy-reduzierter Reentry-Gap-Audit ergänzt; keine Kanonisierung
+**Letzte Prüfung:** Projektkonstellation und privacy-reduzierter Reentry-Gap-Audit nach user-relayed Claude-/Diogenes-Pruefung gehaertet; keine Kanonisierung
 
 Startpunkt des Masterindex. Enthält Struktur, narrative Einordnung und Links zu Canvas-Dokumenten.
 
@@ -18,7 +18,7 @@ Startpunkt des Masterindex. Enthält Struktur, narrative Einordnung und Links zu
 - `docs/PROJECT_CONSTELLATION_MAP_v0_1.md` — dünne projektübergreifende Lagekarte zu Repo-Ankern, Status, Abhängigkeiten und sichtbaren Lücken
 - `docs/audit/2026-07-14_tesser3takt_reentry_gap_audit.md` — privacy-reduzierter Abgleich des aktuellen Arbeitsstands gegen vorhandene tesser3TAKT-, Traversal-, Index- und Validierungsstrukturen
 
-Die Konstellationskarte ergänzt die Navigation, ohne `index/`, `VOIDMAP.yml`, Policies, Specs, Receipts oder Governance-Entwürfe hochzustufen. Sie trennt Repository-Präsenz von Authority-Status und markiert repository-lagging Knoten ausdrücklich als Review- oder Intake-Bedarf. Der Reentry-Gap-Audit ist ein nachgeordneter Evidenzbeleg und keine zweite Indexschicht.
+Die Konstellationskarte ergänzt die Navigation, ohne `index/`, `VOIDMAP.yml`, Policies, Specs, Receipts oder Governance-Entwürfe hochzustufen. Sie trennt Repository-Präsenz von Authority-Status. Der Status `repository-lagging` ist nur mit datiertem Intake-/Receipt-Pointer zulässig; ohne Pointer wird der Knoten als `present-partial`, `intake-only` oder `absent-or-unindexed` geführt. Der Reentry-Gap-Audit ist ein nachgeordneter Evidenzbeleg und keine zweite Indexschicht.
 
 ## Verzeichnisstruktur
 
@@ -55,7 +55,8 @@ Die Konstellationskarte ergänzt die Navigation, ohne `index/`, `VOIDMAP.yml`, P
 
 - Canon-Narrativ: `docs/narratives/symphonie_der_resonanz.md`
 - Functorial Map: `index/ENTAENGELMENT_INDEX_v3_FUNCTORIAL.yaml`
-- Draft-Reentry: `docs/audit/2026-07-14_tesser3takt_reentry_gap_audit.md` durch Claude/Diogenes und menschliche Inhaltsprüfung führen
+- Draft-Reentry: menschliche Inhaltsprüfung des gehaerteten `docs/audit/2026-07-14_tesser3takt_reentry_gap_audit.md`
+- Optional: Vollprüfung der 12 noch nicht inhaltlich gegengeprüften Delta-Matrix-Zeilen vor Merge
 
 Ausformulierung der Kenogramm-Slots & Aufbau der Receipt-Chain.
 
@@ -103,7 +104,7 @@ Kenogramme (☐) markieren **bekanntes Nichtwissen** — Bereiche wo strukturell
 
 ## XII. Topology-Diagramme
 
-- **Tri-Strang Venn:** `diagrams/triad_venn.svg` — Visualisiert A∩B, B∩C, A∩B∩C
+- **Tri-Strang Venn:** `diagrams/triad_venn.svg` — Visualisiert A∩B, B∩C, A∩C, A∩B∩C
 - **Grammophon-Hexaliminal:** `diagrams/grammophon_hexaliminal.svg` — Saturn z6-Rotation
 - **Apex-Äquivalenz:** `diagrams/threefold_apex.svg` — 0_holo = Grammophon = Nektar-Pyramide (geplant)
 
