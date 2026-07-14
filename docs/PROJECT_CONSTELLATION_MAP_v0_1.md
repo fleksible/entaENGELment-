@@ -1,7 +1,7 @@
 # PROJECT_CONSTELLATION_MAP_v0_1
 
 **Status:** [ANNEX] — projektuebergreifende Navigationskarte, keine Kanonisierung  
-**Datum:** 2026-07-10  
+**Datum:** 2026-07-14  
 **Claim-Tags:** [FACT] [INFERENCE] [PROPOSAL] [OPEN]
 
 ## 0. Funktion und Grenze
@@ -13,6 +13,10 @@ Sie ist kein neues Atlas-System, keine Source of Truth und kein Ersatz fuer `doc
 `repository_status` beschreibt die Repo-Repraesentation: `present-current`, `present-partial`, `repository-lagging`, `intake-only`, `absent-or-unindexed`, `archived`.
 
 `authority_status` beschreibt die Geltung: `gold`, `governed`, `annex`, `draft`, `intake`, `receipt-only`, `unresolved`.
+
+Aktueller Reentry-Abgleich:
+
+- `docs/audit/2026-07-14_tesser3takt_reentry_gap_audit.md` — privacy-reduzierte Delta-Matrix zwischen bestehender Repo-Struktur und aktuellem Arbeitsstand; keine neue Index- oder Kanonisierungsschicht
 
 ## 1. Projektknoten
 
@@ -34,7 +38,7 @@ Sie ist kein neues Atlas-System, keine Source of Truth und kein Ersatz fuer `doc
   open_voids:
     - technische und narrative Projektkoerper gemeinsam navigierbar machen
   review:
-    chatgpt: architecture-pass-2026-07-10
+    chatgpt: architecture-pass-2026-07-14
     claude: pending
     human: standing-by-for-content-questions
 
@@ -59,6 +63,7 @@ Sie ist kein neues Atlas-System, keine Source of Truth und kein Ersatz fuer `doc
   primary_repo_anchor:
     - docs/tesser3takt/README.md
     - docs/tesser3takt/TESSER3TAKT_ASSEMBLY_NAVI_v0_1.md
+    - docs/audit/2026-07-14_tesser3takt_reentry_gap_audit.md
   depends_on:
     - source-decoration-guards
     - claim-hygiene
@@ -66,8 +71,10 @@ Sie ist kein neues Atlas-System, keine Source of Truth und kein Ersatz fuer `doc
   open_voids:
     - Verhaeltnis zum erweiterten Grimm-Apparat
     - spaetere Pruefung weiterer Assembly-Schichten
+    - praemetrische Relation-vor-Koordinate-Reihenfolge pruefen
+    - Markov/non-Markov- und Landungsmodi nur als begrenzte Modellkandidaten formalisieren
   review:
-    chatgpt: architecture-pass-2026-07-10
+    chatgpt: reentry-gap-audit-2026-07-14
     claude: pending
 
 - id: GRIMM-APPARAT
@@ -87,9 +94,10 @@ Sie ist kein neues Atlas-System, keine Source of Truth und kein Ersatz fuer `doc
     - Aegypten-Griechenland-Bruecke
     - Ra-Skarabaeus-Logos-720-degree-Strang
     - heutige Rolle als adaptiver Muse- und Leseraum
+    - mehrschichtige Zeitreise und Hermes-Uebersetzung ohne private Herkunftsoffenlegung
   promotion_boundary: neuere Chat-Synthesen zuerst als Intake
   review:
-    chatgpt: pending-formalization
+    chatgpt: reentry-gap-audit-2026-07-14
     claude: pending
     human: standing-by-for-content-questions
 
@@ -144,10 +152,12 @@ docs/START_HERE.md
         -> bestehende Index-, VOID-, Governance-, Grimm-, tesser3TAKT- und ARK-Anker
 ```
 
+Der Reentry-Gap-Audit ist ein nachgeordneter Evidenzbeleg der Konstellationskarte, kein zusaetzlicher Navigationsknoten.
+
 ## 3. Reentry
 
 Hochstufung setzt Provenienz, Scope, Repo-Anker, Claim-/Layer-Status, offene Voids, Ruecknahmebedingung, menschliche Inhaltspruefung und die vorgesehene Gegenpruefung voraus.
 
-**PASS:** projektuebergreifende ANNEX-Navigation  
-**HOLD:** Kanonisierung  
+**PASS:** projektuebergreifende ANNEX-Navigation und privacy-reduzierter Gap-Audit  
+**HOLD:** Kanonisierung, GOLD-/VOIDMAP-Aenderung und Engel-Operationalisierung  
 **LOOP:** Claude-/Diogenes-Pruefung und menschliche Inhaltsklaerung
