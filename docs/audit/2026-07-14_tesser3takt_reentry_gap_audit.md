@@ -124,11 +124,20 @@ Er prueft nur:
 - `confirmed_findings`: A∩C-Regression, ungovernte Tag-/Status-Dialekte, ueberschreibende Review-Felder, fehlendes Privacy-Kriterium, Selbst-PASS-Sprechakt, umgekehrte Beweislast bei repository-lagging
 - `sampling_limit`: 12 Delta-Zeilen nicht inhaltlich vollgeprueft
 
+### 2026-07-14 — Claude/Diogenes full check
+
+- `id`: full-check-user-relayed-2026-07-14
+- `source`: user-relayed
+- `scope`: verification-of-7-fixes-plus-full-check-17-of-17-delta-rows-keyword-level
+- `result`: pass-candidate-confirmed
+- `note`: Absenz-Claims grep-verifiziert, nicht semantisch erschoepfend; CI nicht unabhaengig geprueft
+- `self_correction_trace`: zwei zunaechst falsch-negative Suchlaeufe durch Sprach- und Schreibvarianten; Schlussfolgerungen danach korrigiert und erneut geprueft
+
 [INFERENZ] Die Review-Historie wird nicht als Beweis der Inhalte gelesen. Sie dokumentiert Scope, Fehlerfaehigkeit, Stichprobentiefe und den jeweiligen Entscheidungsstand.
 
 ## 7. Reentry-Entscheidung
 
-**PASS-KANDIDAT:** Der bestehende Repo-Koerper traegt den Grossteil der Architektur; der Audit darf im Draft verbleiben, nachdem die benannten Blocker im Patch adressiert sind.  
+**PASS-KANDIDAT:** Der bestehende Repo-Koerper traegt den Grossteil der Architektur; die sieben Review-Befunde wurden mechanisch adressiert und alle 17 Delta-Zeilen auf Keyword-Ebene gegengeprueft.  
 **HOLD:** Keine Kanonisierung, keine GOLD-/VOIDMAP-Aenderung und keine Engel-Operationalisierung.  
-**LOOP:** Die Claude-/Diogenes-Pruefung ist stichprobenhaft erfolgt; menschliche Inhaltsentscheidung und optionaler Vollcheck der verbleibenden 12 Matrixzeilen bleiben offen.  
+**LOOP:** Der inhaltliche Vollcheck ist geschlossen; offen bleiben die menschliche Inhalts- und Merge-Entscheidung sowie die ausdruecklich nicht behauptete semantische Erschoepfung der grep-basierten Absenzpruefung.  
 **STOP:** Neue Parallelindizes oder Gleichsetzungen von Metapher, Mathematik, Physik und Empirie.
