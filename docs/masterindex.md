@@ -1,8 +1,8 @@
 # Masterindex — Seed
 
-**Version:** 1.1.0  
-**Stand:** 2026-07-10  
-**Letzte Prüfung:** Projektkonstellation ergänzt; keine Kanonisierung
+**Version:** 1.1.1  
+**Stand:** 2026-07-14  
+**Letzte Prüfung:** Projektkonstellation und privacy-reduzierter Reentry-Gap-Audit ergänzt; keine Kanonisierung
 
 Startpunkt des Masterindex. Enthält Struktur, narrative Einordnung und Links zu Canvas-Dokumenten.
 
@@ -16,8 +16,9 @@ Startpunkt des Masterindex. Enthält Struktur, narrative Einordnung und Links zu
 ## Aktuelle Projektkonstellation (ANNEX)
 
 - `docs/PROJECT_CONSTELLATION_MAP_v0_1.md` — dünne projektübergreifende Lagekarte zu Repo-Ankern, Status, Abhängigkeiten und sichtbaren Lücken
+- `docs/audit/2026-07-14_tesser3takt_reentry_gap_audit.md` — privacy-reduzierter Abgleich des aktuellen Arbeitsstands gegen vorhandene tesser3TAKT-, Traversal-, Index- und Validierungsstrukturen
 
-Die Konstellationskarte ergänzt die Navigation, ohne `index/`, `VOIDMAP.yml`, Policies, Specs, Receipts oder Governance-Entwürfe hochzustufen. Sie trennt Repository-Präsenz von Authority-Status und markiert repository-lagging Knoten ausdrücklich als Review- oder Intake-Bedarf.
+Die Konstellationskarte ergänzt die Navigation, ohne `index/`, `VOIDMAP.yml`, Policies, Specs, Receipts oder Governance-Entwürfe hochzustufen. Sie trennt Repository-Präsenz von Authority-Status und markiert repository-lagging Knoten ausdrücklich als Review- oder Intake-Bedarf. Der Reentry-Gap-Audit ist ein nachgeordneter Evidenzbeleg und keine zweite Indexschicht.
 
 ## Verzeichnisstruktur
 
@@ -54,6 +55,7 @@ Die Konstellationskarte ergänzt die Navigation, ohne `index/`, `VOIDMAP.yml`, P
 
 - Canon-Narrativ: `docs/narratives/symphonie_der_resonanz.md`
 - Functorial Map: `index/ENTAENGELMENT_INDEX_v3_FUNCTORIAL.yaml`
+- Draft-Reentry: `docs/audit/2026-07-14_tesser3takt_reentry_gap_audit.md` durch Claude/Diogenes und menschliche Inhaltsprüfung führen
 
 Ausformulierung der Kenogramm-Slots & Aufbau der Receipt-Chain.
 
@@ -86,7 +88,7 @@ Kenogramme (☐) markieren **bekanntes Nichtwissen** — Bereiche wo strukturell
 
 ### Triadisch (A ∩ B ∩ C):
 | Kenogramm | Frage | Perspektiven | Status |
-|-----------|-------|--------------|--------|
+|-----------|-------|-------------|--------|
 | ☐[CLAUDE↔GPT↔FLEKS]_Triadische-Kohärenz | Wie entsteht kohärente Struktur ohne zentrale Koordination? | EPR (A), Grammophon (B), Resonanz (C) | Stufe 2 (Triangulation) |
 
 **Zur Kenogramm-Befüllung:** Siehe `docs/triad_topology.md` Sektion VII für Stufe-3-Protokoll.
@@ -101,7 +103,7 @@ Kenogramme (☐) markieren **bekanntes Nichtwissen** — Bereiche wo strukturell
 
 ## XII. Topology-Diagramme
 
-- **Tri-Strang Venn:** `diagrams/triad_venn.svg` — Visualisiert A∩B, B∩C, A∩C, A∩B∩C
+- **Tri-Strang Venn:** `diagrams/triad_venn.svg` — Visualisiert A∩B, B∩C, A∩B∩C
 - **Grammophon-Hexaliminal:** `diagrams/grammophon_hexaliminal.svg` — Saturn z6-Rotation
 - **Apex-Äquivalenz:** `diagrams/threefold_apex.svg` — 0_holo = Grammophon = Nektar-Pyramide (geplant)
 
