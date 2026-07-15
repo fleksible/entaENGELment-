@@ -1,8 +1,8 @@
 # Masterindex — Seed
 
-**Version:** 1.0.0
-**Stand:** 2026-01-13
-**Letzte Prüfung:** Alignment mit Functorial Index v3
+**Version:** 1.1.2  
+**Stand:** 2026-07-14  
+**Letzte Prüfung:** Projektkonstellation und privacy-reduzierter Reentry-Gap-Audit nach user-relayed Claude-/Diogenes-Pruefung gehaertet; keine Kanonisierung
 
 Startpunkt des Masterindex. Enthält Struktur, narrative Einordnung und Links zu Canvas-Dokumenten.
 
@@ -12,6 +12,13 @@ Startpunkt des Masterindex. Enthält Struktur, narrative Einordnung und Links zu
 - `docs/ROADMAP_ORBITAL_v1.md` — Roadmap (Orbit-basiert)
 - `docs/bridgecards/BC_consent_as_transit.md` — Consent als Transit-Brücke
 - `docs/validation/VALIDATION_DEMO_v1.md` — Replizierbare Demo, kein Studienclaim
+
+## Aktuelle Projektkonstellation (ANNEX)
+
+- `docs/PROJECT_CONSTELLATION_MAP_v0_1.md` — dünne projektübergreifende Lagekarte zu Repo-Ankern, Status, Abhängigkeiten und sichtbaren Lücken
+- `docs/audit/2026-07-14_tesser3takt_reentry_gap_audit.md` — privacy-reduzierter Abgleich des aktuellen Arbeitsstands gegen vorhandene tesser3TAKT-, Traversal-, Index- und Validierungsstrukturen
+
+Die Konstellationskarte ergänzt die Navigation, ohne `index/`, `VOIDMAP.yml`, Policies, Specs, Receipts oder Governance-Entwürfe hochzustufen. Sie trennt Repository-Präsenz von Authority-Status. Der Status `repository-lagging` ist nur mit datiertem Intake-/Receipt-Pointer zulässig; ohne Pointer wird der Knoten als `present-partial`, `intake-only` oder `absent-or-unindexed` geführt. Der Reentry-Gap-Audit ist ein nachgeordneter Evidenzbeleg und keine zweite Indexschicht.
 
 ## Verzeichnisstruktur
 
@@ -48,6 +55,8 @@ Startpunkt des Masterindex. Enthält Struktur, narrative Einordnung und Links zu
 
 - Canon-Narrativ: `docs/narratives/symphonie_der_resonanz.md`
 - Functorial Map: `index/ENTAENGELMENT_INDEX_v3_FUNCTORIAL.yaml`
+- Draft-Reentry: menschliche Inhaltsprüfung des gehaerteten `docs/audit/2026-07-14_tesser3takt_reentry_gap_audit.md`
+- Optional: Vollprüfung der 12 noch nicht inhaltlich gegengeprüften Delta-Matrix-Zeilen vor Merge
 
 Ausformulierung der Kenogramm-Slots & Aufbau der Receipt-Chain.
 
@@ -80,7 +89,7 @@ Kenogramme (☐) markieren **bekanntes Nichtwissen** — Bereiche wo strukturell
 
 ### Triadisch (A ∩ B ∩ C):
 | Kenogramm | Frage | Perspektiven | Status |
-|-----------|-------|--------------|--------|
+|-----------|-------|-------------|--------|
 | ☐[CLAUDE↔GPT↔FLEKS]_Triadische-Kohärenz | Wie entsteht kohärente Struktur ohne zentrale Koordination? | EPR (A), Grammophon (B), Resonanz (C) | Stufe 2 (Triangulation) |
 
 **Zur Kenogramm-Befüllung:** Siehe `docs/triad_topology.md` Sektion VII für Stufe-3-Protokoll.
