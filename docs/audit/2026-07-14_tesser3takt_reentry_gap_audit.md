@@ -1,6 +1,6 @@
 # tesser3TAKT Reentry Gap Audit — 2026-07-14
 
-**Status:** [ANNEX] [AUDIT] — privacy-reduced Reentry-Abgleich, keine Kanonisierung  
+**Status:** [ANNEX] — `artifact_type: audit` · privacy-reduced Reentry-Abgleich, keine Kanonisierung  
 **Inline-Claim-Tags:** [FACT] [INFERENZ] [HYPOTHESE] [MODEL] [ROSETTA] [BRIDGE-WIP] [VOID] [ANNEX]  
 **Scope:** bestehende Repo-Struktur gegen den aktuellen, gespraechsbasierten Arbeitsstand pruefen; keine privaten Erzaehlungen oder symbolischen Profile uebernehmen
 
@@ -134,6 +134,24 @@ Er prueft nur:
 - `self_correction_trace`: zwei zunaechst falsch-negative Suchlaeufe durch Sprach- und Schreibvarianten; Schlussfolgerungen danach korrigiert und erneut geprueft
 
 [INFERENZ] Die Review-Historie wird nicht als Beweis der Inhalte gelesen. Sie dokumentiert Scope, Fehlerfaehigkeit, Stichprobentiefe und den jeweiligen Entscheidungsstand.
+
+### 2026-07-15 — Cross-instance Konvergenzsynthese 1.1
+
+- `id`: cross-instance-convergence-synthesis-2026-07-15
+- `source`: user-relayed
+- `contributing_instances`: Claude/Diogenes (direkte Repo-Relektüre und Selbstanwendung auf die zwölf Recon-Artefakte); ChatGPT (Gegenprüfung und Review-/Entscheidungs-Membran)
+- `review_kind`: synthesis; keine unabhängige empirische Replikation
+- `independence`: partial — gemeinsamer Repo-Körper und geerbte Prompt-/Review-Lineage werden ausdrücklich mitgeführt
+- `attested_refs`: `main@96bbdb9`; `PR#297@e0aaacd` vor diesem Ergänzungscommit
+- `scope`: Direktlektüre von `claim_tags_v0_2.yaml`, `tools/claim_lint.py`, `EPISTEMIC_HYGIENE.md`, `CLAUDE.md`, `VOIDMAP.yml`, Konstellationskarte, Audit und Masterindex; Selbstanwendung auf die zwölf Recon-Pass-1-Artefakte
+- `result`: pass-candidate-confirmed-after-D13; ergänzt die Reviews vom 2026-07-14 und ersetzt keinen Eintrag
+- `confirmed`: Draft-Register, Runtime-Linter und Status-/Autoritätsfelder sind getrennte Ebenen; `[ANNEX]` ist registriert, `[OPEN]`/`[GOLD]`/`[CONFLICT]`/`[AUDIT]` nicht; Register und Linter sind teildisjunkt; 5/17-, 17/17- und 12-Angaben sind bei sichtbarer Prüftiefe konsistent
+- `self_corrections`: `claude: []` war nur knotenbezogen; main-Abwesenheit wurde fälschlich auf den PR-Branch ausgedehnt; „GitHub-Vollaufnahme“ wurde auf einen gezielten Snapshot begrenzt; K2 wurde von einer Linter-Behauptung auf eine Drei-Ebenen-Rekonstruktion umgestellt; Fable-Intake wurde von `[SPEC][ANNEX]` auf ROHSEDIMENT zurückgenommen
+- `limits`: Issues/Actions-Logs und Drive ungeprüft; Keyword-/grep-Prüfungen nicht semantisch erschöpfend; Review-Anzahl erzeugt keine Mehrheits- oder Wahrheitswirkung
+- `authority_effect`: none
+- `decision_effect`: none
+- `promotion_effect`: none
+- `open_human_decisions`: Inhalts- und Merge-Entscheidung zu PR #297; D14/CORE-Scope ja oder nein; PR #298 HOLD/Migration; mögliche Promotion des Fable-Prompts aus ROHSEDIMENT
 
 ## 7. Reentry-Entscheidung
 
