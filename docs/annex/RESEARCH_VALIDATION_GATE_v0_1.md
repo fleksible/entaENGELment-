@@ -92,7 +92,10 @@ Zusätzlich gelten die harten Nicht-Gleichungen:
 - **Erforderliche Artefakte:** Herkunftspointer (Intake).
 - **Mögliche Falsifier:** noch keine — es gibt noch keinen prüfbaren Satz.
 - **Nächster Schritt:** Klasse zuordnen (§2), sonst `CLASSIFICATION_UNDETERMINED`.
-- **Rücknahmepfad:** Intake bleibt liegen oder wird als [VOID] markiert; nichts wird gelöscht.
+- **Rücknahmepfad:** Der Intake bleibt liegen. Ein daraus ausdrücklich
+  formulierter Claim kann nach menschlicher Prüfung als [VOID] markiert
+  werden; das Material selbst erhält dadurch keinen Claim-Status. Nichts
+  wird gelöscht.
 
 ### 3.2 MODEL
 
@@ -273,8 +276,9 @@ research_claim_review:
 
 ## 9. Verhältnis zu den anderen Modulen
 
-**M5 ↔ M1:** M5 prüft methodische Zulässigkeit; M1 hält die semantische
-Übertragung und ihren Verlust sichtbar. Keines ersetzt das andere.
+**M5 ↔ M1:** M5 prüft methodische Prüfbarkeit, Voraussetzungen und externe
+Review-Reife; M1 hält die semantische Übertragung und ihren Verlust
+sichtbar. Keines ersetzt das andere. M5 besitzt keine Freigabekompetenz.
 
 **M5 ↔ M6:** M6 darf einen Komponentenclaim nur über M5 weitergeben:
 
@@ -284,7 +288,9 @@ M6 component claim → M5 bench/method review
 ```
 
 Kein direkter Hardware-zu-Ethik-Pfad. M6 bleibt bis zur Akzeptanz dieses
-Gates HOLD.
+Gates HOLD. Akzeptanz bedeutet hier ausschließlich expliziten menschlichen
+Review dieses ANNEX und gegebenenfalls Merge oder dokumentierten Freeze;
+sie ist keine Forschungs-, Sicherheits- oder Hardwarefreigabe.
 
 **M5 ↔ ERK:** Ein M5-Ergebnis kann später als Material oder
 EvidenceRelation in einen ERK-Flow eingehen (Referenzstand:
