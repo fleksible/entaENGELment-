@@ -28,14 +28,36 @@ Absenzbefunde gelten für den Suchscope `main @ 683ea6c` mit Volltextsuche
 
 ### Integritätsbefund (Kurzform)
 
-- [FACT] Alle 10 Receipt-Datei-Hashes verifiziert (2026-07-21), YAML/JSON
-  valide, Pfade sicher, keine Duplikate.
-- [FACT] Der äußere Container-Digest (`3dd76c1f…`) entspricht **nicht** dem
-  zuvor beobachteten Erwartungswert (`9de320ff…`). Da die inneren Hashes
-  vollständig stimmen, ist die Container-Identität des früheren
-  Beobachtungswertes **UNDETERMINED**; die Inhalts-Integrität ist
-  receipt-verifiziert. Bundle-Integrität ist keine semantische Wahrheit
-  (Invariante 1).
+- [FACT] Alle 10 Manifest-Datei-Hashes verifiziert (2026-07-21), YAML/JSON
+  valide, Pfade sicher, keine Duplikate. Der Drive-Container enthält
+  12 ZIP-Einträge (1 Verzeichniseintrag, 11 Datei-Einträge); das Manifest
+  hasht 10 Dateien und nimmt sich selbst nicht auf
+  (`manifest_self_hashed: false`).
+- [FACT] Es existieren **zwei verschieden verpackte Container desselben
+  Inhalts**: die vom Projektinitiator bereitgestellte Original-Variante
+  (`9de320ff…`, 26 043 Bytes, 11 Datei-Einträge, 0 Verzeichniseinträge)
+  und die geprüfte Drive-Variante (`3dd76c1f…`, 27 209 Bytes,
+  11 Datei-Einträge, 1 Verzeichniseintrag). Verglichen wurden die elf
+  normalisierten Dateinamen, die zehn Manifest-Hashes und separat der
+  SHA-256 des Receipts selbst (`156e146d…`, beidseitig identisch).
+  Disposition: **SAME_INNER_PAYLOAD_DIFFERENT_CONTAINER** (Details:
+  Intake, `container_comparison`). Bundle-Integrität bleibt dennoch keine
+  semantische Wahrheit (Invariante 1).
+
+### ERK-Referenz dieser Prüfung
+
+```yaml
+erk_reference:
+  pull_request: 314
+  state: open_draft
+  reviewed_head: ef3393e9b40e6cc2a777c5b464909e5a42b5e7c6
+  moving_target: true
+  authority_effect: none
+```
+
+[ANNEX] PR #314 ist **kein stabiler Repo-Kanon**. Alle ERK-Bezüge in diesem
+Crosswalk gelten für den genannten Head; Änderungen nach diesem Head
+benötigen einen neuen Drift-Check.
 
 ---
 
@@ -342,8 +364,9 @@ preserved_value: >
   ehrliche limits-Liste, repo_witness mit Ref, authority_effect: none.
 outdated_assumption: >
   Scope-Grenzen: Das Receipt hasht sich selbst nicht (korrekt) und deckt
-  den äußeren Container nicht ab — daher konnte der äußere
-  Digest-Erwartungswert nicht über das Receipt geklärt werden.
+  den äußeren Container nicht ab. Die Container-Frage wurde daher separat
+  über den Receipt-Selbsthash (156e146d..., beidseitig identisch) und die
+  zehn Manifest-Hashes geklärt: SAME_INNER_PAYLOAD_DIFFERENT_CONTAINER.
 privacy_risk: >
   Gering; method_scope nennt private Quellklassen (save states, P7) nur
   als Kategorien, ohne Inhalte.
@@ -385,7 +408,12 @@ human_decision: keine erforderlich
 | MISSING_REPO_SAFE | 01, 05, 06, 07 |
 | PRIVATE_ONLY | 03 |
 | HISTORICAL_WITNESS | 00, 08, 09, README |
-| UNDETERMINED (Teilaspekte) | Container-Identität des früheren Digests; heutiger P7-Stand |
+| UNDETERMINED (Teilaspekte) | heutiger P7-Stand (privater Korpus liegt der Prüfung nicht vor) |
+
+[FACT] Die zunächst offene Container-Identität des früheren Digests ist
+aufgelöst: `9de320ff…` gehört zur Original-ZIP-Variante des
+Projektinitiators; beide Container tragen denselben inneren Inhalt
+(`SAME_INNER_PAYLOAD_DIFFERENT_CONTAINER`, siehe Integritätsbefund).
 
 [INFERENZ] Kein Bundle-Modul ist SUPERSEDED im strengen Sinn: Auch die
 teilweise repräsentierten Module (02, 04) enthalten Prüfmaterial (Negativtests,

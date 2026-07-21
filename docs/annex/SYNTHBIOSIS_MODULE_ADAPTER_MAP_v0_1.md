@@ -10,7 +10,21 @@
 **Quellen:** Synthbiosis Systematlas v1.1 (Bundle-Witness, siehe
 `INBOX/INTAKE-2026-07-21-synthbiosis-system-atlas-v1_1.md` und
 `docs/audit/SYNTHBIOSIS_BUNDLE_CROSSWALK_v0_1.md`); Evidence Routing Kernel
-v0.1a (PR #314, offen — noch nicht main).
+v0.1a — exakt geprüfter Zwischenstand:
+
+```yaml
+erk_reference:
+  pull_request: 314
+  state: open_draft
+  reviewed_head: ef3393e9b40e6cc2a777c5b464909e5a42b5e7c6
+  moving_target: true
+  authority_effect: none
+```
+
+PR #314 ist **kein stabiler Repo-Kanon**. Diese Adapter-Map bezieht sich auf
+den genannten Head; Änderungen nach diesem Head benötigen einen neuen
+Drift-Check. Phase 2A bleibt HOLD/LOOP, bis der ERK-Zielstand gemergt oder
+ausdrücklich eingefroren wurde.
 
 ---
 
@@ -27,7 +41,7 @@ sechs Bundle-Modulen und dem Evidence Routing Kernel (ERK):
 | M4 | Governance / Receipts / False-Safety |
 | M5 | Research & Validation Gate |
 | M6 | Photonic/Thermal ROSETTA Airlock |
-| ERK | Evidence Routing Kernel v0.1a (PR #314) |
+| ERK | Evidence Routing Kernel v0.1a (PR #314 @ `ef3393e9`, siehe `erk_reference`) |
 
 Die Map ist **kein neuer Orchestrator**, kein Runtime-Vertrag und keine
 Kopplung. Nichts hierin wird enforced; jede spätere Implementierung benötigt
@@ -209,8 +223,6 @@ Invariante 8: Simulation ist keine Empirie).
 
 `UNDETERMINED` bleibt ausdrücklich stehen für:
 
-- die Container-Identität des früher beobachteten Bundle-Digests
-  (Intake, `bundle_sha256_note`);
 - den heutigen Zustand der privaten P7-Gates (privater Korpus liegt dieser
   Prüfung nicht vor);
 - die Frage, ob `07_MODULE_CONTRACTS.yaml`-`stops` als typisiertes Schema
@@ -223,7 +235,7 @@ Nichts davon wird ästhetisch geschlossen.
 
 | Phase | Inhalt | Voraussetzung | kleinster nächster Schritt |
 |---|---|---|---|
-| 2A | M1 Bridge-Adapter (`src/core/evidence_bridge_adapter.py` + Tests + ANNEX-Doku) | PR #314 gemergt oder stabiler Adapterzielstand | Feld-Mapping aus §2.1 als Schema-Entwurf reviewen |
+| 2A | M1 Bridge-Adapter (`src/core/evidence_bridge_adapter.py` + Tests + ANNEX-Doku) | PR #314 gemergt oder Zielstand ausdrücklich eingefroren (geprüfter Head: `ef3393e9`); bis dahin HOLD/LOOP | Feld-Mapping aus §2.1 als Schema-Entwurf reviewen |
 | 2B | `docs/annex/RESEARCH_VALIDATION_GATE_v0_1.md` (reduzierte ANNEX-Fassung von Bundle 05) | eigener Plan-first-/Safety-Checkpoint | Freigabeentscheidung |
 | 2C | Photonic/Thermal Airlock: nur atomare Komponentenclaims | 2B existiert | ersten Bench-Claim-Text reviewen |
 | 2D | Grimm/Nektar Source-Freeze-Manifest (Hash, Purpose, Inventar, Datenfluss, Providergrenzen, Known Limits, Lizenz, Public-Allowlist, private Ausschlüsse) | kein P7-Import | Manifest-Zuschnitt entscheiden |
