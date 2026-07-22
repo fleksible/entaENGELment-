@@ -112,3 +112,6 @@ Each boundary pair must contain exactly one ordered `EXIT` and one `ENTRY`, use 
 
 JSON and transport inputs must enter through `validateTesserTickFrame`. The runtime validator checks the complete serialized shape, requires every transition to name `GLOBAL_REENTRY_LATTICE`, verifies the EXIT/ENTRY pair invariant, rejects a supplied `collisionProxy` that disagrees with the state IDs, and enforces the `digest`/`digestStatus` relation. TypeScript annotations alone are not an input boundary.
 
+## Related Intake
+
+`docs/narratives/grimm2/GRIMM_IR_MEREOTOPOLOGY_INTAKE_v0_1.md` is an optional Grimm-IR crosswalk for projected crossings, mereotopological relations, reader actions, and protected provenance. It is not a dependency of Frame Contract v0.2 and cannot alter frame validation or collision semantics.

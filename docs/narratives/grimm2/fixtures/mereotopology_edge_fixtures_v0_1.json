@@ -1,0 +1,262 @@
+{
+  "schemaVersion": "0.1",
+  "status": "[ANNEX]",
+  "claimLayer": "[SPEC-WIP]",
+  "purpose": "Qualitative counterexamples for Grimm-IR edge relations and the tesser3TAKT collision boundary.",
+  "invariants": {
+    "relationSet": ["DC", "EC", "PO", "TPP", "NTPP", "EQ"],
+    "collisionSource": "EXACT_STATE_ID",
+    "colorCarriesMeaning": false,
+    "motionCarriesMeaning": false,
+    "readerActions": ["ACCEPT", "REVISE", "REJECT", "SILENCE"],
+    "minimumViewportCssPx": 320
+  },
+  "fixtures": [
+    {
+      "id": "horizon-projection-no-contact",
+      "title": "Horizontprojektion ohne Kontakt",
+      "relation": "DC",
+      "crossing": "PROJECTED",
+      "direction": "NONE",
+      "sourceNodeId": "line-observer-a",
+      "targetNodeId": "line-observer-b",
+      "plainLanguage": "Die Kanten liegen nur in der Projektion übereinander; ihre Bereiche bleiben getrennt.",
+      "guard": "Bildschirmnähe oder perspektivisches Kreuzen erzeugt weder Kontakt noch Identität.",
+      "reentryQuestion": "Bleiben die Bereiche bei einem Perspektivwechsel weiterhin getrennt?",
+      "claimLayer": "[MODEL]",
+      "provenance": {
+        "sourceForm": "conversation-derived edge distinction",
+        "sourcePointer": "docs/narratives/grimm2/GRIMM_IR_MEREOTOPOLOGY_INTAKE_v0_1.md#4-mereotopological-edge-grammar",
+        "authorityStatus": "derived",
+        "sourceVisibility": "public-safe",
+        "publicReconstructionAllowed": true
+      },
+      "visualEncoding": {
+        "color": "claim-layer-neutral",
+        "linePattern": "long-gap",
+        "relationLabel": "DC — getrennt",
+        "arrow": "none",
+        "staticFallback": "Two labelled lines cross in projection with a small bridge break at the crossing.",
+        "requiresColorForMeaning": false,
+        "requiresMotionForMeaning": false
+      },
+      "reader": {
+        "actions": ["ACCEPT", "REVISE", "REJECT", "SILENCE"],
+        "orderAtNarrowWidth": ["title", "relation", "endpoints", "guard", "reentryQuestion"]
+      },
+      "frameBridge": {
+        "transitionPairId": null,
+        "collisionSemantics": null,
+        "leftStateId": null,
+        "rightStateId": null,
+        "expectedCollisionProxy": false,
+        "disposition": "NO_FRAME_EFFECT"
+      }
+    },
+    {
+      "id": "shared-boundary-no-interior",
+      "title": "Gemeinsame Grenze ohne gemeinsamen Innenraum",
+      "relation": "EC",
+      "crossing": "TOUCH",
+      "direction": "BIDIRECTIONAL",
+      "sourceNodeId": "reader-membrane",
+      "targetNodeId": "offered-scene",
+      "plainLanguage": "Die beiden Bereiche berühren dieselbe Grenze, teilen aber keinen Innenraum.",
+      "guard": "Berührung erlaubt Austauschfragen, aber keine Verschmelzung der Bereiche.",
+      "reentryQuestion": "Ist nur die Grenze gemeinsam oder auch ein Teil des Innenraums?",
+      "claimLayer": "[MODEL]",
+      "provenance": {
+        "sourceForm": "conversation-derived boundary motif",
+        "sourcePointer": "docs/narratives/grimm2/GRIMM_IR_MEREOTOPOLOGY_INTAKE_v0_1.md#6-reader-membrane",
+        "authorityStatus": "derived",
+        "sourceVisibility": "public-safe",
+        "publicReconstructionAllowed": true
+      },
+      "visualEncoding": {
+        "color": "claim-layer-neutral",
+        "linePattern": "paired-dot",
+        "relationLabel": "EC — Randberührung",
+        "arrow": "double-ended",
+        "staticFallback": "Two labelled regions meet at one marked boundary point without an overlap fill.",
+        "requiresColorForMeaning": false,
+        "requiresMotionForMeaning": false
+      },
+      "reader": {
+        "actions": ["ACCEPT", "REVISE", "REJECT", "SILENCE"],
+        "orderAtNarrowWidth": ["title", "relation", "endpoints", "guard", "reentryQuestion"]
+      },
+      "frameBridge": {
+        "transitionPairId": null,
+        "collisionSemantics": null,
+        "leftStateId": null,
+        "rightStateId": null,
+        "expectedCollisionProxy": false,
+        "disposition": "NO_FRAME_EFFECT"
+      }
+    },
+    {
+      "id": "partial-overlap-with-remainders",
+      "title": "Teilüberlappung mit Resten",
+      "relation": "PO",
+      "crossing": "OVER",
+      "direction": "FORWARD",
+      "sourceNodeId": "mythic-vocabulary",
+      "targetNodeId": "technical-vocabulary",
+      "plainLanguage": "Die Bereiche überlappen teilweise und behalten getrennte Reste.",
+      "guard": "Eine gemeinsame Übersetzungszone beweist keine Gleichheit der Vokabulare.",
+      "reentryQuestion": "Welche Anteile bleiben auf beiden Seiten außerhalb der Überlappung?",
+      "claimLayer": "[ROSETTA]",
+      "provenance": {
+        "sourceForm": "conversation-derived translation zone",
+        "sourcePointer": "docs/narratives/grimm2/GRIMM_IR_MEREOTOPOLOGY_INTAKE_v0_1.md#5-orthogonal-visual-channels",
+        "authorityStatus": "derived",
+        "sourceVisibility": "public-safe",
+        "publicReconstructionAllowed": true
+      },
+      "visualEncoding": {
+        "color": "translation-layer",
+        "linePattern": "dash-dot",
+        "relationLabel": "PO — Teilüberlappung",
+        "arrow": "forward",
+        "staticFallback": "Two labelled regions share a hatched lens while each retains an unhatched remainder.",
+        "requiresColorForMeaning": false,
+        "requiresMotionForMeaning": false
+      },
+      "reader": {
+        "actions": ["ACCEPT", "REVISE", "REJECT", "SILENCE"],
+        "orderAtNarrowWidth": ["title", "relation", "endpoints", "guard", "reentryQuestion"]
+      },
+      "frameBridge": {
+        "transitionPairId": null,
+        "collisionSemantics": null,
+        "leftStateId": null,
+        "rightStateId": null,
+        "expectedCollisionProxy": false,
+        "disposition": "NO_FRAME_EFFECT"
+      }
+    },
+    {
+      "id": "reader-scene-tangential-containment",
+      "title": "Rücknehmbare Szene an der Reader-Membran",
+      "relation": "TPP",
+      "crossing": "OVER",
+      "direction": "FORWARD",
+      "sourceNodeId": "offered-scene",
+      "targetNodeId": "reader-membrane",
+      "plainLanguage": "Die angebotene Szene liegt tangential innerhalb der Reader-Membran und bleibt rücknehmbar.",
+      "guard": "Die Membran begrenzt die Szene; sie diagnostiziert oder verpflichtet die lesende Person nicht.",
+      "reentryQuestion": "Kann die Szene revidiert oder abgelehnt werden, ohne die Membran zu verändern?",
+      "claimLayer": "[SPEC-WIP]",
+      "provenance": {
+        "sourceForm": "conversation-derived reader action model",
+        "sourcePointer": "docs/narratives/grimm2/GRIMM_IR_MEREOTOPOLOGY_INTAKE_v0_1.md#6-reader-membrane",
+        "authorityStatus": "derived",
+        "sourceVisibility": "public-safe",
+        "publicReconstructionAllowed": true
+      },
+      "visualEncoding": {
+        "color": "reader-boundary",
+        "linePattern": "solid-with-tangent-mark",
+        "relationLabel": "TPP — innen mit Randkontakt",
+        "arrow": "forward",
+        "staticFallback": "A labelled scene sits inside a labelled membrane and touches it at one marked tangent.",
+        "requiresColorForMeaning": false,
+        "requiresMotionForMeaning": false
+      },
+      "reader": {
+        "actions": ["ACCEPT", "REVISE", "REJECT", "SILENCE"],
+        "orderAtNarrowWidth": ["title", "relation", "endpoints", "guard", "reentryQuestion"]
+      },
+      "frameBridge": {
+        "transitionPairId": null,
+        "collisionSemantics": null,
+        "leftStateId": null,
+        "rightStateId": null,
+        "expectedCollisionProxy": false,
+        "disposition": "NO_FRAME_EFFECT"
+      }
+    },
+    {
+      "id": "protected-origin-inside-privacy-envelope",
+      "title": "Geschützte Herkunft in der Privacy-Hülle",
+      "relation": "NTPP",
+      "crossing": "UNDER",
+      "direction": "REVERSE",
+      "sourceNodeId": "protected-origin-note",
+      "targetNodeId": "privacy-envelope",
+      "plainLanguage": "Der Herkunftshinweis liegt geschützt innerhalb der Privacy-Hülle und wird öffentlich nicht rekonstruiert.",
+      "guard": "Nur die nicht rückrechenbare Struktur darf den öffentlichen Rand erreichen.",
+      "reentryQuestion": "Lässt sich aus der öffentlichen Form noch eine Person oder ein Ereignis rekonstruieren?",
+      "claimLayer": "[CONTEXT]",
+      "provenance": {
+        "sourceForm": "protected personal origin reduced to a structural note",
+        "sourcePointer": null,
+        "authorityStatus": "derived",
+        "sourceVisibility": "protected-origin",
+        "publicReconstructionAllowed": false
+      },
+      "visualEncoding": {
+        "color": "protected-context",
+        "linePattern": "double-boundary",
+        "relationLabel": "NTPP — geschützt innen",
+        "arrow": "reverse-to-envelope",
+        "staticFallback": "An anonymous structural note is fully enclosed by a double-lined privacy boundary with no trace-back path.",
+        "requiresColorForMeaning": false,
+        "requiresMotionForMeaning": false
+      },
+      "reader": {
+        "actions": ["ACCEPT", "REVISE", "REJECT", "SILENCE"],
+        "orderAtNarrowWidth": ["title", "relation", "endpoints", "guard", "reentryQuestion"]
+      },
+      "frameBridge": {
+        "transitionPairId": null,
+        "collisionSemantics": null,
+        "leftStateId": null,
+        "rightStateId": null,
+        "expectedCollisionProxy": false,
+        "disposition": "NO_FRAME_EFFECT"
+      }
+    },
+    {
+      "id": "exact-state-id-frame-witness",
+      "title": "Exakter State-ID-Witness des Frames",
+      "relation": "EQ",
+      "crossing": "EXACT_STATE_ID",
+      "direction": "BIDIRECTIONAL",
+      "sourceNodeId": "left-frame-state",
+      "targetNodeId": "right-frame-state",
+      "plainLanguage": "Nur der Frame bestätigt auf beiden Seiten exakt dieselbe State-ID; deshalb ist der Kollisionsproxy wahr.",
+      "guard": "Narrative Gleichheit, ähnliche Farbe oder sichtbare Überlagerung reichen dafür nicht aus.",
+      "reentryQuestion": "Sind Semantik und beide State-IDs im Frame weiterhin exakt gleich?",
+      "claimLayer": "[SPEC]",
+      "provenance": {
+        "sourceForm": "tesser3TAKT Frame Contract v0.2 counterexample",
+        "sourcePointer": "ui-app/lib/tesser3takt-frame.ts",
+        "authorityStatus": "repo-local",
+        "sourceVisibility": "public-safe",
+        "publicReconstructionAllowed": true
+      },
+      "visualEncoding": {
+        "color": "frame-witness",
+        "linePattern": "double-solid",
+        "relationLabel": "EQ + EXACT_STATE_ID — Frame-Witness",
+        "arrow": "double-ended",
+        "staticFallback": "Both labelled endpoints print the same full State-ID beside an explicit EXACT_STATE_ID badge.",
+        "requiresColorForMeaning": false,
+        "requiresMotionForMeaning": false
+      },
+      "reader": {
+        "actions": ["ACCEPT", "REVISE", "REJECT", "SILENCE"],
+        "orderAtNarrowWidth": ["title", "relation", "endpoints", "guard", "reentryQuestion"]
+      },
+      "frameBridge": {
+        "transitionPairId": "bt-fixture-exact-001",
+        "collisionSemantics": "EXACT_STATE_ID",
+        "leftStateId": "S4:1234",
+        "rightStateId": "S4:1234",
+        "expectedCollisionProxy": true,
+        "disposition": "FRAME_WITNESS_REQUIRED"
+      }
+    }
+  ]
+}
