@@ -5,7 +5,6 @@ import sys
 import unittest
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
@@ -37,9 +36,7 @@ class GrimmMereotopologyFixtureTests(unittest.TestCase):
                 continue
             with self.subTest(fixture=fixture["id"]):
                 self.assertFalse(fixture["frameBridge"]["expectedCollisionProxy"])
-                self.assertEqual(
-                    fixture["frameBridge"]["disposition"], "NO_FRAME_EFFECT"
-                )
+                self.assertEqual(fixture["frameBridge"]["disposition"], "NO_FRAME_EFFECT")
 
     def test_exact_collision_has_frame_owned_witness(self) -> None:
         exact = [
@@ -68,9 +65,7 @@ class GrimmMereotopologyFixtureTests(unittest.TestCase):
     def test_validator_rejects_collision_from_projected_crossing(self) -> None:
         malformed = copy.deepcopy(self.bundle)
         projected = next(
-            fixture
-            for fixture in malformed["fixtures"]
-            if fixture["crossing"] == "PROJECTED"
+            fixture for fixture in malformed["fixtures"] if fixture["crossing"] == "PROJECTED"
         )
         projected["frameBridge"]["expectedCollisionProxy"] = True
         errors = validate_bundle(malformed)
