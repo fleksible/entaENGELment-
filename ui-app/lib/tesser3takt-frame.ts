@@ -308,7 +308,8 @@ export function validateTesserTickFrame(input: unknown): TesserTickFrameValidati
   if (!Array.isArray(input.boundaryTransitions)) {
     errors.push('$.boundaryTransitions: expected an array');
   } else {
-    input.boundaryTransitions.forEach((transition, index) => {
+    for (let index = 0; index < input.boundaryTransitions.length; index += 1) {
+      const transition = input.boundaryTransitions[index];
       if (
         validateBoundaryTransition(
           transition,
@@ -318,7 +319,7 @@ export function validateTesserTickFrame(input: unknown): TesserTickFrameValidati
       ) {
         transitions.push(transition);
       }
-    });
+    }
     if (transitions.length === input.boundaryTransitions.length) {
       errors.push(...validateBoundaryPairs(transitions).errors);
     }
@@ -337,3 +338,4 @@ export function validateTesserTickFrame(input: unknown): TesserTickFrameValidati
   }
   return { valid: true, errors, frame: input as unknown as TesserTickFrame };
 }
+
