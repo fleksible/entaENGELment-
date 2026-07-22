@@ -7,6 +7,7 @@ import { NavItem } from '@/types';
 const NAV_ITEMS: NavItem[] = [
   { id: 'home', label: 'Home', icon: '🏠', href: '/' },
   { id: 'metatron', label: 'Fokus', icon: '🎯', href: '/metatron' },
+  { id: 'tesser3takt', label: 'tesser3TAKT', icon: '⌬', href: '/tesser3takt' },
   { id: 'voidmap', label: 'VOIDs', icon: '☐', href: '/voidmap' },
   { id: 'guards', label: 'Guards', icon: '🛡️', href: '/guards' },
   { id: 'fractalsense', label: 'Fraktal', icon: '🌀', href: '/fractalsense' },
@@ -35,7 +36,7 @@ export function Navigation() {
               href={item.href}
               className={`
                 flex flex-col items-center justify-center
-                min-w-[64px] min-h-[56px] p-2
+                min-w-[56px] min-h-[56px] p-2
                 touch-manipulation
                 transition-colors duration-150
                 ${isActive
@@ -45,7 +46,7 @@ export function Navigation() {
               `}
             >
               <span className="text-xl mb-0.5">{item.icon}</span>
-              <span className="text-[10px] font-medium">{item.label}</span>
+              <span className="text-[9px] font-medium">{item.label}</span>
             </Link>
           );
         })}
@@ -69,7 +70,7 @@ export function Navigation() {
         </div>
 
         {/* Navigation Links */}
-        <nav className="flex-1 p-4 space-y-1">
+        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
           {NAV_ITEMS.map((item) => {
             const isActive = pathname === item.href;
             return (
