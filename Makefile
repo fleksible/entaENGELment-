@@ -9,7 +9,7 @@ PHI ?= 0.72
 REFRACTORY ?= 120
 JS_VERIFY_CMD ?= pnpm turbo run typecheck lint build
 
-.PHONY: help install install-dev install-hooks test test-unit test-integration test-ethics coverage lint format type-check clean gate-test port-lint frame-lint voids-backlog voids-backlog-check voidmap-ui-drift-check pipeline-essentials workflow-posture-check verify verify-core verify-governance verify-js verify-all verify-pointers claim-lint verify-json status status-verify snapshot all deepjump benchmark-replay intake demo
+.PHONY: help install install-dev install-hooks test test-unit test-integration test-ethics coverage lint format type-check clean gate-test port-lint frame-lint voids-backlog voids-backlog-check voidmap-ui-drift-check pipeline-essentials workflow-posture-check verify verify-core verify-governance verify-js verify-all verify-pointers claim-lint verify-json status status-verify snapshot all deepjump benchmark-replay intake demo erk-drill erk-intake
 
 help:
 	@echo "entaENGELment Framework - Development Commands"
@@ -57,6 +57,10 @@ help:
 	@echo ""
 	@echo "Benchmark:"
 	@echo "  make benchmark-replay Run deterministic benchmark replay"
+	@echo ""
+	@echo "Evidence Routing Kernel:"
+	@echo "  make erk-drill       Replay ERK fixtures as guard drills (read-only)"
+	@echo "  make erk-intake FILE=<path> [LEDGER=<jsonl>]  Intake -> MATERIAL_REGISTERED"
 	@echo ""
 	@echo "Cleanup:"
 	@echo "  make clean           Remove build artifacts and cache"
@@ -217,6 +221,20 @@ intake:
 		exit 2; \
 	fi
 	@$(PY) tools/intake_add.py --file "$(FILE)" --title "$(TITLE)" --source "$(SOURCE)"
+
+# ERK Guard-Drill: Fixtures als lebende Grenz-Übung replayen (rein lesend).
+# Siehe docs/annex/ERK_CONNECTIONS_v0_1.md.
+erk-drill:
+	@$(PY) tools/erk_drill.py
+
+# ERK Intake-Adapter: Intake-Artefakt als MATERIAL_REGISTERED-Event erfassen.
+# Ohne LEDGER= läuft der Adapter als Dry-Run (zeigt nur das Payload).
+erk-intake:
+	@if [ -z "$(FILE)" ]; then \
+		echo "Usage: make erk-intake FILE=<path> [LEDGER=out/erk/erk_events.jsonl]"; \
+		exit 2; \
+	fi
+	@$(PY) tools/erk_intake_adapter.py --file "$(FILE)" $(if $(LEDGER),--ledger "$(LEDGER)")
 
 # Demo: Minimal receipt cycle (emit → verify)
 demo:

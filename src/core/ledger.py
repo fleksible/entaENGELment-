@@ -201,6 +201,63 @@ class Ledger:
             with open(self.path, "a", encoding="utf-8") as f:
                 f.write(json.dumps(event.to_dict(), separators=(",", ":")) + "\n")
 
+    def event(
+        self,
+        event_type: str,
+        payload: Mapping[str, Any],
+        *,
+        event_id: str | None = None,
+        timestamp: float | None = None,
+        span_id: str | None = None,
+    ) -> LedgerEvent:
+        """Emit a generic domain event with the existing hash-chain semantics.
+
+        Fail-closed: ein nicht kanonisch JSON-serialisierbarer Payload führt zu
+        ``ValueError``, bevor irgendetwas angehängt wird. Der gespeicherte Payload
+        ist eine defensive Tiefkopie — spätere Mutation des übergebenen Mappings
+        verändert den Eventinhalt nicht.
+
+        Args:
+            event_type: Domain-Eventtyp (z.B. "CLAIM_CREATED").
+            payload: JSON-serialisierbares Mapping mit dem Eventinhalt.
+            event_id: Explizite Event-ID (für Fixtures/Replay-Tests); sonst UUID.
+            timestamp: Expliziter Zeitstempel; sonst aktuelle Zeit.
+            span_id: Expliziter Span; sonst aktueller Kontext-Span.
+
+        Returns:
+            Das emittierte LedgerEvent inklusive Hash-Chain-Feldern.
+        """
+        if not isinstance(event_type, str) or not event_type.strip():
+            raise ValueError("event_type must be a non-empty string")
+        if not isinstance(payload, Mapping):
+            raise ValueError("payload must be a mapping")
+        if event_id is not None and (not isinstance(event_id, str) or not event_id.strip()):
+            raise ValueError("event_id must be a non-empty string when provided")
+        if timestamp is not None and (
+            isinstance(timestamp, bool) or not isinstance(timestamp, (int, float))
+        ):
+            raise ValueError("timestamp must be int or float when provided")
+
+        try:
+            canonical = json.dumps(
+                dict(payload), sort_keys=True, separators=(",", ":"), allow_nan=False
+            )
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"payload is not canonically JSON-serializable: {exc}") from exc
+        payload_copy: dict[str, Any] = json.loads(canonical)
+
+        kwargs: dict[str, Any] = {"type": event_type, "payload": payload_copy}
+        if event_id is not None:
+            kwargs["event_id"] = event_id
+        if timestamp is not None:
+            kwargs["timestamp"] = float(timestamp)
+        if span_id is not None:
+            kwargs["span_id"] = span_id
+
+        event = LedgerEvent(**kwargs)
+        self._emit(event)
+        return event
+
     def metric(self, metric_id: str, value: float, **tags: Any) -> None:
         """Emit a metric event.
 
