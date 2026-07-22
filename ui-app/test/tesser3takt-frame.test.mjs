@@ -49,6 +49,13 @@ test('boundary validation rejects orphan, duplicate, id mismatch, coordinate mis
     /duplicate EXIT/,
   );
   assert.match(
+    validateBoundaryPairs([
+      { ...exit, stepIndex: 4 },
+      { ...entry, stepIndex: 3 },
+    ]).errors.join('\\n'),
+    /EXIT must precede ENTRY/,
+  );
+  assert.match(
     validateBoundaryPairs([exit, { ...entry, transformedFrom: 'S4:9999' }]).errors.join('\n'),
     /transformedFrom must match/,
   );
@@ -137,4 +144,21 @@ test('runtime validation rejects malformed JSON without throwing', () => {
   assert.match(result.errors.join('\n'), /stepIndex/);
   assert.match(result.errors.join('\n'), /latticePosition/);
   assert.match(result.errors.join('\n'), /GLOBAL_REENTRY_LATTICE/);
+});
+
+test('runtime validation rejects sparse boundary transition arrays', () => {
+  const sparseTransitions = [exit];
+  sparseTransitions.length = 3;
+  sparseTransitions[2] = entry;
+
+  const result = validateTesserTickFrame({
+    ...fixture,
+    boundaryTransitions: sparseTransitions,
+  });
+
+  assert.equal(result.valid, false);
+  assert.match(
+    result.errors.join('\n'),
+    /\$\.boundaryTransitions\[1\]: expected a boundary transition object/,
+  );
 });
