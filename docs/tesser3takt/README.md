@@ -102,3 +102,12 @@ Optionally add a future VOIDMAP proposal in a separate explicit GOLD-change step
 Optionally create a later PATH_INTEGRAL_ASSEMBLY_NOTE only after the local cluster is stable.
 
 Optionally link this README from docs/masterindex.md only after explicit approval.
+
+
+## Frame Contract v0.2
+
+The UI frame contract is represented by `ui-app/lib/tesser3takt-frame.ts` and the minimal serializable fixture `ui-app/fixtures/tesser3takt-minimal-frame.json`. The v0.2 contract keeps kenograms as UI-local `kenograms`, derives `collisionProxy` from `leftStateId`, `rightStateId`, and `collisionSemantics: EXACT_STATE_ID`, and makes `boundaryTransitions` first-class frame data.
+
+Each boundary pair must contain exactly one ordered `EXIT` and one `ENTRY`, use unique half IDs per pair, link the entry to the exit via `transformedFrom`, and validate the knight move in the explicitly shared `GLOBAL_REENTRY_LATTICE` coordinate space rather than subtracting unrelated quadrant-local coordinates. Every boundary transition and frame-level witness carries a typed `ProvenanceRef` with source, revision, optional `digest`, explicit `digestStatus`, locator, claim layer, and authority status. An unverified pointer uses `digest: null` plus `digestStatus: UNVERIFIED`; it never uses a hash-looking placeholder.
+
+JSON and transport inputs must enter through `validateTesserTickFrame`. The runtime validator checks the complete serialized shape, requires every transition to name `GLOBAL_REENTRY_LATTICE`, verifies the EXIT/ENTRY pair invariant, rejects a supplied `collisionProxy` that disagrees with the state IDs, and enforces the `digest`/`digestStatus` relation. TypeScript annotations alone are not an input boundary.

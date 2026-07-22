@@ -29,7 +29,7 @@ Web-App für die Visualisierung der EntaENGELment-Konzepte (Guard System, VOIDMA
 
 ## Tech Stack
 
-- Next.js 14 (App Router)
+- Next.js 16 (App Router)
 - TypeScript
 - Tailwind CSS
 - React Query (vorbereitet)
