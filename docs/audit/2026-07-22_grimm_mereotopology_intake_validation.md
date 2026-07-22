@@ -22,6 +22,12 @@ OK
 
 python -m py_compile tools/validate_grimm_mereotopology_fixtures.py tests/unit/test_grimm_mereotopology_fixtures.py
 PASS (exit 0)
+
+ruff check tools/validate_grimm_mereotopology_fixtures.py tests/unit/test_grimm_mereotopology_fixtures.py
+All checks passed!
+
+black --check tools/validate_grimm_mereotopology_fixtures.py tests/unit/test_grimm_mereotopology_fixtures.py
+2 files would be left unchanged.
 ```
 
 ## Validation matrix
