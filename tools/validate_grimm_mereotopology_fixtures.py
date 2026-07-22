@@ -61,7 +61,9 @@ def validate_bundle(bundle: dict[str, Any]) -> list[str]:
     if invariants.get("motionCarriesMeaning") is not False:
         errors.append("bundle: motionCarriesMeaning must be false")
     if set(invariants.get("readerActions", [])) != READER_ACTIONS:
-        errors.append("bundle: readerActions must contain ACCEPT, REVISE, REJECT, and SILENCE")
+        errors.append(
+            "bundle: readerActions must contain ACCEPT, REVISE, REJECT, and SILENCE"
+        )
     viewport = invariants.get("minimumViewportCssPx")
     if not isinstance(viewport, int) or isinstance(viewport, bool) or viewport < 320:
         errors.append("bundle: minimumViewportCssPx must be an integer of at least 320")
@@ -124,7 +126,9 @@ def validate_bundle(bundle: dict[str, Any]) -> list[str]:
             for field in ("sourceForm", "authorityStatus", "sourceVisibility"):
                 value = provenance.get(field)
                 if not isinstance(value, str) or not value.strip():
-                    errors.append(f"{prefix}: provenance.{field} must be a non-empty string")
+                    errors.append(
+                        f"{prefix}: provenance.{field} must be a non-empty string"
+                    )
             if provenance.get("sourceVisibility") == "protected-origin":
                 if provenance.get("publicReconstructionAllowed") is not False:
                     errors.append(
@@ -138,7 +142,9 @@ def validate_bundle(bundle: dict[str, Any]) -> list[str]:
             for field in ("linePattern", "relationLabel", "arrow", "staticFallback"):
                 value = visual.get(field)
                 if not isinstance(value, str) or not value.strip():
-                    errors.append(f"{prefix}: visualEncoding.{field} must be a non-empty string")
+                    errors.append(
+                        f"{prefix}: visualEncoding.{field} must be a non-empty string"
+                    )
             if visual.get("requiresColorForMeaning") is not False:
                 errors.append(f"{prefix}: color may not be required for meaning")
             if visual.get("requiresMotionForMeaning") is not False:
@@ -164,30 +170,44 @@ def validate_bundle(bundle: dict[str, Any]) -> list[str]:
 
         if crossing != "EXACT_STATE_ID":
             if expected_collision is not False:
-                errors.append(f"{prefix}: only EXACT_STATE_ID may produce collisionProxy=true")
+                errors.append(
+                    f"{prefix}: only EXACT_STATE_ID may produce collisionProxy=true"
+                )
             if frame_bridge.get("disposition") != "NO_FRAME_EFFECT":
-                errors.append(f"{prefix}: non-exact crossings must have NO_FRAME_EFFECT")
+                errors.append(
+                    f"{prefix}: non-exact crossings must have NO_FRAME_EFFECT"
+                )
         else:
             exact_witness_count += 1
             if relation != "EQ":
                 errors.append(f"{prefix}: EXACT_STATE_ID requires relation EQ")
             if frame_bridge.get("collisionSemantics") != "EXACT_STATE_ID":
-                errors.append(f"{prefix}: exact witness requires EXACT_STATE_ID semantics")
+                errors.append(
+                    f"{prefix}: exact witness requires EXACT_STATE_ID semantics"
+                )
             left = frame_bridge.get("leftStateId")
             right = frame_bridge.get("rightStateId")
             if not isinstance(left, str) or not left or left != right:
-                errors.append(f"{prefix}: exact witness requires equal non-empty state IDs")
+                errors.append(
+                    f"{prefix}: exact witness requires equal non-empty state IDs"
+                )
             pair_id = frame_bridge.get("transitionPairId")
             if not isinstance(pair_id, str) or not pair_id.strip():
                 errors.append(f"{prefix}: exact witness requires transitionPairId")
             if expected_collision is not True:
-                errors.append(f"{prefix}: valid exact witness must expect collisionProxy=true")
+                errors.append(
+                    f"{prefix}: valid exact witness must expect collisionProxy=true"
+                )
             if frame_bridge.get("disposition") != "FRAME_WITNESS_REQUIRED":
-                errors.append(f"{prefix}: exact crossing must have FRAME_WITNESS_REQUIRED")
+                errors.append(
+                    f"{prefix}: exact crossing must have FRAME_WITNESS_REQUIRED"
+                )
 
     if observed_relations != RELATIONS:
         missing = ", ".join(sorted(RELATIONS - observed_relations)) or "none"
-        errors.append(f"bundle: fixture relation coverage incomplete; missing {missing}")
+        errors.append(
+            f"bundle: fixture relation coverage incomplete; missing {missing}"
+        )
     if exact_witness_count != 1:
         errors.append("bundle: expected exactly one EXACT_STATE_ID frame witness")
 
