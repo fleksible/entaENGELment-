@@ -18,7 +18,7 @@ description: >
 
 metadata:
   maintainer: entaENGELment
-  last_updated: "2026-06-24"
+  last_updated: "2026-07-22"
   generated_doc: docs/voids_backlog.md
   reconciliation_notes: |
     [SPEC] 2026-06-24 consolidation:
@@ -32,6 +32,12 @@ metadata:
       be performed, not that they are already running.
     - No statement about "universal breathing @ 10 Hz" is treated as a
       physical fact claim without an external measurement path.
+    [SPEC] 2026-07-22 post-merge reconciliation:
+    - PRs #312, #304, and #318 provide partial runtime evidence for VOID-027.
+    - VOID-027 moves from OPEN to IN_PROGRESS; its full closing path remains
+      open and no merge, CI result, or HUD projection creates Authority.
+    - PR #314 is the merged ERK witness and PR #316 the M5 ANNEX witness;
+      neither closes a VOID by itself.
 
 voids:
   - id: VOID-001
@@ -465,7 +471,7 @@ voids:
 
   - id: VOID-027
     title: "tesser3TAKT HUD Projection Layer"
-    status: OPEN
+    status: IN_PROGRESS
     priority: high
     owner: "fleks"
     target_date: null
@@ -480,7 +486,13 @@ voids:
       TesserTickFrame with 7x9 matrix, 1xn slice, Apex marker, periphery,
       EFS/MVI axis, decision bar, and receipt link, with explicit projection
       labels.
-    evidence: null
+    evidence:
+      - "ui-app/lib/tesser3takt-frame.ts"
+      - "ui-app/lib/tesser3takt-hud.ts"
+      - "ui-app/fixtures/tesser3takt-minimal-frame.json"
+      - "ui-app/test/tesser3takt-frame.test.mjs"
+      - "ui-app/test/tesser3takt-hud.test.mjs"
+      - "ui-app/README.md"
     created: "2026-06-24"
     closed: null
     notes: |
@@ -492,7 +504,15 @@ voids:
       [SPEC] GitHub remains KRISTALL/artifact source; Airtable remains
       governance/status membrane; Human remains commit point.
       [GUARD] No autonomous merge/close/claim-upgrade from the HUD.
-
+      [REPO-FACT 2026-07-22] PR #312 added the canonical TesserTickFrame and
+      runtime validation; PR #304 bound the projection-only HUD to that
+      transport; PR #318 hardened sparse boundary arrays and reverse ordering.
+      [PARTIAL] Present evidence covers the canonical frame, 7x9/Kenogram HUD,
+      exact-state collision semantics, boundary pairs, structured provenance,
+      fixtures, tests, and a read-only route.
+      [VOID] The declared 1xn traversal slice, Apex marker, calibrated EFS/MVI
+      axis, decision bar, and resolvable receipt link are not jointly evidenced.
+      VOID-027 therefore remains IN_PROGRESS and must not be marked CLOSED.
   - id: VOID-028
     title: "EFS/MVI Grüneisen-Axis Calibration"
     status: OPEN
