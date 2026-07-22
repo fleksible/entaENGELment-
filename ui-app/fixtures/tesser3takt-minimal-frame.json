@@ -1,0 +1,61 @@
+{
+  "frameId": "tesser3takt-minimal-v0.2",
+  "collisionSemantics": "EXACT_STATE_ID",
+  "leftStateId": "S4:1234",
+  "rightStateId": "S4:1234",
+  "collisionProxy": true,
+  "kenograms": ["kg-fringe-01", "kg-fringe-02"],
+  "boundaryTransitions": [
+    {
+      "pairId": "bt-001",
+      "half": "EXIT",
+      "stepIndex": 2,
+      "stateId": "S4:1234",
+      "quadrant": "alpha",
+      "coordinateSpace": "GLOBAL_REENTRY_LATTICE",
+      "latticePosition": [1, 1],
+      "provenance": {
+        "kind": "fixture",
+        "source": "ui-app/fixtures/tesser3takt-minimal-frame.json",
+        "revision": "v0.2",
+        "digest": null,
+        "digestStatus": "UNVERIFIED",
+        "locator": "$.boundaryTransitions[0]",
+        "claimLayer": "FIXTURE",
+        "authorityStatus": "repo-local"
+      }
+    },
+    {
+      "pairId": "bt-001",
+      "half": "ENTRY",
+      "stepIndex": 3,
+      "stateId": "S4:2143",
+      "quadrant": "beta",
+      "coordinateSpace": "GLOBAL_REENTRY_LATTICE",
+      "latticePosition": [2, 3],
+      "transformedFrom": "S4:1234",
+      "provenance": {
+        "kind": "fixture",
+        "source": "ui-app/fixtures/tesser3takt-minimal-frame.json",
+        "revision": "v0.2",
+        "digest": null,
+        "digestStatus": "UNVERIFIED",
+        "locator": "$.boundaryTransitions[1]",
+        "claimLayer": "FIXTURE",
+        "authorityStatus": "repo-local"
+      }
+    }
+  ],
+  "provenance": [
+    {
+      "kind": "annex",
+      "source": "docs/tesser3takt/TESSER3TAKT_ASSEMBLY_NAVI_v0_1.md",
+      "revision": "v0.1",
+      "digest": null,
+      "digestStatus": "UNVERIFIED",
+      "locator": "docs/tesser3takt/TESSER3TAKT_ASSEMBLY_NAVI_v0_1.md#boundary-roles",
+      "claimLayer": "MODEL",
+      "authorityStatus": "repo-local"
+    }
+  ]
+}
