@@ -6,25 +6,44 @@
 **Runtime-Enforcement:** none
 **Promotion-Effect:** none
 **Human-Decision-Boundary:** required
-**Datum:** 2026-07-21
+**Datum:** 2026-07-22
 **Quellen:** Synthbiosis Systematlas v1.1 (Bundle-Witness, siehe
 `INBOX/INTAKE-2026-07-21-synthbiosis-system-atlas-v1_1.md` und
 `docs/audit/SYNTHBIOSIS_BUNDLE_CROSSWALK_v0_1.md`); Evidence Routing Kernel
-v0.1a — exakt geprüfter Zwischenstand:
+v0.1a — gemergter Reconciliation-Stand:
 
 ```yaml
 erk_reference:
   pull_request: 314
-  state: open_draft
-  reviewed_head: ef3393e9b40e6cc2a777c5b464909e5a42b5e7c6
-  moving_target: true
+  state: merged
+  merged_commit: c81bb202e3b069672b284569523d9c114ba2a2f1
+  reviewed_head: c81bb202e3b069672b284569523d9c114ba2a2f1
+  moving_target: false
+  main_witness: d39b9db72dd04d6e1e2cded5a7d08287be76b9b8
   authority_effect: none
+runtime_witnesses:
+  tesser_tick_frame:
+    pull_request: 312
+    commit: a2b5ddf6c20ba268f68daf65472d62cbaf16d6a1
+  tesser_hud:
+    pull_request: 304
+    commit: 5cd423f0c40f64e50811ee9392601fb4f99fe48c
+  boundary_array_hardening:
+    pull_request: 318
+    commit: d39b9db72dd04d6e1e2cded5a7d08287be76b9b8
+  research_validation_gate:
+    pull_request: 316
+    commit: 51950ae53a5ae5d116129fbd7eb6049ec0077808
 ```
 
-PR #314 ist **kein stabiler Repo-Kanon**. Diese Adapter-Map bezieht sich auf
-den genannten Head; Änderungen nach diesem Head benötigen einen neuen
-Drift-Check. Phase 2A bleibt HOLD/LOOP, bis der ERK-Zielstand gemergt oder
-ausdrücklich eingefroren wurde.
+[REPO-FACT] PR #314 ist auf `main` gemergt; der frühere Moving-Target-HOLD
+ist beendet. Phase 2A ist damit **ELIGIBLE_FOR_SPEC**, nicht automatisch zur
+Implementierung oder Claim-Promotion freigegeben. Ein eigener Plan-first-
+Checkpoint, Negativfixtures und menschlicher Review bleiben erforderlich.
+
+[PARALLEL-HOLD] Draft-PR #319 (Grimm-IR-Mereotopologie) liegt außerhalb
+dieser Reconciliation und ist kein Evidence- oder Closure-Witness für die
+hier beschriebenen Moduladapter.
 
 ---
 
@@ -41,7 +60,7 @@ sechs Bundle-Modulen und dem Evidence Routing Kernel (ERK):
 | M4 | Governance / Receipts / False-Safety |
 | M5 | Research & Validation Gate |
 | M6 | Photonic/Thermal ROSETTA Airlock |
-| ERK | Evidence Routing Kernel v0.1a (PR #314 @ `ef3393e9`, siehe `erk_reference`) |
+| ERK | Evidence Routing Kernel v0.1a (gemergter PR #314 @ `c81bb20`, siehe `erk_reference`) |
 
 Die Map ist **kein neuer Orchestrator**, kein Runtime-Vertrag und keine
 Kopplung. Nichts hierin wird enforced; jede spätere Implementierung benötigt
@@ -161,7 +180,7 @@ Invariante 8: Simulation ist keine Empirie).
 - source_module: M1
   target_module: ERK
   current_contract: bridge_record (Bundle 01, YAML-Skizze)
-  repo_representation: keine (ERK in PR #314; Bridge-Adapter existiert nicht)
+  repo_representation: ERK gemergt in PR #314 @ c81bb20; Bridge-Adapter existiert nicht
   missing_fields: [source_register, transferred_property, known_loss, falsifier, intended_use]
   prohibited_shortcut: bridge_record als direkter CLAIM_RETAGGED-Auslöser
   failure_mode: Metapher wird über SUPPORTS-Relation als Evidenz eingeschleust
@@ -171,7 +190,7 @@ Invariante 8: Simulation ist keine Empirie).
 - source_module: M2
   target_module: ERK
   current_contract: tesser_input/tesser_output (Bundle 02)
-  repo_representation: tesser3takt-ANNEX-Doku; UI-seitig PR #304/#312 (offen)
+  repo_representation: tesser3takt-ANNEX-Doku; UI-seitig PR #304/#312 gemergt, Frame-Hardening in #318
   missing_fields: [reason_codes-Abgleich, receipt_pointer-Semantik]
   prohibited_shortcut: PASS->APPROVE, PASS->RETAG, HOLD->VOID (jede Automatik)
   failure_mode: Navigationsentscheidung wird als epistemischer Status gelesen
@@ -191,7 +210,7 @@ Invariante 8: Simulation ist keine Empirie).
 - source_module: M4
   target_module: ERK
   current_contract: receipt_types + false_safety_check (Bundle 04)
-  repo_representation: F7-Methodsheet, Ledger/Receipt-Mechanik (scoped), ERK-Reason-Codes (PR #314)
+  repo_representation: F7-Methodsheet, Ledger/Receipt-Mechanik (scoped), ERK-Reason-Codes (gemergter PR #314 @ c81bb20)
   missing_fields: [receipt_type, proves, does_not_prove, scope, authority_effect]
   prohibited_shortcut: Receipt-Gültigkeit als Claim-Wahrheit
   failure_mode: F7/FALSE_OK — grün trotz fehlender Grundlage
@@ -201,12 +220,13 @@ Invariante 8: Simulation ist keine Empirie).
 - source_module: M5
   target_module: ERK
   current_contract: Eingangsklassen + Airlock (Bundle 05)
-  repo_representation: keine (MISSING_REPO_SAFE)
-  missing_fields: [gesamtes Gate als ANNEX-Vertrag]
+  repo_representation: docs/annex/RESEARCH_VALIDATION_GATE_v0_1.md (gemergter PR #316; ANNEX)
+  missing_fields: []
+  residual_hold: Runtime-Enforcement none; Human-Research HOLD; Promotion-Effect none
   prohibited_shortcut: normativer Wert als Biomarker; Simulation als Empirie
   failure_mode: HRV o.ä. wird als Resonanz-/Wahrheitsmeter gelesen
   human_boundary: Ethik-/Zuständigkeitsentscheidung liegt außerhalb des Systems
-  recommended_phase: 2B
+  recommended_phase: 2B-ANNEX vorhanden; jedes Enforcement-Delta braucht eigenen Plan-first-Checkpoint
 
 - source_module: M6
   target_module: M5
@@ -216,7 +236,7 @@ Invariante 8: Simulation ist keine Empirie).
   prohibited_shortcut: Hardware->Authority, Hardware->Ethics-PASS
   failure_mode: Bauteileigenschaft und Governancebedeutung im selben Satz
   human_boundary: Semantik-Zuordnung nur als separates M1-Bridge-Record nach Review
-  recommended_phase: 2C (erst nach 2B)
+  recommended_phase: 2C (M5-ANNEX vorhanden; eigener Plan-first- und Komponentenclaim-Review bleibt Pflicht)
 ```
 
 ## 4. Keine erfundene Vollständigkeit
@@ -231,15 +251,15 @@ Invariante 8: Simulation ist keine Empirie).
 
 Nichts davon wird ästhetisch geschlossen.
 
-## 5. Noch nicht genehmigte Folgephasen (nur Vorschläge, keine Dateien)
+## 5. Folgephasen und Reconciliation-Status
 
 | Phase | Inhalt | Voraussetzung | kleinster nächster Schritt |
 |---|---|---|---|
-| 2A | M1 Bridge-Adapter (`src/core/evidence_bridge_adapter.py` + Tests + ANNEX-Doku) | PR #314 gemergt oder Zielstand ausdrücklich eingefroren (geprüfter Head: `ef3393e9`); bis dahin HOLD/LOOP | Feld-Mapping aus §2.1 als Schema-Entwurf reviewen |
-| 2B | `docs/annex/RESEARCH_VALIDATION_GATE_v0_1.md` (reduzierte ANNEX-Fassung von Bundle 05) | eigener Plan-first-/Safety-Checkpoint | Freigabeentscheidung |
-| 2C | Photonic/Thermal Airlock: nur atomare Komponentenclaims | 2B existiert | ersten Bench-Claim-Text reviewen |
+| 2A | M1 Bridge-Adapter (`src/core/evidence_bridge_adapter.py` + Tests + ANNEX-Doku) | **ELIGIBLE_FOR_SPEC**: PR #314 ist gemergt @ `c81bb20`; Implementierung bleibt bis zu eigenem Plan-first-/Review-PASS HOLD | separates Schema + Negativfixtures aus §2.1 reviewen |
+| 2B | `docs/annex/RESEARCH_VALIDATION_GATE_v0_1.md` (reduzierte ANNEX-Fassung von Bundle 05) | **ANNEX vorhanden**: gemergter PR #316; Runtime-Enforcement none, Humanforschung HOLD | nur bei Delta erneut plan-first prüfen |
+| 2C | Photonic/Thermal Airlock: nur atomare Komponentenclaims | 2B-ANNEX existiert; kein Hardware→Authority-Pfad | eigenen Plan-first-Checkpoint und ersten Bench-Claim-Text reviewen |
 | 2D | Grimm/Nektar Source-Freeze-Manifest (Hash, Purpose, Inventar, Datenfluss, Providergrenzen, Known Limits, Lizenz, Public-Allowlist, private Ausschlüsse) | kein P7-Import | Manifest-Zuschnitt entscheiden |
-| 2E | Annex F v0.3: revisionsgebundener Source-Pointer für PR #304-Quellen; Gate-0-Korrekturen als reduzierte ANNEX-Fassung; Rohdaten/Scanner/24-42-H0 bleiben HOLD | Entscheidung zu PR #304 | prüfen, ob ein Source-Pointer genügt |
+| 2E | Annex F v0.3: revisionsgebundener Source-Pointer für die gemergte #304-Quelle; Gate-0-Korrekturen als reduzierte ANNEX-Fassung; Rohdaten/Scanner/24-42-H0 bleiben HOLD | PR #304 gemergt @ `5cd423f`; Issue #305 bleibt offen | prüfen, ob der eingefrorene Source-Pointer genügt |
 | 2F | NotebookFM Source Membrane: Rest-Vertrag für Reader/Retrieval, nachdem Privacy Boundary, Claim Mapping und Source Decoration Map den Großteil abdecken | kein Import des biographischen Korpus | Abdeckungslücke präzise benennen |
 
 ## 6. Grenzen dieser Map
