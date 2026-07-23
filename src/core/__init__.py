@@ -8,9 +8,17 @@ Enthält die fünf Kern-Metriken (Core-5):
 - FD (Fractal Dimension)
 - PF (Power Flux)
 
-Zusätzlich: Evidence Routing Kernel v0.1a (bewusst kleine, stabile Exports).
+Zusätzlich: Evidence Routing Kernel v0.1a (bewusst kleine, stabile Exports)
+sowie die nicht-ausführende Action-Gate-Schnittstelle v0.1.
 """
 
+from .action_gate import (
+    ActionGateError,
+    ActionProposal,
+    ActionReasonCode,
+    ResponsibilityClass,
+    build_action_proposal,
+)
 from .evidence_routing import (
     ClaimCandidate,
     ClaimPolicy,
@@ -68,4 +76,10 @@ __all__ = [
     "replay_events",
     "reduce_public_export",
     "compute_state_digest",
+    # Action-Gate v0.1 — nicht ausführende Schnittstelle
+    "ActionProposal",
+    "ResponsibilityClass",
+    "ActionReasonCode",
+    "ActionGateError",
+    "build_action_proposal",
 ]
