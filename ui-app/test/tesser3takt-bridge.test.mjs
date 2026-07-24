@@ -153,6 +153,20 @@ test('a locally valid pair cannot silently break the traversal chain', () => {
   assert.match(result.errors.join('\n'), /pair chain state continuity broke/);
 });
 
+test('complete pairs cannot interleave and masquerade as a sequential traversal', () => {
+  const interleaved = [
+    { ...fixture.transitions[0], stepIndex: 2 },
+    { ...fixture.transitions[2], stepIndex: 3 },
+    { ...fixture.transitions[1], stepIndex: 4 },
+    { ...fixture.transitions[3], stepIndex: 5 },
+  ];
+  const result = buildMicroToMesoTrace(request({ transitions: interleaved }));
+
+  assert.equal(result.accepted, false);
+  assert.equal(result.code, 'BRIDGE_FALSIFIED');
+  assert.match(result.errors.join('\n'), /pair chain event order broke/);
+});
+
 test('lost transition provenance rejects the bridge before aggregation', () => {
   const entryWithoutProvenance = { ...fixture.transitions[1] };
   delete entryWithoutProvenance.provenance;
@@ -202,4 +216,18 @@ test('malformed and sparse transport inputs fail closed without throwing', () =>
   assert.equal(result.accepted, false);
   assert.equal(result.code, 'BRIDGE_INCOMPLETE');
   assert.match(result.errors.join('\n'), /sparse array entries are not allowed/);
+
+  const sparsePosition = [1];
+  sparsePosition.length = 2;
+  const sparseCoordinate = buildMicroToMesoTrace(
+    request({
+      transitions: [
+        { ...fixture.transitions[0], latticePosition: sparsePosition },
+        ...fixture.transitions.slice(1),
+      ],
+    }),
+  );
+  assert.equal(sparseCoordinate.accepted, false);
+  assert.equal(sparseCoordinate.code, 'BRIDGE_INCOMPLETE');
+  assert.match(sparseCoordinate.errors.join('\n'), /two integer global coordinates/);
 });

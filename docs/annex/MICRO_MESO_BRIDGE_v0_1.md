@@ -70,9 +70,10 @@ Die v0.1-Brücke verlangt:
 5. `ORIGIN_CLAIM_LEVEL`
 
 Der Ausgang führt Paarreihenfolge, Ereignisreihenfolge, gerichtete
-State-Verbindungen sowie EXIT-/ENTRY-Provenienz explizit weiter. Zwischen
-aufeinanderfolgenden Paaren müssen State-ID und globale Lattice-Position des
-vorherigen ENTRY mit dem nächsten EXIT übereinstimmen.
+State-Verbindungen sowie EXIT-/ENTRY-Provenienz explizit weiter. Paare dürfen
+nicht ineinander verschachtelt werden. Zwischen aufeinanderfolgenden Paaren
+müssen Ereignisfolge, State-ID und globale Lattice-Position des vorherigen
+ENTRY mit dem nächsten EXIT übereinstimmen.
 
 ## 4. Verlust und Restdifferenz
 
@@ -127,6 +128,7 @@ Negativtests:
 - umgeordnete Ereignisse,
 - gebrochene Konnektivität,
 - lokal gültige, aber untereinander diskontinuierliche Paare,
+- zeitlich ineinander verschachtelte Paare,
 - verlorene Provenienz,
 - lösch- beziehungsweise überschreibbarer Ursprung,
 - sparse oder malformed Transportdaten.

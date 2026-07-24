@@ -292,6 +292,8 @@ function validateBoundaryTransitionShape(
   if (
     !Array.isArray(value.latticePosition) ||
     value.latticePosition.length !== 2 ||
+    !(0 in value.latticePosition) ||
+    !(1 in value.latticePosition) ||
     !value.latticePosition.every(Number.isInteger)
   ) {
     errors.push(`${path}.latticePosition: expected two integer global coordinates`);
@@ -522,6 +524,11 @@ export function buildMicroToMesoTrace(input: unknown): BridgeResult {
           `$.transitions: ${orderedPairs[index - 1].exit.pairId} lost its ENTRY`,
         );
         continue;
+      }
+      if (previousEntry.stepIndex >= currentExit.stepIndex) {
+        falsifierErrors.push(
+          `$.transitions: pair chain event order broke before ${currentExit.pairId}`,
+        );
       }
       if (previousEntry.stateId !== currentExit.stateId) {
         falsifierErrors.push(

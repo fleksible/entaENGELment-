@@ -47,8 +47,8 @@ Protokollautorität verwendet.
 
 | Gate | Ergebnis |
 |---|---|
-| `pnpm --filter entaengelment-ui test` | PASS · 22/22 Tests |
-| neue Bridge-Tests | PASS · 9/9 |
+| `pnpm --filter entaengelment-ui test` | PASS · 23/23 Tests |
+| neue Bridge-Tests | PASS · 10/10 |
 | bestehende Frame-/HUD-Regressionen | PASS · 13/13 |
 | `make verify` | PASS · 290/290 Python-Tests, Port-Lint, Pointer, Claim-Lint |
 | `make verify-governance` | PASS · 14 Workflows, VOID-Backlog und UI-Mirror synchron |
