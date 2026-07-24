@@ -189,9 +189,18 @@ class ActionProposal:
         Neuberechnung der Gate-Entscheidung: :func:`build_action_proposal` bleibt
         die alleinige Autorität für die abgeleiteten Felder.
         """
-        object.__setattr__(self, "filesystem_effects", tuple(self.filesystem_effects))
-        object.__setattr__(self, "process_effects", tuple(self.process_effects))
-        object.__setattr__(self, "reason_codes", tuple(self.reason_codes))
+        # Kollektionen fail-closed normalisieren: ein blindes ``tuple()`` würde
+        # einen bloßen String in Zeichen zerlegen und Nicht-String-Einträge
+        # (z.B. ``[123]``) durchreichen. Beides wird abgewiesen.
+        for field_name in ("filesystem_effects", "process_effects", "reason_codes"):
+            value = getattr(self, field_name)
+            if isinstance(value, str) or not isinstance(value, (list, tuple)):
+                raise ActionGateError(
+                    f"{field_name} must be a sequence of strings, not {type(value).__name__}"
+                )
+            if not all(isinstance(item, str) for item in value):
+                raise ActionGateError(f"{field_name} must contain only strings")
+            object.__setattr__(self, field_name, tuple(value))
 
         if self.schema_version != ACTION_GATE_SCHEMA_VERSION:
             raise ActionGateError(f"unknown schema_version: {self.schema_version!r}")

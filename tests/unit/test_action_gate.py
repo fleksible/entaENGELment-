@@ -344,3 +344,16 @@ class TestPostInitValidation:
     def test_list_collections_are_coerced_to_tuple(self):
         proposal = ActionProposal(**self._valid_kwargs(reason_codes=["ACTION_PROPOSAL_ONLY"]))
         assert isinstance(proposal.reason_codes, tuple)
+
+    def test_bare_string_effect_collection_rejected(self):
+        # Ein bloßer String darf nicht in Zeichen zerlegt werden.
+        with pytest.raises(ActionGateError):
+            ActionProposal(**self._valid_kwargs(filesystem_effects="writes-everything"))
+
+    def test_non_string_effect_entry_rejected(self):
+        with pytest.raises(ActionGateError):
+            ActionProposal(**self._valid_kwargs(process_effects=[123]))
+
+    def test_non_string_reason_code_entry_rejected(self):
+        with pytest.raises(ActionGateError):
+            ActionProposal(**self._valid_kwargs(reason_codes=[123]))
