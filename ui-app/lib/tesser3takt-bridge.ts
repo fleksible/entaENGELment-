@@ -503,6 +503,42 @@ export function buildMicroToMesoTrace(input: unknown): BridgeResult {
       );
     }
   }
+
+  if (falsifierErrors.length === 0) {
+    const orderedPairs = transitions
+      .filter((transition) => transition.half === 'EXIT')
+      .map((exit) => ({
+        exit,
+        entry: transitions.find(
+          (transition) => transition.pairId === exit.pairId && transition.half === 'ENTRY',
+        ),
+      }));
+
+    for (let index = 1; index < orderedPairs.length; index += 1) {
+      const previousEntry = orderedPairs[index - 1].entry;
+      const currentExit = orderedPairs[index].exit;
+      if (!previousEntry) {
+        falsifierErrors.push(
+          `$.transitions: ${orderedPairs[index - 1].exit.pairId} lost its ENTRY`,
+        );
+        continue;
+      }
+      if (previousEntry.stateId !== currentExit.stateId) {
+        falsifierErrors.push(
+          `$.transitions: pair chain state continuity broke before ${currentExit.pairId}`,
+        );
+      }
+      if (
+        previousEntry.latticePosition[0] !== currentExit.latticePosition[0] ||
+        previousEntry.latticePosition[1] !== currentExit.latticePosition[1]
+      ) {
+        falsifierErrors.push(
+          `$.transitions: pair chain position continuity broke before ${currentExit.pairId}`,
+        );
+      }
+    }
+  }
+
   if (falsifierErrors.length > 0) {
     return reject('BRIDGE_FALSIFIED', falsifierErrors);
   }

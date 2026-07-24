@@ -22,13 +22,15 @@ test('positive synthetic bridge emits a derived meso trace without claim promoti
   assert.equal(result.decision, 'PASS_CANDIDATE');
   assert.deepEqual(result.errors, []);
   assert.equal(result.trace.authorityStatus, 'derived');
-  assert.equal(result.trace.sourceFrameId, 'tesser3takt-minimal-v0.2');
+  assert.equal(result.trace.sourceFrameId, 'tesser3takt-micro-slice-v0.1');
   assert.equal(result.trace.from.resolutionScale, 'MICRO');
   assert.equal(result.trace.to.resolutionScale, 'MESO');
-  assert.deepEqual(result.trace.pairOrder, ['bt-001']);
+  assert.deepEqual(result.trace.pairOrder, ['bt-001', 'bt-002']);
   assert.deepEqual(result.trace.eventOrder, [
     { pairId: 'bt-001', half: 'EXIT', stepIndex: 2 },
     { pairId: 'bt-001', half: 'ENTRY', stepIndex: 3 },
+    { pairId: 'bt-002', half: 'EXIT', stepIndex: 4 },
+    { pairId: 'bt-002', half: 'ENTRY', stepIndex: 5 },
   ]);
   assert.deepEqual(result.trace.connectivity[0], {
     pairId: 'bt-001',
@@ -38,6 +40,15 @@ test('positive synthetic bridge emits a derived meso trace without claim promoti
     toPosition: [2, 3],
     exitProvenance: fixture.transitions[0].provenance,
     entryProvenance: fixture.transitions[1].provenance,
+  });
+  assert.deepEqual(result.trace.connectivity[1], {
+    pairId: 'bt-002',
+    fromStateId: 'S4:2143',
+    toStateId: 'S4:2413',
+    fromPosition: [2, 3],
+    toPosition: [4, 4],
+    exitProvenance: fixture.transitions[2].provenance,
+    entryProvenance: fixture.transitions[3].provenance,
   });
   assert.deepEqual(result.trace.origin, fixture.origin);
 });
@@ -115,6 +126,31 @@ test('changed connectivity falsifies the bridge', () => {
   assert.equal(result.accepted, false);
   assert.equal(result.code, 'BRIDGE_FALSIFIED');
   assert.match(result.errors.join('\n'), /transformedFrom must match EXIT stateId/);
+});
+
+test('a locally valid pair cannot silently break the traversal chain', () => {
+  const disconnectedExit = {
+    ...fixture.transitions[2],
+    stateId: 'S4:9999',
+  };
+  const internallyReboundEntry = {
+    ...fixture.transitions[3],
+    transformedFrom: 'S4:9999',
+  };
+  const result = buildMicroToMesoTrace(
+    request({
+      transitions: [
+        fixture.transitions[0],
+        fixture.transitions[1],
+        disconnectedExit,
+        internallyReboundEntry,
+      ],
+    }),
+  );
+
+  assert.equal(result.accepted, false);
+  assert.equal(result.code, 'BRIDGE_FALSIFIED');
+  assert.match(result.errors.join('\n'), /pair chain state continuity broke/);
 });
 
 test('lost transition provenance rejects the bridge before aggregation', () => {

@@ -14,7 +14,9 @@
 
 [SPEC-WIP] Dieser Annex definiert den ersten schmalen, falsifizierbaren
 Mikro→Meso-Vertical-Slice für tesser3TAKT. Er aggregiert bereits validierbare
-`BoundaryTransition`-Paare zu einem abgeleiteten `TransitionTrace`.
+  `BoundaryTransition`-Paare zu einem abgeleiteten `TransitionTrace`. Der
+  positive Fixture enthält zwei verkettete Paare, damit die Meso-Aggregation
+  nicht auf einer trivialen Einpaar-Abbildung beruht.
 
 Der Bridge-Layer:
 
@@ -68,7 +70,9 @@ Die v0.1-Brücke verlangt:
 5. `ORIGIN_CLAIM_LEVEL`
 
 Der Ausgang führt Paarreihenfolge, Ereignisreihenfolge, gerichtete
-State-Verbindungen sowie EXIT-/ENTRY-Provenienz explizit weiter.
+State-Verbindungen sowie EXIT-/ENTRY-Provenienz explizit weiter. Zwischen
+aufeinanderfolgenden Paaren müssen State-ID und globale Lattice-Position des
+vorherigen ENTRY mit dem nächsten EXIT übereinstimmen.
 
 ## 4. Verlust und Restdifferenz
 
@@ -122,6 +126,7 @@ Negativtests:
 - verwaiste Boundary-Hälfte,
 - umgeordnete Ereignisse,
 - gebrochene Konnektivität,
+- lokal gültige, aber untereinander diskontinuierliche Paare,
 - verlorene Provenienz,
 - lösch- beziehungsweise überschreibbarer Ursprung,
 - sparse oder malformed Transportdaten.

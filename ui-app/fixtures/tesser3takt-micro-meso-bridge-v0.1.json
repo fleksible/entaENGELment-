@@ -1,6 +1,6 @@
 {
   "bridgeId": "t3t-boundary-trace-v0.1",
-  "sourceFrameId": "tesser3takt-minimal-v0.2",
+  "sourceFrameId": "tesser3takt-micro-slice-v0.1",
   "from": {
     "resolutionScale": "MICRO",
     "extentScope": "TRAVERSAL_CELL"
@@ -45,6 +45,45 @@
         "digest": null,
         "digestStatus": "UNVERIFIED",
         "locator": "$.transitions[1]",
+        "claimLayer": "FIXTURE",
+        "authorityStatus": "repo-local"
+      }
+    },
+    {
+      "pairId": "bt-002",
+      "half": "EXIT",
+      "stepIndex": 4,
+      "stateId": "S4:2143",
+      "quadrant": "beta",
+      "coordinateSpace": "GLOBAL_REENTRY_LATTICE",
+      "latticePosition": [2, 3],
+      "provenance": {
+        "kind": "fixture",
+        "source": "ui-app/fixtures/tesser3takt-micro-meso-bridge-v0.1.json",
+        "revision": "v0.1",
+        "digest": null,
+        "digestStatus": "UNVERIFIED",
+        "locator": "$.transitions[2]",
+        "claimLayer": "FIXTURE",
+        "authorityStatus": "repo-local"
+      }
+    },
+    {
+      "pairId": "bt-002",
+      "half": "ENTRY",
+      "stepIndex": 5,
+      "stateId": "S4:2413",
+      "quadrant": "gamma",
+      "coordinateSpace": "GLOBAL_REENTRY_LATTICE",
+      "latticePosition": [4, 4],
+      "transformedFrom": "S4:2143",
+      "provenance": {
+        "kind": "fixture",
+        "source": "ui-app/fixtures/tesser3takt-micro-meso-bridge-v0.1.json",
+        "revision": "v0.1",
+        "digest": null,
+        "digestStatus": "UNVERIFIED",
+        "locator": "$.transitions[3]",
         "claimLayer": "FIXTURE",
         "authorityStatus": "repo-local"
       }

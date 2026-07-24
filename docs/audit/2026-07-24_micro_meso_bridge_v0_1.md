@@ -26,6 +26,7 @@ Provenienz, Skalen oder Readouts still zu identifizieren.
 - [x] Claim-Tag und `PROVENANCE_ONLY` als getrennte Rollen modelliert
 - [x] Claim-Ursprung und Trace-Ausgabe zur Laufzeit eingefroren
 - [x] positiver Fixture und negative Transport-/Relations-Fixtures ergänzt
+- [x] nichttrivialen Zweipaar-Slice samt State-/Positionskontinuität ergänzt
 - [x] lokalen tesser3TAKT-Index um einen ANNEX-Verweis ergänzt
 
 ## Abgleich der Quellen
@@ -46,8 +47,8 @@ Protokollautorität verwendet.
 
 | Gate | Ergebnis |
 |---|---|
-| `pnpm --filter entaengelment-ui test` | PASS · 21/21 Tests |
-| neue Bridge-Tests | PASS · 8/8 |
+| `pnpm --filter entaengelment-ui test` | PASS · 22/22 Tests |
+| neue Bridge-Tests | PASS · 9/9 |
 | bestehende Frame-/HUD-Regressionen | PASS · 13/13 |
 | `make verify` | PASS · 290/290 Python-Tests, Port-Lint, Pointer, Claim-Lint |
 | `make verify-governance` | PASS · 14 Workflows, VOID-Backlog und UI-Mirror synchron |
@@ -83,8 +84,8 @@ Ein erfolgreicher Lauf ergibt ausschließlich `PASS_CANDIDATE` und
 
 ## Risiken und verbleibende Grenzen
 
-- Der positive Fixture enthält bislang ein Boundary-Paar; ein Mehrpaar-Slice
-  braucht einen weiteren Fixture für globale Reihenfolge und Kettensemantik.
+- Der positive Fixture enthält zwei Paare. Größere Slices und verzweigte
+  Traversals sind noch nicht abgedeckt.
 - `sourceFrameId` ist strukturell verlangt, aber noch nicht durch einen
   kanonischen Frame-Digest gebunden.
 - Der Trace besitzt noch keinen kanonischen Content-Digest.
@@ -101,7 +102,6 @@ Ein erfolgreicher Lauf ergibt ausschließlich `PASS_CANDIDATE` und
 - [ ] ☐ PR #320 GOLD-Statusänderung zu VOID-027 entscheiden
 - [ ] ☐ PR #319 Grimm-Vokabular fachlich freigeben oder revidieren
 - [ ] ☐ PR #321 dem aktuellen Meilenstein zuordnen oder parken
-- [ ] ☐ entscheiden, ob der Einpaar-Fixture für v0.1 genügt oder vor Merge ein Mehrpaar-Fixture verlangt wird
 
 ## Artefakte
 
