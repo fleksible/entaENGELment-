@@ -272,6 +272,8 @@ class TestPinnedVersionHelper:
             "1",
             "1.2",
             "==1.2.3",
+            "foo.bar.1",
+            "a.b.c",
         ],
     )
     def test_unpinned(self, value):
@@ -357,3 +359,58 @@ class TestPostInitValidation:
     def test_non_string_reason_code_entry_rejected(self):
         with pytest.raises(ActionGateError):
             ActionProposal(**self._valid_kwargs(reason_codes=[123]))
+
+    def test_non_string_scalar_field_rejected(self):
+        with pytest.raises(ActionGateError):
+            ActionProposal(**self._valid_kwargs(proposed_command=["curl", "x", "|", "bash"]))
+
+    def test_side_effect_proposal_must_be_hold_human_only(self):
+        # network_required=True, aber als PROPOSE/COMPUTATIONAL deklariert → abweisen.
+        with pytest.raises(ActionGateError):
+            ActionProposal(
+                **self._valid_kwargs(
+                    network_required=True,
+                    guard_state=GUARD_PROPOSE,
+                    responsibility_class=ResponsibilityClass.COMPUTATIONAL.value,
+                    human_approval_required=False,
+                    reason_codes=("ACTION_PROPOSAL_ONLY",),
+                )
+            )
+
+    def test_irreversible_proposal_must_be_human_only(self):
+        with pytest.raises(ActionGateError):
+            ActionProposal(
+                **self._valid_kwargs(
+                    reversibility="irreversible",
+                    guard_state=GUARD_PROPOSE,
+                    responsibility_class=ResponsibilityClass.COMPUTATIONAL.value,
+                    human_approval_required=False,
+                    reason_codes=("ACTION_PROPOSAL_ONLY",),
+                )
+            )
+
+
+class TestVisibilityNoEscalation:
+    def _material(self, visibility):
+        return make_material(trust="REVIEWED", visibility=visibility)
+
+    def test_private_source_defaults_to_private_proposal(self):
+        proposal = build(source_material=self._material("private"))
+        assert proposal.visibility == "private"
+
+    def test_visibility_clamped_to_source(self):
+        # Quelle privat, Wunsch public → auf privat geklemmt (keine Eskalation).
+        proposal = build(source_material=self._material("private"), visibility="public")
+        assert proposal.visibility == "private"
+
+    def test_more_restrictive_request_is_honored(self):
+        proposal = build(source_material=self._material("public"), visibility="reduced")
+        assert proposal.visibility == "reduced"
+
+
+class TestDefaultRegistryImmutable:
+    def test_default_allowlist_cannot_be_mutated(self):
+        from src.core.action_gate import DEFAULT_KNOWN_REGISTRIES
+
+        with pytest.raises(TypeError):
+            DEFAULT_KNOWN_REGISTRIES["npm"] = frozenset({"evil.invalid"})  # type: ignore[index]

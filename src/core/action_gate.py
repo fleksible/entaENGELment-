@@ -30,6 +30,7 @@ import json
 from collections.abc import Mapping, Sequence
 from dataclasses import asdict, dataclass
 from enum import Enum
+from types import MappingProxyType
 
 from .evidence_routing import (
     GUARD_HOLD,
@@ -64,14 +65,19 @@ _NON_UNTRUSTED_TRUST = frozenset({TRUST_TRUSTED, TRUST_REVIEWED})
 # unbekannter oder falsch zugeordneter Herkunft. Eine Registry, die nicht zum
 # angegebenen Ökosystem gehört (z.B. npm + pypi.org), sowie ein unbekanntes
 # Ökosystem führen fail-closed zu HOLD.
-DEFAULT_KNOWN_REGISTRIES: Mapping[str, frozenset[str]] = {
-    "pypi": frozenset({"pypi", "pypi.org"}),
-    "npm": frozenset({"npm", "registry.npmjs.org"}),
-    "cargo": frozenset({"cargo", "crates.io"}),
-    "rubygems": frozenset({"rubygems", "rubygems.org"}),
-    "go": frozenset({"go", "pkg.go.dev"}),
-    "maven": frozenset({"maven", "maven-central", "maven central"}),
-}
+# MappingProxyType macht die Default-Allowlist read-only: kein Consumer kann sie
+# prozessweit erweitern (`DEFAULT_KNOWN_REGISTRIES['npm'] = ...` schlägt fehl) und
+# so das Gate für andere still aufweiten. Die Werte sind bereits frozensets.
+DEFAULT_KNOWN_REGISTRIES: Mapping[str, frozenset[str]] = MappingProxyType(
+    {
+        "pypi": frozenset({"pypi", "pypi.org"}),
+        "npm": frozenset({"npm", "registry.npmjs.org"}),
+        "cargo": frozenset({"cargo", "crates.io"}),
+        "rubygems": frozenset({"rubygems", "rubygems.org"}),
+        "go": frozenset({"go", "pkg.go.dev"}),
+        "maven": frozenset({"maven", "maven-central", "maven central"}),
+    }
+)
 
 # Versionsangaben, die keine überprüfbare, gepinnte Version darstellen.
 _UNPINNED_VERSION_TOKENS = frozenset({"", "latest", "*", "any", "x", "unknown", "none"})
@@ -83,6 +89,27 @@ _MIN_PINNED_VERSION_COMPONENTS = 3
 
 # Verifikationsstatus, der eine überprüfte Quelle bezeugt.
 VERIFICATION_VERIFIED = "verified"
+
+# Sichtbarkeits-Restriktivität (kleiner = privater). Ein Proposal darf niemals
+# öffentlicher sein als seine Materialquelle.
+_VISIBILITY_ORDER = {VISIBILITY_PRIVATE: 0, VISIBILITY_REDUCED: 1, VISIBILITY_PUBLIC: 2}
+
+# Skalare Felder des Manifests, die echte Strings sein müssen.
+_SCALAR_STRING_FIELDS = (
+    "action_id",
+    "schema_version",
+    "source_material_ref",
+    "proposed_command",
+    "ecosystem",
+    "package_or_resource",
+    "requested_version",
+    "registry_or_origin",
+    "reversibility",
+    "verification_status",
+    "guard_state",
+    "responsibility_class",
+    "visibility",
+)
 
 
 class ResponsibilityClass(str, Enum):
@@ -189,6 +216,13 @@ class ActionProposal:
         Neuberechnung der Gate-Entscheidung: :func:`build_action_proposal` bleibt
         die alleinige Autorität für die abgeleiteten Felder.
         """
+        # Skalare Textfelder müssen echte Strings sein — sonst könnte ein direkt
+        # konstruiertes Manifest z.B. ``proposed_command=['curl', 'x']`` tragen
+        # und die Invariante "Befehl ist inerter Text" verletzen.
+        for field_name in _SCALAR_STRING_FIELDS:
+            if not isinstance(getattr(self, field_name), str):
+                raise ActionGateError(f"{field_name} must be a string")
+
         # Kollektionen fail-closed normalisieren: ein blindes ``tuple()`` würde
         # einen bloßen String in Zeichen zerlegen und Nicht-String-Einträge
         # (z.B. ``[123]``) durchreichen. Beides wird abgewiesen.
@@ -221,6 +255,25 @@ class ActionProposal:
         has_human_code = ActionReasonCode.HUMAN_APPROVAL_REQUIRED.value in self.reason_codes
         if has_human_code != self.human_approval_required:
             raise ActionGateError("human_approval_required flag inconsistent with reason codes")
+
+        # Invarianz-Kohärenz (keine Neuberechnung der vollen Ladder): eine reale
+        # Nebenwirkung oder Irreversibilität MUSS HOLD + HUMAN_ONLY + menschliche
+        # Freigabe tragen. Das verhindert, dass ein direkt/deserialisiert
+        # konstruiertes Manifest eine Netz-/FS-/Prozess-/irreversible Aktion als
+        # PROPOSE/COMPUTATIONAL ausweist und so am Gate vorbei geroutet wird.
+        effects_present = (
+            self.network_required or bool(self.filesystem_effects) or bool(self.process_effects)
+        )
+        irreversible = self.reversibility.strip().lower() != "reversible"
+        if effects_present or irreversible:
+            if self.guard_state != GUARD_HOLD:
+                raise ActionGateError("side-effect/irreversible proposal must be HOLD")
+            if self.responsibility_class != ResponsibilityClass.HUMAN_ONLY.value:
+                raise ActionGateError("side-effect/irreversible proposal must be HUMAN_ONLY")
+            if not self.human_approval_required:
+                raise ActionGateError(
+                    "side-effect/irreversible proposal must require human approval"
+                )
 
     def to_manifest(self) -> dict[str, object]:
         """Kanonische, serialisierbare (JSON-native) Manifest-Darstellung.
@@ -276,8 +329,9 @@ def _is_pinned_version(value: str) -> bool:
     # Teilweise Versionen (``1``, ``1.2``) sind X-Ranges, keine feste Version.
     if len(parts) < _MIN_PINNED_VERSION_COMPONENTS:
         return False
-    # Mindestens ein Ziffernanteil ist für eine konkrete Version zu erwarten.
-    return any(ch.isdigit() for ch in token)
+    # Die ersten drei (Release-)Komponenten müssen numerisch beginnen; sonst ist
+    # es keine aufgelöste Major.Minor.Patch-Version (``foo.bar.1`` → ungepinnt).
+    return all(part[:1].isdigit() for part in parts[:_MIN_PINNED_VERSION_COMPONENTS])
 
 
 def _normalize_effects(effects: Sequence[str] | None) -> list[str]:
@@ -302,13 +356,30 @@ def _normalize_effects(effects: Sequence[str] | None) -> list[str]:
     return normalized
 
 
-def _validate_visibility(visibility: str) -> str:
-    if visibility not in _KNOWN_VISIBILITIES:
+def _resolve_visibility(requested: str | None, source_visibility: object) -> str:
+    """Proposal-Sichtbarkeit fail-closed bestimmen, ohne Eskalation über die Quelle.
+
+    - ``requested is None`` → das Proposal erbt die Sichtbarkeit der Quelle.
+    - sonst → das Restriktivere (privater) von Wunsch und Quelle.
+
+    Eine unbekannte Quell-Sichtbarkeit wird fail-closed als ``private`` behandelt.
+    """
+    if isinstance(source_visibility, str) and source_visibility in _KNOWN_VISIBILITIES:
+        source = source_visibility
+    else:
+        source = VISIBILITY_PRIVATE
+
+    if requested is None:
+        return source
+    if requested not in _KNOWN_VISIBILITIES:
         raise ActionGateError(
-            f"unknown visibility class: {visibility!r}",
+            f"unknown visibility class: {requested!r}",
             [ActionReasonCode.ACTION_PROPOSAL_ONLY],
         )
-    return visibility
+    # Kleinere Ordnungszahl = privater = restriktiver.
+    if _VISIBILITY_ORDER[requested] <= _VISIBILITY_ORDER[source]:
+        return requested
+    return source
 
 
 def build_action_proposal(
@@ -326,7 +397,7 @@ def build_action_proposal(
     reversibility: str = "unknown",
     verification_status: str = "unverified",
     known_registries: Mapping[str, frozenset[str]] = DEFAULT_KNOWN_REGISTRIES,
-    visibility: str = VISIBILITY_REDUCED,
+    visibility: str | None = None,
 ) -> ActionProposal:
     """Ein nicht ausführbares ``ActionProposal`` aus einer Handlungsanweisung bauen.
 
@@ -341,6 +412,12 @@ def build_action_proposal(
     - unverifizierte Quelle → ``HOLD`` (``SOURCE_UNVERIFIED``);
     - Netzwerk/Dateisystem/Prozess-Effekt oder Irreversibilität → ``HOLD``;
     - untrusted Materialquelle → ``HOLD`` (``UNTRUSTED_SOURCE_MATERIAL``).
+
+    ``visibility`` wird niemals über die Sichtbarkeit der Materialquelle
+    hinaus eskaliert: bei ``None`` erbt das Proposal die Quell-Sichtbarkeit,
+    sonst wird auf das Restriktivere von Wunsch und Quelle geklemmt. So kann
+    kein privater ``proposed_command`` über ein ``reduced``/``public``-Label
+    diffundieren.
     """
     if not isinstance(source_material, MaterialRef):
         raise ActionGateError(
@@ -368,7 +445,7 @@ def build_action_proposal(
             [ActionReasonCode.ACTION_PROPOSAL_ONLY],
         )
 
-    visibility = _validate_visibility(visibility)
+    visibility = _resolve_visibility(visibility, source_material.visibility)
     fs_effects = _normalize_effects(filesystem_effects)
     proc_effects = _normalize_effects(process_effects)
     source_trust = normalize_trust(source_material.trust)

@@ -104,11 +104,26 @@ fail-closed zu `HOLD`. Bekanntheit bedeutet **nicht** Vertrauen zur Ausführung.
 Eine gepinnte Version muss mindestens `Major.Minor.Patch` auflösen; kürzere oder
 X-Range-Angaben (`1`, `1.2`, `1.x`, `^1`, `>=2`) gelten als nicht gepinnt.
 
+`visibility` wird nie über die Sichtbarkeit der Materialquelle hinaus eskaliert:
+ohne Angabe erbt das Proposal die Quell-Sichtbarkeit, sonst wird auf das
+Restriktivere von Wunsch und Quelle geklemmt (unbekannte Quell-Sichtbarkeit →
+`private`). So diffundiert kein privater `proposed_command` über ein
+`reduced`/`public`-Label.
+
+Die Default-Registry-Allowlist ist unveränderlich (`MappingProxyType`), damit
+kein Consumer sie prozessweit aufweiten kann.
+
 `ActionProposal.__post_init__` erzwingt strukturelle Gültigkeit auf jedem
-Konstruktionspfad (Schema-Version, Enum-Grenzen von `guard_state`,
-`responsibility_class`, `visibility`, geschlossenes Reason-Code-Vokabular,
-`HUMAN_APPROVAL_REQUIRED`-Kohärenz) und normalisiert Kollektionen zu Tupeln.
-Das sichert strukturelle Konsistenz; die abgeleitete Gate-Entscheidung bleibt
+Konstruktionspfad: Skalarfelder sind echte Strings (`proposed_command` bleibt
+inerter Text), Kollektionen enthalten nur Strings und werden zu Tupeln
+normalisiert, `schema_version`/`guard_state`/`responsibility_class`/`visibility`
+und das Reason-Code-Vokabular sind geschlossen, und die
+`HUMAN_APPROVAL_REQUIRED`-Kohärenz gilt. Zusätzlich wird die **Invariante**
+erzwungen, dass ein Manifest mit realer Nebenwirkung oder Irreversibilität
+`HOLD` + `HUMAN_ONLY` + menschliche Freigabe tragen muss — so kann ein
+deserialisiertes/direkt gebautes Manifest eine solche Aktion nicht als
+`PROPOSE`/`COMPUTATIONAL` am Gate vorbei routen. Das ist eine Invarianzprüfung,
+keine Neuberechnung der vollen Ladder; die abgeleitete Gate-Entscheidung bleibt
 allein Sache von `build_action_proposal`.
 
 ## 6. Invarianten (getestet)
