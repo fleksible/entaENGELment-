@@ -1,0 +1,87 @@
+{
+  "bridgeId": "t3t-boundary-trace-v0.1",
+  "sourceFrameId": "tesser3takt-minimal-v0.2",
+  "from": {
+    "resolutionScale": "MICRO",
+    "extentScope": "TRAVERSAL_CELL"
+  },
+  "to": {
+    "resolutionScale": "MESO",
+    "extentScope": "TRAVERSAL_SLICE"
+  },
+  "transitions": [
+    {
+      "pairId": "bt-001",
+      "half": "EXIT",
+      "stepIndex": 2,
+      "stateId": "S4:1234",
+      "quadrant": "alpha",
+      "coordinateSpace": "GLOBAL_REENTRY_LATTICE",
+      "latticePosition": [1, 1],
+      "provenance": {
+        "kind": "fixture",
+        "source": "ui-app/fixtures/tesser3takt-micro-meso-bridge-v0.1.json",
+        "revision": "v0.1",
+        "digest": null,
+        "digestStatus": "UNVERIFIED",
+        "locator": "$.transitions[0]",
+        "claimLayer": "FIXTURE",
+        "authorityStatus": "repo-local"
+      }
+    },
+    {
+      "pairId": "bt-001",
+      "half": "ENTRY",
+      "stepIndex": 3,
+      "stateId": "S4:2143",
+      "quadrant": "beta",
+      "coordinateSpace": "GLOBAL_REENTRY_LATTICE",
+      "latticePosition": [2, 3],
+      "transformedFrom": "S4:1234",
+      "provenance": {
+        "kind": "fixture",
+        "source": "ui-app/fixtures/tesser3takt-micro-meso-bridge-v0.1.json",
+        "revision": "v0.1",
+        "digest": null,
+        "digestStatus": "UNVERIFIED",
+        "locator": "$.transitions[1]",
+        "claimLayer": "FIXTURE",
+        "authorityStatus": "repo-local"
+      }
+    }
+  ],
+  "preservedInvariants": [
+    "BOUNDARY_PAIR_IDENTITY",
+    "EVENT_ORDER",
+    "DIRECTIONAL_CONNECTIVITY",
+    "PROVENANCE_BINDING",
+    "ORIGIN_CLAIM_LEVEL"
+  ],
+  "measuredOrDeclaredLoss": [
+    "raw timing detail outside stepIndex",
+    "per-cell state detail not carried by BoundaryTransition"
+  ],
+  "falsifiers": [
+    "MISSING_OR_REORDERED_BOUNDARY_HALF",
+    "CHANGED_CONNECTIVITY",
+    "LOST_PROVENANCE",
+    "LOST_CLAIM_ORIGIN"
+  ],
+  "evidenceRefs": [
+    {
+      "kind": "transport",
+      "source": "ui-app/lib/tesser3takt-frame.ts",
+      "revision": "d39b9db72dd04d6e1e2cded5a7d08287be76b9b8",
+      "digest": null,
+      "digestStatus": "UNVERIFIED",
+      "locator": "BoundaryTransition and validateBoundaryPairs",
+      "claimLayer": "SPEC",
+      "authorityStatus": "repo-local"
+    }
+  ],
+  "origin": {
+    "claimTag": "BRIDGE-WIP",
+    "evidenceRole": "CLAIM_BEARING",
+    "immutable": true
+  }
+}
