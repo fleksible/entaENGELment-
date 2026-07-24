@@ -142,10 +142,19 @@ class TestFailClosedHolds:
         assert proposal.responsibility_class == ResponsibilityClass.HUMAN_ONLY.value
         assert ActionReasonCode.PROCESS_EFFECT.value in proposal.reason_codes
 
-    def test_irreversible_holds(self):
+    def test_irreversible_is_human_only(self):
         proposal = build(reversibility="irreversible")
         assert proposal.guard_state == GUARD_HOLD
         assert ActionReasonCode.IRREVERSIBLE_EFFECT.value in proposal.reason_codes
+        # Irreversibilität ist eine menschliche Grenze, auch ohne Netz/FS/Prozess.
+        assert proposal.responsibility_class == ResponsibilityClass.HUMAN_ONLY.value
+        assert proposal.human_approval_required is True
+
+    def test_unknown_reversibility_is_human_only(self):
+        # Nicht nachweisbar reversibel → fail-closed HUMAN_ONLY.
+        proposal = build(reversibility="unknown")
+        assert proposal.responsibility_class == ResponsibilityClass.HUMAN_ONLY.value
+        assert proposal.human_approval_required is True
 
     def test_untrusted_material_holds(self):
         proposal = build(source_material=make_material(trust="UNTRUSTED"))
@@ -197,6 +206,22 @@ class TestDeterminism:
             build(network_required=True).reason_codes == build(network_required=True).reason_codes
         )
 
+    def test_reason_codes_are_immutable_tuple(self):
+        proposal = build(network_required=True)
+        assert isinstance(proposal.reason_codes, tuple)
+        assert isinstance(proposal.filesystem_effects, tuple)
+        assert isinstance(proposal.process_effects, tuple)
+
+    def test_manifest_mutation_does_not_change_proposal_or_digest(self):
+        proposal = build(network_required=True)
+        before = proposal.manifest_digest()
+        manifest = proposal.to_manifest()
+        # Defensive Kopie: Mutation des Manifests darf den Proposal nicht berühren.
+        manifest["reason_codes"].append("INJECTED_CODE")
+        manifest["reason_codes"].clear()
+        assert proposal.manifest_digest() == before
+        assert "INJECTED_CODE" not in proposal.reason_codes
+
 
 class TestInputValidation:
     def test_non_material_source_rejected(self):
@@ -230,6 +255,9 @@ class TestPinnedVersionHelper:
     def test_pinned(self, value):
         assert _is_pinned_version(value) is True
 
-    @pytest.mark.parametrize("value", ["", "latest", "*", "^1.0.0", "~2", ">=3.1", "1 - 2", "any"])
+    @pytest.mark.parametrize(
+        "value",
+        ["", "latest", "*", "^1.0.0", "~2", ">=3.1", "1 - 2", "any", "1.x", "1.2.x", "2.X"],
+    )
     def test_unpinned(self, value):
         assert _is_pinned_version(value) is False

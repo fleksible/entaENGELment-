@@ -167,19 +167,28 @@ class ActionProposal:
     requested_version: str
     registry_or_origin: str
     network_required: bool
-    filesystem_effects: list[str]
-    process_effects: list[str]
+    filesystem_effects: tuple[str, ...]
+    process_effects: tuple[str, ...]
     reversibility: str
     verification_status: str
     guard_state: str
     responsibility_class: str
     human_approval_required: bool
-    reason_codes: list[str]
+    reason_codes: tuple[str, ...]
     visibility: str
 
     def to_manifest(self) -> dict[str, object]:
-        """Kanonische, serialisierbare Manifest-Darstellung."""
-        return asdict(self)
+        """Kanonische, serialisierbare (JSON-native) Manifest-Darstellung.
+
+        Die intern unveränderlichen Tupel werden defensiv als frische Listen
+        ausgegeben: Ein Aufrufer kann das Manifest mutieren, ohne den frozen
+        Proposal oder dessen ``manifest_digest`` zu verändern.
+        """
+        data = asdict(self)
+        data["filesystem_effects"] = list(self.filesystem_effects)
+        data["process_effects"] = list(self.process_effects)
+        data["reason_codes"] = list(self.reason_codes)
+        return data
 
     def manifest_digest(self) -> str:
         """Deterministischer Integritätsverweis über das kanonisierte Manifest.
@@ -213,6 +222,10 @@ def _is_pinned_version(value: str) -> bool:
         return False
     # Range-/Wildcard-Operatoren markieren keine feste Version.
     if any(op in token for op in ("^", "~", ">", "<", "*", " - ", "||", ",")):
+        return False
+    # Eingebettete Wildcard-Komponenten (``1.x``, ``1.2.x``, ``x``) sind nicht
+    # gepinnt, obwohl sie eine Ziffer enthalten.
+    if any(part in ("x", "") for part in token.split(".")):
         return False
     # Mindestens ein Ziffernanteil ist für eine konkrete Version zu erwarten.
     return any(ch.isdigit() for ch in token)
@@ -353,15 +366,19 @@ def build_action_proposal(
     if proc_effects:
         hold(ActionReasonCode.PROCESS_EFFECT)
         has_side_effect = True
-    if reversibility.strip().lower() != "reversible":
+    # Nicht nachweisbar reversibel (inkl. ``unknown``) zählt fail-closed als
+    # menschliche Grenze — die Spec ordnet Irreversibilität HUMAN_ONLY zu.
+    irreversible = reversibility.strip().lower() != "reversible"
+    if irreversible:
         hold(ActionReasonCode.IRREVERSIBLE_EFFECT)
 
     # Untrusted Materialquelle.
     if source_trust not in _NON_UNTRUSTED_TRUST:
         hold(ActionReasonCode.UNTRUSTED_SOURCE_MATERIAL)
 
-    # Verantwortungsklasse der vorgeschlagenen Handlung ableiten.
-    if has_side_effect:
+    # Verantwortungsklasse der vorgeschlagenen Handlung ableiten. Reale
+    # Nebenwirkung oder Irreversibilität erzwingt HUMAN_ONLY.
+    if has_side_effect or irreversible:
         responsibility = ResponsibilityClass.HUMAN_ONLY
     elif guard_state == GUARD_HOLD:
         responsibility = ResponsibilityClass.IN_BETWEEN
@@ -369,8 +386,8 @@ def build_action_proposal(
         responsibility = ResponsibilityClass.COMPUTATIONAL
 
     # Menschliche Freigabe ist erforderlich, sobald etwas nicht fail-open
-    # durchläuft: reale Nebenwirkung oder ein HOLD-Zustand.
-    human_required = has_side_effect or guard_state == GUARD_HOLD
+    # durchläuft: reale Nebenwirkung, Irreversibilität oder ein HOLD-Zustand.
+    human_required = has_side_effect or irreversible or guard_state == GUARD_HOLD
     if human_required:
         reasons.append(ActionReasonCode.HUMAN_APPROVAL_REQUIRED)
 
@@ -384,13 +401,13 @@ def build_action_proposal(
         requested_version=requested_version,
         registry_or_origin=registry_or_origin,
         network_required=network_required,
-        filesystem_effects=fs_effects,
-        process_effects=proc_effects,
+        filesystem_effects=tuple(fs_effects),
+        process_effects=tuple(proc_effects),
         reversibility=reversibility,
         verification_status=verification_status,
         guard_state=guard_state,
         responsibility_class=responsibility.value,
         human_approval_required=human_required,
-        reason_codes=[code.value for code in reasons],
+        reason_codes=tuple(code.value for code in reasons),
         visibility=visibility,
     )
