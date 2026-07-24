@@ -83,8 +83,8 @@ Verletzung fail-closed auf `HOLD`:
 
 | Bedingung | Reason-Code | Wirkung |
 |---|---|---|
-| Registry/Herkunft nicht in Allowlist | `REGISTRY_UNKNOWN` | HOLD |
-| Version nicht gepinnt/überprüfbar | `VERSION_UNVERIFIABLE` | HOLD |
+| Registry passt nicht zum Ökosystem / unbekanntes Ökosystem | `REGISTRY_UNKNOWN` | HOLD |
+| Version nicht vollständig gepinnt (`1`, `1.2`, `1.x`, Ranges) | `VERSION_UNVERIFIABLE` | HOLD |
 | Quelle nicht `verified` | `SOURCE_UNVERIFIED` | HOLD |
 | Netzwerk erforderlich | `NETWORK_REQUIRED` | HOLD + HUMAN_ONLY |
 | Dateisystemeffekt | `FILESYSTEM_EFFECT` | HOLD + HUMAN_ONLY |
@@ -96,9 +96,20 @@ Immer gesetzt: `ACTION_PROPOSAL_ONLY`, `NO_EXECUTION`, `SHELL_FRAGMENT_INERT`.
 `HUMAN_APPROVAL_REQUIRED` wird gesetzt, sobald eine reale Nebenwirkung vorliegt
 oder der Zustand `HOLD` ist.
 
-Die Allowlist-Bekanntheit einer Registry bedeutet **nicht** Vertrauen zur
-Ausführung; sie unterscheidet nur eine benannte Ökosystem-Registry von
-unbekannter Herkunft.
+Die Allowlist ist nach Ökosystem gekeyt: eine Registry gilt nur als bekannt,
+wenn sie zum angegebenen Ökosystem passt (z.B. `npm` + `registry.npmjs.org`).
+Eine Fehlzuordnung (`npm` + `pypi.org`) oder ein unbekanntes Ökosystem führt
+fail-closed zu `HOLD`. Bekanntheit bedeutet **nicht** Vertrauen zur Ausführung.
+
+Eine gepinnte Version muss mindestens `Major.Minor.Patch` auflösen; kürzere oder
+X-Range-Angaben (`1`, `1.2`, `1.x`, `^1`, `>=2`) gelten als nicht gepinnt.
+
+`ActionProposal.__post_init__` erzwingt strukturelle Gültigkeit auf jedem
+Konstruktionspfad (Schema-Version, Enum-Grenzen von `guard_state`,
+`responsibility_class`, `visibility`, geschlossenes Reason-Code-Vokabular,
+`HUMAN_APPROVAL_REQUIRED`-Kohärenz) und normalisiert Kollektionen zu Tupeln.
+Das sichert strukturelle Konsistenz; die abgeleitete Gate-Entscheidung bleibt
+allein Sache von `build_action_proposal`.
 
 ## 6. Invarianten (getestet)
 
@@ -113,11 +124,14 @@ unbekannter Herkunft.
 3. **Setup-Doku ist Daten** — README-/Makefile-/requirements-Zeilen erzeugen nur
    ein zurückgehaltenes Proposal; ein monkeypatchter Subprozess/`os.system`
    wird während des Baus nie berührt.
-4. **Fail-closed** — unbekannte Registry und nicht überprüfbare Version führen
-   zu `HOLD`.
-5. **HUMAN_ONLY** — jede reale Nebenwirkung erfordert `human_approval_required`.
+4. **Fail-closed** — nicht zum Ökosystem passende Registry und nicht vollständig
+   gepinnte Version (`1`, `1.2`, `1.x`, Ranges) führen zu `HOLD`.
+5. **HUMAN_ONLY** — jede reale Nebenwirkung **und Irreversibilität** erfordert
+   `human_approval_required`.
 6. **Deterministisch** — identische Eingabe ergibt identisches Manifest und
    identischen `manifest_digest`; Reason-Code-Reihenfolge ist stabil.
+7. **Strukturell fail-closed** — `ActionProposal.__post_init__` weist ungültige
+   Enums/Reason-Codes/Schema-Versionen auf jedem Konstruktionspfad ab.
 
 ## 7. Abgrenzung
 

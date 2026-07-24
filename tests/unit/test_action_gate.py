@@ -257,7 +257,90 @@ class TestPinnedVersionHelper:
 
     @pytest.mark.parametrize(
         "value",
-        ["", "latest", "*", "^1.0.0", "~2", ">=3.1", "1 - 2", "any", "1.x", "1.2.x", "2.X"],
+        [
+            "",
+            "latest",
+            "*",
+            "^1.0.0",
+            "~2",
+            ">=3.1",
+            "1 - 2",
+            "any",
+            "1.x",
+            "1.2.x",
+            "2.X",
+            "1",
+            "1.2",
+            "==1.2.3",
+        ],
     )
     def test_unpinned(self, value):
         assert _is_pinned_version(value) is False
+
+
+class TestEcosystemRegistryMatch:
+    def test_matching_ecosystem_registry_is_known(self):
+        proposal = build(ecosystem="npm", registry_or_origin="registry.npmjs.org")
+        assert ActionReasonCode.REGISTRY_KNOWN.value in proposal.reason_codes
+        assert proposal.guard_state == GUARD_PROPOSE
+
+    def test_registry_from_other_ecosystem_holds(self):
+        # npm-Proposal mit pypi.org-Registry ist eine Fehlzuordnung → HOLD.
+        proposal = build(ecosystem="npm", registry_or_origin="pypi.org")
+        assert proposal.guard_state == GUARD_HOLD
+        assert ActionReasonCode.REGISTRY_UNKNOWN.value in proposal.reason_codes
+
+    def test_unknown_ecosystem_holds(self):
+        proposal = build(ecosystem="shell", registry_or_origin="pypi.org")
+        assert proposal.guard_state == GUARD_HOLD
+        assert ActionReasonCode.REGISTRY_UNKNOWN.value in proposal.reason_codes
+
+
+class TestPostInitValidation:
+    def _valid_kwargs(self, **overrides):
+        data = {
+            "action_id": "a",
+            "schema_version": ACTION_GATE_SCHEMA_VERSION,
+            "source_material_ref": "m",
+            "proposed_command": "c",
+            "ecosystem": "pypi",
+            "package_or_resource": "p",
+            "requested_version": "1.2.3",
+            "registry_or_origin": "pypi.org",
+            "network_required": False,
+            "filesystem_effects": (),
+            "process_effects": (),
+            "reversibility": "reversible",
+            "verification_status": "verified",
+            "guard_state": GUARD_PROPOSE,
+            "responsibility_class": ResponsibilityClass.COMPUTATIONAL.value,
+            "human_approval_required": False,
+            "reason_codes": ("ACTION_PROPOSAL_ONLY",),
+            "visibility": "reduced",
+        }
+        data.update(overrides)
+        return data
+
+    def test_valid_direct_construction_ok(self):
+        assert isinstance(ActionProposal(**self._valid_kwargs()), ActionProposal)
+
+    def test_unknown_reason_code_rejected(self):
+        with pytest.raises(ActionGateError):
+            ActionProposal(**self._valid_kwargs(reason_codes=("NOT_A_CODE",)))
+
+    def test_invalid_guard_state_rejected(self):
+        with pytest.raises(ActionGateError):
+            ActionProposal(**self._valid_kwargs(guard_state="EXECUTE"))
+
+    def test_invalid_responsibility_class_rejected(self):
+        with pytest.raises(ActionGateError):
+            ActionProposal(**self._valid_kwargs(responsibility_class="WHATEVER"))
+
+    def test_inconsistent_human_flag_rejected(self):
+        # human_approval_required True, aber Reason-Code fehlt → inkohärent.
+        with pytest.raises(ActionGateError):
+            ActionProposal(**self._valid_kwargs(human_approval_required=True))
+
+    def test_list_collections_are_coerced_to_tuple(self):
+        proposal = ActionProposal(**self._valid_kwargs(reason_codes=["ACTION_PROPOSAL_ONLY"]))
+        assert isinstance(proposal.reason_codes, tuple)

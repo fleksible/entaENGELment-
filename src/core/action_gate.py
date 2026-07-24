@@ -27,7 +27,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import asdict, dataclass
 from enum import Enum
 
@@ -58,29 +58,28 @@ _KNOWN_VISIBILITIES = frozenset({VISIBILITY_PRIVATE, VISIBILITY_REDUCED, VISIBIL
 # Trust-Level, die eine Materialquelle nicht als untrusted markieren.
 _NON_UNTRUSTED_TRUST = frozenset({TRUST_TRUSTED, TRUST_REVIEWED})
 
-# Kleine, fail-closed Allowlist bekannter Paket-Registries/Herkünfte. Bekanntheit
-# heißt ausdrücklich nicht "vertrauenswürdig zur Ausführung" — sie unterscheidet
-# nur eine benannte Ökosystem-Registry von unbekannter Herkunft. Alles außerhalb
-# der Liste führt zu HOLD.
-DEFAULT_KNOWN_REGISTRIES = frozenset(
-    {
-        "pypi",
-        "pypi.org",
-        "npm",
-        "registry.npmjs.org",
-        "cargo",
-        "crates.io",
-        "rubygems",
-        "rubygems.org",
-        "go",
-        "pkg.go.dev",
-        "maven",
-        "maven-central",
-    }
-)
+# Kleine, fail-closed Allowlist bekannter Paket-Registries/Herkünfte, gekeyt nach
+# Ökosystem. Bekanntheit heißt ausdrücklich nicht "vertrauenswürdig zur
+# Ausführung" — sie unterscheidet nur eine zum Ökosystem passende Registry von
+# unbekannter oder falsch zugeordneter Herkunft. Eine Registry, die nicht zum
+# angegebenen Ökosystem gehört (z.B. npm + pypi.org), sowie ein unbekanntes
+# Ökosystem führen fail-closed zu HOLD.
+DEFAULT_KNOWN_REGISTRIES: Mapping[str, frozenset[str]] = {
+    "pypi": frozenset({"pypi", "pypi.org"}),
+    "npm": frozenset({"npm", "registry.npmjs.org"}),
+    "cargo": frozenset({"cargo", "crates.io"}),
+    "rubygems": frozenset({"rubygems", "rubygems.org"}),
+    "go": frozenset({"go", "pkg.go.dev"}),
+    "maven": frozenset({"maven", "maven-central", "maven central"}),
+}
 
 # Versionsangaben, die keine überprüfbare, gepinnte Version darstellen.
 _UNPINNED_VERSION_TOKENS = frozenset({"", "latest", "*", "any", "x", "unknown", "none"})
+
+# Eine gepinnte Version muss mindestens Major.Minor.Patch auflösen. Kürzere
+# Angaben (``1``, ``1.2``) werden von npm & Co. als X-Range interpretiert und
+# gelten hier fail-closed als nicht gepinnt.
+_MIN_PINNED_VERSION_COMPONENTS = 3
 
 # Verifikationsstatus, der eine überprüfte Quelle bezeugt.
 VERIFICATION_VERIFIED = "verified"
@@ -134,6 +133,7 @@ class ActionReasonCode(str, Enum):
 
 
 _KNOWN_ACTION_REASON_CODES = frozenset(code.value for code in ActionReasonCode)
+_KNOWN_RESPONSIBILITY_CLASSES = frozenset(rc.value for rc in ResponsibilityClass)
 
 
 class ActionGateError(ValueError):
@@ -176,6 +176,42 @@ class ActionProposal:
     human_approval_required: bool
     reason_codes: tuple[str, ...]
     visibility: str
+
+    def __post_init__(self) -> None:
+        """Strukturelle Gültigkeit erzwingen — egal über welchen Konstruktionspfad.
+
+        ``ActionProposal`` ist Teil der öffentlichen Core-API. Wird ein Manifest
+        direkt (statt über :func:`build_action_proposal`) erzeugt, deserialisiert
+        oder gecacht, darf es die geschlossenen Vokabulare und Enum-Grenzen nicht
+        verletzen. Kollektionen werden defensiv zu Tupeln normalisiert.
+
+        Diese Prüfung sichert **strukturelle** Konsistenz, nicht die vollständige
+        Neuberechnung der Gate-Entscheidung: :func:`build_action_proposal` bleibt
+        die alleinige Autorität für die abgeleiteten Felder.
+        """
+        object.__setattr__(self, "filesystem_effects", tuple(self.filesystem_effects))
+        object.__setattr__(self, "process_effects", tuple(self.process_effects))
+        object.__setattr__(self, "reason_codes", tuple(self.reason_codes))
+
+        if self.schema_version != ACTION_GATE_SCHEMA_VERSION:
+            raise ActionGateError(f"unknown schema_version: {self.schema_version!r}")
+        if self.guard_state not in ACTION_GATE_STATES:
+            raise ActionGateError(f"invalid guard_state: {self.guard_state!r}")
+        if self.responsibility_class not in _KNOWN_RESPONSIBILITY_CLASSES:
+            raise ActionGateError(f"invalid responsibility_class: {self.responsibility_class!r}")
+        if self.visibility not in _KNOWN_VISIBILITIES:
+            raise ActionGateError(f"invalid visibility: {self.visibility!r}")
+        if not isinstance(self.network_required, bool) or not isinstance(
+            self.human_approval_required, bool
+        ):
+            raise ActionGateError("network_required and human_approval_required must be bool")
+        unknown_codes = [c for c in self.reason_codes if c not in _KNOWN_ACTION_REASON_CODES]
+        if unknown_codes:
+            raise ActionGateError(f"unknown reason codes: {unknown_codes}")
+        # Kohärenz: das HUMAN_APPROVAL_REQUIRED-Signal muss zum Flag passen.
+        has_human_code = ActionReasonCode.HUMAN_APPROVAL_REQUIRED.value in self.reason_codes
+        if has_human_code != self.human_approval_required:
+            raise ActionGateError("human_approval_required flag inconsistent with reason codes")
 
     def to_manifest(self) -> dict[str, object]:
         """Kanonische, serialisierbare (JSON-native) Manifest-Darstellung.
@@ -221,11 +257,15 @@ def _is_pinned_version(value: str) -> bool:
     if token in _UNPINNED_VERSION_TOKENS:
         return False
     # Range-/Wildcard-Operatoren markieren keine feste Version.
-    if any(op in token for op in ("^", "~", ">", "<", "*", " - ", "||", ",")):
+    if any(op in token for op in ("^", "~", ">", "<", "*", "=", " - ", "||", ",")):
         return False
-    # Eingebettete Wildcard-Komponenten (``1.x``, ``1.2.x``, ``x``) sind nicht
-    # gepinnt, obwohl sie eine Ziffer enthalten.
-    if any(part in ("x", "") for part in token.split(".")):
+    parts = token.split(".")
+    # Eingebettete Wildcard- oder leere Komponenten (``1.x``, ``1.2.x``, ``x``)
+    # sind nicht gepinnt, obwohl sie eine Ziffer enthalten.
+    if any(part in ("x", "") for part in parts):
+        return False
+    # Teilweise Versionen (``1``, ``1.2``) sind X-Ranges, keine feste Version.
+    if len(parts) < _MIN_PINNED_VERSION_COMPONENTS:
         return False
     # Mindestens ein Ziffernanteil ist für eine konkrete Version zu erwarten.
     return any(ch.isdigit() for ch in token)
@@ -276,7 +316,7 @@ def build_action_proposal(
     process_effects: Sequence[str] | None = None,
     reversibility: str = "unknown",
     verification_status: str = "unverified",
-    known_registries: frozenset[str] = DEFAULT_KNOWN_REGISTRIES,
+    known_registries: Mapping[str, frozenset[str]] = DEFAULT_KNOWN_REGISTRIES,
     visibility: str = VISIBILITY_REDUCED,
 ) -> ActionProposal:
     """Ein nicht ausführbares ``ActionProposal`` aus einer Handlungsanweisung bauen.
@@ -286,7 +326,8 @@ def build_action_proposal(
     ausschließlich ein Manifest samt fail-closed Gate-Zustand.
 
     Fail-closed Regeln:
-    - unbekannte Registry/Herkunft → ``HOLD`` (``REGISTRY_UNKNOWN``);
+    - unbekannte oder nicht zum Ökosystem passende Registry/Herkunft → ``HOLD``
+      (``REGISTRY_UNKNOWN``);
     - nicht überprüfbare/ungepinnte Version → ``HOLD`` (``VERSION_UNVERIFIABLE``);
     - unverifizierte Quelle → ``HOLD`` (``SOURCE_UNVERIFIED``);
     - Netzwerk/Dateisystem/Prozess-Effekt oder Irreversibilität → ``HOLD``;
@@ -337,8 +378,11 @@ def build_action_proposal(
         if code not in reasons:
             reasons.append(code)
 
-    # Registry-/Herkunfts-Allowlist (fail-closed).
-    if registry_or_origin.strip().lower() in {r.lower() for r in known_registries}:
+    # Registry-/Herkunfts-Allowlist (fail-closed), gekeyt nach Ökosystem: eine
+    # Registry muss zum angegebenen Ökosystem passen. Unbekanntes Ökosystem oder
+    # falsch zugeordnete Registry (z.B. npm + pypi.org) → HOLD.
+    ecosystem_registries = known_registries.get(ecosystem.strip().lower(), frozenset())
+    if registry_or_origin.strip().lower() in {r.lower() for r in ecosystem_registries}:
         reasons.append(ActionReasonCode.REGISTRY_KNOWN)
     else:
         hold(ActionReasonCode.REGISTRY_UNKNOWN)
