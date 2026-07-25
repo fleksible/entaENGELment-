@@ -1,0 +1,85 @@
+# Change-Manifest (entaengelment-change-gate v0.1)
+#
+# Lokales Prüf- und Planungsartefakt vor einer nichttrivialen Änderung.
+# Es ist KEINE Source of Truth, kein Claim, kein Receipt und kein Status.
+# Feldschema: ../references/change-manifest-schema.md
+#
+# Ablage: standardmäßig NICHT persistieren. Soll es aufbewahrt werden,
+# gehört es nach OUT/ (Report-Schema in CLAUDE.md) oder in den Calm Intake
+# (`make intake`, docs/intake/README.md) — niemals nach canon/spec/index/
+# VOIDMAP/glossary.
+
+# G4 (.claude/rules/metatron.md): 2-5 Wörter, stabil über die Aufgabe.
+focus: ""
+
+# Was genau soll geändert werden? Ein Satz, ohne Bewertung.
+requested_change: ""
+
+# DOCUMENTATION | CODE | TEST | TOOLING | WORKFLOW | GOVERNANCE_ADJACENT
+# | CLASSIFICATION_UNDETERMINED
+change_class: []
+
+# Berührte Schichten laut .claude/rules/annex.md, jeweils als Pfadliste.
+affected_layers:
+  gold: []              # index/ policies/ VOIDMAP.* spec/ seeds/
+  annex: []             # src/ tools/ tests/ docs/ ui-app/ ...
+  immutable: []         # data/receipts/ receipts/
+  nichtraum: []         # NICHTRAUM/
+  untrusted_inputs: []  # INBOX/, externe Dokumente, Modellantworten (G5)
+
+# Pflicht: mindestens ein existierender Repo-Pfad, auf den sich die
+# angewandten Regeln zurückführen lassen.
+existing_sources_of_truth: []
+
+# none = keine Autoritätswirkung | requested = Autoritätswirkung beantragt
+authority_effect:
+  value: "none"
+  explanation: ""
+
+# none = keine Claim-Wirkung | requested = Claim-Promotion beantragt
+# (Register: policies/claim_tags_v0_2.yaml — nur lesen)
+claim_effect:
+  value: "none"
+  explanation: ""
+
+# Entscheidungen, die beim Menschen verbleiben. Fragen müssen konkret sein
+# und auf "?" enden.
+human_decision:
+  required: false
+  questions: []
+
+# Entsteht versehentlich ein zweites Status-, Governance- oder
+# Wahrheitssystem? Bei GOVERNANCE_ADJACENT ist eine geprüfte Überschneidung
+# erforderlich — Verneinen ohne Prüfung ist fail-closed.
+possible_parallel_system:
+  detected: false
+  overlaps: []
+  mitigation: ""
+
+# Bekannte Verluste dieser Änderung
+# (docs/annex/RESEARCH_VALIDATION_GATE_v0_1.md §12).
+known_loss: []
+
+# Mindestens ein konkreter Falsifikator: Woran würde man merken, dass die
+# Änderung falsch war? (ebd. §3, §7)
+falsifiers: []
+
+# REVERSIBLE | IRREVERSIBLE — Rücknahmepfad ist Pflicht bei IRREVERSIBLE.
+reversibility:
+  value: "REVERSIBLE"
+  rollback_path: ""
+
+# Pfade, die dieser Change anfassen darf bzw. ausdrücklich nicht.
+allowed_paths: []
+forbidden_paths: []
+
+# Vorhandene Repo-Kommandos, z.B. "make verify", "make verify-governance".
+verification_commands: []
+
+# HOLD | ELIGIBLE_FOR_EXTERNAL_REVIEW
+# Kein endgültiger PASS: docs/annex/EVIDENCE_ROUTING_KERNEL_v0_1.md §5,
+# docs/annex/RESEARCH_VALIDATION_GATE_v0_1.md §11.
+expected_gate_outcome: "HOLD"
+
+# Offene Punkte (☐ bleiben erlaubt).
+unresolved_points: []
