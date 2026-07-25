@@ -218,3 +218,27 @@ Bedingungsprüfung:
 
 - `OUT/entaengelment_change_gate_v0_1_plan.md` (dieser Bericht)
 - geplant: `.claude/skills/entaengelment-change-gate/**`, `tests/unit/test_change_gate_manifest.py`
+
+---
+
+## Nachtrag 2026-07-25 (Runde 2, nach Review von PR #323)
+
+Dieser Planbericht bleibt als **Dokument des Planungsstands vom 2026-07-24**
+unverändert stehen. Zwei Aussagen oben sind durch die Umsetzung überholt und
+werden hier korrigiert, statt oben still überschrieben zu werden:
+
+1. **§2.5 / §4:** „GOLD-Präfixe des Validators sind in `.claude/rules/annex.md`
+   belegt" — trifft nur für GOLD und IMMUTABLE zu. `NICHTRAUM/` steht **nicht**
+   in `annex.md`, sondern in `CLAUDE.md` (G2). Der Herkunftstest hat das während
+   der Umsetzung erzwungen; korrigiert wurde die Quellenangabe im Validator,
+   nicht `annex.md`.
+2. **§2.5:** Der Testumfang ist über die zwölf geplanten Fälle hinaus gewachsen:
+   Runde 1 endete mit 62 Tests, Runde 2 mit **92 Tests** in 15 Klassen. Die
+   Erweiterung deckt sechs Review-Befunde ab (undeklarierte IMMUTABLE-/
+   NICHTRAUM-Pfade, ausführbare Fokus-Wortzahl, Rücknahmepfad-Vertrag,
+   Exit-Code-Semantik, `possible_parallel_system`-Aufteilung, Doku-Drift).
+
+Der Scope blieb dabei in allen Punkten innerhalb von §2.2/§2.4: additiv, keine
+GOLD-/IMMUTABLE-/Receipt-/Policy-/VOIDMAP-/NICHTRAUM-Datei berührt, keine
+CI-/Make-Verdrahtung. Einzelheiten und geprüfte Strukturzahlen:
+`OUT/entaengelment_change_gate_v0_1_audit.md` §1.1 und §8.

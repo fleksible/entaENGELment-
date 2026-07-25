@@ -93,7 +93,8 @@ Tippfehlerkorrekturen. Für reine Beobachtung gilt weiterhin
 Lesen, nicht schreiben. Erlaubte Werkzeuge wie in
 `.claude/skills/witness_mode.md`. Klären:
 
-1. Welcher **Fokus** (2–5 Wörter) gilt? Liegt ein Fokus-Switch vor (G4)?
+1. Welcher **Fokus** (2–5 Wörter, wird geprüft) gilt? Liegt ein Fokus-Switch
+   vor (G4)?
 2. Welche **Pfade** werden berührt, und in welche Schicht fallen sie
    (`.claude/rules/annex.md`)?
 3. Welche **vorhandenen Regeln** gelten? Jede muss auf einen Repo-Pfad zeigen.
@@ -124,7 +125,8 @@ Ergebnis:
 | Verdikt | Exit | Bedeutung |
 |---|---|---|
 | `ELIGIBLE_FOR_EXTERNAL_REVIEW` | 0 | Manifest strukturell vollständig genug für menschliche Prüfung |
-| `HOLD` | 1 | mindestens ein Befund |
+| `HOLD` | 1 | mindestens ein Befund oder selbst deklariertes `HOLD` |
+| `HOLD` | 2 | Eingabefehler: Datei nicht lesbar oder YAML nicht parsebar |
 
 `ELIGIBLE_FOR_EXTERNAL_REVIEW` heißt **nicht** geprüft, korrekt, sicher,
 genehmigt oder wahr.
@@ -178,6 +180,12 @@ Bei Überschneidung: `HOLD` mit dem lokalen Reason-Code
 `POSSIBLE_PARALLEL_SYSTEM`. Dieser Code ist **nur validator-lokal** und niemals
 ein globaler Projektstatus.
 
+Das Manifest trennt dabei **geprüft** von **gefunden**: `systems_checked` nennt
+die Systeme, gegen die geprüft wurde, `detected_overlaps` die tatsächlich
+erkannten Überschneidungen. Bei `GOVERNANCE_ADJACENT` muss `systems_checked`
+benannt sein — eine ungeprüfte Verneinung ist kein Nachweis. Eine erkannte
+Überschneidung verlangt eine `mitigation`.
+
 `HOLD` ist in diesem Skill gate-lokal und wird nicht in Navigations-HOLD,
 ERK-Guard-HOLD oder Claim-`[VOID]` übersetzt
 (`docs/annex/RESEARCH_VALIDATION_GATE_v0_1.md` §9).
@@ -194,6 +202,12 @@ zusammenführen und auslösen, aber **nicht deren neue Ursprungsquelle werden**.
 erfolgen. Ein Manifest, das GOLD, IMMUTABLE oder NICHTRAUM berührt, ohne eine
 konkrete menschliche Entscheidungsfrage zu stellen, wird auf `HOLD` gesetzt.
 Receipts bleiben append-only (`.claude/rules/annex.md`).
+
+Das gilt für **alle drei** geschützten Schichten symmetrisch und in beide
+Richtungen: Ein geschützter Pfad in `allowed_paths`, der nicht in der
+zugehörigen `affected_layers`-Liste deklariert ist, wird fail-closed als
+`*_PATH_UNDECLARED` gemeldet — sonst ließe sich die HumanDecision-Pflicht durch
+Nicht-Deklarieren umgehen.
 
 ### 4.5 Untrusted bleibt untrusted
 
@@ -218,6 +232,12 @@ Quelle: `docs/annex/RESEARCH_VALIDATION_GATE_v0_1.md` §3, §7, §12.
 Additive und isolierte Änderungen bevorzugen. Keine Löschung, keine stille
 Migration, keine automatische Kanonisierung. Statt zu löschen: nach
 `NICHTRAUM/archive/` verschieben und im Commit begründen (G3).
+
+Ein konkreter `rollback_path` ist **in beiden Fällen** Pflicht — auch bei
+`REVERSIBLE`. „Reversibel" ohne benannten Rücknahmeweg ist eine unbelegte
+Behauptung. `IRREVERSIBLE` verlangt zusätzlich eine konkrete menschliche
+Entscheidungsfrage. Der Validator prüft nur, **dass** ein Pfad deklariert ist —
+nicht, ob er funktioniert.
 
 ### 4.8 Fokusbindung
 

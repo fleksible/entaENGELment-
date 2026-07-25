@@ -28,9 +28,9 @@ Usage:
         validate_change_manifest.py <manifest.yaml> [--json] [--repo-root PATH]
 
 Exit-Codes:
-    0  ELIGIBLE_FOR_EXTERNAL_REVIEW  (Manifest vollständig genug für Review)
-    1  HOLD                          (mindestens ein Befund)
-    2  Eingabe nicht lesbar
+    0  ELIGIBLE_FOR_EXTERNAL_REVIEW  (kein Befund)
+    1  HOLD                          (Befund oder selbst deklariertes HOLD)
+    2  Eingabefehler                  (Datei nicht lesbar oder YAML nicht parsebar)
 """
 
 from __future__ import annotations
@@ -67,6 +67,7 @@ UNKNOWN_FIELD = "UNKNOWN_FIELD"
 FIELD_TYPE_INVALID = "FIELD_TYPE_INVALID"
 EMPTY_REQUIRED_VALUE = "EMPTY_REQUIRED_VALUE"
 UNKNOWN_ENUM_VALUE = "UNKNOWN_ENUM_VALUE"
+FOCUS_WORD_COUNT_INVALID = "FOCUS_WORD_COUNT_INVALID"
 
 # Befunde: Selbstautorisierung
 FORBIDDEN_SELF_ATTESTATION = "FORBIDDEN_SELF_ATTESTATION"
@@ -76,7 +77,9 @@ FINAL_PASS_NOT_PERMITTED = "FINAL_PASS_NOT_PERMITTED"
 GOLD_PATH_REQUIRES_HUMAN_DECISION = "GOLD_PATH_REQUIRES_HUMAN_DECISION"
 GOLD_PATH_UNDECLARED = "GOLD_PATH_UNDECLARED"
 IMMUTABLE_PATH_REQUIRES_HUMAN_DECISION = "IMMUTABLE_PATH_REQUIRES_HUMAN_DECISION"
+IMMUTABLE_PATH_UNDECLARED = "IMMUTABLE_PATH_UNDECLARED"
 NICHTRAUM_PATH_REQUIRES_HUMAN_DECISION = "NICHTRAUM_PATH_REQUIRES_HUMAN_DECISION"
+NICHTRAUM_PATH_UNDECLARED = "NICHTRAUM_PATH_UNDECLARED"
 PATH_ALLOWLIST_CONFLICT = "PATH_ALLOWLIST_CONFLICT"
 
 # Befunde: Wirkung
@@ -91,6 +94,7 @@ SOURCE_OF_TRUTH_PATH_MISSING = "SOURCE_OF_TRUTH_PATH_MISSING"
 SOURCE_OF_TRUTH_PATH_ESCAPES_REPO = "SOURCE_OF_TRUTH_PATH_ESCAPES_REPO"
 MISSING_KNOWN_LOSS = "MISSING_KNOWN_LOSS"
 UNTRUSTED_INPUT_WITHOUT_DECLARED_LOSS = "UNTRUSTED_INPUT_WITHOUT_DECLARED_LOSS"
+REVERSIBLE_WITHOUT_ROLLBACK = "REVERSIBLE_WITHOUT_ROLLBACK"
 IRREVERSIBLE_WITHOUT_ROLLBACK = "IRREVERSIBLE_WITHOUT_ROLLBACK"
 IRREVERSIBLE_WITHOUT_HUMAN_DECISION = "IRREVERSIBLE_WITHOUT_HUMAN_DECISION"
 
@@ -133,8 +137,35 @@ IMMUTABLE_PREFIXES = ("data/receipts/", "receipts/")
 # Schicht nicht, deshalb hier ein eigener Quellverweis.
 NICHTRAUM_PREFIXES = ("NICHTRAUM/",)
 
+# Geschützte Schichten in einer Tabelle: Schlüssel in affected_layers, Label
+# für die Meldung, Reason-Code bei fehlender menschlicher Entscheidung,
+# Reason-Code bei undeklarierter Freigabe, Pfadpräfixe.
+PROTECTED_LAYERS = (
+    ("gold", "GOLD", GOLD_PATH_REQUIRES_HUMAN_DECISION, GOLD_PATH_UNDECLARED, GOLD_PREFIXES),
+    (
+        "immutable",
+        "IMMUTABLE",
+        IMMUTABLE_PATH_REQUIRES_HUMAN_DECISION,
+        IMMUTABLE_PATH_UNDECLARED,
+        IMMUTABLE_PREFIXES,
+    ),
+    (
+        "nichtraum",
+        "NICHTRAUM",
+        NICHTRAUM_PATH_REQUIRES_HUMAN_DECISION,
+        NICHTRAUM_PATH_UNDECLARED,
+        NICHTRAUM_PREFIXES,
+    ),
+)
+
 # Flächen, deren Berührung eine Claim-Wirkung wahrscheinlich macht.
 CLAIM_SURFACE_PREFIXES = GOLD_PREFIXES
+
+# Fokus-Wortgrenzen. Quelle: .claude/rules/metatron.md ("FOKUS: <2-5 Wörter
+# die das Ziel beschreiben>"). Gezählt wird whitespace-basiert; keine
+# linguistische Tokenisierung.
+FOCUS_MIN_WORDS = 2
+FOCUS_MAX_WORDS = 5
 
 # Endgültige Selbstattestierungen. Quelle:
 # docs/annex/RESEARCH_VALIDATION_GATE_v0_1.md §11 (PASS, VALIDATED, PROVEN,
@@ -196,6 +227,12 @@ OPTIONAL_EMPTY_LISTS = ("known_loss", "forbidden_paths", "unresolved_points")
 
 AFFECTED_LAYER_KEYS = ("gold", "annex", "immutable", "nichtraum", "untrusted_inputs")
 
+# Getrennte Bedeutungen statt eines mehrdeutigen Bool-Flags:
+# systems_checked = wogegen geprüft wurde, detected_overlaps = was gefunden
+# wurde. Die frühere Form (`detected`/`overlaps`) ist damit ein unbekanntes
+# Feld und läuft nicht still durch.
+PARALLEL_SYSTEM_KEYS = ("systems_checked", "detected_overlaps", "mitigation")
+
 TOP_LEVEL_FIELDS = tuple(
     sorted(REQUIRED_STRING_FIELDS + REQUIRED_LIST_FIELDS + REQUIRED_MAPPING_FIELDS)
 )
@@ -247,6 +284,18 @@ def _normalize_path(raw: str) -> str:
     return value.rstrip("/")
 
 
+def count_focus_words(focus: str) -> int:
+    """Wörter im Fokus whitespace-basiert zählen.
+
+    Bewusst einfach und deterministisch: ``str.split()`` fasst beliebige
+    Whitespace-Folgen (auch Tabs und Zeilenumbrüche) zusammen, sodass
+    zusätzlicher Whitespace das Ergebnis nicht verändert. Keine
+    linguistische Tokenisierung, keine Silben- oder Bindestrich-Analyse —
+    "Change-Gate Skill" zählt als zwei Wörter.
+    """
+    return len(focus.split())
+
+
 def _matches_prefix(path: str, prefixes: Sequence[str]) -> bool:
     normalized = _normalize_path(path)
     for prefix in prefixes:
@@ -291,6 +340,19 @@ def _check_structure(data: dict[str, Any]) -> list[Finding]:
             findings.append(Finding(FIELD_TYPE_INVALID, field, "String erwartet"))
         elif not data[field].strip():
             findings.append(Finding(EMPTY_REQUIRED_VALUE, field, "leerer Pflichtwert"))
+        elif field == "focus":
+            # Der Fokus-Vertrag aus .claude/rules/metatron.md ist ausführbar:
+            # 2-5 Wörter. Ein leerer Fokus ist oben schon gemeldet.
+            words = count_focus_words(data[field])
+            if not FOCUS_MIN_WORDS <= words <= FOCUS_MAX_WORDS:
+                findings.append(
+                    Finding(
+                        FOCUS_WORD_COUNT_INVALID,
+                        "focus",
+                        f"{words} Wort(e); erlaubt sind {FOCUS_MIN_WORDS}-"
+                        f"{FOCUS_MAX_WORDS} (.claude/rules/metatron.md)",
+                    )
+                )
 
     for field in REQUIRED_LIST_FIELDS:
         if field not in data:
@@ -360,22 +422,25 @@ def _check_nested_shapes(data: dict[str, Any]) -> list[Finding]:
     parallel = data.get("possible_parallel_system")
     if isinstance(parallel, dict):
         findings.extend(
-            _check_closed_keys(
-                parallel, ("detected", "overlaps", "mitigation"), "possible_parallel_system"
-            )
+            _check_closed_keys(parallel, PARALLEL_SYSTEM_KEYS, "possible_parallel_system")
         )
-        if not isinstance(parallel.get("detected"), bool):
-            findings.append(
-                Finding(FIELD_TYPE_INVALID, "possible_parallel_system.detected", "Boolean erwartet")
-            )
-        if not _is_str_list(parallel.get("overlaps")):
-            findings.append(
-                Finding(
-                    FIELD_TYPE_INVALID,
-                    "possible_parallel_system.overlaps",
-                    "Liste von Strings erwartet",
+        for key in ("systems_checked", "detected_overlaps"):
+            if key not in parallel:
+                findings.append(
+                    Finding(
+                        MISSING_REQUIRED_FIELD,
+                        f"possible_parallel_system.{key}",
+                        "Pflichtfeld fehlt",
+                    )
                 )
-            )
+            elif not _is_str_list(parallel[key]):
+                findings.append(
+                    Finding(
+                        FIELD_TYPE_INVALID,
+                        f"possible_parallel_system.{key}",
+                        "Liste von Strings erwartet",
+                    )
+                )
         if not isinstance(parallel.get("mitigation"), str):
             findings.append(
                 Finding(
@@ -469,16 +534,12 @@ def _check_layer_boundaries(data: dict[str, Any]) -> list[Finding]:
 
     human_ok = _human_decision_is_concrete(data)
 
-    for key, code, prefixes in (
-        ("gold", GOLD_PATH_REQUIRES_HUMAN_DECISION, GOLD_PREFIXES),
-        ("immutable", IMMUTABLE_PATH_REQUIRES_HUMAN_DECISION, IMMUTABLE_PREFIXES),
-        ("nichtraum", NICHTRAUM_PATH_REQUIRES_HUMAN_DECISION, NICHTRAUM_PREFIXES),
-    ):
+    for key, label, human_code, undeclared_code, prefixes in PROTECTED_LAYERS:
         declared = _nonempty_strings(layers.get(key))
         if declared and not human_ok:
             findings.append(
                 Finding(
-                    code,
+                    human_code,
                     f"affected_layers.{key}",
                     f"{len(declared)} Pfad(e) berührt; erfordert "
                     "human_decision.required=true mit konkreter Frage "
@@ -486,19 +547,21 @@ def _check_layer_boundaries(data: dict[str, Any]) -> list[Finding]:
                 )
             )
         # Nicht deklarierte Berührung derselben Schicht über allowed_paths.
+        # Fail-closed für jede geschützte Schicht: eine Freigabe ohne
+        # Deklaration darf nicht still durchlaufen.
         undeclared = sorted(
             path
             for path in _nonempty_strings(data.get("allowed_paths"))
             if _matches_prefix(path, prefixes)
             and not any(_normalize_path(path) == _normalize_path(d) for d in declared)
         )
-        if key == "gold" and undeclared:
+        if undeclared:
             findings.append(
                 Finding(
-                    GOLD_PATH_UNDECLARED,
+                    undeclared_code,
                     "allowed_paths",
-                    "GOLD-Pfad(e) freigegeben, aber nicht in affected_layers.gold "
-                    "deklariert: {}".format(", ".join(undeclared)),
+                    f"{label}-Pfad(e) freigegeben, aber nicht in "
+                    f"affected_layers.{key} deklariert: " + ", ".join(undeclared),
                 )
             )
 
@@ -643,26 +706,30 @@ def _check_parallel_system(data: dict[str, Any]) -> list[Finding]:
     if not isinstance(parallel, dict):
         return findings
 
-    detected = parallel.get("detected")
-    overlaps = _nonempty_strings(parallel.get("overlaps"))
+    # Zwei getrennte Bedeutungen: systems_checked = wogegen geprüft wurde,
+    # detected_overlaps = was tatsächlich gefunden wurde. Ein leeres
+    # detected_overlaps heißt nur "keine Überschneidung deklariert gefunden" —
+    # nicht, dass keine Prüfung stattfand.
+    systems_checked = _nonempty_strings(parallel.get("systems_checked"))
+    detected_overlaps = _nonempty_strings(parallel.get("detected_overlaps"))
     mitigation = parallel.get("mitigation")
     mitigation_text = mitigation.strip() if isinstance(mitigation, str) else ""
     governance_adjacent = "GOVERNANCE_ADJACENT" in _nonempty_strings(data.get("change_class"))
 
-    if detected is True and not mitigation_text:
+    if detected_overlaps and not mitigation_text:
         findings.append(
             Finding(
                 POSSIBLE_PARALLEL_SYSTEM,
                 "possible_parallel_system.mitigation",
-                "paralleles System erkannt, aber keine Gegenmaßnahme benannt",
+                "erkannte Überschneidung ohne benannte Gegenmaßnahme",
             )
         )
-    if governance_adjacent and detected is False and not overlaps:
+    if governance_adjacent and not systems_checked:
         findings.append(
             Finding(
                 POSSIBLE_PARALLEL_SYSTEM,
-                "possible_parallel_system.overlaps",
-                "GOVERNANCE_ADJACENT ohne geprüfte Überschneidung; "
+                "possible_parallel_system.systems_checked",
+                "GOVERNANCE_ADJACENT ohne benannte geprüfte Systeme; "
                 "fail-closed statt stillschweigend verneint",
             )
         )
@@ -694,21 +761,39 @@ def _check_sources_of_truth(data: dict[str, Any], repo_root: Path | None) -> lis
 
 
 def _check_reversibility(data: dict[str, Any]) -> list[Finding]:
+    """Rücknahmepfad prüfen.
+
+    Ein Rücknahmepfad ist in beiden Fällen Pflicht (CLAUDE.md G3:
+    "Reversibilität erhalten"; docs/annex/RESEARCH_VALIDATION_GATE_v0_1.md §3:
+    jede Stufe nennt einen Rücknahmepfad). Der Validator prüft ausschließlich,
+    **ob** ein Pfad konkret deklariert ist — nicht, ob er fachlich funktioniert.
+    """
     findings: list[Finding] = []
     block = data.get("reversibility")
-    if not isinstance(block, dict) or block.get("value") != "IRREVERSIBLE":
+    if not isinstance(block, dict):
+        return findings
+
+    value = block.get("value")
+    if value not in REVERSIBILITY_VALUES:
+        # Unbekannter Wert ist bereits als UNKNOWN_ENUM_VALUE gemeldet.
         return findings
 
     rollback = block.get("rollback_path")
     if not isinstance(rollback, str) or not rollback.strip():
+        code = (
+            IRREVERSIBLE_WITHOUT_ROLLBACK
+            if value == "IRREVERSIBLE"
+            else REVERSIBLE_WITHOUT_ROLLBACK
+        )
         findings.append(
             Finding(
-                IRREVERSIBLE_WITHOUT_ROLLBACK,
+                code,
                 "reversibility.rollback_path",
-                "irreversible Änderung ohne begründeten Rücknahmepfad (CLAUDE.md G3)",
+                f"{value}: kein konkreter Rücknahmepfad deklariert (CLAUDE.md G3)",
             )
         )
-    if not _human_decision_is_concrete(data):
+
+    if value == "IRREVERSIBLE" and not _human_decision_is_concrete(data):
         findings.append(
             Finding(
                 IRREVERSIBLE_WITHOUT_HUMAN_DECISION,
@@ -813,21 +898,26 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     data, parse_finding = load_manifest_text(text)
     if parse_finding is not None:
+        # Nicht parsebares YAML ist ein Eingabefehler, kein inhaltlicher
+        # Befund: Exit 2, wie im Modul-Docstring und im Schema dokumentiert.
+        # Das fail-closed Verdikt bleibt HOLD, damit der Befund sichtbar ist.
         result = ValidationResult(VERDICT_HOLD, (parse_finding,))
-    else:
-        repo_root: Path | None = None
-        if not args.no_path_check:
-            repo_root = (
-                Path(args.repo_root) if args.repo_root else Path(__file__).resolve().parents[4]
-            )
-        result = validate_manifest(data, repo_root)
+        _emit(result, as_json=args.json)
+        return 2
 
-    if args.json:
+    repo_root: Path | None = None
+    if not args.no_path_check:
+        repo_root = Path(args.repo_root) if args.repo_root else Path(__file__).resolve().parents[4]
+    result = validate_manifest(data, repo_root)
+    _emit(result, as_json=args.json)
+    return 0 if result.verdict == VERDICT_ELIGIBLE else 1
+
+
+def _emit(result: ValidationResult, *, as_json: bool) -> None:
+    if as_json:
         print(json.dumps(result.as_dict(), indent=2, sort_keys=True, ensure_ascii=False))
     else:
         print(render_text(result))
-
-    return 0 if result.verdict == VERDICT_ELIGIBLE else 1
 
 
 if __name__ == "__main__":

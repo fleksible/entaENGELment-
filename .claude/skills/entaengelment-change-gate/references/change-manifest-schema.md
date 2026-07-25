@@ -22,7 +22,7 @@ Unbekannte Felder werden fail-closed abgelehnt (Muster:
 
 | Feld | Typ | Pflicht | Darf leer sein | Werte |
 |---|---|---|---|---|
-| `focus` | String | ja | nein | 2–5 Wörter (G4) |
+| `focus` | String | ja | nein | 2–5 Wörter (G4), **geprüft** — s. §2.5 |
 | `requested_change` | String | ja | nein | Freitext |
 | `change_class` | Liste[String] | ja | nein | s. §2.1 |
 | `affected_layers` | Mapping | ja | — | Schlüssel: `gold`, `annex`, `immutable`, `nichtraum`, `untrusted_inputs`; Werte je Liste[String] |
@@ -30,7 +30,7 @@ Unbekannte Felder werden fail-closed abgelehnt (Muster:
 | `authority_effect` | Mapping | ja | — | `value` (s. §2.2), `explanation` (String) |
 | `claim_effect` | Mapping | ja | — | `value` (s. §2.2), `explanation` (String) |
 | `human_decision` | Mapping | ja | — | `required` (Bool), `questions` (Liste[String]) |
-| `possible_parallel_system` | Mapping | ja | — | `detected` (Bool), `overlaps` (Liste[String]), `mitigation` (String) |
+| `possible_parallel_system` | Mapping | ja | — | `systems_checked` (Liste[String]), `detected_overlaps` (Liste[String]), `mitigation` (String) — s. §2.6 |
 | `known_loss` | Liste[String] | ja | ja¹ | Freitext |
 | `falsifiers` | Liste[String] | ja | nein | Freitext |
 | `reversibility` | Mapping | ja | — | `value` (s. §2.3), `rollback_path` (String) |
@@ -68,6 +68,14 @@ erzwingt eine menschliche Entscheidung.
 `REVERSIBLE` · `IRREVERSIBLE` — `rollback_path` entspricht dem
 „Rücknahmepfad" aus `docs/annex/RESEARCH_VALIDATION_GATE_v0_1.md` §3.
 
+Ein **konkreter `rollback_path` ist in beiden Fällen Pflicht** (`CLAUDE.md` G3
+„Reversibilität erhalten"; ebd. §3 nennt für jede Stufe einen Rücknahmepfad).
+`IRREVERSIBLE` verlangt **zusätzlich** eine konkrete menschliche
+Entscheidungsfrage.
+
+Der Validator prüft ausschließlich, **ob** ein Rücknahmepfad konkret deklariert
+ist. Er behauptet **nicht**, dass dieser Pfad fachlich funktioniert.
+
 ### 2.4 `expected_gate_outcome`
 
 `HOLD` · `ELIGIBLE_FOR_EXTERNAL_REVIEW`
@@ -80,6 +88,43 @@ Claim-Tag** markiert (`docs/annex/RESEARCH_VALIDATION_GATE_v0_1.md` §11).
 tesser3TAKT-Navigations-HOLD, *nicht* ERK-Guard-HOLD und *nicht* Claim-`[VOID]`
 (ebd. §9: „Das Wort HOLD besitzt verschiedene lokale Rollen … Keine
 automatische Übersetzung").
+
+### 2.5 `focus` — Wortzahl
+
+Quelle: `.claude/rules/metatron.md` („`FOKUS: <2-5 Wörter die das Ziel
+beschreiben>`"). Der Vertrag ist ausführbar: weniger als 2 oder mehr als 5
+Wörter → `FOCUS_WORD_COUNT_INVALID`.
+
+Gezählt wird **whitespace-basiert** (`str.split()`): beliebige Whitespace-Folgen
+gelten als ein Trenner, zusätzlicher Whitespace verändert das Ergebnis nicht.
+Keine linguistische Tokenisierung — `Change-Gate Skill` zählt als **zwei**
+Wörter. Ein leerer Fokus wird nur als `EMPTY_REQUIRED_VALUE` gemeldet, nicht
+zusätzlich als Wortzahlverletzung.
+
+### 2.6 `possible_parallel_system`
+
+Zwei getrennte Bedeutungen, damit „geprüft" und „gefunden" nicht kollabieren:
+
+| Feld | Bedeutung |
+|---|---|
+| `systems_checked` | bestehende Systeme, **gegen die geprüft wurde** |
+| `detected_overlaps` | **tatsächlich erkannte** Überschneidungen |
+| `mitigation` | Gegenmaßnahme; Pflicht, sobald `detected_overlaps` nicht leer ist |
+
+Invarianten:
+
+- `GOVERNANCE_ADJACENT` in `change_class` ⇒ `systems_checked` darf **nicht leer**
+  sein. Fail-closed: eine ungeprüfte Behauptung „kein Parallelsystem" ist kein
+  Nachweis.
+- `detected_overlaps` nicht leer ⇒ `mitigation` darf **nicht leer** sein.
+- Ein leeres `detected_overlaps` bedeutet **nur**: keine Überschneidung
+  deklariert gefunden. Es bedeutet **nicht**, dass keine Prüfung stattfand —
+  diese Aussage trägt allein `systems_checked`.
+
+Die frühere Form (`detected: Bool` plus `overlaps`) ist **nicht** mehr gültig.
+Weil das Feldschema geschlossen ist, erzeugt sie `UNKNOWN_FIELD` und
+`MISSING_REQUIRED_FIELD` — widersprüchliche Altsemantik (`detected: true` bei
+leeren `overlaps`) läuft nicht still durch.
 
 ## 3. Nicht-Äquivalenztabelle
 
@@ -99,19 +144,24 @@ Ledger, Receipts oder Events geschrieben und begründen keinen Projektstatus.
 
 ## 4. Reason-Codes
 
-### 4.1 Struktur
+Insgesamt **29 Reason-Codes**. Ein Test (`test_every_reason_code_is_documented_in_the_schema`,
+`test_documented_reason_code_count_matches_the_code`) hält Code und diese
+Tabelle deckungsgleich; Drift wird sichtbar, statt still zu bleiben.
+
+### 4.1 Struktur (8)
 
 | Code | Auslöser |
 |---|---|
-| `MANIFEST_UNPARSEABLE` | YAML nicht lesbar (`yaml.safe_load`) |
+| `MANIFEST_UNPARSEABLE` | YAML nicht parsebar (`yaml.safe_load`) |
 | `MANIFEST_NOT_MAPPING` | Wurzelknoten ist kein Mapping |
 | `MISSING_REQUIRED_FIELD` | Pflichtfeld fehlt |
 | `UNKNOWN_FIELD` | Feld nicht im geschlossenen Schema |
 | `FIELD_TYPE_INVALID` | falscher Typ |
 | `EMPTY_REQUIRED_VALUE` | leerer Pflichtwert / leere Pflichtliste |
 | `UNKNOWN_ENUM_VALUE` | Wert außerhalb des Wertebereichs |
+| `FOCUS_WORD_COUNT_INVALID` | `focus` hat weniger als 2 oder mehr als 5 Wörter (§2.5) |
 
-### 4.2 Selbstautorisierung
+### 4.2 Selbstautorisierung (2)
 
 | Code | Auslöser |
 |---|---|
@@ -121,18 +171,27 @@ Ledger, Receipts oder Events geschrieben und begründen keinen Projektstatus.
 Ein in eckigen Klammern stehender Tag (`[CANON]`) gilt als **Referenz** auf das
 Claim-Register und wird nicht als Selbstattestierung gewertet.
 
-### 4.3 Schichtgrenzen
+### 4.3 Schichtgrenzen (8)
+
+Jede der drei geschützten Schichten hat **zwei** Codes: einen für die fehlende
+menschliche Entscheidung und einen für eine Freigabe ohne Deklaration. Ein
+geschützter Pfad in `allowed_paths` muss in der zugehörigen
+`affected_layers`-Liste stehen — sonst entfiele die HumanDecision-Pflicht
+still. Nach korrekter Deklaration greift weiterhin die Pflicht zur konkreten
+menschlichen Frage.
 
 | Code | Auslöser |
 |---|---|
 | `GOLD_PATH_REQUIRES_HUMAN_DECISION` | `affected_layers.gold` nicht leer ohne konkrete menschliche Frage |
 | `GOLD_PATH_UNDECLARED` | GOLD-Pfad in `allowed_paths`, aber nicht in `affected_layers.gold` |
 | `IMMUTABLE_PATH_REQUIRES_HUMAN_DECISION` | `affected_layers.immutable` nicht leer ohne konkrete Frage |
+| `IMMUTABLE_PATH_UNDECLARED` | IMMUTABLE-Pfad (`data/receipts/`, `receipts/`) in `allowed_paths`, aber nicht in `affected_layers.immutable` |
 | `NICHTRAUM_PATH_REQUIRES_HUMAN_DECISION` | `affected_layers.nichtraum` nicht leer ohne konkrete Frage |
+| `NICHTRAUM_PATH_UNDECLARED` | NICHTRAUM-Pfad in `allowed_paths`, aber nicht in `affected_layers.nichtraum` |
 | `PATH_ALLOWLIST_CONFLICT` | Pfad gleichzeitig in `allowed_paths` und `forbidden_paths` (inkl. Unterpfad) |
 | `UNTRUSTED_INPUT_WITHOUT_DECLARED_LOSS` | untrusted Eingaben ohne `known_loss` |
 
-### 4.4 Wirkung
+### 4.4 Wirkung (6)
 
 | Code | Auslöser |
 |---|---|
@@ -140,16 +199,17 @@ Claim-Register und wird nicht als Selbstattestierung gewertet.
 | `PROMOTION_WITHOUT_HUMAN_DECISION` | `authority_effect`/`claim_effect` `requested` ohne `human_decision.required: true` |
 | `AUTHORITY_EFFECT_UNDERSTATED` | `none` behauptet trotz GOLD-Berührung; oder `none` bei `GOVERNANCE_ADJACENT` **ohne Begründung** (verlangt wird eine Begründung, nicht die Hochstufung auf `requested`) |
 | `CLAIM_EFFECT_UNDERSTATED` | `none` behauptet trotz freigegebener Claim-Fläche (`index/`, `policies/`, `spec/`, `seeds/`, `VOIDMAP.*`) |
-| `POSSIBLE_PARALLEL_SYSTEM` | erkanntes Parallelsystem ohne Gegenmaßnahme **oder** `GOVERNANCE_ADJACENT` ohne geprüfte Überschneidung |
+| `POSSIBLE_PARALLEL_SYSTEM` | `detected_overlaps` nicht leer ohne `mitigation` **oder** `GOVERNANCE_ADJACENT` ohne benannte `systems_checked` (§2.6) |
 | `MISSING_KNOWN_LOSS` | `GOVERNANCE_ADJACENT` ohne deklarierten Verlust |
 
-### 4.5 Quellenbindung, Rücknahme
+### 4.5 Quellenbindung, Rücknahme (5)
 
 | Code | Auslöser |
 |---|---|
 | `SOURCE_OF_TRUTH_PATH_MISSING` | genannter Pfad existiert nicht im Repository |
 | `SOURCE_OF_TRUTH_PATH_ESCAPES_REPO` | absoluter Pfad oder `..`-Segment |
-| `IRREVERSIBLE_WITHOUT_ROLLBACK` | `IRREVERSIBLE` ohne `rollback_path` |
+| `REVERSIBLE_WITHOUT_ROLLBACK` | `REVERSIBLE` ohne konkreten `rollback_path` (§2.3) |
+| `IRREVERSIBLE_WITHOUT_ROLLBACK` | `IRREVERSIBLE` ohne konkreten `rollback_path` |
 | `IRREVERSIBLE_WITHOUT_HUMAN_DECISION` | `IRREVERSIBLE` ohne konkrete menschliche Frage |
 
 ## 5. Ergebnis und Exit-Codes
@@ -158,7 +218,14 @@ Claim-Register und wird nicht als Selbstattestierung gewertet.
 |---|---|---|
 | `ELIGIBLE_FOR_EXTERNAL_REVIEW` | 0 | keine strukturellen Befunde; das Manifest ist vollständig genug für eine menschliche Prüfung |
 | `HOLD` | 1 | mindestens ein Befund, oder selbst deklariertes `HOLD` |
-| — | 2 | Manifest nicht lesbar |
+| `HOLD` | 2 | **Eingabefehler**: Datei nicht lesbar oder YAML nicht parsebar |
+
+Exit `2` trennt einen Eingabefehler von einem inhaltlichen Befund. Das Verdikt
+bleibt in diesem Fall fail-closed `HOLD` und wird mit dem Befund
+`MANIFEST_UNPARSEABLE` ausgegeben — nur der Exit-Code unterscheidet.
+
+Die öffentliche `validate_manifest()`-API kennt keine Exit-Codes; sie liefert
+immer ein `ValidationResult`. Die Trennung findet in der CLI statt.
 
 Ein selbst deklariertes `expected_gate_outcome: HOLD` wird respektiert und
 **nie** hochgestuft.

@@ -1,9 +1,10 @@
 # Report: EntaENGELment Change-Gate Skill v0.1 — Abschlussbericht
 
-**Datum:** 2026-07-24
+**Datum:** 2026-07-24 (Runde 1) · 2026-07-25 (Runde 2: Review-Nachbesserung)
 **Fokus:** Change-Gate Skill v0.1
 **Planbericht:** [`OUT/entaengelment_change_gate_v0_1_plan.md`](entaengelment_change_gate_v0_1_plan.md)
 **Scope-Entscheidung aus Phase 2:** PROCEED_ANNEX_ONLY
+**PR:** #323 (Draft)
 **Abschlussstatus:** **ELIGIBLE_FOR_EXTERNAL_REVIEW**
 
 > Der Abschlussstatus verwendet den bereits im Repository belegten Begriff aus
@@ -25,28 +26,55 @@ Entscheidungen und ohne automatische Kanonisierung.
 
 ## 1. Technisch umgesetzt
 
+Alle Zahlen unten sind mit `wc -l`, `pytest --collect-only` und einem
+Konstanten-Scan über den Validator-Quelltext gegen den tatsächlichen Patch
+geprüft (Stand: Runde 2).
+
 | Datei | Zeilen | Inhalt |
 |---|---|---|
-| `.claude/skills/entaengelment-change-gate/SKILL.md` | 226 | Aktivierungsbereich, 5-Schritt-Ablauf, Guard-Semantik §4.1–4.8, Quellenbindungstabelle (21 Repo-Pfade) |
-| `.claude/skills/entaengelment-change-gate/references/change-manifest-schema.md` | 176 | geschlossenes Feldschema, 22 Reason-Codes, Nicht-Äquivalenztabelle, deklarierte Verluste, Falsifikatoren |
-| `.claude/skills/entaengelment-change-gate/templates/change-manifest.yaml` | 88 | leeres Arbeitstemplate mit Quellenkommentaren |
-| `.claude/skills/entaengelment-change-gate/scripts/validate_change_manifest.py` | 800 | deterministischer, offline, seiteneffektfreier Validator |
-| `tests/unit/test_change_gate_manifest.py` | 559 | 62 Tests |
+| `.claude/skills/entaengelment-change-gate/SKILL.md` | 281 | Aktivierungsbereich, 5-Schritt-Ablauf, Guard-Semantik §4.1–4.8, Quellenbindungstabelle (21 Repo-Pfade) |
+| `.claude/skills/entaengelment-change-gate/references/change-manifest-schema.md` | 271 | geschlossenes Feldschema, **29 Reason-Codes**, Nicht-Äquivalenztabelle, deklarierte Verluste, Falsifikatoren |
+| `.claude/skills/entaengelment-change-gate/templates/change-manifest.yaml` | 93 | leeres Arbeitstemplate mit Quellenkommentaren |
+| `.claude/skills/entaengelment-change-gate/scripts/validate_change_manifest.py` | 924 | deterministischer, offline, seiteneffektfreier Validator |
+| `tests/unit/test_change_gate_manifest.py` | 865 | **92 Tests** in 15 Testklassen |
+| `OUT/entaengelment_change_gate_v0_1_plan.md` | 220 | Planbericht (Phase 2) |
+| `OUT/entaengelment_change_gate_v0_1_audit.md` | dieses Dokument | Abschlussbericht |
 
 **Alle Änderungen sind additiv.** Keine bestehende Datei wurde geändert,
-verschoben oder gelöscht (`git status` zeigt ausschließlich drei neue Pfade).
+verschoben oder gelöscht — `git diff origin/main --name-only` listet genau
+**7 neue Dateien in 3 Bereichen** (`.claude/skills/…`, `tests/unit/`, `OUT/`).
+
+### 1.1 Runde 2 — Review-Nachbesserung (Kohärenz Vertrag ↔ Code ↔ Tests)
+
+Die konzeptionelle Architektur ist unverändert: kein neuer Source of Truth,
+keine Governance-/Claim-Autorität, keine CI-/Make-Verdrahtung, keine
+automatische Freigabe, additiv und reversibel.
+
+| # | Befund | Umsetzung |
+|---|---|---|
+| 1 | Undeklarierte IMMUTABLE-/NICHTRAUM-Pfade liefen still durch (Finding nur für `gold`) | Neue Codes `IMMUTABLE_PATH_UNDECLARED`, `NICHTRAUM_PATH_UNDECLARED`; die drei geschützten Schichten liegen jetzt in einer Tabelle `PROTECTED_LAYERS` und werden symmetrisch geprüft |
+| 2 | Fokus-Vertrag „2–5 Wörter" war dokumentiert, aber nicht ausführbar | `count_focus_words()` (whitespace-basiert, dokumentiert) + `FOCUS_WORD_COUNT_INVALID`; leerer Fokus bleibt reiner `EMPTY_REQUIRED_VALUE` |
+| 3 | `REVERSIBLE` konnte ohne benannten Rücknahmepfad ein positives Verdikt erhalten | `REVERSIBLE_WITHOUT_ROLLBACK`; ein konkreter `rollback_path` ist in **beiden** Fällen Pflicht, `IRREVERSIBLE` zusätzlich mit HumanDecision |
+| 4 | Doku nannte Exit 2 für Parsefehler, CLI gab 1 zurück | CLI trennt Eingabefehler vom Befund: Parsefehler → Exit **2** (Verdikt bleibt fail-closed `HOLD`); Docstring, Schema §5 und SKILL.md §Schritt 3 nennen dieselbe Semantik |
+| 5 | `possible_parallel_system` erlaubte widersprüchliche Kombinationen | Aufteilung in `systems_checked` (wogegen geprüft) und `detected_overlaps` (was gefunden); `GOVERNANCE_ADJACENT` verlangt `systems_checked`, erkannte Überschneidung verlangt `mitigation`; die Altform erzeugt `UNKNOWN_FIELD` + `MISSING_REQUIRED_FIELD` und läuft nicht still durch |
+| 6 | Audit sagte „3 Pfade", listete 7 Dateien | korrigiert; **alle** Strukturzahlen neu gegen den Patch geprüft (s. §1 und §5) |
+
+Zusätzlich als Drift-Schutz eingezogen: `test_every_reason_code_is_documented_in_the_schema`
+und `test_documented_reason_code_count_matches_the_code` — ein neuer Reason-Code
+ohne Tabelleneintrag bricht die Suite, statt die Doku still veralten zu lassen.
 
 ### Umgesetzte Guard-Semantik
 
 | Anforderung | Umsetzung | Reason-Code(s) |
 |---|---|---|
 | Keine Selbstautorisierung | Freistehende Endattestierungen im gesamten Manifest werden erkannt; `[CANON]` in Klammern gilt als Registerreferenz, nicht als Attestierung | `FORBIDDEN_SELF_ATTESTATION`, `FINAL_PASS_NOT_PERMITTED` |
-| Kein paralleles Governance-System | Keine neue Statusleiter; `GOVERNANCE_ADJACENT` ohne geprüfte Überschneidung ist fail-closed | `POSSIBLE_PARALLEL_SYSTEM` |
+| Kein paralleles Governance-System | Keine neue Statusleiter; `GOVERNANCE_ADJACENT` ohne benannte `systems_checked` ist fail-closed; erkannte Überschneidung verlangt `mitigation` | `POSSIBLE_PARALLEL_SYSTEM` |
 | Source-of-Truth-Bindung | `existing_sources_of_truth` ist Pflicht; Pfade werden gegen das Repository geprüft | `SOURCE_OF_TRUTH_PATH_MISSING`, `SOURCE_OF_TRUTH_PATH_ESCAPES_REPO` |
-| GOLD-/IMMUTABLE-Schutz | Berührung ohne konkrete menschliche Frage → HOLD; GOLD in `allowed_paths` ohne Deklaration wird erkannt | `GOLD_PATH_REQUIRES_HUMAN_DECISION`, `GOLD_PATH_UNDECLARED`, `IMMUTABLE_PATH_REQUIRES_HUMAN_DECISION`, `NICHTRAUM_PATH_REQUIRES_HUMAN_DECISION` |
+| GOLD-/IMMUTABLE-/NICHTRAUM-Schutz | Berührung ohne konkrete menschliche Frage → HOLD; **jede** der drei Schichten wird zusätzlich auf undeklarierte Freigabe in `allowed_paths` geprüft | `GOLD_PATH_REQUIRES_HUMAN_DECISION`, `GOLD_PATH_UNDECLARED`, `IMMUTABLE_PATH_REQUIRES_HUMAN_DECISION`, `IMMUTABLE_PATH_UNDECLARED`, `NICHTRAUM_PATH_REQUIRES_HUMAN_DECISION`, `NICHTRAUM_PATH_UNDECLARED` |
 | Untrusted bleibt untrusted | `verification_commands` werden als Daten behandelt und nie ausgeführt; untrusted Eingaben verlangen deklarierten Verlust | `UNTRUSTED_INPUT_WITHOUT_DECLARED_LOSS` |
 | Falsifikation vor Verstärkung | `falsifiers` ist Pflichtliste, `known_loss` bei `GOVERNANCE_ADJACENT` und untrusted Eingaben | `MISSING_KNOWN_LOSS` |
-| Reversibilität | `IRREVERSIBLE` verlangt Rücknahmepfad **und** menschliche Frage | `IRREVERSIBLE_WITHOUT_ROLLBACK`, `IRREVERSIBLE_WITHOUT_HUMAN_DECISION` |
+| Reversibilität | Ein konkreter Rücknahmepfad ist in **beiden** Fällen Pflicht; `IRREVERSIBLE` zusätzlich mit konkreter menschlicher Frage | `REVERSIBLE_WITHOUT_ROLLBACK`, `IRREVERSIBLE_WITHOUT_ROLLBACK`, `IRREVERSIBLE_WITHOUT_HUMAN_DECISION` |
+| Fokus-Bindung (G4) | Fokus-Vertrag 2–5 Wörter ist ausführbar, whitespace-basiert gezählt | `FOCUS_WORD_COUNT_INVALID` |
 | Menschliche Entscheidung | Beantragte Authority-/Claim-Wirkung ohne HumanDecision; `required: true` ohne konkrete Frage | `PROMOTION_WITHOUT_HUMAN_DECISION`, `HUMAN_DECISION_WITHOUT_QUESTION` |
 | Fail-closed Schema | geschlossenes Feldschema (Muster: `src/core/evidence_routing.py`) | `UNKNOWN_FIELD`, `UNKNOWN_ENUM_VALUE`, `MISSING_REQUIRED_FIELD`, `FIELD_TYPE_INVALID`, `EMPTY_REQUIRED_VALUE`, `MANIFEST_NOT_MAPPING`, `MANIFEST_UNPARSEABLE` |
 
@@ -56,21 +84,32 @@ verschoben oder gelöscht (`git status` zeigt ausschließlich drei neue Pfade).
 
 Alle Läufe wurden tatsächlich ausgeführt; die Ergebnisse sind unverändert übernommen.
 
-| Befehl | Ergebnis |
+| Befehl | Ergebnis (Runde 2, tatsächlich ausgeführt) |
 |---|---|
 | `make verify` (Baseline **vor** dem Patch) | grün — 290 Tests, Pointer/Claims/Ports OK |
 | `make verify-governance` (Baseline **vor** dem Patch) | grün — 14 Workflows, VOID-Backlog, UI-Drift OK |
-| `make verify` (**nach** dem Patch) | grün — **352 passed in 2.50s**, „Core verify membrane passed" |
-| `make verify-governance` (**nach** dem Patch) | grün — „Governance membrane checked" |
-| `pytest tests/unit/test_change_gate_manifest.py -q` | **62 passed** |
+| `make verify` (**nach** Runde 2) | grün — **382 passed in 9.16s**, „Core verify membrane passed" |
+| `make verify-governance` (**nach** Runde 2) | grün — „Governance membrane checked", 22 VOIDs in sync |
+| `pytest tests/unit/test_change_gate_manifest.py -q` | **92 passed** (Runde 1: 62) |
 | `ruff check src/ tools/ tests/` | „All checks passed!" |
 | `black --check src/ tools/ tests/` | „87 files would be left unchanged" |
 | `mypy src/ tools/` | „Success: no issues found in 43 source files" |
-| `ruff` + `black` + `mypy` auf dem Validator (ausserhalb des Repo-Scope, manuell) | sauber bzw. „Success: no issues found in 1 source file" |
-| CLI auf dem leeren Template | `HOLD`, Exit 1, 7 Befunde — das Template ist absichtlich noch kein gültiges Manifest |
-| CLI auf dem ausgefüllten Selbst-Manifest dieser Änderung | `ELIGIBLE_FOR_EXTERNAL_REVIEW`, Exit 0 |
+| `ruff` + `black` + `mypy` auf dem Validator (ausserhalb des Repo-Lint-Scope, manuell) | sauber bzw. „Success: no issues found in 1 source file" |
 
-### Testabdeckung gegenüber den zwölf geforderten Fällen
+382 = 290 Baseline + 92 neue Tests. Die Differenz ist vollständig durch diesen
+Patch erklärt; keine bestehende Testdatei wurde angefasst.
+
+### Dogfooding (fünf geforderte Fälle, alle ausgeführt)
+
+| Fall | Erwartet | Tatsächlich |
+|---|---|---|
+| leeres Template | `HOLD` | `HOLD`, Exit 1, 7 Befunde (`EMPTY_REQUIRED_VALUE`) |
+| korrekt ausgefülltes ANNEX-Manifest | `ELIGIBLE_FOR_EXTERNAL_REVIEW` | `ELIGIBLE_FOR_EXTERNAL_REVIEW`, Exit 0, keine Befunde |
+| undeklarierter IMMUTABLE-Pfad (`data/receipts/…`) | `HOLD` | `HOLD`, Exit 1, `IMMUTABLE_PATH_UNDECLARED` |
+| undeklarierter NICHTRAUM-Pfad | `HOLD` | `HOLD`, Exit 1, `NICHTRAUM_PATH_UNDECLARED` |
+| ungültiges YAML | Exit `2` | Exit **2**, Verdikt `HOLD`, `MANIFEST_UNPARSEABLE` |
+
+### Testabdeckung gegenüber den zwölf geforderten Fällen (Runde 1)
 
 | # | Geforderter Fall | Testklasse | Status |
 |---|---|---|---|
@@ -87,7 +126,18 @@ Alle Läufe wurden tatsächlich ausgeführt; die Ergebnisse sind unverändert ü
 | 11 | keine Netzwerk-/Prozess-/Write-Nebenwirkungen | `TestNoSideEffects` | abgedeckt (Import-Scan, Write-Sperre, leeres tmp-Verzeichnis) |
 | 12 | Source-of-Truth-Pfade werden verlangt/geprüft | `TestSourceOfTruthBinding` | abgedeckt (inkl. Drift-Check der Pfadklassen) |
 
-### Zwei Befunde aus dem eigenen Lauf
+### Zusätzliche Testabdeckung aus Runde 2
+
+| Befund | Testklasse / Tests |
+|---|---|
+| undeklarierte geschützte Pfade | `TestUndeclaredProtectedPaths` (6 Tests: `data/receipts/…`, `receipts/…`, `NICHTRAUM/…`, korrekt deklariert ohne HumanDecision je Schicht, deklariert + Frage, Layer-Tabellen-Drift) |
+| Fokus-Wortzahl | `TestFocusWordCount` (4 Grenzfälle 1/2/5/6 Wörter, Whitespace-Idempotenz, leerer Fokus, Zählfunktion) |
+| Rücknahmepfad | `TestSourceOfTruthBinding` (5 Tests: `REVERSIBLE` leer/gefüllt, `IRREVERSIBLE` ohne/mit Pfad, keine Funktionsbehauptung) |
+| Exit-Codes | `TestTemplateAndCli` (0 / 1 bei Finding / 1 bei selbst deklariertem HOLD / 2 bei kaputtem YAML / 2 bei fehlender Datei, JSON-Determinismus, Docstring-Abgleich) |
+| `possible_parallel_system` | `TestParallelSystem` (geprüft ohne Überschneidung, Überschneidung ohne/mit Mitigation, Altform, widersprüchliche Altform) |
+| Doku-Drift | `test_every_reason_code_is_documented_in_the_schema`, `test_documented_reason_code_count_matches_the_code` |
+
+### Zwei Befunde aus dem eigenen Lauf (Runde 1)
 
 1. **Drift sichtbar gemacht:** Der Herkunftstest schlug zunächst fehl, weil
    `NICHTRAUM/` **nicht** in `.claude/rules/annex.md` steht, sondern in
@@ -117,6 +167,13 @@ Alle Läufe wurden tatsächlich ausgeführt; die Ergebnisse sind unverändert ü
   keine Trigger-Evaluation durchgeführt.
 - **Inhaltliche Richtigkeit** eines Manifests wird vom Validator grundsätzlich
   nicht geprüft — nur Struktur (deklarierter Verlust).
+- **Funktionsfähigkeit eines `rollback_path`** wird nicht geprüft. Der Validator
+  stellt nur fest, **dass** ein Pfad konkret deklariert ist.
+- **Semantische Qualität von `systems_checked`/`detected_overlaps`** wird nicht
+  geprüft. Ob die genannten Systeme die *richtigen* sind, bleibt menschliche
+  Review-Arbeit; der Validator zählt nur, ob etwas benannt wurde.
+- **CI-Ergebnis auf PR #323** für Runde 2 lag zum Zeitpunkt dieses Berichts
+  noch nicht vor (Push erfolgt mit diesem Commit).
 
 ---
 
@@ -136,6 +193,17 @@ Alle Läufe wurden tatsächlich ausgeführt; die Ergebnisse sind unverändert ü
       verlinkt werden?
 - [ ] ☐ Ist der Wertebereich `none | requested` für `authority_effect` und
       `claim_effect` richtig gewählt? Nur `none` war im Repository attestiert.
+- [ ] ☐ **(Runde 2)** Sind die Fokus-Grenzen 2–5 Wörter als *harte* Schranke
+      gewollt? `.claude/rules/metatron.md` nennt „2-5 Wörter"; der Gate setzt
+      das jetzt durchsetzend um. Ein längerer Fokus ist damit HOLD, nicht nur
+      unschön.
+- [ ] ☐ **(Runde 2)** Soll ein konkreter `rollback_path` auch bei `REVERSIBLE`
+      Pflicht bleiben? Der Vertrag ist damit strenger als der frühere Code,
+      aber deckungsgleich mit `SKILL.md` §4.6/§4.7 und G3.
+- [ ] ☐ **(Runde 2)** Ist die Aufteilung `systems_checked` /
+      `detected_overlaps` die gewünschte Form? Die frühere Form
+      (`detected`/`overlaps`) ist damit ungültig — v0.1 ist Draft und nicht
+      extern verdrahtet, ein Kompatibilitätspfad wurde bewusst nicht gebaut.
 
 ---
 
@@ -196,20 +264,40 @@ Dependency-Installation.
 
 ## 8. Veränderte Dateien
 
-**Neu (3 Pfade, additiv):**
+**Neu: 7 Dateien in 3 Bereichen, vollständig additiv.**
+Quelle der Zahl: `git diff origin/main --name-only` (7 Einträge).
 
 ```
-.claude/skills/entaengelment-change-gate/SKILL.md
-.claude/skills/entaengelment-change-gate/references/change-manifest-schema.md
-.claude/skills/entaengelment-change-gate/templates/change-manifest.yaml
-.claude/skills/entaengelment-change-gate/scripts/validate_change_manifest.py
-tests/unit/test_change_gate_manifest.py
-OUT/entaengelment_change_gate_v0_1_plan.md
-OUT/entaengelment_change_gate_v0_1_audit.md
+.claude/skills/entaengelment-change-gate/SKILL.md                          (281 Zeilen)
+.claude/skills/entaengelment-change-gate/references/change-manifest-schema.md  (271)
+.claude/skills/entaengelment-change-gate/templates/change-manifest.yaml     (93)
+.claude/skills/entaengelment-change-gate/scripts/validate_change_manifest.py (924)
+tests/unit/test_change_gate_manifest.py                                    (865)
+OUT/entaengelment_change_gate_v0_1_plan.md                                 (220)
+OUT/entaengelment_change_gate_v0_1_audit.md                                (dieses Dokument)
 ```
 
-**Geändert:** keine.
+In Runde 2 geändert wurden ausschließlich Dateien aus dieser Liste:
+`scripts/validate_change_manifest.py`, `references/change-manifest-schema.md`,
+`templates/change-manifest.yaml`, `SKILL.md`,
+`tests/unit/test_change_gate_manifest.py`, dieser Bericht.
+
+**Bestehende Dateien geändert:** keine.
 **Gelöscht/verschoben:** keine.
+
+### Geprüfte Strukturzahlen (gegen den tatsächlichen Patch)
+
+| Größe | Wert | Ermittelt durch |
+|---|---|---|
+| neue Dateien | 7 (in 3 Bereichen) | `git diff origin/main --name-only` |
+| geänderte bestehende Dateien | 0 | ebd. |
+| Reason-Codes | 29 | Konstanten-Scan über den Validator-Quelltext |
+| Tests in der Suite | 92 | `pytest --collect-only -q` |
+| Testklassen | 15 | `grep -c "^class Test"` |
+| Tests gesamt in `make verify` | 382 (= 290 Baseline + 92) | Testlauf |
+| geforderte Fälle Runde 1 | 12, alle abgedeckt | §2 |
+| geforderte Fälle Runde 2 | 6 Befunde, alle abgedeckt | §1.1 |
+| Zeilenzahlen | s. Liste oben | `wc -l` |
 
 ---
 
@@ -228,11 +316,41 @@ OUT/entaengelment_change_gate_v0_1_audit.md
 
 ---
 
-## 10. Offene Punkte
+## 10. Verbleibende bekannte Verluste
 
-- [ ] ☐ Menschliche Entscheidungen aus §4.
+Diese Verluste sind **deklariert, nicht behoben** — sie stehen so auch in
+`references/change-manifest-schema.md` §6:
+
+1. Der Validator prüft **Struktur, nicht Inhalt**. Ein formal vollständiges
+   Manifest kann fachlich falsch sein.
+2. Das Wort `GOLD` wird **nicht** als Selbstattestierung geprüft, weil es in
+   Manifesten legitim als Schichtname vorkommt. GOLD-Wirkung wird ausschließlich
+   über die Pfadregeln erfasst.
+3. Ein Manifest, das die Verbotsregel zum Endzustand **wörtlich zitiert**, löst
+   `FINAL_PASS_NOT_PERMITTED` aus. Fail-closed vor stiller Durchlassung.
+4. Die Pfadklassen sind **Kopien** aus `.claude/rules/annex.md` (GOLD,
+   IMMUTABLE) bzw. `CLAUDE.md` (NICHTRAUM). Es gibt keine gemeinsame
+   maschinenlesbare Quelle; zwei Tests machen Drift sichtbar.
+5. Der Validator liegt **außerhalb** des CI-Lint-Scope (`src/ tools/ tests/`);
+   `ruff`/`black`/`mypy` laufen dort nur manuell.
+6. Die Wortzählung im Fokus ist **rein whitespace-basiert**. `Change-Gate Skill`
+   zählt als zwei Wörter; Komposita, Bindestriche und Abkürzungen werden nicht
+   analysiert.
+7. Ein deklarierter `rollback_path` wird **nicht auf Funktionsfähigkeit**
+   geprüft — nur auf Vorhandensein.
+8. `systems_checked` wird **nicht auf Vollständigkeit oder Eignung** geprüft.
+   Der Gate erkennt „nichts benannt", nicht „das Falsche benannt".
+9. Der Validator kennt weiterhin **keine** VOIDs, Receipts, Ledger-Events oder
+   Policy-Digests.
+
+---
+
+## 11. Offene Punkte
+
+- [ ] ☐ Menschliche Entscheidungen aus §4 (inkl. drei neue aus Runde 2).
 - [ ] ☐ Folgearbeiten aus §6.
 - [ ] ☐ Prüfung auf den CI-Matrix-Legs 3.10/3.12 (§3).
+- [ ] ☐ CI-Ergebnis von PR #323 nach dem Runde-2-Push.
 
 ---
 

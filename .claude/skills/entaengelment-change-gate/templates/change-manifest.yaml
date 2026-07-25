@@ -10,6 +10,7 @@
 # VOIDMAP/glossary.
 
 # G4 (.claude/rules/metatron.md): 2-5 Wörter, stabil über die Aufgabe.
+# Die Wortzahl wird geprüft (whitespace-basiert).
 focus: ""
 
 # Was genau soll geändert werden? Ein Satz, ohne Bewertung.
@@ -49,11 +50,16 @@ human_decision:
   questions: []
 
 # Entsteht versehentlich ein zweites Status-, Governance- oder
-# Wahrheitssystem? Bei GOVERNANCE_ADJACENT ist eine geprüfte Überschneidung
-# erforderlich — Verneinen ohne Prüfung ist fail-closed.
+# Wahrheitssystem?
+#   systems_checked   = bestehende Systeme, gegen die geprüft wurde
+#   detected_overlaps = tatsächlich erkannte Überschneidungen
+#   mitigation        = Pflicht, sobald detected_overlaps nicht leer ist
+# Bei GOVERNANCE_ADJACENT muss systems_checked nicht leer sein — Verneinen
+# ohne Prüfung ist fail-closed. Ein leeres detected_overlaps heißt nur:
+# keine Überschneidung deklariert gefunden; nicht, dass nicht geprüft wurde.
 possible_parallel_system:
-  detected: false
-  overlaps: []
+  systems_checked: []
+  detected_overlaps: []
   mitigation: ""
 
 # Bekannte Verluste dieser Änderung
@@ -64,7 +70,9 @@ known_loss: []
 # Änderung falsch war? (ebd. §3, §7)
 falsifiers: []
 
-# REVERSIBLE | IRREVERSIBLE — Rücknahmepfad ist Pflicht bei IRREVERSIBLE.
+# REVERSIBLE | IRREVERSIBLE — ein konkreter Rücknahmepfad ist in BEIDEN
+# Fällen Pflicht (CLAUDE.md G3). IRREVERSIBLE verlangt zusätzlich eine
+# konkrete menschliche Entscheidungsfrage.
 reversibility:
   value: "REVERSIBLE"
   rollback_path: ""

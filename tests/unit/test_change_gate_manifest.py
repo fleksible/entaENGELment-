@@ -59,7 +59,11 @@ def minimal_annex_manifest() -> dict[str, Any]:
         "authority_effect": {"value": "none", "explanation": "Keine Autoritätswirkung."},
         "claim_effect": {"value": "none", "explanation": "Kein Claim wird umgetaggt."},
         "human_decision": {"required": False, "questions": []},
-        "possible_parallel_system": {"detected": False, "overlaps": [], "mitigation": ""},
+        "possible_parallel_system": {
+            "systems_checked": [],
+            "detected_overlaps": [],
+            "mitigation": "",
+        },
         "known_loss": [],
         "falsifiers": ["Ein Manifest mit GOLD-Wirkung erhält trotzdem ein positives Verdikt."],
         "reversibility": {
@@ -76,6 +80,13 @@ def minimal_annex_manifest() -> dict[str, Any]:
 
 def codes(result) -> set:
     return {finding.code for finding in result.findings}
+
+
+def reason_code_names() -> list[str]:
+    """Reason-Code-Konstanten aus dem Validator-Quelltext lesen (NAME = "NAME")."""
+    source = VALIDATOR_PATH.read_text(encoding="utf-8")
+    names = re.findall(r'^([A-Z][A-Z0-9_]+) = "\1"$', source, re.MULTILINE)
+    return sorted(name for name in names if not name.startswith("VERDICT_"))
 
 
 # ---------------------------------------------------------------------------
@@ -125,6 +136,63 @@ class TestMissingRequiredField:
         del data["affected_layers"]["nichtraum"]
         result = validator.validate_manifest(data, REPO_ROOT)
         assert validator.MISSING_REQUIRED_FIELD in codes(result)
+
+    @pytest.mark.parametrize("key", ["systems_checked", "detected_overlaps"])
+    def test_missing_parallel_system_key_is_reported(self, key):
+        data = minimal_annex_manifest()
+        del data["possible_parallel_system"][key]
+        result = validator.validate_manifest(data, REPO_ROOT)
+        assert validator.MISSING_REQUIRED_FIELD in codes(result)
+
+
+# ---------------------------------------------------------------------------
+# 2b. Fokus-Vertrag: 2-5 Wörter (ausführbar, whitespace-basiert)
+# ---------------------------------------------------------------------------
+
+
+class TestFocusWordCount:
+    @pytest.mark.parametrize(
+        ("focus", "expect_finding"),
+        [
+            ("Changegate", True),  # 1 Wort
+            ("Change-Gate Skill", False),  # 2 Wörter
+            ("Change Gate Skill v0.1 schaerfen", False),  # 5 Wörter
+            ("Change Gate Skill v0.1 nach Review", True),  # 6 Wörter
+        ],
+    )
+    def test_word_count_boundaries(self, focus, expect_finding):
+        data = minimal_annex_manifest()
+        data["focus"] = focus
+        result = validator.validate_manifest(data, REPO_ROOT)
+        assert (validator.FOCUS_WORD_COUNT_INVALID in codes(result)) is expect_finding
+        if expect_finding:
+            assert result.verdict == validator.VERDICT_HOLD
+
+    def test_extra_whitespace_does_not_change_the_result(self):
+        compact = minimal_annex_manifest()
+        compact["focus"] = "Change-Gate Skill"
+        padded = minimal_annex_manifest()
+        padded["focus"] = "  Change-Gate\t\tSkill \n "
+        assert validator.count_focus_words(padded["focus"]) == 2
+        assert validator.validate_manifest(compact, REPO_ROOT) == validator.validate_manifest(
+            padded, REPO_ROOT
+        )
+
+    def test_empty_focus_reports_only_the_empty_value(self):
+        """Ein leerer Fokus ist ein leerer Pflichtwert, keine Wortzahlverletzung."""
+        data = minimal_annex_manifest()
+        data["focus"] = "   "
+        result = validator.validate_manifest(data, REPO_ROOT)
+        assert validator.EMPTY_REQUIRED_VALUE in codes(result)
+        assert validator.FOCUS_WORD_COUNT_INVALID not in codes(result)
+
+    def test_count_is_whitespace_based_and_documented(self):
+        assert validator.count_focus_words("eins") == 1
+        assert validator.count_focus_words("eins zwei") == 2
+        assert validator.count_focus_words("a b c d e") == 5
+        assert validator.count_focus_words("") == 0
+        assert validator.FOCUS_MIN_WORDS == 2
+        assert validator.FOCUS_MAX_WORDS == 5
 
 
 # ---------------------------------------------------------------------------
@@ -199,6 +267,84 @@ class TestGoldBoundary:
         data["affected_layers"]["nichtraum"] = ["NICHTRAUM/maybe/offen.md"]
         result = validator.validate_manifest(data, REPO_ROOT)
         assert validator.NICHTRAUM_PATH_REQUIRES_HUMAN_DECISION in codes(result)
+
+
+# ---------------------------------------------------------------------------
+# 4b. Undeklarierte geschützte Pfade in allowed_paths (adversarial)
+#
+# Ein geschützter Pfad darf nicht über allowed_paths freigegeben werden, ohne
+# in der zugehörigen affected_layers-Liste zu stehen. Sonst entfiele die
+# HumanDecision-Pflicht still.
+# ---------------------------------------------------------------------------
+
+
+def _concrete_question(target: str) -> dict[str, Any]:
+    return {"required": True, "questions": [f"Soll {target} wirklich berührt werden?"]}
+
+
+class TestUndeclaredProtectedPaths:
+    @pytest.mark.parametrize(
+        "path",
+        ["data/receipts/2026-01-15_receipt.json", "receipts/arc_sample.json"],
+    )
+    def test_undeclared_immutable_path_is_reported(self, path):
+        data = minimal_annex_manifest()
+        data["allowed_paths"] = [path]
+        data["forbidden_paths"] = []
+        result = validator.validate_manifest(data, REPO_ROOT)
+        assert validator.IMMUTABLE_PATH_UNDECLARED in codes(result)
+        assert result.verdict == validator.VERDICT_HOLD
+
+    def test_undeclared_nichtraum_path_is_reported(self):
+        data = minimal_annex_manifest()
+        data["allowed_paths"] = ["NICHTRAUM/maybe/unentschieden.md"]
+        data["forbidden_paths"] = []
+        result = validator.validate_manifest(data, REPO_ROOT)
+        assert validator.NICHTRAUM_PATH_UNDECLARED in codes(result)
+        assert result.verdict == validator.VERDICT_HOLD
+
+    def test_declared_immutable_path_still_needs_human_decision(self):
+        """Nach korrekter Deklaration bleibt die HumanDecision-Pflicht."""
+        data = minimal_annex_manifest()
+        path = "data/receipts/2026-01-15_receipt.json"
+        data["affected_layers"]["immutable"] = [path]
+        data["allowed_paths"] = [path]
+        data["forbidden_paths"] = []
+        result = validator.validate_manifest(data, REPO_ROOT)
+        assert validator.IMMUTABLE_PATH_UNDECLARED not in codes(result)
+        assert validator.IMMUTABLE_PATH_REQUIRES_HUMAN_DECISION in codes(result)
+        assert result.verdict == validator.VERDICT_HOLD
+
+    def test_declared_nichtraum_path_still_needs_human_decision(self):
+        data = minimal_annex_manifest()
+        path = "NICHTRAUM/maybe/unentschieden.md"
+        data["affected_layers"]["nichtraum"] = [path]
+        data["allowed_paths"] = [path]
+        data["forbidden_paths"] = []
+        result = validator.validate_manifest(data, REPO_ROOT)
+        assert validator.NICHTRAUM_PATH_UNDECLARED not in codes(result)
+        assert validator.NICHTRAUM_PATH_REQUIRES_HUMAN_DECISION in codes(result)
+        assert result.verdict == validator.VERDICT_HOLD
+
+    def test_declared_immutable_path_with_question_clears_both_findings(self):
+        data = minimal_annex_manifest()
+        path = "data/receipts/2026-01-15_receipt.json"
+        data["affected_layers"]["immutable"] = [path]
+        data["allowed_paths"] = [path]
+        data["forbidden_paths"] = []
+        data["human_decision"] = _concrete_question(path)
+        result = validator.validate_manifest(data, REPO_ROOT)
+        assert validator.IMMUTABLE_PATH_UNDECLARED not in codes(result)
+        assert validator.IMMUTABLE_PATH_REQUIRES_HUMAN_DECISION not in codes(result)
+
+    def test_every_protected_layer_has_an_undeclared_code(self):
+        """Kein geschützter Layer ohne Undeclared-Prüfung (Drift-Schutz)."""
+        keys = {entry[0] for entry in validator.PROTECTED_LAYERS}
+        assert keys == {"gold", "immutable", "nichtraum"}
+        for _key, _label, human_code, undeclared_code, prefixes in validator.PROTECTED_LAYERS:
+            assert human_code.endswith("_REQUIRES_HUMAN_DECISION")
+            assert undeclared_code.endswith("_UNDECLARED")
+            assert prefixes
 
 
 # ---------------------------------------------------------------------------
@@ -291,7 +437,7 @@ class TestFinalPass:
 
 
 class TestParallelSystem:
-    def test_governance_adjacent_without_examined_overlap(self):
+    def test_governance_adjacent_without_checked_systems(self):
         data = minimal_annex_manifest()
         data["change_class"] = ["GOVERNANCE_ADJACENT"]
         data["known_loss"] = ["Der Skill kennt keine Receipts."]
@@ -299,15 +445,69 @@ class TestParallelSystem:
         assert validator.POSSIBLE_PARALLEL_SYSTEM in codes(result)
         assert result.verdict == validator.VERDICT_HOLD
 
-    def test_detected_without_mitigation(self):
+    def test_checked_systems_without_overlap_is_allowed(self):
+        """Geprüft, nichts gefunden: zulässig — leeres detected_overlaps ist kein Defizit."""
+        data = minimal_annex_manifest()
+        data["change_class"] = ["GOVERNANCE_ADJACENT"]
+        data["known_loss"] = ["Der Skill kennt keine Receipts."]
+        data["authority_effect"] = {
+            "value": "none",
+            "explanation": "Nicht verdrahtet, kein Enforcement.",
+        }
+        data["possible_parallel_system"] = {
+            "systems_checked": ["policies/claim_tags_v0_2.yaml", "src/core/evidence_routing.py"],
+            "detected_overlaps": [],
+            "mitigation": "",
+        }
+        result = validator.validate_manifest(data, REPO_ROOT)
+        assert validator.POSSIBLE_PARALLEL_SYSTEM not in codes(result)
+        assert result.findings == ()
+
+    def test_detected_overlap_without_mitigation(self):
         data = minimal_annex_manifest()
         data["possible_parallel_system"] = {
-            "detected": True,
-            "overlaps": ["policies/claim_tags_v0_2.yaml"],
+            "systems_checked": ["policies/claim_tags_v0_2.yaml"],
+            "detected_overlaps": ["policies/claim_tags_v0_2.yaml"],
             "mitigation": "",
         }
         result = validator.validate_manifest(data, REPO_ROOT)
         assert validator.POSSIBLE_PARALLEL_SYSTEM in codes(result)
+        assert result.verdict == validator.VERDICT_HOLD
+
+    def test_detected_overlap_with_mitigation_is_allowed(self):
+        data = minimal_annex_manifest()
+        data["possible_parallel_system"] = {
+            "systems_checked": ["policies/claim_tags_v0_2.yaml"],
+            "detected_overlaps": ["policies/claim_tags_v0_2.yaml"],
+            "mitigation": "Register wird nur gelesen, kein Tag wird erzeugt.",
+        }
+        result = validator.validate_manifest(data, REPO_ROOT)
+        assert validator.POSSIBLE_PARALLEL_SYSTEM not in codes(result)
+        assert result.findings == ()
+
+    def test_legacy_detected_overlaps_form_does_not_pass_silently(self):
+        """Die alte Bool-Semantik ist ein unbekanntes Feld, kein stiller Durchlauf."""
+        data = minimal_annex_manifest()
+        data["possible_parallel_system"] = {
+            "detected": False,
+            "overlaps": [],
+            "mitigation": "",
+        }
+        result = validator.validate_manifest(data, REPO_ROOT)
+        assert validator.UNKNOWN_FIELD in codes(result)
+        assert validator.MISSING_REQUIRED_FIELD in codes(result)
+        assert result.verdict == validator.VERDICT_HOLD
+
+    def test_legacy_contradiction_detected_true_without_overlaps_is_rejected(self):
+        data = minimal_annex_manifest()
+        data["possible_parallel_system"] = {
+            "detected": True,
+            "overlaps": [],
+            "mitigation": "",
+        }
+        result = validator.validate_manifest(data, REPO_ROOT)
+        assert result.verdict == validator.VERDICT_HOLD
+        assert validator.UNKNOWN_FIELD in codes(result)
 
     def test_governance_adjacent_needs_a_justified_authority_effect(self):
         data = minimal_annex_manifest()
@@ -522,6 +722,41 @@ class TestSourceOfTruthBinding:
         result = validator.validate_manifest(data, REPO_ROOT)
         assert validator.IRREVERSIBLE_WITHOUT_ROLLBACK in codes(result)
         assert validator.IRREVERSIBLE_WITHOUT_HUMAN_DECISION in codes(result)
+        assert result.verdict == validator.VERDICT_HOLD
+
+    def test_irreversible_with_rollback_still_needs_human_decision(self):
+        data = minimal_annex_manifest()
+        data["reversibility"] = {
+            "value": "IRREVERSIBLE",
+            "rollback_path": "Snapshot aus OUT/ zurückspielen.",
+        }
+        result = validator.validate_manifest(data, REPO_ROOT)
+        assert validator.IRREVERSIBLE_WITHOUT_ROLLBACK not in codes(result)
+        assert validator.IRREVERSIBLE_WITHOUT_HUMAN_DECISION in codes(result)
+        assert result.verdict == validator.VERDICT_HOLD
+
+    def test_reversible_without_rollback_path_is_reported(self):
+        """Auch REVERSIBLE braucht einen konkret benannten Rücknahmepfad (G3)."""
+        data = minimal_annex_manifest()
+        data["reversibility"] = {"value": "REVERSIBLE", "rollback_path": "   "}
+        result = validator.validate_manifest(data, REPO_ROOT)
+        assert validator.REVERSIBLE_WITHOUT_ROLLBACK in codes(result)
+        assert validator.IRREVERSIBLE_WITHOUT_ROLLBACK not in codes(result)
+        assert validator.IRREVERSIBLE_WITHOUT_HUMAN_DECISION not in codes(result)
+        assert result.verdict == validator.VERDICT_HOLD
+
+    def test_reversible_with_rollback_path_is_allowed(self):
+        data = minimal_annex_manifest()
+        result = validator.validate_manifest(data, REPO_ROOT)
+        assert validator.REVERSIBLE_WITHOUT_ROLLBACK not in codes(result)
+        assert result.findings == ()
+
+    def test_validator_does_not_claim_the_rollback_path_works(self):
+        """Geprüft wird nur, DASS ein Pfad deklariert ist — nicht ob er funktioniert."""
+        data = minimal_annex_manifest()
+        data["reversibility"] = {"value": "REVERSIBLE", "rollback_path": "irgendwas"}
+        result = validator.validate_manifest(data, REPO_ROOT)
+        assert validator.REVERSIBLE_WITHOUT_ROLLBACK not in codes(result)
 
     def test_untrusted_input_needs_declared_loss(self):
         data = minimal_annex_manifest()
@@ -543,6 +778,9 @@ class TestTemplateAndCli:
         )
         assert set(template.keys()) == set(validator.TOP_LEVEL_FIELDS)
         assert set(template["affected_layers"].keys()) == set(validator.AFFECTED_LAYER_KEYS)
+        assert set(template["possible_parallel_system"].keys()) == set(
+            validator.PARALLEL_SYSTEM_KEYS
+        )
 
     def test_template_is_incomplete_and_therefore_holds(self):
         """Das leere Template ist absichtlich noch kein gültiges Manifest."""
@@ -553,24 +791,69 @@ class TestTemplateAndCli:
         result = validator.validate_manifest(template, REPO_ROOT)
         assert result.verdict == validator.VERDICT_HOLD
 
-    def test_cli_returns_one_on_hold(self, tmp_path):
+    def _write(self, tmp_path, data):
         yaml = pytest.importorskip("yaml")
-        data = minimal_annex_manifest()
-        data["expected_gate_outcome"] = "HOLD"
         manifest = tmp_path / "manifest.yaml"
         manifest.write_text(yaml.safe_dump(data, allow_unicode=True), encoding="utf-8")
-        assert validator.main([str(manifest), "--repo-root", str(REPO_ROOT)]) == 1
+        return manifest
 
     def test_cli_returns_zero_on_eligible(self, tmp_path):
-        yaml = pytest.importorskip("yaml")
-        manifest = tmp_path / "manifest.yaml"
-        manifest.write_text(
-            yaml.safe_dump(minimal_annex_manifest(), allow_unicode=True), encoding="utf-8"
-        )
+        manifest = self._write(tmp_path, minimal_annex_manifest())
         assert validator.main([str(manifest), "--repo-root", str(REPO_ROOT)]) == 0
+
+    def test_cli_returns_one_on_self_declared_hold_without_findings(self, tmp_path):
+        data = minimal_annex_manifest()
+        data["expected_gate_outcome"] = "HOLD"
+        manifest = self._write(tmp_path, data)
+        assert validator.main([str(manifest), "--repo-root", str(REPO_ROOT)]) == 1
+
+    def test_cli_returns_one_on_finding(self, tmp_path):
+        data = minimal_annex_manifest()
+        data["focus"] = "Einwort"
+        manifest = self._write(tmp_path, data)
+        assert validator.main([str(manifest), "--repo-root", str(REPO_ROOT)]) == 1
+
+    def test_cli_returns_two_on_unparseable_yaml(self, tmp_path):
+        """Dokumentierte Semantik: Parsefehler ist ein Eingabefehler, nicht Befund."""
+        manifest = tmp_path / "broken.yaml"
+        manifest.write_text("focus: [unclosed\n  - :: bad", encoding="utf-8")
+        assert validator.main([str(manifest), "--repo-root", str(REPO_ROOT)]) == 2
 
     def test_cli_returns_two_on_unreadable_input(self, tmp_path):
         assert validator.main([str(tmp_path / "missing.yaml")]) == 2
+
+    def test_cli_json_output_is_deterministic(self, tmp_path, capsys):
+        manifest = self._write(tmp_path, minimal_annex_manifest())
+        argv = [str(manifest), "--json", "--repo-root", str(REPO_ROOT)]
+        assert validator.main(argv) == 0
+        first = capsys.readouterr().out
+        assert validator.main(argv) == 0
+        assert capsys.readouterr().out == first
+        payload = json.loads(first)
+        assert payload["verdict"] == validator.VERDICT_ELIGIBLE
+        assert payload["schema"] == validator.SCHEMA_ID
+
+    def test_documented_exit_codes_match_the_module_docstring(self):
+        doc = VALIDATOR_PATH.read_text(encoding="utf-8")
+        assert "2  Eingabefehler" in doc
+        assert "YAML nicht parsebar" in doc
+
+    def test_every_reason_code_is_documented_in_the_schema(self):
+        """Struktur-Zahl gegen Realität: kein Code ohne Tabelleneintrag."""
+        schema = (SKILL_DIR / "references" / "change-manifest-schema.md").read_text(
+            encoding="utf-8"
+        )
+        for code in reason_code_names():
+            assert f"`{code}`" in schema, f"{code} fehlt in der Reason-Code-Tabelle"
+
+    def test_documented_reason_code_count_matches_the_code(self):
+        schema = (SKILL_DIR / "references" / "change-manifest-schema.md").read_text(
+            encoding="utf-8"
+        )
+        count = len(reason_code_names())
+        assert (
+            f"{count} Reason-Codes" in schema
+        ), f"Schema nennt nicht die tatsächliche Zahl {count}"
 
     def test_skill_files_exist(self):
         for relative in (
