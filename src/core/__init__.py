@@ -11,6 +11,14 @@ Enthält die fünf Kern-Metriken (Core-5):
 Zusätzlich: Evidence Routing Kernel v0.1a (bewusst kleine, stabile Exports).
 """
 
+from .evidence_bridge_adapter import (
+    BridgeAdapterError,
+    BridgeReason,
+    BridgeRecord,
+    BridgeTranslation,
+    translate_bridge_record,
+    validate_bridge_record,
+)
 from .evidence_routing import (
     ClaimCandidate,
     ClaimPolicy,
@@ -68,4 +76,11 @@ __all__ = [
     "replay_events",
     "reduce_public_export",
     "compute_state_digest",
+    # Dual-Format Claim Bridge Adapter v0.1 (M1 -> ERK)
+    "BridgeRecord",
+    "BridgeTranslation",
+    "BridgeReason",
+    "BridgeAdapterError",
+    "validate_bridge_record",
+    "translate_bridge_record",
 ]
