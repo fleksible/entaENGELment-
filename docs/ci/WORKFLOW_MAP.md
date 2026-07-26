@@ -57,14 +57,19 @@ void-sync.yml:
 [FACT] New workflows must document any permission broader than `contents: read`
 in the machine-readable exception contract above. The exact workflow/job scope
 and permission mapping must match; a filename mention alone grants nothing.
+Exceptions without a currently matching broad permission are rejected as stale.
 
 [FACT] `make workflow-posture-check` (`tools/workflow_posture_check.py`) verifies
 this contract locally. Every workflow must declare explicit `permissions` and
 `concurrency` with `cancel-in-progress: true`; broader top-level or job
 permissions must be named here. External actions must use full commit SHAs.
-Executable shell/`github-script` bodies may not interpolate Actions expressions
-directly or hide failure with `|| true`, including before another shell
-separator. Reusable calls must pass named secrets, and secrets may not live in
-a job-wide environment. Docker actions require an immutable `sha256` digest;
-only reusable-job and step `uses` nodes are interpreted as actions. The check
-is read-only and deterministic.
+Checked-in composite actions are followed recursively so they cannot hide a
+mutable external reference. Executable shell bodies and the official
+`actions/github-script` action may not interpolate Actions expressions directly
+or hide failure with `|| true`, including before another shell separator or a
+closing subshell. Reusable calls must pass named secrets, and secrets may not
+live in a workflow-wide or job-wide environment. A reusable-call secret mapping
+must reference one explicit `secrets.NAME`, never the whole context. Docker
+actions plus job and service container images require an immutable `sha256`
+digest; only reusable-job and step `uses` nodes are interpreted as actions.
+The check is read-only and deterministic.
