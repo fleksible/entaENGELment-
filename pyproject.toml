@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "entaengelment"
 version = "0.1.0"
-description = "Hardened Kernel für verkörperte Mensch-KI-Interaktion mit physikalisch erzwungener Resonanz"
+description = "Experimenteller Kernel für verkörperte Mensch-KI-Interaktion mit physikalisch inspirierten Resonanzmodellen"
 authors = [
     {name = "fleksible"}
 ]

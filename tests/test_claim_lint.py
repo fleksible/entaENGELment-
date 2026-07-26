@@ -2,6 +2,22 @@
 
 import subprocess
 import sys
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+PUBLIC_CLAIM_FILES = (
+    "Index.html",
+    "pyproject.toml",
+    "docs/START_HERE.md",
+    "docs/triad_topology.md",
+    "REPOSITORY_ESSENZ_ANALYSE.md",
+)
+DISALLOWED_OVERCLAIMS = (
+    "physically-enforced resonance",
+    "physikalisch erzwungener Resonanz",
+    "closes the remote-code-execution surface",
+    "messbare nicht-lokale Korrelation",
+)
 
 
 def test_claim_lint_help():
@@ -61,3 +77,14 @@ def test_claim_lint_empty_scope():
         text=True,
     )
     assert result.returncode == 0
+
+
+def test_public_claim_surfaces_exclude_known_overclaims():
+    """Keep previously corrected security and physics overclaims from returning."""
+    corpus = "\n".join(
+        (REPO_ROOT / relative_path).read_text(encoding="utf-8")
+        for relative_path in PUBLIC_CLAIM_FILES
+    )
+
+    for overclaim in DISALLOWED_OVERCLAIMS:
+        assert overclaim not in corpus
