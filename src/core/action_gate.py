@@ -27,8 +27,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from collections.abc import Mapping, Sequence
-from dataclasses import asdict, dataclass
+from dataclasses import InitVar, asdict, dataclass
 from enum import Enum
 from types import MappingProxyType
 
@@ -79,19 +80,33 @@ DEFAULT_KNOWN_REGISTRIES: Mapping[str, frozenset[str]] = MappingProxyType(
     }
 )
 
-# Versionsangaben, die keine überprüfbare, gepinnte Version darstellen.
-_UNPINNED_VERSION_TOKENS = frozenset({"", "latest", "*", "any", "x", "unknown", "none"})
+# Maximale Länge einer Versionsangabe. Längere Eingaben sind für diese kleine,
+# rein lokale Schnittstelle nicht nötig und fallen deterministisch auf HOLD.
+_MAX_VERSION_LENGTH = 128
 
-# Eine gepinnte Version muss mindestens Major.Minor.Patch auflösen. Kürzere
-# Angaben (``1``, ``1.2``) werden von npm & Co. als X-Range interpretiert und
-# gelten hier fail-closed als nicht gepinnt.
-_MIN_PINNED_VERSION_COMPONENTS = 3
+# npm: striktes SemVer 2.0.0 ohne ``v``-/``=``-Normalisierung. Numerische
+# Prerelease-Komponenten mit führender Null werden nach dem Match separat
+# abgewiesen.
+_NPM_SEMVER_RE = re.compile(
+    r"^(?P<major>0|[1-9][0-9]*)\."
+    r"(?P<minor>0|[1-9][0-9]*)\."
+    r"(?P<patch>0|[1-9][0-9]*)"
+    r"(?:-(?P<prerelease>[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?"
+    r"(?:\+(?P<build>[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?$",
+    re.ASCII,
+)
 
-# Konservativer Zeichensatz einer aufgelösten Version (nach Lowercasing). Alles
-# außerhalb (z.B. ``/``, Whitespace) markiert keine gepinnte Version. Dies ist
-# bewusst KEIN vollständiger ökosystemspezifischer Semver-Parser, sondern der
-# kleinste deterministische Struktur-Check.
-_VERSION_CHARSET = frozenset("0123456789abcdefghijklmnopqrstuvwxyz.+-")
+# PyPI: konservativer kanonischer PEP-440-Public-Identifier. Das Gate verlangt
+# mindestens Major.Minor.Patch und akzeptiert bewusst keine lokalen ``+label``-
+# Versionen für die öffentliche PyPI-Registry.
+_PYPI_CANONICAL_VERSION_RE = re.compile(
+    r"^(?:[1-9][0-9]*!)?"
+    r"(?:0|[1-9][0-9]*)(?:\.(?:0|[1-9][0-9]*)){2,}"
+    r"(?:(?:a|b|rc)(?:0|[1-9][0-9]*))?"
+    r"(?:\.post(?:0|[1-9][0-9]*))?"
+    r"(?:\.dev(?:0|[1-9][0-9]*))?$",
+    re.ASCII,
+)
 
 # Verifikationsstatus, der eine überprüfte Quelle bezeugt.
 VERIFICATION_VERIFIED = "verified"
@@ -168,10 +183,8 @@ class ActionReasonCode(str, Enum):
 _KNOWN_ACTION_REASON_CODES = frozenset(code.value for code in ActionReasonCode)
 _KNOWN_RESPONSIBILITY_CLASSES = frozenset(rc.value for rc in ResponsibilityClass)
 
-# Reason-Codes, die im Builder immer ``hold()`` auslösen. Trägt ein Manifest
-# einen davon, muss es HOLD + menschliche Freigabe sein — sonst würde ein direkt/
-# deserialisiert gebautes Manifest eine vom Builder fail-closed abgelehnte Eingabe
-# als PROPOSE ausweisen und so am Gate vorbei geroutet werden.
+# Reason-Codes, die im Builder immer ``hold()`` auslösen. Der interne
+# Kohärenzcheck bindet sie exakt an HOLD + menschliche Freigabe.
 _HOLD_IMPLYING_REASON_CODES = frozenset(
     {
         ActionReasonCode.REGISTRY_UNKNOWN.value,
@@ -184,6 +197,12 @@ _HOLD_IMPLYING_REASON_CODES = frozenset(
         ActionReasonCode.UNTRUSTED_SOURCE_MATERIAL.value,
     }
 )
+
+# Ein über JSON rekonstruiertes Manifest darf die vom Gate berechneten Felder
+# nicht selbst wählen. Nur ``build_action_proposal`` besitzt dieses
+# prozesslokale, nicht serialisierbare Konstruktionstoken. Es ist keine
+# Authentisierung oder Sandbox-Grenze gegen bösartigen Code im selben Prozess.
+_ACTION_PROPOSAL_BUILDER_TOKEN = object()
 
 
 class ActionGateError(ValueError):
@@ -226,24 +245,27 @@ class ActionProposal:
     human_approval_required: bool
     reason_codes: tuple[str, ...]
     visibility: str
+    _builder_token: InitVar[object | None] = None
 
-    def __post_init__(self) -> None:
-        """Strukturelle Gültigkeit erzwingen — egal über welchen Konstruktionspfad.
+    def __post_init__(self, _builder_token: object | None) -> None:
+        """Builder-sealed Manifestfelder und ihre Kohärenz erzwingen.
 
-        ``ActionProposal`` ist Teil der öffentlichen Core-API. Wird ein Manifest
-        direkt (statt über :func:`build_action_proposal`) erzeugt, deserialisiert
-        oder gecacht, darf es die geschlossenen Vokabulare und Enum-Grenzen nicht
-        verletzen. Kollektionen werden defensiv zu Tupeln normalisiert.
-
-        Diese Prüfung sichert **strukturelle** Konsistenz, nicht die vollständige
-        Neuberechnung der Gate-Entscheidung: :func:`build_action_proposal` bleibt
-        die alleinige Autorität für die abgeleiteten Felder.
+        ``ActionProposal`` ist öffentlich lesbar, aber nicht öffentlich
+        konstruierbar: Ein deserialisiertes Mapping darf ``guard_state``,
+        ``responsibility_class`` und Reason-Codes nicht selbst setzen. Es muss
+        mit Materialquelle und Registry-Policy erneut durch
+        :func:`build_action_proposal` laufen.
         """
+        if _builder_token is not _ACTION_PROPOSAL_BUILDER_TOKEN:
+            raise ActionGateError(
+                "ActionProposal is builder-only; re-evaluate data with build_action_proposal"
+            )
+
         # Skalare Textfelder müssen echte Strings sein — sonst könnte ein direkt
         # konstruiertes Manifest z.B. ``proposed_command=['curl', 'x']`` tragen
         # und die Invariante "Befehl ist inerter Text" verletzen.
         for field_name in _SCALAR_STRING_FIELDS:
-            if not isinstance(getattr(self, field_name), str):
+            if type(getattr(self, field_name)) is not str:
                 raise ActionGateError(f"{field_name} must be a string")
 
         # Kollektionen fail-closed normalisieren: ein blindes ``tuple()`` würde
@@ -251,11 +273,11 @@ class ActionProposal:
         # (z.B. ``[123]``) durchreichen. Beides wird abgewiesen.
         for field_name in ("filesystem_effects", "process_effects", "reason_codes"):
             value = getattr(self, field_name)
-            if isinstance(value, str) or not isinstance(value, (list, tuple)):
+            if type(value) not in (list, tuple):
                 raise ActionGateError(
                     f"{field_name} must be a sequence of strings, not {type(value).__name__}"
                 )
-            if not all(isinstance(item, str) for item in value):
+            if not all(type(item) is str for item in value):
                 raise ActionGateError(f"{field_name} must contain only strings")
             object.__setattr__(self, field_name, tuple(value))
 
@@ -267,85 +289,72 @@ class ActionProposal:
             raise ActionGateError(f"invalid responsibility_class: {self.responsibility_class!r}")
         if self.visibility not in _KNOWN_VISIBILITIES:
             raise ActionGateError(f"invalid visibility: {self.visibility!r}")
-        if not isinstance(self.network_required, bool) or not isinstance(
-            self.human_approval_required, bool
+        if (
+            type(self.network_required) is not bool
+            or type(self.human_approval_required) is not bool
         ):
             raise ActionGateError("network_required and human_approval_required must be bool")
         unknown_codes = [c for c in self.reason_codes if c not in _KNOWN_ACTION_REASON_CODES]
         if unknown_codes:
             raise ActionGateError(f"unknown reason codes: {unknown_codes}")
-        # Kohärenz: das HUMAN_APPROVAL_REQUIRED-Signal muss zum Flag passen.
-        has_human_code = ActionReasonCode.HUMAN_APPROVAL_REQUIRED.value in self.reason_codes
-        if has_human_code != self.human_approval_required:
-            raise ActionGateError("human_approval_required flag inconsistent with reason codes")
+        if len(self.reason_codes) != len(set(self.reason_codes)):
+            raise ActionGateError("reason_codes must not contain duplicates")
 
-        # Builder-Invariante: PROPOSE trägt nie eine Freigabepflicht, jedes HOLD
-        # trägt sie. Das bindet ``human_approval_required`` bikonditional an den
-        # Gate-Zustand — ein PROPOSE-Manifest mit Freigabepflicht (oder ein HOLD
-        # ohne) ist inkohärent.
-        if (self.guard_state == GUARD_HOLD) != self.human_approval_required:
-            raise ActionGateError(
-                "human_approval_required must match guard_state (PROPOSE→False, HOLD→True)"
-            )
+        codes = set(self.reason_codes)
+        required_baseline = {
+            ActionReasonCode.ACTION_PROPOSAL_ONLY.value,
+            ActionReasonCode.NO_EXECUTION.value,
+            ActionReasonCode.SHELL_FRAGMENT_INERT.value,
+        }
+        if not required_baseline <= codes:
+            raise ActionGateError("proposal is missing mandatory inert baseline reason codes")
 
-        # Deskriptive-Feld-Kohärenz, soweit **policy-frei** re-derivierbar (geteilte
-        # Helfer, keine externen Eingaben): eine nicht gepinnte Version oder eine
-        # unverifizierte Quelle impliziert im Builder HOLD. Registry-Zuordnung und
-        # Quell-Trust lassen sich hier bewusst NICHT re-derivieren — das Manifest
-        # führt die Policy-Eingabe (``known_registries``) bzw. den Quell-Trust nicht
-        # mit; das bleibt Sache von ``build_action_proposal`` (bzw. Provenienz/
-        # Signatur, Phase-2).
-        if not _is_pinned_version(self.requested_version) and self.guard_state != GUARD_HOLD:
-            raise ActionGateError("unpinned requested_version must be HOLD")
-        if (
-            self.verification_status.strip().lower() != VERIFICATION_VERIFIED
-            and self.guard_state != GUARD_HOLD
-        ):
-            raise ActionGateError("unverified source must be HOLD")
+        def expect_code(code: ActionReasonCode, expected: bool) -> None:
+            if (code.value in codes) != expected:
+                raise ActionGateError(f"{code.value} inconsistent with descriptive manifest fields")
 
-        # Ein HOLD-auslösender Reason-Code bindet den Gate-Zustand: das Manifest
-        # muss HOLD + Freigabe tragen. So kann kein direkt/deserialisiert
-        # gebautes Manifest einen vom Builder abgelehnten Grund als PROPOSE führen.
-        if any(code in _HOLD_IMPLYING_REASON_CODES for code in self.reason_codes):
-            if self.guard_state != GUARD_HOLD:
-                raise ActionGateError("proposal carrying a HOLD-implying reason code must be HOLD")
-            if not self.human_approval_required:
-                raise ActionGateError(
-                    "proposal carrying a HOLD-implying reason code must require human approval"
-                )
+        # Genau eine Registry-Entscheidung muss aus der vom Builder verwendeten
+        # Allowlist stammen. Die Policy selbst wird nicht serialisiert; deshalb
+        # sind rohe Manifeste nicht rekonstruierbar und der Konstruktor ist oben
+        # versiegelt.
+        has_registry_known = ActionReasonCode.REGISTRY_KNOWN.value in codes
+        has_registry_unknown = ActionReasonCode.REGISTRY_UNKNOWN.value in codes
+        if has_registry_known == has_registry_unknown:
+            raise ActionGateError("proposal must carry exactly one registry decision")
 
-        # Invarianz-Kohärenz (keine Neuberechnung der vollen Ladder): eine reale
-        # Nebenwirkung oder Irreversibilität MUSS HOLD + HUMAN_ONLY + menschliche
-        # Freigabe tragen. Das verhindert, dass ein direkt/deserialisiert
-        # konstruiertes Manifest eine Netz-/FS-/Prozess-/irreversible Aktion als
-        # PROPOSE/COMPUTATIONAL ausweist und so am Gate vorbei geroutet wird.
-        effects_present = (
-            self.network_required or bool(self.filesystem_effects) or bool(self.process_effects)
-        )
+        pinned = _is_pinned_version(self.requested_version, self.ecosystem)
+        expect_code(ActionReasonCode.VERSION_PINNED, pinned)
+        expect_code(ActionReasonCode.VERSION_UNVERIFIABLE, not pinned)
+
+        verified = self.verification_status.strip().lower() == VERIFICATION_VERIFIED
+        expect_code(ActionReasonCode.SOURCE_VERIFIED, verified)
+        expect_code(ActionReasonCode.SOURCE_UNVERIFIED, not verified)
+
+        filesystem_effect = bool(self.filesystem_effects)
+        process_effect = bool(self.process_effects)
         irreversible = self.reversibility.strip().lower() != "reversible"
-        if effects_present or irreversible:
-            if self.guard_state != GUARD_HOLD:
-                raise ActionGateError("side-effect/irreversible proposal must be HOLD")
-            if self.responsibility_class != ResponsibilityClass.HUMAN_ONLY.value:
-                raise ActionGateError("side-effect/irreversible proposal must be HUMAN_ONLY")
-            if not self.human_approval_required:
-                raise ActionGateError(
-                    "side-effect/irreversible proposal must require human approval"
-                )
+        expect_code(ActionReasonCode.NETWORK_REQUIRED, self.network_required)
+        expect_code(ActionReasonCode.FILESYSTEM_EFFECT, filesystem_effect)
+        expect_code(ActionReasonCode.PROCESS_EFFECT, process_effect)
+        expect_code(ActionReasonCode.IRREVERSIBLE_EFFECT, irreversible)
 
-        # PROPOSE ist ausschließlich COMPUTATIONAL vorbehalten. Auch die
-        # *deklarierte* Klasse bindet: IN_BETWEEN (unaufgelöst) und HUMAN_ONLY
-        # (menschlich) dürfen niemals stillen Durchlass bekommen — sie müssen
-        # HOLD + menschliche Freigabe tragen. So kann kein direkt/deserialisiert
-        # gebautes Manifest dieser Klassen als PROPOSE am Gate vorbei geroutet
-        # werden.
-        if self.responsibility_class != ResponsibilityClass.COMPUTATIONAL.value:
-            if self.guard_state != GUARD_HOLD:
-                raise ActionGateError(f"{self.responsibility_class} proposal must be HOLD")
-            if not self.human_approval_required:
-                raise ActionGateError(
-                    f"{self.responsibility_class} proposal must require human approval"
-                )
+        expected_hold = bool(codes & _HOLD_IMPLYING_REASON_CODES)
+        expected_guard = GUARD_HOLD if expected_hold else GUARD_PROPOSE
+        if self.guard_state != expected_guard:
+            raise ActionGateError("guard_state inconsistent with computed reason codes")
+
+        expect_code(ActionReasonCode.HUMAN_APPROVAL_REQUIRED, expected_hold)
+        if self.human_approval_required != expected_hold:
+            raise ActionGateError("human_approval_required inconsistent with guard_state")
+
+        if self.network_required or filesystem_effect or process_effect or irreversible:
+            expected_responsibility = ResponsibilityClass.HUMAN_ONLY.value
+        elif expected_hold:
+            expected_responsibility = ResponsibilityClass.IN_BETWEEN.value
+        else:
+            expected_responsibility = ResponsibilityClass.COMPUTATIONAL.value
+        if self.responsibility_class != expected_responsibility:
+            raise ActionGateError("responsibility_class inconsistent with effects and guard_state")
 
     def to_manifest(self) -> dict[str, object]:
         """Kanonische, serialisierbare (JSON-native) Manifest-Darstellung.
@@ -379,54 +388,55 @@ class ActionProposal:
 # ---------------------------------------------------------------------------
 
 
-def _is_pinned_version(value: str) -> bool:
-    """True nur für eine konkret gepinnte, überprüfbare Version.
+def _is_pinned_version(value: str, ecosystem: str) -> bool:
+    """Eine konservative, ökosystemspezifische Exact-Version prüfen.
 
-    Leere, offene oder Range-artige Angaben (``latest``, ``*``, ``^1``, ``>=2`` …)
-    gelten fail-closed als nicht überprüfbar.
+    v0.1 validiert nur die beiden tatsächlich implementierten Grammatiken:
+
+    - ``npm``: striktes SemVer 2.0.0;
+    - ``pypi``: kanonischer PEP-440-Public-Identifier mit mindestens drei
+      Release-Komponenten.
+
+    Für weitere bekannte Registries fehlt ein lokaler Exact-Version-Parser.
+    Sie bleiben deshalb fail-closed ``VERSION_UNVERIFIABLE`` statt durch einen
+    unsicheren gemeinsamen Näherungscheck als gepinnt zu gelten.
     """
-    if not isinstance(value, str):
+    if type(value) is not str or type(ecosystem) is not str:
         return False
-    token = value.strip().lower()
-    if token in _UNPINNED_VERSION_TOKENS:
+    if value != value.strip() or not value or len(value) > _MAX_VERSION_LENGTH:
         return False
-    # Range-/Wildcard-Operatoren markieren keine feste Version.
-    if any(op in token for op in ("^", "~", ">", "<", "*", "=", " - ", "||", ",")):
-        return False
-    # Fremde Zeichen (``/``, Whitespace o.Ä.) markieren keine feste Version.
-    if any(ch not in _VERSION_CHARSET for ch in token):
-        return False
-    parts = token.split(".")
-    # Eingebettete Wildcard- oder leere Komponenten (``1.x``, ``1.2.x``, ``x``)
-    # sind nicht gepinnt, obwohl sie eine Ziffer enthalten.
-    if any(part in ("x", "") for part in parts):
-        return False
-    # Teilweise Versionen (``1``, ``1.2``) sind X-Ranges, keine feste Version.
-    if len(parts) < _MIN_PINNED_VERSION_COMPONENTS:
-        return False
-    major, minor, patch = parts[0], parts[1], parts[2]
-    # Major/Minor müssen reine Ziffernblöcke sein; der Patch darf ein
-    # angehängtes Prerelease tragen (``0.1.0a``), muss aber mit einer Ziffer
-    # beginnen und alphanumerisch enden — so scheitern ``1foo.2bar.3baz`` und
-    # ``1.2.3+`` fail-closed. Ein vollständiger ökosystemspezifischer
-    # Versionsparser ist bewusst NICHT Teil dieses minimalen Gates.
-    if not (major.isdigit() and minor.isdigit()):
-        return False
-    return bool(patch) and patch[:1].isdigit() and patch[-1:].isalnum()
+
+    normalized_ecosystem = ecosystem.strip().lower()
+    if normalized_ecosystem == "npm":
+        match = _NPM_SEMVER_RE.fullmatch(value)
+        if match is None:
+            return False
+        prerelease = match.group("prerelease")
+        if prerelease is None:
+            return True
+        return all(
+            not (identifier.isdigit() and len(identifier) > 1 and identifier.startswith("0"))
+            for identifier in prerelease.split(".")
+        )
+
+    if normalized_ecosystem == "pypi":
+        return _PYPI_CANONICAL_VERSION_RE.fullmatch(value) is not None
+
+    return False
 
 
 def _normalize_effects(effects: Sequence[str] | None) -> list[str]:
     """Effektliste auf nicht-leere, aussagekräftige String-Einträge reduzieren."""
     if effects is None:
         return []
-    if isinstance(effects, str):
+    if type(effects) not in (list, tuple):
         raise ActionGateError(
-            "effects must be a sequence of strings, not a bare string",
+            "effects must be a list or tuple of strings",
             [ActionReasonCode.ACTION_PROPOSAL_ONLY],
         )
     normalized: list[str] = []
     for item in effects:
-        if not isinstance(item, str):
+        if type(item) is not str:
             raise ActionGateError(
                 "each effect entry must be a string",
                 [ActionReasonCode.ACTION_PROPOSAL_ONLY],
@@ -437,6 +447,63 @@ def _normalize_effects(effects: Sequence[str] | None) -> list[str]:
     return normalized
 
 
+def _registry_is_known(
+    ecosystem: str,
+    registry_or_origin: str,
+    known_registries: Mapping[str, frozenset[str]],
+) -> bool:
+    """Eine Registry-Zuordnung kontrolliert und fail-closed auswerten."""
+    # Nur eingebaute, seiteneffektfreie Container akzeptieren. Eine beliebige
+    # Mapping-Implementierung könnte bereits in ``get`` Aufrufercode ausführen
+    # und damit das Reinheitsversprechen des Gates brechen.
+    if known_registries is DEFAULT_KNOWN_REGISTRIES:
+        policy_items = tuple(DEFAULT_KNOWN_REGISTRIES.items())
+    elif type(known_registries) is dict:
+        try:
+            policy_items = tuple(known_registries.items())
+        except RuntimeError as exc:
+            raise ActionGateError(
+                "known_registries changed while being read",
+                [ActionReasonCode.ACTION_PROPOSAL_ONLY],
+            ) from exc
+    else:
+        raise ActionGateError(
+            "known_registries must be the default policy or a built-in dict",
+            [ActionReasonCode.ACTION_PROPOSAL_ONLY],
+        )
+
+    normalized_policy: dict[str, frozenset[str]] = {}
+    for policy_ecosystem, registries in policy_items:
+        if (
+            type(policy_ecosystem) is not str
+            or not policy_ecosystem
+            or policy_ecosystem != policy_ecosystem.strip()
+        ):
+            raise ActionGateError(
+                "registry policy keys must be non-empty strings without edge whitespace",
+                [ActionReasonCode.ACTION_PROPOSAL_ONLY],
+            )
+        if type(registries) not in (set, frozenset, list, tuple):
+            raise ActionGateError(
+                "registry allowlist entries must be string collections",
+                [ActionReasonCode.ACTION_PROPOSAL_ONLY],
+            )
+        if not all(type(item) is str and item and item == item.strip() for item in registries):
+            raise ActionGateError(
+                "registry allowlist entries must contain canonical non-empty strings",
+                [ActionReasonCode.ACTION_PROPOSAL_ONLY],
+            )
+        normalized_ecosystem = policy_ecosystem.lower()
+        if normalized_ecosystem in normalized_policy:
+            raise ActionGateError(
+                "registry policy contains duplicate normalized ecosystem keys",
+                [ActionReasonCode.ACTION_PROPOSAL_ONLY],
+            )
+        normalized_policy[normalized_ecosystem] = frozenset(item.lower() for item in registries)
+
+    return registry_or_origin.lower() in normalized_policy.get(ecosystem.lower(), frozenset())
+
+
 def _resolve_visibility(requested: str | None, source_visibility: object) -> str:
     """Proposal-Sichtbarkeit fail-closed bestimmen, ohne Eskalation über die Quelle.
 
@@ -445,14 +512,14 @@ def _resolve_visibility(requested: str | None, source_visibility: object) -> str
 
     Eine unbekannte Quell-Sichtbarkeit wird fail-closed als ``private`` behandelt.
     """
-    if isinstance(source_visibility, str) and source_visibility in _KNOWN_VISIBILITIES:
+    if type(source_visibility) is str and source_visibility in _KNOWN_VISIBILITIES:
         source = source_visibility
     else:
         source = VISIBILITY_PRIVATE
 
     if requested is None:
         return source
-    if requested not in _KNOWN_VISIBILITIES:
+    if type(requested) is not str or requested not in _KNOWN_VISIBILITIES:
         raise ActionGateError(
             f"unknown visibility class: {requested!r}",
             [ActionReasonCode.ACTION_PROPOSAL_ONLY],
@@ -500,7 +567,7 @@ def build_action_proposal(
     kein privater ``proposed_command`` über ein ``reduced``/``public``-Label
     diffundieren.
     """
-    if not isinstance(source_material, MaterialRef):
+    if type(source_material) is not MaterialRef:
         raise ActionGateError(
             "source_material must be a MaterialRef",
             [ActionReasonCode.ACTION_PROPOSAL_ONLY],
@@ -515,12 +582,37 @@ def build_action_proposal(
         ("reversibility", reversibility),
         ("verification_status", verification_status),
     ):
-        if not isinstance(value, str):
+        if type(value) is not str:
             raise ActionGateError(
                 f"{name} must be a string",
                 [ActionReasonCode.ACTION_PROPOSAL_ONLY],
             )
-    if not isinstance(network_required, bool):
+    for name, value in (
+        ("action_id", action_id),
+        ("source_material.material_id", source_material.material_id),
+        ("proposed_command", proposed_command),
+        ("package_or_resource", package_or_resource),
+    ):
+        if type(value) is not str or not value.strip():
+            raise ActionGateError(
+                f"{name} must be a non-empty string",
+                [ActionReasonCode.ACTION_PROPOSAL_ONLY],
+            )
+    for name, value in (
+        ("action_id", action_id),
+        ("source_material.material_id", source_material.material_id),
+        ("ecosystem", ecosystem),
+        ("package_or_resource", package_or_resource),
+        ("registry_or_origin", registry_or_origin),
+        ("reversibility", reversibility),
+        ("verification_status", verification_status),
+    ):
+        if value != value.strip():
+            raise ActionGateError(
+                f"{name} must not contain leading or trailing whitespace",
+                [ActionReasonCode.ACTION_PROPOSAL_ONLY],
+            )
+    if type(network_required) is not bool:
         raise ActionGateError(
             "network_required must be a bool",
             [ActionReasonCode.ACTION_PROPOSAL_ONLY],
@@ -529,7 +621,9 @@ def build_action_proposal(
     visibility = _resolve_visibility(visibility, source_material.visibility)
     fs_effects = _normalize_effects(filesystem_effects)
     proc_effects = _normalize_effects(process_effects)
-    source_trust = normalize_trust(source_material.trust)
+    source_trust = normalize_trust(
+        source_material.trust if type(source_material.trust) is str else None
+    )
 
     # Reason-Codes werden in fester Reihenfolge angehängt → deterministisch.
     reasons: list[ActionReasonCode] = [
@@ -548,14 +642,13 @@ def build_action_proposal(
     # Registry-/Herkunfts-Allowlist (fail-closed), gekeyt nach Ökosystem: eine
     # Registry muss zum angegebenen Ökosystem passen. Unbekanntes Ökosystem oder
     # falsch zugeordnete Registry (z.B. npm + pypi.org) → HOLD.
-    ecosystem_registries = known_registries.get(ecosystem.strip().lower(), frozenset())
-    if registry_or_origin.strip().lower() in {r.lower() for r in ecosystem_registries}:
+    if _registry_is_known(ecosystem, registry_or_origin, known_registries):
         reasons.append(ActionReasonCode.REGISTRY_KNOWN)
     else:
         hold(ActionReasonCode.REGISTRY_UNKNOWN)
 
     # Versions-Pin-Prüfung.
-    if _is_pinned_version(requested_version):
+    if _is_pinned_version(requested_version, ecosystem):
         reasons.append(ActionReasonCode.VERSION_PINNED)
     else:
         hold(ActionReasonCode.VERSION_UNVERIFIABLE)
@@ -621,4 +714,5 @@ def build_action_proposal(
         human_approval_required=human_required,
         reason_codes=tuple(code.value for code in reasons),
         visibility=visibility,
+        _builder_token=_ACTION_PROPOSAL_BUILDER_TOKEN,
     )

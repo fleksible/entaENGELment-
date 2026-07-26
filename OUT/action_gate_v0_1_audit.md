@@ -1,6 +1,7 @@
 # Report: Action-Gate v0.1 — Computable Stitching Spine
 
 **Datum:** 2026-07-23
+**Validation-Refresh:** 2026-07-26
 **Fokus:** Computable Stitching Spine v0.1
 
 ## Ziel
@@ -30,11 +31,17 @@ die eine extern gefundene Handlungsanweisung ausschließlich in ein inertes
       geforderten Manifest-Felder), `ResponsibilityClass`-Enum
       (COMPUTATIONAL/IN_BETWEEN/HUMAN_ONLY), geschlossenes `ActionReasonCode`-Enum,
       reine `build_action_proposal(...)`-Funktion mit fail-closed HOLD-Regeln.
+- [x] Öffentliche Rohkonstruktion versiegelt: Nur der Builder besitzt das
+      nicht serialisierbare Konstruktionstoken; JSON-/Cache-Manifeste können
+      `guard_state`, Responsibility oder Reason-Codes nicht selbst wählen.
+- [x] Exact-Version-Prüfung nach Ökosystem getrennt: npm SemVer 2.0.0 und
+      konservatives kanonisches PyPI/PEP 440; weitere Ökosysteme fallen bis zu
+      einem eigenen Parser auf `VERSION_UNVERIFIABLE`/`HOLD`.
 - [x] Wiederverwendung bestehender Typen/Konstanten aus `evidence_routing.py`
       (`MaterialRef`, `GUARD_HOLD/PROPOSE`, Trust-/Visibility-Konstanten,
       `normalize_trust`) — keine Paralleltypen, keine neue Runtime-Dependency.
 - [x] `src/core/__init__.py`: stabile Exports der neuen Symbole ergänzt.
-- [x] `tests/unit/test_action_gate.py` (35 Tests) und
+- [x] `tests/unit/test_action_gate.py` (122 Tests) und
       `tests/ethics/test_action_gate_no_execution.py` (9 Tests).
 - [x] Fixture `tests/fixtures/erk/action_gate_setup_doc.md` (inerte Setup-Doku
       mit `curl … | bash`-Zeile als reine Daten).
@@ -44,23 +51,25 @@ die eine extern gefundene Handlungsanweisung ausschließlich in ein inertes
 ## Ausgeführte Prüfungen
 
 - `python -m pytest tests/unit/test_action_gate.py tests/ethics/test_action_gate_no_execution.py`
-  → **44 passed**.
+  → **131 passed**.
 - `python -m pytest tests/ethics tests/unit/test_evidence_routing.py tests/integration/test_erk_ledger.py tests/unit/test_erk_tools.py`
   → **102 passed** (keine Regression im ERK-Umfeld).
-- `ruff check` auf die drei neuen Python-Dateien → **All checks passed**.
-- `black --line-length 100 --target-version py311` → angewendet, sauber.
-- `mypy src/core/action_gate.py` → keine Fehler aus dem neuen Modul; einziger
-  gemeldeter Punkt ist der **vorbestehende** fehlende `types-PyYAML`-Stub in
-  `evidence_routing.py` (nicht durch dieses Delta verursacht).
+- `ruff check` auf die drei Python-Dateien → **All checks passed**.
+- `black --check --line-length 100 --target-version py311` → sauber.
+- `mypy src/core/action_gate.py` → **Success: no issues found**.
+- `make verify` → **583 passed, 104 warnings**; Port-, Pointer- und Claim-Gates
+  bestanden (0 fehlende Core-Pointer).
+- `make verify-governance` → **14** Workflow-Postures bestanden; generierter
+  VOID-Backlog aktuell; **22** VOIDs mit dem UI-Mirror synchron.
+- Adversarialer JSON-Shape-Sweep über **343** deterministische
+  Einzelmutationen an Manifest-, Material- und Policy-Eingaben →
+  **0 unerwartete Exceptions** (nur kontrollierter `ActionGateError` oder
+  gültiges Proposal).
 
 ## Nicht getan (bewusst)
 
-- Kein `make verify`/`make test`/`make verify-all` als Gesamtlauf: Die
-  Dev-Toolchain ließ sich nicht vollständig via `requirements-dev.txt`
-  installieren (Konflikt mit debian-vorinstalliertem `cryptography`, RECORD
-  fehlt). Es wurden nur `pyyaml` und `pytest` in den aktiven Interpreter
-  installiert, um den scope-relevanten Testumfang zu fahren. `verify-js` ist
-  nicht anwendbar (reiner Python-ANNEX-Scope).
+- Kein `make verify-js`: Der PR berührt keine JS-/UI-Datei. Die Python-Core- und
+  Governance-Membranen wurden vollständig ausgeführt.
 - Kein Kontext-Rot-/Drift-Check implementiert — als Phase-2-Kandidat in
   `docs/annex/ACTION_GATE_v0_1.md` §8 dokumentiert, ohne neues Backlog und ohne
   `VOIDMAP.yml`-Mutation.
@@ -75,12 +84,20 @@ die eine extern gefundene Handlungsanweisung ausschließlich in ein inertes
   kryptografische Prüfung — dokumentierte Grenze (§8).
 - Die Registry-Allowlist ist bewusst klein und bedeutet Bekanntheit, nicht
   Vertrauen zur Ausführung.
-- Voller `make verify`-Lauf steht wegen Toolchain-Installationskonflikt aus;
-  CI muss dies vor Merge grün bestätigen (G6).
+- Ein serialisiertes Manifest ist nicht authentifiziert und wird deshalb nicht
+  direkt rehydriert; es muss mit Material-/Policy-Kontext neu gebaut werden.
+- Das Builder-Token ist eine API-Invariante, kein Geheimnis und keine
+  Sicherheitsgrenze gegen bösartigen Code im selben Python-Prozess.
+- Paket-/Effekt-/Reversibilitätsangaben bleiben Behauptungen des Aufrufers; der
+  inerte Command wird absichtlich nicht semantisch dagegen geprüft. `PROPOSE`
+  ist daher niemals eine Ausführungsautorisierung.
+- Cargo-, Go-, Maven- und RubyGems-Versionen bleiben in v0.1 bewusst
+  `VERSION_UNVERIFIABLE`/`HOLD`.
 
 ## Offene Punkte
 
-- [ ] ☐ Voller `make verify` / `make test-ethics` im CI-Kontext grün bestätigen.
+- [x] ☑ Voller lokaler Core-/Ethics-/Governance-Lauf grün.
+- [ ] ☐ GitHub-CI auf dem finalen Remote-Head grün bestätigen.
 - [ ] ☐ Menschliche Entscheidung über Phase-2-Drift-Check (HOLD).
 - [ ] ☐ Menschliche Entscheidung über spätere Ledger-Adapter-Kopplung (LOOP).
 

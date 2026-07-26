@@ -4,6 +4,9 @@ Siehe docs/annex/ACTION_GATE_v0_1.md und src/core/action_gate.py.
 """
 
 import json
+from collections.abc import Mapping
+from dataclasses import replace
+from types import MappingProxyType
 
 import pytest
 
@@ -249,11 +252,131 @@ class TestInputValidation:
         with pytest.raises(ActionGateError):
             build(network_required="yes")  # type: ignore[arg-type]
 
+    @pytest.mark.parametrize(
+        ("field", "value"),
+        [
+            ("action_id", " "),
+            ("proposed_command", ""),
+            ("package_or_resource", "\t"),
+        ],
+    )
+    def test_blank_required_text_rejected(self, field, value):
+        with pytest.raises(ActionGateError):
+            build(**{field: value})
+
+    def test_blank_material_id_rejected(self):
+        with pytest.raises(ActionGateError):
+            build(source_material=make_material(material_id=" ", trust="REVIEWED"))
+
+    @pytest.mark.parametrize(
+        "field",
+        [
+            "action_id",
+            "ecosystem",
+            "package_or_resource",
+            "registry_or_origin",
+            "reversibility",
+            "verification_status",
+        ],
+    )
+    def test_semantic_text_with_edge_whitespace_rejected(self, field):
+        with pytest.raises(ActionGateError, match="leading or trailing whitespace"):
+            build(**{field: f" {build().to_manifest()[field]} "})
+
+    def test_material_id_with_edge_whitespace_rejected(self):
+        with pytest.raises(ActionGateError, match="leading or trailing whitespace"):
+            build(source_material=make_material(material_id=" mat-001 ", trust="REVIEWED"))
+
+    def test_set_effects_rejected_as_nondeterministic(self):
+        with pytest.raises(ActionGateError):
+            build(filesystem_effects={"a", "b"})  # type: ignore[arg-type]
+
+    def test_generator_effects_rejected_as_one_shot(self):
+        with pytest.raises(ActionGateError):
+            build(process_effects=(item for item in ["a"]))  # type: ignore[arg-type]
+
+    def test_custom_effect_list_rejected_without_iteration(self):
+        class ExecutableList(list):
+            def __iter__(self):  # pragma: no cover - must not run
+                raise AssertionError("custom effect collection executed")
+
+        with pytest.raises(ActionGateError, match="list or tuple"):
+            build(filesystem_effects=ExecutableList(["writes /tmp"]))
+
+    @pytest.mark.parametrize(
+        "known_registries",
+        [
+            [],
+            {"pypi": "pypi.org"},
+            {"pypi": frozenset({123})},
+            {"pypi": frozenset({""})},
+            {1: frozenset({"pypi.org"})},
+            {" pypi": frozenset({"pypi.org"})},
+            {
+                "pypi": frozenset({"pypi.org"}),
+                "PyPI": frozenset({"pypi"}),
+            },
+        ],
+    )
+    def test_malformed_registry_policy_rejected(self, known_registries):
+        with pytest.raises(ActionGateError):
+            build(known_registries=known_registries)
+
+    def test_custom_mapping_policy_rejected_without_reading_it(self):
+        class ExecutableMapping(Mapping):
+            def __getitem__(self, key):  # pragma: no cover - must not run
+                raise AssertionError("custom mapping executed")
+
+            def __iter__(self):  # pragma: no cover - must not run
+                raise AssertionError("custom mapping executed")
+
+            def __len__(self):  # pragma: no cover - must not run
+                raise AssertionError("custom mapping executed")
+
+            def get(self, key, default=None):  # pragma: no cover - must not run
+                raise AssertionError("custom mapping executed")
+
+        with pytest.raises(ActionGateError, match="built-in dict"):
+            build(known_registries=ExecutableMapping())
+
+    def test_custom_mapping_proxy_policy_rejected_without_reading_it(self):
+        class ExecutableMapping(Mapping):
+            def __getitem__(self, key):  # pragma: no cover - must not run
+                raise AssertionError("custom mapping executed")
+
+            def __iter__(self):  # pragma: no cover - must not run
+                raise AssertionError("custom mapping executed")
+
+            def __len__(self):  # pragma: no cover - must not run
+                raise AssertionError("custom mapping executed")
+
+        policy = MappingProxyType(ExecutableMapping())
+        with pytest.raises(ActionGateError, match="default policy"):
+            build(known_registries=policy)
+
+    def test_string_subclass_rejected_before_custom_methods_run(self):
+        class HostileString(str):
+            def strip(self, *args, **kwargs):  # pragma: no cover - must not run
+                raise AssertionError("custom string method executed")
+
+        with pytest.raises(ActionGateError):
+            build(ecosystem=HostileString("pypi"))
+
 
 class TestPinnedVersionHelper:
-    @pytest.mark.parametrize("value", ["1.0.0", "2.13.1", "0.1.0a"])
-    def test_pinned(self, value):
-        assert _is_pinned_version(value) is True
+    @pytest.mark.parametrize(
+        "value",
+        [
+            "1.0.0",
+            "2.13.1",
+            "1.2.3-rc1",
+            "1.2.3-alpha.1",
+            "1.2.3+build.5",
+            "1.2.3-rc.1+build.5",
+        ],
+    )
+    def test_npm_strict_semver_pinned(self, value):
+        assert _is_pinned_version(value, "npm") is True
 
     @pytest.mark.parametrize(
         "value",
@@ -278,14 +401,58 @@ class TestPinnedVersionHelper:
             "1.2.3/evil",
             "1.2.3+",
             "1.2 3",
+            "1.2.3evil",
+            "1.2.3.4",
+            "1.2.3+a+b",
+            "01.2.3",
+            "1.02.3",
+            "1.2.03",
+            "1.2.3-01",
+            "v1.2.3",
+            "=1.2.3",
+            " 1.2.3",
+            "1.2.3 ",
         ],
     )
-    def test_unpinned(self, value):
-        assert _is_pinned_version(value) is False
+    def test_npm_invalid_or_range_unpinned(self, value):
+        assert _is_pinned_version(value, "npm") is False
 
-    @pytest.mark.parametrize("value", ["1.2.3", "0.1.0a", "1.2.3-rc1", "1.2.3+build.5"])
-    def test_pinned_release_forms(self, value):
-        assert _is_pinned_version(value) is True
+    @pytest.mark.parametrize(
+        "value",
+        [
+            "1.2.3",
+            "1!1.2.3",
+            "1.2.3a1",
+            "1.2.3b2",
+            "1.2.3rc1",
+            "1.2.3.post1",
+            "1.2.3.dev1",
+            "1.2.3rc1.post2.dev3",
+        ],
+    )
+    def test_pypi_canonical_public_version_pinned(self, value):
+        assert _is_pinned_version(value, "pypi") is True
+
+    @pytest.mark.parametrize(
+        "value",
+        [
+            "0.1.0a",
+            "1.2",
+            "1.2.3-rc1",
+            "1.2.3+local",
+            "01.2.3",
+            "1.2.3evil",
+            "==1.2.3",
+            " 1.2.3",
+            "1.2.3 ",
+        ],
+    )
+    def test_pypi_noncanonical_version_unpinned(self, value):
+        assert _is_pinned_version(value, "pypi") is False
+
+    @pytest.mark.parametrize("ecosystem", ["cargo", "go", "maven", "rubygems", "shell"])
+    def test_ecosystem_without_exact_parser_fails_closed(self, ecosystem):
+        assert _is_pinned_version("1.2.3", ecosystem) is False
 
 
 class TestEcosystemRegistryMatch:
@@ -305,187 +472,42 @@ class TestEcosystemRegistryMatch:
         assert proposal.guard_state == GUARD_HOLD
         assert ActionReasonCode.REGISTRY_UNKNOWN.value in proposal.reason_codes
 
+    def test_known_registry_without_version_parser_still_holds(self):
+        proposal = build(ecosystem="cargo", registry_or_origin="crates.io")
+        assert ActionReasonCode.REGISTRY_KNOWN.value in proposal.reason_codes
+        assert ActionReasonCode.VERSION_UNVERIFIABLE.value in proposal.reason_codes
+        assert proposal.guard_state == GUARD_HOLD
 
-class TestPostInitValidation:
-    def _valid_kwargs(self, **overrides):
-        data = {
-            "action_id": "a",
-            "schema_version": ACTION_GATE_SCHEMA_VERSION,
-            "source_material_ref": "m",
-            "proposed_command": "c",
-            "ecosystem": "pypi",
-            "package_or_resource": "p",
-            "requested_version": "1.2.3",
-            "registry_or_origin": "pypi.org",
-            "network_required": False,
-            "filesystem_effects": (),
-            "process_effects": (),
-            "reversibility": "reversible",
-            "verification_status": "verified",
-            "guard_state": GUARD_PROPOSE,
-            "responsibility_class": ResponsibilityClass.COMPUTATIONAL.value,
-            "human_approval_required": False,
-            "reason_codes": ("ACTION_PROPOSAL_ONLY",),
-            "visibility": "reduced",
-        }
-        data.update(overrides)
-        return data
 
-    def test_valid_direct_construction_ok(self):
-        assert isinstance(ActionProposal(**self._valid_kwargs()), ActionProposal)
+class TestBuilderOnlyConstruction:
+    def test_serialized_manifest_cannot_choose_computed_fields(self):
+        manifest = build().to_manifest()
+        with pytest.raises(ActionGateError, match="builder-only"):
+            ActionProposal(**manifest)
 
-    def test_unknown_reason_code_rejected(self):
-        with pytest.raises(ActionGateError):
-            ActionProposal(**self._valid_kwargs(reason_codes=("NOT_A_CODE",)))
+    def test_malicious_deserialized_manifest_cannot_bypass_gate(self):
+        manifest = build().to_manifest()
+        manifest.update(
+            {
+                "registry_or_origin": "evil.invalid",
+                "requested_version": "latest",
+                "verification_status": "unverified",
+                "guard_state": GUARD_PROPOSE,
+                "responsibility_class": ResponsibilityClass.COMPUTATIONAL.value,
+                "human_approval_required": False,
+                "reason_codes": ["ACTION_PROPOSAL_ONLY"],
+            }
+        )
+        with pytest.raises(ActionGateError, match="builder-only"):
+            ActionProposal(**manifest)
 
-    def test_invalid_guard_state_rejected(self):
-        with pytest.raises(ActionGateError):
-            ActionProposal(**self._valid_kwargs(guard_state="EXECUTE"))
+    def test_dataclass_replace_cannot_forge_computed_fields(self):
+        proposal = build()
+        with pytest.raises(ActionGateError, match="builder-only"):
+            replace(proposal, guard_state=GUARD_HOLD)
 
-    def test_invalid_responsibility_class_rejected(self):
-        with pytest.raises(ActionGateError):
-            ActionProposal(**self._valid_kwargs(responsibility_class="WHATEVER"))
-
-    def test_inconsistent_human_flag_rejected(self):
-        # human_approval_required True, aber Reason-Code fehlt → inkohärent.
-        with pytest.raises(ActionGateError):
-            ActionProposal(**self._valid_kwargs(human_approval_required=True))
-
-    def test_list_collections_are_coerced_to_tuple(self):
-        proposal = ActionProposal(**self._valid_kwargs(reason_codes=["ACTION_PROPOSAL_ONLY"]))
-        assert isinstance(proposal.reason_codes, tuple)
-
-    def test_bare_string_effect_collection_rejected(self):
-        # Ein bloßer String darf nicht in Zeichen zerlegt werden.
-        with pytest.raises(ActionGateError):
-            ActionProposal(**self._valid_kwargs(filesystem_effects="writes-everything"))
-
-    def test_non_string_effect_entry_rejected(self):
-        with pytest.raises(ActionGateError):
-            ActionProposal(**self._valid_kwargs(process_effects=[123]))
-
-    def test_non_string_reason_code_entry_rejected(self):
-        with pytest.raises(ActionGateError):
-            ActionProposal(**self._valid_kwargs(reason_codes=[123]))
-
-    def test_non_string_scalar_field_rejected(self):
-        with pytest.raises(ActionGateError):
-            ActionProposal(**self._valid_kwargs(proposed_command=["curl", "x", "|", "bash"]))
-
-    def test_side_effect_proposal_must_be_hold_human_only(self):
-        # network_required=True, aber als PROPOSE/COMPUTATIONAL deklariert → abweisen.
-        with pytest.raises(ActionGateError):
-            ActionProposal(
-                **self._valid_kwargs(
-                    network_required=True,
-                    guard_state=GUARD_PROPOSE,
-                    responsibility_class=ResponsibilityClass.COMPUTATIONAL.value,
-                    human_approval_required=False,
-                    reason_codes=("ACTION_PROPOSAL_ONLY",),
-                )
-            )
-
-    def test_irreversible_proposal_must_be_human_only(self):
-        with pytest.raises(ActionGateError):
-            ActionProposal(
-                **self._valid_kwargs(
-                    reversibility="irreversible",
-                    guard_state=GUARD_PROPOSE,
-                    responsibility_class=ResponsibilityClass.COMPUTATIONAL.value,
-                    human_approval_required=False,
-                    reason_codes=("ACTION_PROPOSAL_ONLY",),
-                )
-            )
-
-    def test_propose_with_approval_required_rejected(self):
-        # PROPOSE trägt nie eine Freigabepflicht (Builder-Invariante).
-        with pytest.raises(ActionGateError):
-            ActionProposal(
-                **self._valid_kwargs(
-                    guard_state=GUARD_PROPOSE,
-                    responsibility_class=ResponsibilityClass.COMPUTATIONAL.value,
-                    human_approval_required=True,
-                    reason_codes=("ACTION_PROPOSAL_ONLY", "HUMAN_APPROVAL_REQUIRED"),
-                )
-            )
-
-    def test_hold_without_approval_required_rejected(self):
-        # Jedes HOLD trägt eine Freigabepflicht.
-        with pytest.raises(ActionGateError):
-            ActionProposal(
-                **self._valid_kwargs(
-                    guard_state=GUARD_HOLD,
-                    responsibility_class=ResponsibilityClass.COMPUTATIONAL.value,
-                    human_approval_required=False,
-                    reason_codes=("ACTION_PROPOSAL_ONLY",),
-                )
-            )
-
-    def test_unpinned_version_descriptive_field_forces_hold(self):
-        # Deskriptives Feld: latest ist ungepinnt → PROPOSE inkohärent.
-        with pytest.raises(ActionGateError):
-            ActionProposal(
-                **self._valid_kwargs(
-                    requested_version="latest",
-                    guard_state=GUARD_PROPOSE,
-                    responsibility_class=ResponsibilityClass.COMPUTATIONAL.value,
-                    human_approval_required=False,
-                    reason_codes=("ACTION_PROPOSAL_ONLY",),
-                )
-            )
-
-    def test_unverified_descriptive_field_forces_hold(self):
-        with pytest.raises(ActionGateError):
-            ActionProposal(
-                **self._valid_kwargs(
-                    verification_status="unverified",
-                    guard_state=GUARD_PROPOSE,
-                    responsibility_class=ResponsibilityClass.COMPUTATIONAL.value,
-                    human_approval_required=False,
-                    reason_codes=("ACTION_PROPOSAL_ONLY",),
-                )
-            )
-
-    def test_hold_implying_reason_code_with_propose_rejected(self):
-        # REGISTRY_UNKNOWN etc. sind Builder-HOLD-Gründe; PROPOSE damit inkohärent.
-        with pytest.raises(ActionGateError):
-            ActionProposal(
-                **self._valid_kwargs(
-                    guard_state=GUARD_PROPOSE,
-                    responsibility_class=ResponsibilityClass.COMPUTATIONAL.value,
-                    human_approval_required=False,
-                    reason_codes=(
-                        "REGISTRY_UNKNOWN",
-                        "VERSION_UNVERIFIABLE",
-                        "SOURCE_UNVERIFIED",
-                    ),
-                )
-            )
-
-    def test_declared_in_between_as_propose_rejected(self):
-        # IN_BETWEEN ist unaufgelöst und darf nie stillen Durchlass (PROPOSE) haben.
-        with pytest.raises(ActionGateError):
-            ActionProposal(
-                **self._valid_kwargs(
-                    responsibility_class=ResponsibilityClass.IN_BETWEEN.value,
-                    guard_state=GUARD_PROPOSE,
-                    human_approval_required=False,
-                    reason_codes=("ACTION_PROPOSAL_ONLY",),
-                )
-            )
-
-    def test_declared_human_only_without_approval_rejected(self):
-        # HUMAN_ONLY ohne Nebenwirkung/Irreversibilität, aber als PROPOSE/ohne
-        # Freigabe deklariert → abweisen (die deklarierte Klasse bindet).
-        with pytest.raises(ActionGateError):
-            ActionProposal(
-                **self._valid_kwargs(
-                    responsibility_class=ResponsibilityClass.HUMAN_ONLY.value,
-                    guard_state=GUARD_PROPOSE,
-                    human_approval_required=False,
-                    reason_codes=("ACTION_PROPOSAL_ONLY",),
-                )
-            )
+    def test_construction_token_is_not_serialized(self):
+        assert "_builder_token" not in build().to_manifest()
 
 
 class TestVisibilityNoEscalation:
