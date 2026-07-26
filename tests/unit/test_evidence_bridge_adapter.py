@@ -240,9 +240,7 @@ class TestRegisterReach:
                 make_record(
                     source_register=register,
                     relation_type="CONTRADICTS",
-                    m5_review_pointer=(
-                        "docs/annex/RESEARCH_VALIDATION_GATE_v0_1.md#bench-001"
-                    ),
+                    m5_review_pointer=("docs/annex/RESEARCH_VALIDATION_GATE_v0_1.md#bench-001"),
                 )
             )
         message = str(excinfo.value)
