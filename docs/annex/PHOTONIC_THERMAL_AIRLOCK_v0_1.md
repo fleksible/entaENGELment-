@@ -122,7 +122,10 @@ component_claim:
   negative_path:
   raw_data_pointer:
   analysis_code_pointer:
-  receipt_type: bench | simulation      # Einordnung siehe §7
+  evidence_modality: bench | simulation # kein Receipt-Typ; Einordnung siehe §7
+  receipt_type: repo_hmac | p7_sha_chain | review_relay | status_receipt | empirical_bundle | null
+  # empirical_bundle nur für bench nach M5; andere M4-Typen belegen
+  # ausschließlich ihre Provenienz-/Kontextfunktion
   semantic_mapping: separate_bridge_record
   known_loss: []
   status: HOLD
@@ -144,8 +147,13 @@ Anspruch:
 
 Benötigt werden: Datenblatt oder Herstellungsweg, optischer Aufbau, Rohdaten,
 Kalibrierung, Wiederholungen, Temperaturabhängigkeit, Degradation, Drift und
-ein Negativpfad. Erst danach kann eine **digitale** Policy entscheiden, wie
-dieser Messwert verwendet wird.
+ein Negativpfad. Erst danach darf der Befund in M5 eingereicht und — nur bei
+dort festgestellter methodischer Eignung — über eine getrennte M1-Brücke einem
+M4-Governance-Review vorgelegt werden. Sobald daraus Claim-Status oder
+Authority folgen sollen, ist eine ausdrücklich **menschliche** Entscheidung
+Pflicht. Policy darf syntaktische Übergänge und nicht-authority-verändernde
+Verarbeitung wie Analyse oder Visualisierung steuern; sie entscheidet weder
+Bedeutung noch Claim-Wahrheit.
 
 [CONTEXT] Dieser Satz ist ein Formulierungsbeispiel für den engsten Anspruch.
 Er ist keine Messankündigung, keine Beschaffungsempfehlung und keine
@@ -153,7 +161,7 @@ Terminzusage.
 
 ## 7. Verhältnis zu den anderen Modulen
 
-**Einziger zulässiger Hauptpfad:**
+**Einziger zulässiger Hauptpfad für Claim-/Authority-Wirkung:**
 
 ```
 physischer Komponentenbefund
@@ -163,7 +171,9 @@ physischer Komponentenbefund
 ```
 
 **Nicht zulässig:** `M6 → Authority`, `M6 → menschlicher Consent`,
-`M6 → moralische Wahrheit`, `M6 → M4` direkt.
+`M6 → moralische Wahrheit`, `M6 → M4` direkt mit Claim-/Authority-Wirkung.
+Analyse, Visualisierung und andere Verarbeitung ohne Authority-Änderung dürfen
+innerhalb ihres dokumentierten Scopes policy-gesteuert bleiben.
 
 **M6 ↔ M5:** M6 liefert Komponentenbefunde; M5 prüft methodische Prüfbarkeit,
 Voraussetzungen und externe Review-Reife
@@ -172,12 +182,16 @@ der M5-Evidenzleiter höchstens `BENCH_OR_FEASIBILITY` — niemals
 `REPLICATED_EVIDENCE` allein durch Wiederholung im selben Aufbau.
 
 **M6 ↔ M4 (Receipt-Einordnung):** Dieser ANNEX führt **kein eigenes
-Receipt-Vokabular** ein. `receipt_type: bench | simulation` ordnet sich in die
-bestehende M4-Typologie ein
+Receipt-Vokabular** ein. `bench | simulation` ist ausschließlich die
+`evidence_modality`. `receipt_type` verwendet die bestehende M4-Typologie
 (`docs/annex/SYNTHBIOSIS_MODULE_ADAPTER_MAP_v0_1.md` §2.4): Ein
-Bench-Ergebnis kann dort höchstens als `empirical_bundle` mit Relation
-`SUPPORTS` oder `CONTRADICTS` erscheinen — und auch das erst **nach**
-M5-Prüfung. Ein Simulationsergebnis bleibt Simulation.
+Bench-Ergebnis kann dort höchstens **nach** M5-Prüfung als
+`empirical_bundle` mit Relation `SUPPORTS` oder `CONTRADICTS` erscheinen.
+Vor M5 und für Simulationen bleiben `repo_hmac`, `p7_sha_chain`,
+`review_relay` und `status_receipt` für genau ihre dort definierte
+Provenienz-/Kontextfunktion zulässig; `null` bedeutet, dass keine solche
+Receipt-Funktion vorliegt. Eine Simulation darf niemals `empirical_bundle`
+tragen und wird nicht durch Signatur, Status oder Review zu Empirie.
 
 **M6 ↔ ERK:** Ein Komponentenbefund kann später als `MaterialRef` mit einer
 `EvidenceRelation` in einen ERK-Flow eingehen
@@ -222,8 +236,9 @@ Sichtbare Verluste dieser reduzierten Fassung (`known_loss_required: true`):
 - Der externe Forschungspointer wurde nicht erneut aufgelöst.
 - Das `component_claim`-Schema wurde gegenüber der Quelle um
   `repetitions`, `degradation_and_drift`, `negative_path`, `known_loss` und
-  `status` ergänzt — als Strukturschärfung, nicht als neue inhaltliche
-  Anforderung; die Quelle nennt diese Punkte im Fließtext.
+  `status` ergänzt sowie um `evidence_modality` von der bestehenden
+  M4-`receipt_type`-Typologie getrennt — als Strukturschärfung, nicht als neue
+  inhaltliche Anforderung; die Quelle nennt diese Punkte im Fließtext.
 - Kein Messaufbau, keine Stückliste, kein Schaltplan, keine Rohdaten.
 
 ## 11. Exit-Semantik
