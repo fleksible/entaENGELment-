@@ -28,8 +28,9 @@ overrides:
   "sharp@<0.35.0": "0.35.3"
   "tar@<=7.5.20": "7.5.22"
 
-# brace-expansion v5 drops the callable CommonJS shape expected by the older
-# minimatch majors in electron-builder. Keep the named v5 API and restore that
-# legacy shape; the packaging glob regression test covers all four consumers.
+# brace-expansion v5 drops the callable CommonJS and default ESM shapes expected
+# by older minimatch majors in electron-builder. Keep the named v5 API and
+# restore both legacy shapes; the packaging glob regression test covers the
+# CommonJS consumers and @electron/universal's published ESM entry.
 patchedDependencies:
   brace-expansion@5.0.8: patches/brace-expansion@5.0.8.patch
