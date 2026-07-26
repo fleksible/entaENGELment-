@@ -41,7 +41,8 @@ ist beendet. Phase 2A ist damit **ELIGIBLE_FOR_SPEC**, nicht automatisch zur
 Implementierung oder Claim-Promotion freigegeben. Ein eigener Plan-first-
 Checkpoint, Negativfixtures und menschlicher Review bleiben erforderlich.
 
-[PARALLEL-HOLD] Draft-PR #319 (Grimm-IR-Mereotopologie) liegt außerhalb
+[PARALLEL-HOLD] Der offene, nicht gemergte PR #319
+(Grimm-IR-Mereotopologie) liegt außerhalb
 dieser Reconciliation und ist kein Evidence- oder Closure-Witness für die
 hier beschriebenen Moduladapter.
 

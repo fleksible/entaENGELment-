@@ -77,7 +77,8 @@ reconciliation_delta:
     boundary_array_hardening: {pull_request: 318, commit: d39b9db72dd04d6e1e2cded5a7d08287be76b9b8}
   parallel_open_work:
     pull_request: 319
-    state: draft
+    state: open_unmerged
+    moving_target: true
     relation: outside_reconciliation_scope
     authority_effect: none
 ```
@@ -91,7 +92,8 @@ reconciliation_delta:
 
 [GUARD] Dieses Delta überschreibt weder den historischen Suchscope noch die
 ursprüngliche Klassifikation. Merge-Status ist kein Authority-Upgrade.
-Draft-PR #319 verändert keine der drei Reconciliation-Zieldateien und ist
+Der offene, nicht gemergte PR #319 verändert keine der drei
+Reconciliation-Zieldateien und ist
 kein Beleg für VOID-Closure.
 
 ---
