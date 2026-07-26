@@ -124,3 +124,7 @@ The bridge is ANNEX and `PASS_CANDIDATE` only. It requires an explicit source
 frame, preserved invariants, declared loss, falsifiers, evidence references,
 and an immutable claim origin. It does not promote claims, create receipts,
 change VOIDMAP, or identify the two scale readouts.
+
+## Related Intake
+
+`docs/narratives/grimm2/GRIMM_IR_MEREOTOPOLOGY_INTAKE_v0_1.md` is an optional Grimm-IR crosswalk for projected crossings, mereotopological relations, reader actions, and protected provenance. It is not a dependency of Frame Contract v0.2 and cannot alter frame validation or collision semantics.
