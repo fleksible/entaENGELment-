@@ -292,7 +292,7 @@ export const VOIDMAP_DATA: VoidMap = {
     {
       id: 'VOID-027',
       title: 'tesser3TAKT HUD Projection Layer',
-      status: 'OPEN',
+      status: 'IN_PROGRESS',
       priority: 'high',
       owner: 'fleks',
       domain: '[COMP][META]',

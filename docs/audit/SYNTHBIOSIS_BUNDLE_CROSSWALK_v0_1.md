@@ -4,6 +4,7 @@
 **Datum:** 2026-07-21
 **Geprüftes Artefakt:** Synthbiosis Systematlas v1.1 (siehe `INBOX/INTAKE-2026-07-21-synthbiosis-system-atlas-v1_1.md`)
 **Repo-Referenz der Prüfung:** `main @ 683ea6c079d6099834a5edab44dac1a1ee87cb73`
+**Reconciliation-Referenz (append-only):** `main @ d39b9db72dd04d6e1e2cded5a7d08287be76b9b8` (2026-07-22)
 **Bundle-Referenz:** `repo_witness.ref = 29390c3d7676a050465568c15dc1caebf62718d8` (historisch)
 
 ## 0. Zweck und Grenze
@@ -58,6 +59,42 @@ erk_reference:
 [ANNEX] PR #314 ist **kein stabiler Repo-Kanon**. Alle ERK-Bezüge in diesem
 Crosswalk gelten für den genannten Head; Änderungen nach diesem Head
 benötigen einen neuen Drift-Check.
+
+### Reconciliation-Delta 2026-07-22 (append-only)
+
+[REPO-FACT] Die vorstehenden Aussagen bleiben als historischer Prüf-Witness
+unverändert. Für den aktuellen Reentry gilt zusätzlich:
+
+```yaml
+reconciliation_delta:
+  observed_main: d39b9db72dd04d6e1e2cded5a7d08287be76b9b8
+  authority_effect: none
+  merged_witnesses:
+    research_validation_gate: {pull_request: 316, commit: 51950ae53a5ae5d116129fbd7eb6049ec0077808}
+    tesser_tick_frame: {pull_request: 312, commit: a2b5ddf6c20ba268f68daf65472d62cbaf16d6a1}
+    evidence_routing_kernel: {pull_request: 314, commit: c81bb202e3b069672b284569523d9c114ba2a2f1}
+    tesser_hud: {pull_request: 304, commit: 5cd423f0c40f64e50811ee9392601fb4f99fe48c}
+    boundary_array_hardening: {pull_request: 318, commit: d39b9db72dd04d6e1e2cded5a7d08287be76b9b8}
+  parallel_open_work:
+    pull_request: 319
+    state: open_unmerged
+    moving_target: true
+    relation: outside_reconciliation_scope
+    authority_effect: none
+```
+
+| Bundle-Datei | Historische Einstufung | Aktueller Overlay-Status |
+|---|---|---|
+| 01 Dual-Format Claim Bridge | `MISSING_REPO_SAFE` | weiterhin fehlender separater Adapter; nach Merge #314 jetzt `ELIGIBLE_FOR_SPEC` |
+| 02 tesser3TAKT Transition Engine | `PRESENT_PARTIAL` | Frame/HUD-Witnesses #312/#304 gemergt; #318 härtet den Runtime-Rand; keine vollständige Engine-Closure |
+| 05 Research Validation Gate | `MISSING_REPO_SAFE` | jetzt `PRESENT_PARTIAL` als ANNEX aus #316; Runtime-Enforcement none, Humanforschung HOLD |
+| 07 Module Contracts | `MISSING_REPO_SAFE` | weiterhin kein maschinenlesbarer Gesamtvertrag; kein stiller Import |
+
+[GUARD] Dieses Delta überschreibt weder den historischen Suchscope noch die
+ursprüngliche Klassifikation. Merge-Status ist kein Authority-Upgrade.
+Der offene, nicht gemergte PR #319 verändert keine der drei
+Reconciliation-Zieldateien und ist
+kein Beleg für VOID-Closure.
 
 ---
 
