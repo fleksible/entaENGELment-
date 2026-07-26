@@ -108,7 +108,7 @@ def permission_is_documented(
     else:
         jobs = workflow.get("jobs")
         documented = jobs.get(job_name) if isinstance(jobs, dict) else None
-    return documented == permissions
+    return bool(documented == permissions)
 
 
 def action_reference_problem(uses: str) -> str | None:
