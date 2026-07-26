@@ -145,8 +145,11 @@ Er ist iterierbar und ginge sonst zeichenweise als Liste durch.
   Quell-/Digest- und M5-Pointer. So kollidieren keine anonymen oder optisch
   identischen IDs und es entstehen keine ERK-Vorschläge mit ungültiger
   Attribution.
-- **Schema-Pin:** Nur `bridge.v0.1` wird interpretiert. Zukünftige oder
-  unbekannte Versionen werden nicht still unter v0.1-Semantik umgedeutet.
+- **Schema-Pin:** Nur `bridge.v0.1` wird interpretiert. Ein externes
+  Eingabe-Mapping muss `schema_version` ausdrücklich mitsenden; die
+  Dataclass-Vorgabe gilt nur für direkte programmatische Konstruktion.
+  Unversionierte, zukünftige oder unbekannte Payloads werden nicht still unter
+  v0.1-Semantik umgedeutet.
 - **Geschlossenes Feldschema:** Unbekannte Felder im Eingabe-Mapping werden
   mit `UNKNOWN_FIELD`, fehlende Pflichtfelder mit `MISSING_REQUIRED_FIELD`
   abgelehnt. Mapping-Intake akzeptiert nur ein eingebautes `dict`, damit ein

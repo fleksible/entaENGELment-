@@ -98,7 +98,9 @@ class TestStructuralValidation:
             bridge_record_from_mapping(payload)
         assert BridgeReason.UNKNOWN_FIELD in excinfo.value.reasons
 
-    @pytest.mark.parametrize("field", ["bridge_id", "source_pointer", "known_loss"])
+    @pytest.mark.parametrize(
+        "field", ["bridge_id", "source_pointer", "known_loss", "schema_version"]
+    )
     def test_missing_mapping_fields_are_structured_errors(self, field):
         payload = dataclasses.asdict(make_record())
         del payload[field]
@@ -230,6 +232,29 @@ class TestRegisterReach:
                 )
             )
         assert BridgeReason.RELATION_NOT_ALLOWED_FOR_REGISTER in excinfo.value.reasons
+
+    @pytest.mark.parametrize("register", ["physical", "biological"])
+    def test_invalid_gated_relation_names_complete_allowed_vocabulary(self, register):
+        with pytest.raises(BridgeAdapterError) as excinfo:
+            validate_bridge_record(
+                make_record(
+                    source_register=register,
+                    relation_type="CONTRADICTS",
+                    m5_review_pointer=(
+                        "docs/annex/RESEARCH_VALIDATION_GATE_v0_1.md#bench-001"
+                    ),
+                )
+            )
+        message = str(excinfo.value)
+        for relation in (
+            "CONTEXTUALIZES",
+            "MOTIVATES",
+            "PROVENANCE_ONLY",
+            "SUPPORTS",
+            "MEASURES",
+            "IMPLEMENTS",
+        ):
+            assert relation in message
 
     @pytest.mark.parametrize("register", ["formal", "governance"])
     def test_deferred_registers_name_their_opening_condition(self, register):

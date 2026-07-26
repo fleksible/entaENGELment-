@@ -418,13 +418,13 @@ def _validate_register_reach(record: BridgeRecord) -> None:
     eine Entscheidung: Der Aufrufer sagte ``MEASURES``. Die Korrektur ist ein
     neuer, ausdrücklich anders lautender Record — von einem Menschen.
     """
+    allowed = _REGISTER_ALLOWED_RELATIONS[record.source_register]
     hint = (
-        f"Zulässig sind hier {sorted(CONTEXT_ONLY_RELATIONS)}. Der Adapter stuft "
+        f"Zulässig sind hier {sorted(allowed)}. Der Adapter stuft "
         "nicht selbst ab; ein Mensch kann einen neuen Record mit ausdrücklich "
         "diesem Relationstyp einreichen."
     )
 
-    allowed = _REGISTER_ALLOWED_RELATIONS[record.source_register]
     if record.relation_type not in allowed:
         if (
             record.relation_type in PROMOTION_CAPABLE_RELATION_TYPES
@@ -659,6 +659,10 @@ def bridge_record_from_mapping(payload: Mapping[str, Any]) -> BridgeRecord:
         for item in fields(BridgeRecord)
         if item.default is MISSING and item.default_factory is MISSING
     }
+    # Programmatic construction may use the dataclass default, but external
+    # JSON-shaped input must declare its semantics explicitly. Otherwise an
+    # unversioned payload would be interpreted silently as bridge.v0.1.
+    required.add("schema_version")
     missing = required - set(payload)
     if missing:
         raise BridgeAdapterError(
