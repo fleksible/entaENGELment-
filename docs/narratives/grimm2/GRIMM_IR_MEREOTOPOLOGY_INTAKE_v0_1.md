@@ -52,6 +52,7 @@ interface GrimmSourceRef {
   sourcePointer: string | null;
   authorityStatus: 'repo-local' | 'external-unverified' | 'derived';
   sourceVisibility: 'public-safe' | 'protected-origin';
+  publicReconstructionAllowed: boolean;
 }
 
 interface GrimmIRNode {
@@ -71,6 +72,7 @@ interface GrimmIREdge {
   crossing: CrossingStatus;
   guard: string;
   reentryQuestion: string;
+  provenance: GrimmSourceRef;
   transitionPairId?: string;
 }
 ```
@@ -87,6 +89,8 @@ interface GrimmIREdge {
 | `TPP` | tangential proper part | contained and touching the container boundary |
 | `NTPP` | non-tangential proper part | contained without touching the container boundary |
 | `EQ` | equal region/state description | narrative equality alone is not a collision witness |
+
+This v0.1 grammar is an ordered six-label profile, not a complete RCC8 serialization. RCC8 also distinguishes the inverse proper-part relations `TPPi` and `NTPPi`. Grimm-IR expresses those inverse readings by swapping the ordered source and target endpoints. `EdgeDirection` remains traversal metadata; it is not a substitute for an RCC inverse relation.
 
 Crossing status is orthogonal to the relation:
 
@@ -126,7 +130,9 @@ These actions do not diagnose the reader, infer private states, or promote a cla
 
 Protected personal material may contribute only a non-reconstructable structural note. The public form records that a boundary, detour, or translation pressure existed; it does not store identifying events, names, quotations, or a reverse path to the origin.
 
-For `sourceVisibility: protected-origin`, `publicReconstructionAllowed` must be `false` in fixtures and later implementations.
+For `sourceVisibility: protected-origin`, `sourcePointer` must be `null` and `publicReconstructionAllowed` must be `false`. The versioned fixture and nested object shapes are closed, so a protected fixture cannot add an undeclared sibling field as a second disclosure channel.
+
+The validator enforces only this structural protocol. It cannot establish that permitted prose is semantically anonymous or resistant to re-identification. Content-level privacy review remains a human HOLD before publication or runtime promotion.
 
 ## 8. Limited motif roles
 
@@ -147,12 +153,13 @@ Each motif remains subject to its source form, limited role, guard, and reentry 
 
 The companion fixture bundle contains exactly six qualitative counterexamples, one for each relation. The read-only validator checks:
 
-1. complete relation coverage;
+1. exact ANNEX/SPEC-WIP authority metadata and complete relation coverage;
 2. collision isolation to an exact frame witness;
-3. non-reconstructability of protected origins;
+3. the closed structural protocol for protected origins;
 4. plain-language guards and reentry questions;
 5. colorless and static fallbacks;
-6. the four reader actions and a 320 CSS-pixel content contract.
+6. the four reader actions and a 320 CSS-pixel content contract;
+7. duplicate JSON keys, closed versioned object shapes, and malformed JSON value types.
 
 If a proposed edge type changes neither validation, reader rollback, nor provenance clarity, it is decoration and is not promoted.
 

@@ -112,6 +112,19 @@ Each boundary pair must contain exactly one ordered `EXIT` and one `ENTRY`, use 
 
 JSON and transport inputs must enter through `validateTesserTickFrame`. The runtime validator checks the complete serialized shape, requires every transition to name `GLOBAL_REENTRY_LATTICE`, verifies the EXIT/ENTRY pair invariant, rejects a supplied `collisionProxy` that disagrees with the state IDs, and enforces the `digest`/`digestStatus` relation. TypeScript annotations alone are not an input boundary.
 
+## Micro→Meso Bridge v0.1
+
+The first bounded scale bridge is documented in
+`docs/annex/MICRO_MESO_BRIDGE_v0_1.md` and implemented by
+`ui-app/lib/tesser3takt-bridge.ts`. It maps validated, ordered
+`BoundaryTransition` pairs from `MICRO / TRAVERSAL_CELL` to a derived
+`MESO / TRAVERSAL_SLICE` trace.
+
+The bridge is ANNEX and `PASS_CANDIDATE` only. It requires an explicit source
+frame, preserved invariants, declared loss, falsifiers, evidence references,
+and an immutable claim origin. It does not promote claims, create receipts,
+change VOIDMAP, or identify the two scale readouts.
+
 ## Related Intake
 
 `docs/narratives/grimm2/GRIMM_IR_MEREOTOPOLOGY_INTAKE_v0_1.md` is an optional Grimm-IR crosswalk for projected crossings, mereotopological relations, reader actions, and protected provenance. It is not a dependency of Frame Contract v0.2 and cannot alter frame validation or collision semantics.

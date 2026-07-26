@@ -1,14 +1,16 @@
 # Grimm-IR Mereotopology Intake Validation
 
-**Date:** 2026-07-22  
+**Original date:** 2026-07-22  
+**Validation refresh:** 2026-07-26  
 **Status:** `[ANNEX]` `[FACT]`  
-**Scope:** read-only fixture and documentation validation
+**Scope:** read-only fixture and documentation validation  
+**Input snapshot:** PR #319 head `23b72e8`, reconciled with `main@586fc7a`
 
 ## Outcome
 
-PASS for ANNEX intake. Runtime promotion remains HOLD.
+The hardened ANNEX intake candidate passes the targeted local validator, negative mutation suite, bytecode compilation, Ruff, and Black checks listed below.
 
-The bundle adds no UI surface and therefore makes no claim that an actual Grimm-IR view has rendered successfully on a phone. It establishes the content and accessibility contract that such a surface must satisfy.
+PR merge and runtime promotion remain HOLD until the candidate is committed, GitHub CI completes on that exact remote head, and a human confirms the content-level protected-origin boundary. No Grimm-IR runtime surface exists in this change, so no phone rendering or interaction claim is made.
 
 ## Commands
 
@@ -17,7 +19,7 @@ python tools/validate_grimm_mereotopology_fixtures.py
 PASS: 6 Grimm-IR mereotopology fixtures satisfy the intake invariants
 
 python -m unittest discover -s tests/unit -p 'test_grimm_mereotopology_fixtures.py' -v
-Ran 7 tests in 0.001s
+Ran 23 tests in 0.026s
 OK
 
 python -m py_compile tools/validate_grimm_mereotopology_fixtures.py tests/unit/test_grimm_mereotopology_fixtures.py
@@ -28,34 +30,63 @@ All checks passed!
 
 black --check tools/validate_grimm_mereotopology_fixtures.py tests/unit/test_grimm_mereotopology_fixtures.py
 2 files would be left unchanged.
+
+mypy tools/validate_grimm_mereotopology_fixtures.py
+Success: no issues found in 1 source file
+
+make verify
+475 passed, 104 warnings, 165 subtests passed
+Core verify membrane passed
+
+make verify-governance
+14 workflow(s) meet the posture contract
+22 VOIDs in sync between VOIDMAP.yml and UI mirror
+Governance membrane checked
 ```
+
+`make verify-js` was attempted with a frozen lockfile and a writable temporary pnpm/XDG store. Installation stopped at pnpm's `ERR_PNPM_IGNORED_BUILDS` for `electron-winstaller@5.4.0` and `unrs-resolver@1.12.2`. The same failure reproduces on an unmodified detached `main@586fc7a` worktree, so it is recorded as a pre-existing JS-workspace/environment HOLD rather than a PASS or a regression caused by this Python/docs patch. GitHub workflow results on the committed head remain the remote integration receipt.
 
 ## Validation matrix
 
 | Gate | Result | Evidence / limit |
 |---|---|---|
-| six qualitative relations | PASS | exactly one fixture each for `DC`, `EC`, `PO`, `TPP`, `NTPP`, and `EQ` |
-| collision semantics | PASS | `PROJECTED`, `OVER`, `UNDER`, and `TOUCH` fixtures are non-colliding; only the explicit equal-State-ID frame witness is true |
-| production boundary | PASS | Grimm-IR may reference `transitionPairId` but cannot replace frame validation |
-| plain language | PASS | every fixture has a short German reading, guard, and reentry question |
-| reader reversibility | PASS | every fixture exposes `ACCEPT`, `REVISE`, `REJECT`, and `SILENCE` |
-| colorless reading | PASS at contract level | relation label, line pattern, arrow, and static fallback remain; color is never required for meaning |
-| reduced motion | PASS at contract level | motion is never required for meaning; all fixtures specify a static fallback |
-| protected provenance | PASS | protected origin has no source pointer and explicitly forbids public reconstruction |
-| 320 CSS-pixel content order | PASS at contract level | minimum width and deterministic narrow reading order are validated |
-| actual 320 CSS-pixel Grimm rendering | HOLD | no Grimm-IR runtime surface exists in this change; screenshot and interaction inspection are required before runtime promotion |
+| authority metadata | PASS locally | bundle must remain exactly `[ANNEX]` and `[SPEC-WIP]` |
+| six qualitative relations | PASS locally | exactly one fixture each for `DC`, `EC`, `PO`, `TPP`, `NTPP`, and `EQ` |
+| JSON input totality | PASS locally | scalar roots, malformed nested values, arrays, objects, and unhashable-shaped JSON members return errors without traceback |
+| duplicate JSON names | PASS locally | duplicate member names are rejected during loading rather than accepted with last-key-wins behavior |
+| closed versioned shapes | PASS locally | unknown bundle, fixture, provenance, visual, reader, and frame fields are rejected |
+| collision semantics | PASS locally | non-exact crossings reject frame-owned witness fields; only the canonical equal-State-ID witness is colliding |
+| transition reference boundary | PASS locally | a non-exact edge may retain `transitionPairId`, but cannot introduce frame witness semantics |
+| provenance vocabulary | PASS locally | authority and visibility values use closed enums; pointer and reconstruction flag types are checked |
+| protected-origin structural protocol | PASS locally | protected origin requires `sourcePointer: null`, `publicReconstructionAllowed: false`, and no undeclared disclosure field |
+| protected-origin content privacy | HOLD | structural validation cannot establish semantic anonymity or resistance to re-identification; human review required |
+| reader reversibility | PASS locally | every fixture exposes `ACCEPT`, `REVISE`, `REJECT`, and `SILENCE` |
+| colorless and reduced-motion contract | PASS locally | labels, line patterns, arrows, and static fallbacks remain; color and motion are not required |
+| actual 320 CSS-pixel Grimm rendering | HOLD | no Grimm-IR runtime surface exists; screenshot and interaction inspection are required before runtime promotion |
 
-## Counterexample check
+## Negative mutation coverage
 
-The test suite mutates the projected `DC` fixture to request `collisionProxy: true`. The validator rejects it because screen-space projection is not `EXACT_STATE_ID` evidence.
+The suite now checks:
+
+- every JSON scalar and array root class;
+- malformed `invariants`, fixture, provenance, visual, reader, and frame objects;
+- null, scalar, object, unhashable-shaped, duplicate, incomplete, and invented set members;
+- invalid relation, crossing, direction, authority, and visibility values;
+- populated protected pointers, invalid reconstruction flags, and sibling shadow fields;
+- each forbidden non-exact frame witness field independently;
+- non-string, blank, padded, and unequal exact State IDs;
+- duplicate JSON keys at the root and nested levels;
+- attempted ANNEX/SPEC-WIP authority relabelling.
+
+The positive counterexample also preserves an optional non-exact `transitionPairId`, preventing the hardening from silently narrowing the documented frame-reference boundary.
 
 ## Repository boundary
 
-This change is limited to:
+This change remains limited to:
 
 - `docs/narratives/grimm2/`;
-- a local pointer in `docs/tesser3takt/README.md`;
-- a read-only validator under `tools/`;
+- the additive local pointer in `docs/tesser3takt/README.md`, reconciled with the newer Micro→Meso section on `main`;
+- the read-only validator under `tools/`;
 - unit tests under `tests/unit/`;
 - this audit note.
 
