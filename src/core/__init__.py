@@ -19,6 +19,15 @@ from .action_gate import (
     ResponsibilityClass,
     build_action_proposal,
 )
+from .evidence_bridge_adapter import (
+    BridgeAdapterError,
+    BridgeContext,
+    BridgeReason,
+    BridgeRecord,
+    BridgeTranslation,
+    translate_bridge_record,
+    validate_bridge_record,
+)
 from .evidence_routing import (
     ClaimCandidate,
     ClaimPolicy,
@@ -82,4 +91,12 @@ __all__ = [
     "ActionReasonCode",
     "ActionGateError",
     "build_action_proposal",
+    # Dual-Format Claim Bridge Adapter v0.1 (M1 -> ERK)
+    "BridgeRecord",
+    "BridgeTranslation",
+    "BridgeContext",
+    "BridgeReason",
+    "BridgeAdapterError",
+    "validate_bridge_record",
+    "translate_bridge_record",
 ]
