@@ -168,6 +168,23 @@ class ActionReasonCode(str, Enum):
 _KNOWN_ACTION_REASON_CODES = frozenset(code.value for code in ActionReasonCode)
 _KNOWN_RESPONSIBILITY_CLASSES = frozenset(rc.value for rc in ResponsibilityClass)
 
+# Reason-Codes, die im Builder immer ``hold()`` auslösen. Trägt ein Manifest
+# einen davon, muss es HOLD + menschliche Freigabe sein — sonst würde ein direkt/
+# deserialisiert gebautes Manifest eine vom Builder fail-closed abgelehnte Eingabe
+# als PROPOSE ausweisen und so am Gate vorbei geroutet werden.
+_HOLD_IMPLYING_REASON_CODES = frozenset(
+    {
+        ActionReasonCode.REGISTRY_UNKNOWN.value,
+        ActionReasonCode.VERSION_UNVERIFIABLE.value,
+        ActionReasonCode.SOURCE_UNVERIFIED.value,
+        ActionReasonCode.NETWORK_REQUIRED.value,
+        ActionReasonCode.FILESYSTEM_EFFECT.value,
+        ActionReasonCode.PROCESS_EFFECT.value,
+        ActionReasonCode.IRREVERSIBLE_EFFECT.value,
+        ActionReasonCode.UNTRUSTED_SOURCE_MATERIAL.value,
+    }
+)
+
 
 class ActionGateError(ValueError):
     """Fail-closed Fehler des Action-Gate mit kontrollierten Reason-Codes."""
@@ -261,6 +278,17 @@ class ActionProposal:
         has_human_code = ActionReasonCode.HUMAN_APPROVAL_REQUIRED.value in self.reason_codes
         if has_human_code != self.human_approval_required:
             raise ActionGateError("human_approval_required flag inconsistent with reason codes")
+
+        # Ein HOLD-auslösender Reason-Code bindet den Gate-Zustand: das Manifest
+        # muss HOLD + Freigabe tragen. So kann kein direkt/deserialisiert
+        # gebautes Manifest einen vom Builder abgelehnten Grund als PROPOSE führen.
+        if any(code in _HOLD_IMPLYING_REASON_CODES for code in self.reason_codes):
+            if self.guard_state != GUARD_HOLD:
+                raise ActionGateError("proposal carrying a HOLD-implying reason code must be HOLD")
+            if not self.human_approval_required:
+                raise ActionGateError(
+                    "proposal carrying a HOLD-implying reason code must require human approval"
+                )
 
         # Invarianz-Kohärenz (keine Neuberechnung der vollen Ladder): eine reale
         # Nebenwirkung oder Irreversibilität MUSS HOLD + HUMAN_ONLY + menschliche

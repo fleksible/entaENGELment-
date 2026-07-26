@@ -397,6 +397,22 @@ class TestPostInitValidation:
                 )
             )
 
+    def test_hold_implying_reason_code_with_propose_rejected(self):
+        # REGISTRY_UNKNOWN etc. sind Builder-HOLD-Gründe; PROPOSE damit inkohärent.
+        with pytest.raises(ActionGateError):
+            ActionProposal(
+                **self._valid_kwargs(
+                    guard_state=GUARD_PROPOSE,
+                    responsibility_class=ResponsibilityClass.COMPUTATIONAL.value,
+                    human_approval_required=False,
+                    reason_codes=(
+                        "REGISTRY_UNKNOWN",
+                        "VERSION_UNVERIFIABLE",
+                        "SOURCE_UNVERIFIED",
+                    ),
+                )
+            )
+
     def test_declared_in_between_as_propose_rejected(self):
         # IN_BETWEEN ist unaufgelöst und darf nie stillen Durchlass (PROPOSE) haben.
         with pytest.raises(ActionGateError):
