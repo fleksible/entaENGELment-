@@ -6,7 +6,8 @@ A practical quickstart for newcomers to the entaENGELment Framework.
 
 ## What is this?
 
-**entaENGELment** is a hardened kernel for embodied human-AI interaction with physically-enforced resonance. It provides:
+**entaENGELment** is an experimental kernel for embodied human-AI interaction
+with physically inspired resonance models. It provides:
 
 - **Stability analysis** via Hessian eigenvalue classification
 - **Consent-gated actions** with cryptographic audit trails
@@ -34,7 +35,8 @@ pip install -e ".[dev]"
 pytest
 ```
 
-Expected output: `76 passed` (or more as the project grows).
+Expected output: the test run finishes without failures. The exact count grows
+with the project and is not a release guarantee.
 
 ---
 

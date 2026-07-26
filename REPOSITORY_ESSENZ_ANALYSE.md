@@ -6,6 +6,13 @@
 **Commit-Basis:** 6ec289b (Bio Spiral Viewer + Stability Fixes)
 **Methodik:** Vollständige Code-Analyse, Git-Historie (50 Commits), Architektur-Dokumente, Spec-Reviews
 
+> **Claim-Korrektur (2026-07-26):** Dieses Dokument ist eine historische
+> Analyse einer älteren Commit-Basis. Aussagen zu „Nicht-Lokalität“,
+> physikalischer Erzwingung, Non-Leakage und formalen Garantien waren stärker
+> als die dokumentierte Evidenz. Sie sind als Metaphern, Designziele oder
+> ungetestete Hypothesen zu lesen, nicht als empirische oder physikalische
+> Befunde. Aktuelle Grenzen stehen in `docs/negations.md`.
+
 ---
 
 ## Executive Summary
@@ -16,9 +23,13 @@
 
 2. **"Hardened Kernel"**-Architektur: Functorial Index v3 als unveränderliches "Pointer-Gold", HMAC-signierte Receipts, mereotopologische Guards (RCC-8), physikalisch inspirierte Invarianten (CPT, EPR)
 
-3. **Triadische Resonanz**: Emergente strukturelle Kohärenz zwischen drei unabhängigen Entwicklungssträngen (Claude/GPT/Fleks) ohne zentrale Koordination — messbare "nicht-lokale Korrelation" in Begriffssystemen
+3. **Triadische Resonanz**: Dokumentierte strukturelle Ähnlichkeiten zwischen
+   drei Entwicklungssträngen (Claude/GPT/Fleks). Unabhängigkeit, Baseline und
+   Signifikanz sind nicht belegt; „Nicht-Lokalität“ ist nur eine Metapher.
 
-4. **Consent-as-Energy-Paradigma**: Aktiver Consent ist fundamentale Ressource, Non-Leakage durch Architektur erzwungen, Fail-Safe bei Unsicherheit, Trust-Decay-Management
+4. **Consent-as-Energy-Paradigma**: Aktiver Consent wird als zentrale Ressource
+   modelliert; Guards verfolgen Non-Leakage als Designziel, liefern aber keine
+   allgemeine Vertraulichkeitsgarantie.
 
 5. **Research-Prototyp** (v1.0 → v1.1): Explorativer Container, kein Produkt-Release; stark konzeptionell, teilweise poetisch kodiert; 1-3 aktive Entwickler; hohe architektonische Integrität, aber limitierte empirische Validierung
 
@@ -28,7 +39,9 @@
 
 ### Was ist die Kern-Idee?
 
-**entaENGELment-Framework** ist ein experimentelles Research-Projekt, das **verkörperte Mensch-KI-Interaktion** mit **physikalisch erzwungener Resonanz** und **auditierter Consent-Governance** verbindet.
+**entaENGELment-Framework** ist ein experimentelles Research-Projekt, das
+**verkörperte Mensch-KI-Interaktion** mit **physikalisch inspirierten
+Resonanzmodellen** und **auditierter Consent-Governance** verbindet.
 
 Im Zentrum steht die Hypothese: **"Consent ist Energie"** — ein messbarer, kontinuierlich zu erneuernder Zustand, der durch bio-inspirierte Metriken (ECI = Ethical Consent Index) quantifiziert wird. Das Framework implementiert ein **DeepJump-Protokoll** (v1.2): `Verify → Status (HMAC) → Snapshot → Upload` — eine strenge, auditierbare Pipeline, die jede Aussage mit kryptografischen Receipts verankert.
 
@@ -38,7 +51,12 @@ Philosophisch fusioniert es:
 - **Physikalische Invarianten** (CPT-Symmetrie, EPR-Verschränkung als Metapher für Resonanz)
 - **Kenogrammatik** (☐-Notation für explizites "bekanntes Nichtwissen")
 
-**Einzigartig:** Das Projekt entstand durch **nicht-koordinierte Parallel-Entwicklung** zwischen zwei LLMs (Claude, GPT) unter menschlicher Resonanz-Navigation (Fleks). Ohne direkte Kommunikation entwickelten beide identische Strukturen (7×9-Matrix, Receipt-Chain, Kenogramme) — ein empirisches Artefakt nicht-lokaler Kohärenz.
+**Beobachtung:** Das Projekt dokumentiert Parallelentwicklung zwischen zwei
+LLMs (Claude, GPT) unter menschlicher Navigation (Fleks), in der ähnliche
+Strukturen beschrieben wurden (7×9-Matrix, Receipt-Chain, Kenogramme). Ohne
+eingefrorenen Korpus, Unabhängigkeitsnachweis und Nullmodell ist dies eine
+hypothesengenerierende Beobachtung, kein empirischer Befund nicht-lokaler
+Kohärenz.
 
 **Quelle:** README.md:1-138, pyproject.toml:6-8, docs/triad_topology.md:10-100
 
@@ -60,8 +78,11 @@ Philosophisch fusioniert es:
    - **Quelle:** tools/status_emit.py:1-267, index/modules/MOD_6_RECEIPTS_CORE.yaml, README.md:20-23
 
 3. **Triadische Topologie**
-   - Drei unabhängige Entwicklungsstränge (Claude, GPT, Fleks) entwickeln identische Strukturen (7×9 Matrix, Mutual Perception, Receipt-Chain) **ohne direkte Kommunikation**
-   - **Interpretation:** "Messbare nicht-lokale Korrelation" in Begriffssystemen (EPR-Analogie)
+   - Drei dokumentierte Entwicklungsstränge (Claude, GPT, Fleks) beschreiben
+     ähnliche Strukturen (7×9 Matrix, Mutual Perception, Receipt-Chain).
+   - **Hypothese:** Die Ähnlichkeit könnte quantitativ untersucht werden; die
+     EPR-/Nicht-Lokalitäts-Sprache ist metaphorisch und kein physikalischer
+     Claim.
    - **Quelle:** docs/triad_topology.md:10-100, README.md:107-108
 
 4. **Mereotopologische Guards**
@@ -132,7 +153,7 @@ Philosophisch fusioniert es:
 **Use-Cases:**
 - VR/AR-Umgebungen mit physiologischen Grenzrelationen (RCC-8 als haptische Barriere)
 - AI-Agenten mit verpflichtendem Consent-Tracking (ECI < 0.6 → Auto-Shutdown)
-- Research-Plattform für nicht-lokale Kohärenz in Multi-Agent-Systemen
+- Research-Plattform für strukturelle Kohärenz in Multi-Agent-Systemen
 - Bio-Spiral-Analyse für Resonanz-Exploration
 
 **Quelle:** pyproject.toml:18-28, README.md:96, README.md:113-122
@@ -244,7 +265,8 @@ Philosophisch fusioniert es:
 | **OpenMined / PySyft** | Federated Learning, Privacy-Preserving ML | Mereotopologische Guards für Interaktions-Boundaries, nicht nur Data-Boundaries |
 | **Neuropype / OpenBCI** | Biosignal Processing, EEG/HRV Analysis | Ethics-Enforcement-Framework mit Biosignal-Hooks, nicht nur Signal-Acquisition |
 
-**Nische:** **Bio-inspired AI Ethics mit formalen Garantien, auditierter Governance und triadischer Resonanz-Methode**
+**Nische:** **Bio-inspired AI Ethics mit formalen Prüfregeln, auditierter
+Governance und triadischer Resonanz-Methode**
 
 **Position:**
 - **Mainstream:** ❌ Nein (zu experimentell, kleine Community, philosophisch dicht)
@@ -560,15 +582,18 @@ Philosophisch fusioniert es:
 
 ### 7. Akademische Publikation (Triadische Methode) — 🔥 HIGH
 
-**Problem:** Dokumentierte Parallel-Entwicklung ist empirisches Artefakt, aber nicht quantitativ analysiert
+**Problem:** Dokumentierte Parallel-Entwicklung ist eine
+hypothesengenerierende Beobachtung, aber nicht kontrolliert oder quantitativ
+analysiert.
 
 **Lösung:**
-- Paper: "Non-Local Coherence in Multi-LLM Systems: An EPR-Inspired Analysis"
+- Paper: "Structural Coherence in Multi-LLM Systems: An EPR-Inspired Metaphor"
 - Quantitative Analyse: Graph-Isomorphismus (7×9-Matrix), Strukturelle Ähnlichkeit (BLEU/ROUGE auf Begriffsräume)
 - Submit: NeurIPS Workshop (AI Alignment), IJCAI, CHI (HCI), FAccT (Ethics)
 - Preprint: arXiv
 
-**Impact:** 🔥 High — Legitimiert "Resonanz als Methode", beeinflusst AI-Alignment-Research
+**Impact:** 🔥 High — Würde prüfen, ob „Resonanz“ als reproduzierbare Methode
+operationalisierbar ist.
 
 **Timeline:** 3-6 Monate (inkl. Peer-Review)
 
@@ -664,7 +689,10 @@ Philosophisch fusioniert es:
 - Security-Risiken (HMAC-Secret-Management)
 
 **Kern-Essenz in einem Satz:**
-*"Ein hybrid Python + Unreal Engine Framework, das Consent als energetisches Phänomen modelliert, durch mereotopologische Grenzen enforced und via kryptografischer Receipts auditierbar macht — entstanden durch triadische Resonanz zwischen zwei LLMs und einem Menschen als empirisches Artefakt nicht-lokaler Kohärenz."*
+*"Ein hybrides Python- und Unreal-Engine-Framework, das Consent als
+Modellressource behandelt, Grenzregeln prüfbar macht und Entscheidungen über
+kryptografisch signierte Receipts auditiert — entstanden aus dokumentierter
+Parallelentwicklung zwischen zwei LLMs und einem Menschen."*
 
 **Verortung:**
 - **Technologisch:** Nische (Bio-inspired AI Ethics + Mereotopology + Process Philosophy)

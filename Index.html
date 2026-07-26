@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <!-- Content-Security-Policy: restrict script origins to self + the two pinned
        CDNs (see SRI hashes on the <script> tags below), forbid plugins/base-uri
-       and block remote connections. Combined with the hardened Electron
-       webPreferences (nodeIntegration:false, contextIsolation:true,
-       sandbox:true) this closes the remote-code-execution surface even if a
-       CDN were compromised. -->
+       and limit remote connections. Together with Electron isolation settings,
+       this reduces exposure but does not prove RCE closure: 'unsafe-inline'
+       remains enabled and every allowed script origin stays in the trust
+       boundary. -->
   <meta http-equiv="Content-Security-Policy"
         content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'">
   <title>Fraktale Explorer mit Chaos-Klang-Turing-Maschine</title>
@@ -1247,5 +1247,4 @@
   </script>
 </body>
 </html>
-
 
