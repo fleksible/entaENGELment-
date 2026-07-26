@@ -341,9 +341,7 @@ def test_bracketed_job_wide_secret_is_rejected(tmp_path: Path) -> None:
 def test_whole_context_job_wide_secret_is_rejected(tmp_path: Path) -> None:
     body = GOOD_READ_ONLY.replace(
         "runs-on: ubuntu-latest",
-        "env:\n"
-        "      ALL_SECRETS: ${{ toJSON(secrets) }}\n"
-        "    runs-on: ubuntu-latest",
+        "env:\n" "      ALL_SECRETS: ${{ toJSON(secrets) }}\n" "    runs-on: ubuntu-latest",
     )
     _make_workflow(tmp_path, "ci.yml", body)
     _make_map(tmp_path, "# map\n")

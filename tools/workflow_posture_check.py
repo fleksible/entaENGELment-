@@ -76,8 +76,7 @@ def masks_shell_failure(script: object) -> bool:
     if not isinstance(script, str):
         return False
     return any(
-        re.search(r"\|\|\s*true(?:\s*(?:[;&|]|#)|\s*$)", line)
-        for line in script.splitlines()
+        re.search(r"\|\|\s*true(?:\s*(?:[;&|]|#)|\s*$)", line) for line in script.splitlines()
     )
 
 
