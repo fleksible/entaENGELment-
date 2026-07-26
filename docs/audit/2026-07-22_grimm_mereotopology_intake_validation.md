@@ -5,12 +5,13 @@
 **Status:** `[ANNEX]` `[FACT]`  
 **Scope:** read-only fixture and documentation validation  
 **Input snapshot:** PR #319 head `23b72e8`, reconciled with `main@586fc7a`
+**Validated code tree:** `f9e56c3`
 
 ## Outcome
 
-The hardened ANNEX intake candidate passes the targeted local validator, negative mutation suite, bytecode compilation, Ruff, and Black checks listed below.
+The committed ANNEX intake code tree `f9e56c3` passes the targeted local validator, negative mutation suite, bytecode compilation, Ruff, Black, full core verifier, governance verifier, and all seven GitHub pull-request workflows.
 
-PR merge and runtime promotion remain HOLD until the candidate is committed, GitHub CI completes on that exact remote head, and a human confirms the content-level protected-origin boundary. No Grimm-IR runtime surface exists in this change, so no phone rendering or interaction claim is made.
+PR merge remains HOLD until a human confirms the content-level protected-origin boundary and re-reviews the remaining open threads. Runtime promotion remains HOLD. No Grimm-IR runtime surface exists in this change, so no phone rendering or interaction claim is made.
 
 ## Commands
 
@@ -42,9 +43,13 @@ make verify-governance
 14 workflow(s) meet the posture contract
 22 VOIDs in sync between VOIDMAP.yml and UI mirror
 Governance membrane checked
+
+GitHub workflows on f9e56c3
+CI Pipeline, Policy Lint, Metatron Guard, Smoke Tests, Tests,
+DeepJump CI, and Python Quality: success
 ```
 
-`make verify-js` was attempted with a frozen lockfile and a writable temporary pnpm/XDG store. Installation stopped at pnpm's `ERR_PNPM_IGNORED_BUILDS` for `electron-winstaller@5.4.0` and `unrs-resolver@1.12.2`. The same failure reproduces on an unmodified detached `main@586fc7a` worktree, so it is recorded as a pre-existing JS-workspace/environment HOLD rather than a PASS or a regression caused by this Python/docs patch. GitHub workflow results on the committed head remain the remote integration receipt.
+`make verify-js` was attempted with a frozen lockfile and a writable temporary pnpm/XDG store. Installation stopped at pnpm's `ERR_PNPM_IGNORED_BUILDS` for `electron-winstaller@5.4.0` and `unrs-resolver@1.12.2`. The same failure reproduces on an unmodified detached `main@586fc7a` worktree, so it is recorded as a pre-existing JS-workspace/environment HOLD rather than a PASS or a regression caused by this Python/docs patch. The seven successful GitHub workflows on `f9e56c3` are the remote integration receipt for the validated code tree.
 
 ## Validation matrix
 
