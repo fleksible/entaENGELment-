@@ -51,7 +51,11 @@ jobs:
   deepjump-audit:
     needs: verify-lint
     uses: ./.github/workflows/deepjump-audit.reusable.yml
-    secrets: inherit
+    secrets:
+      # Never pass the signing key into pull-request execution. Fork and
+      # dependency PRs receive no repository secrets; this also keeps
+      # same-repository PR verification on the unsigned path by construction.
+      ENTA_HMAC_SECRET: ${{ secrets[github.event_name == 'pull_request' && 'UNAVAILABLE_ON_PULL_REQUESTS' || 'ENTA_HMAC_SECRET'] }}
     with:
       python-version: "3.11"
       # Pull requests may not have access to ENTA_HMAC_SECRET. Keep PR verification

@@ -31,8 +31,6 @@ concurrency:
 jobs:
   deepjump-audit:
     runs-on: ubuntu-latest
-    env:
-      ENTA_HMAC_SECRET: ${{ secrets.ENTA_HMAC_SECRET }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -49,6 +47,8 @@ jobs:
 
       - name: Mask HMAC secret
         shell: bash
+        env:
+          ENTA_HMAC_SECRET: ${{ secrets.ENTA_HMAC_SECRET }}
         run: |
           if [ -n "${ENTA_HMAC_SECRET:-}" ]; then
             echo "::add-mask::$ENTA_HMAC_SECRET"
@@ -57,22 +57,22 @@ jobs:
       - name: Check HMAC availability
         id: hmac
         shell: bash
+        env:
+          ALLOW_UNSIGNED_STATUS_SKIP: ${{ inputs.allow-unsigned-status-skip }}
+          ENTA_HMAC_SECRET: ${{ secrets.ENTA_HMAC_SECRET }}
         run: |
-          # Graceful degradation: when the signing key is configured we emit and
-          # verify a signed status; when it is absent we skip ONLY the signing
-          # step (with a warning) instead of failing the whole audit. All
-          # verification phases below (pointers, receipts, claims, tests,
-          # snapshot, verify-json) always run and still gate the job.
           if [ -n "${ENTA_HMAC_SECRET:-}" ]; then
             echo "available=true" >> "$GITHUB_OUTPUT"
             echo "skip_allowed=false" >> "$GITHUB_OUTPUT"
           else
             echo "available=false" >> "$GITHUB_OUTPUT"
-            echo "skip_allowed=true" >> "$GITHUB_OUTPUT"
-            if [ "${{ inputs.allow-unsigned-status-skip }}" = "true" ]; then
+            if [ "$ALLOW_UNSIGNED_STATUS_SKIP" = "true" ]; then
+              echo "skip_allowed=true" >> "$GITHUB_OUTPUT"
               echo "::notice title=DeepJump HMAC skipped::Signing key unavailable in dependency/fork PR context; signed status skipped."
             else
-              echo "::warning title=DeepJump HMAC skipped::ENTA_HMAC_SECRET not configured; signed status emit/verify skipped. Add the repo secret to re-enable signing. Verification phases still ran."
+              echo "skip_allowed=false" >> "$GITHUB_OUTPUT"
+              echo "::error title=DeepJump HMAC required::ENTA_HMAC_SECRET is unavailable in a trusted run; refusing an unsigned status."
+              exit 1
             fi
           fi
 
@@ -90,6 +90,8 @@ jobs:
 
       - name: "Phase 2: Emit & Verify Status"
         if: ${{ steps.hmac.outputs.available == 'true' }}
+        env:
+          ENTA_HMAC_SECRET: ${{ secrets.ENTA_HMAC_SECRET }}
         run: make status-verify STATUS=PASS H=0.85 DMI=4.8 PHI=0.75
 
       - name: "Phase 2: Record unsigned status skip"

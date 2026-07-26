@@ -7,9 +7,15 @@ that each workflow keeps the CI/CD membrane contract:
 - a top-level ``permissions`` block is declared;
 - a top-level ``concurrency`` block is declared;
 - ``concurrency.cancel-in-progress`` is ``true``;
-- any permission broader than ``contents: read`` is documented as an
+- any top-level or job-level permission broader than ``contents: read`` is documented as an
   exception in ``docs/ci/WORKFLOW_MAP.md`` (the workflow filename must be
-  mentioned there).
+  mentioned there);
+- external actions are pinned to full 40-character commit SHAs;
+- executable ``run``/``github-script`` bodies do not interpolate Actions
+  expressions directly;
+- shell commands do not hide failure with ``|| true``;
+- reusable calls do not use ``secrets: inherit`` and secrets are not exposed
+  through job-wide environment variables.
 
 The check is read-only, deterministic, and needs no network access. It
 prints a PASS/FAIL summary and exits non-zero on drift.
@@ -21,6 +27,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -34,6 +41,31 @@ except ImportError:  # pragma: no cover
 REPO_ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW_GLOBS = ("*.yml", "*.yaml")
 WORKFLOW_MAP_REL = "docs/ci/WORKFLOW_MAP.md"
+FULL_COMMIT_SHA = re.compile(r"^[0-9a-fA-F]{40}$")
+SECRET_EXPRESSION = re.compile(r"\$\{\{\s*secrets(?:\.|\[)")
+
+
+def iter_mappings(value: Any):
+    """Yield every mapping nested in a workflow document."""
+    if isinstance(value, dict):
+        yield value
+        for item in value.values():
+            yield from iter_mappings(item)
+    elif isinstance(value, list):
+        for item in value:
+            yield from iter_mappings(item)
+
+
+def has_direct_expression(script: object) -> bool:
+    """Return whether executable code directly contains an Actions expression."""
+    return isinstance(script, str) and "${{" in script
+
+
+def masks_shell_failure(script: object) -> bool:
+    """Return whether a shell body has a line ending in ``|| true``."""
+    if not isinstance(script, str):
+        return False
+    return any(re.search(r"\|\|\s*true\s*(?:#.*)?$", line) for line in script.splitlines())
 
 
 def find_workflows(root: Path) -> list[Path]:
@@ -84,6 +116,59 @@ def check_workflow(path: Path, workflow_map_text: str) -> list[str]:
             problems.append(
                 "permissions broader than 'contents: read' but not documented "
                 f"in {WORKFLOW_MAP_REL}"
+            )
+
+    jobs = doc.get("jobs")
+    if isinstance(jobs, dict):
+        for job_name, job in jobs.items():
+            if not isinstance(job, dict):
+                continue
+            job_permissions = job.get("permissions")
+            if job_permissions is not None and not is_minimal_permissions(job_permissions):
+                if path.name not in workflow_map_text:
+                    problems.append(
+                        f"job {job_name!r} has permissions broader than "
+                        f"'contents: read' but is not documented in {WORKFLOW_MAP_REL}"
+                    )
+            if job.get("secrets") == "inherit":
+                problems.append(
+                    f"job {job_name!r} uses 'secrets: inherit'; pass only named secrets"
+                )
+            job_env = job.get("env")
+            if isinstance(job_env, dict) and any(
+                isinstance(value, str) and SECRET_EXPRESSION.search(value)
+                for value in job_env.values()
+            ):
+                problems.append(
+                    f"job {job_name!r} exposes a secret through job-wide env; "
+                    "scope it to the consuming step"
+                )
+
+    for item in iter_mappings(doc):
+        uses = item.get("uses")
+        if isinstance(uses, str) and not uses.startswith(("./", "docker://")):
+            _, separator, ref = uses.rpartition("@")
+            if not separator or not FULL_COMMIT_SHA.fullmatch(ref):
+                problems.append(f"external action is not pinned to a full commit SHA: {uses}")
+
+        run = item.get("run")
+        if has_direct_expression(run):
+            problems.append(
+                "executable 'run' body contains a direct Actions expression; "
+                "pass it through a step env variable"
+            )
+        if masks_shell_failure(run):
+            problems.append(
+                "shell command masks failure with '|| true'; use an explicit "
+                "non-blocking step or handle the exit code"
+            )
+
+        with_args = item.get("with")
+        script = with_args.get("script") if isinstance(with_args, dict) else None
+        if has_direct_expression(script):
+            problems.append(
+                "github-script body contains a direct Actions expression; "
+                "pass it through a step env variable"
             )
 
     # concurrency
