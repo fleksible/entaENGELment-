@@ -21,6 +21,20 @@ Exception: `release.yml` keeps top-level `contents: read`; only its
 `create-release` job receives `contents: write`, because that job creates a
 GitHub Release from a version tag.
 
+The checker reads the following exact exception contract. A filename mention
+outside this block does not authorize a broader or different scope.
+
+<!-- workflow-posture-permissions
+release.yml:
+  jobs:
+    create-release:
+      contents: write
+void-sync.yml:
+  workflow:
+    contents: read
+    issues: write
+-->
+
 ## Workflows
 
 | Workflow file | Purpose | Permissions | Concurrency |
@@ -31,7 +45,7 @@ GitHub Release from a version tag.
 | `.github/workflows/ci-policy-lint.yml` | Policy JSON lint | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
 | `.github/workflows/ci-smoke.yml` | Python smoke tests | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
 | `.github/workflows/deepjump-audit.reusable.yml` | Reusable DeepJump audit core; HMAC secret is step-scoped and missing keys fail trusted runs | `contents: read` | literal `deepjump-audit-reusable-${{ github.ref }}`, cancel in progress |
-| `.github/workflows/deepjump-ci.yml` | DeepJump verify/lint plus reusable audit call; PRs pass no HMAC secret | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
+| `.github/workflows/deepjump-ci.yml` | DeepJump verify/lint plus separate reusable audit calls: PRs pass no secrets mapping; trusted events pass only `ENTA_HMAC_SECRET` | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
 | `.github/workflows/metatron-guard.yml` | FOKUS marker advisory guard for PRs/branch pushes | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
 | `.github/workflows/release.yml` | Release gate and GitHub Release creation | top-level `contents: read`; `create-release` job: `contents: write` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
 | `.github/workflows/sbom.yml` | Fail-closed Python environment SBOM generation and artifact upload | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
@@ -40,13 +54,17 @@ GitHub Release from a version tag.
 
 ## Maintenance rule
 
-[FACT] New workflows must document any permission broader than `contents: read` in this file. The reason should be action-specific, not symbolic or implied.
+[FACT] New workflows must document any permission broader than `contents: read`
+in the machine-readable exception contract above. The exact workflow/job scope
+and permission mapping must match; a filename mention alone grants nothing.
 
 [FACT] `make workflow-posture-check` (`tools/workflow_posture_check.py`) verifies
 this contract locally. Every workflow must declare explicit `permissions` and
 `concurrency` with `cancel-in-progress: true`; broader top-level or job
 permissions must be named here. External actions must use full commit SHAs.
 Executable shell/`github-script` bodies may not interpolate Actions expressions
-directly or hide failure with `|| true`. Reusable calls must pass named secrets,
-and secrets may not live in a job-wide environment. The check is read-only and
-deterministic.
+directly or hide failure with `|| true`, including before another shell
+separator. Reusable calls must pass named secrets, and secrets may not live in
+a job-wide environment. Docker actions require an immutable `sha256` digest;
+only reusable-job and step `uses` nodes are interpreted as actions. The check
+is read-only and deterministic.

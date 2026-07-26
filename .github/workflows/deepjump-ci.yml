@@ -49,15 +49,21 @@ jobs:
         run: python3 tools/port_lint.py
 
   deepjump-audit:
+    if: ${{ github.event_name == 'pull_request' }}
+    needs: verify-lint
+    uses: ./.github/workflows/deepjump-audit.reusable.yml
+    with:
+      python-version: "3.11"
+      # Pull requests never receive a secrets mapping. Verification remains
+      # strict, while signed-status emission is explicitly skipped.
+      allow-unsigned-status-skip: true
+
+  deepjump-audit-signed:
+    if: ${{ github.event_name != 'pull_request' }}
     needs: verify-lint
     uses: ./.github/workflows/deepjump-audit.reusable.yml
     secrets:
-      # Never pass the signing key into pull-request execution. Fork and
-      # dependency PRs receive no repository secrets; this also keeps
-      # same-repository PR verification on the unsigned path by construction.
-      ENTA_HMAC_SECRET: ${{ secrets[github.event_name == 'pull_request' && 'UNAVAILABLE_ON_PULL_REQUESTS' || 'ENTA_HMAC_SECRET'] }}
+      ENTA_HMAC_SECRET: ${{ secrets.ENTA_HMAC_SECRET }}
     with:
       python-version: "3.11"
-      # Pull requests may not have access to ENTA_HMAC_SECRET. Keep PR verification
-      # strict for pointers/claims/tests, but allow signed-status emission to be skipped.
-      allow-unsigned-status-skip: ${{ github.event_name == 'pull_request' }}
+      allow-unsigned-status-skip: false
