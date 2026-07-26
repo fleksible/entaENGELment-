@@ -281,14 +281,19 @@ class ActionProposal:
                     "side-effect/irreversible proposal must require human approval"
                 )
 
-        # Auch die *deklarierte* Verantwortungsklasse bindet: HUMAN_ONLY ist per
-        # Definition menschlich freizugeben — ein direkt/deserialisiert gebautes
-        # HUMAN_ONLY-Manifest darf niemals PROPOSE ohne Freigabe sein.
-        if self.responsibility_class == ResponsibilityClass.HUMAN_ONLY.value:
+        # PROPOSE ist ausschließlich COMPUTATIONAL vorbehalten. Auch die
+        # *deklarierte* Klasse bindet: IN_BETWEEN (unaufgelöst) und HUMAN_ONLY
+        # (menschlich) dürfen niemals stillen Durchlass bekommen — sie müssen
+        # HOLD + menschliche Freigabe tragen. So kann kein direkt/deserialisiert
+        # gebautes Manifest dieser Klassen als PROPOSE am Gate vorbei geroutet
+        # werden.
+        if self.responsibility_class != ResponsibilityClass.COMPUTATIONAL.value:
             if self.guard_state != GUARD_HOLD:
-                raise ActionGateError("HUMAN_ONLY proposal must be HOLD")
+                raise ActionGateError(f"{self.responsibility_class} proposal must be HOLD")
             if not self.human_approval_required:
-                raise ActionGateError("HUMAN_ONLY proposal must require human approval")
+                raise ActionGateError(
+                    f"{self.responsibility_class} proposal must require human approval"
+                )
 
     def to_manifest(self) -> dict[str, object]:
         """Kanonische, serialisierbare (JSON-native) Manifest-Darstellung.

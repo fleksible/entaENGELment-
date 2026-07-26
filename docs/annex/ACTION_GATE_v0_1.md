@@ -168,6 +168,18 @@ Claim-Kernels.
   Kontext-Rot-/Drift-Check zwischen `CLAUDE.md`, Claim-Tag-Policy,
   Runtime-Eventlog-Draft, Python-Typen und Tests. Er wird hier bewusst **nicht**
   gebaut und erzeugt **kein** neues Backlog-System und keine `VOIDMAP.yml`-Mutation.
+- **Phase-2-Kandidat — ökosystemspezifische Exact-Version-Grammatik:**
+  `_is_pinned_version` ist ein konservativer Struktur-Check, **kein** vollständiger
+  Versionsparser. Formen wie `1.2.3evil`, `1.2.3.4` oder `1.2.3+a+b` können daher
+  noch als `VERSION_PINNED` gelten, obwohl npm (`semver.valid`, SemVer 2.0) sie
+  ablehnen würde. Eine vollständige, ökosystemspezifische Validierung (npm SemVer
+  2.0 **und** PyPI PEP 440 unterscheiden sich — z.B. ist `0.1.0a` PEP-440-gültig,
+  aber kein SemVer-Prerelease) bleibt bewusst außerhalb dieses minimalen, nicht
+  ausführenden Gates (Auftrag: „kleinste sichere Schnittstelle, kein
+  Paket-Sicherheitsprodukt", keine neue Abhängigkeit). **Residualrisiko** ist
+  begrenzt: Ein fälschlich als gepinnt gewertetes Manifest wird niemals
+  ausgeführt; jede reale Nebenwirkung bleibt `HUMAN_ONLY` mit erzwungener
+  Freigabe. Eine strengere Prüfung ist ein separater, zu genehmigender Adapter.
 
 ## 9. Rücknahme
 

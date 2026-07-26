@@ -397,6 +397,18 @@ class TestPostInitValidation:
                 )
             )
 
+    def test_declared_in_between_as_propose_rejected(self):
+        # IN_BETWEEN ist unaufgelöst und darf nie stillen Durchlass (PROPOSE) haben.
+        with pytest.raises(ActionGateError):
+            ActionProposal(
+                **self._valid_kwargs(
+                    responsibility_class=ResponsibilityClass.IN_BETWEEN.value,
+                    guard_state=GUARD_PROPOSE,
+                    human_approval_required=False,
+                    reason_codes=("ACTION_PROPOSAL_ONLY",),
+                )
+            )
+
     def test_declared_human_only_without_approval_rejected(self):
         # HUMAN_ONLY ohne Nebenwirkung/Irreversibilität, aber als PROPOSE/ohne
         # Freigabe deklariert → abweisen (die deklarierte Klasse bindet).
