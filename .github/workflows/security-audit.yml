@@ -56,7 +56,8 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Audit report (all severities, non-blocking)
-        run: pnpm audit || true
+        continue-on-error: true
+        run: pnpm audit
 
       - name: Audit gate (fail on high+)
         run: pnpm audit --audit-level=high
