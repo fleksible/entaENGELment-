@@ -351,6 +351,16 @@ class TestTranslation:
         # Nichts wurde geschrieben:
         assert list(tmp_path.iterdir()) == []
 
+    def test_translation_fails_closed_without_candidate_policy(self):
+        with pytest.raises(BridgeAdapterError) as excinfo:
+            translate_bridge_record(
+                make_record(
+                    proposed_claim_tag="[HYPOTHESE]",
+                    claim_text="Prüfbarer Satz.",
+                )
+            )
+        assert BridgeReason.CLAIM_POLICY_REQUIRED in excinfo.value.reasons
+
     def test_source_expression_never_leaves_the_bridge(self):
         translation = translate_bridge_record(make_record())
         serialized = str(translation.to_dict())

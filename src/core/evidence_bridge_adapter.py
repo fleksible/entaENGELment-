@@ -582,9 +582,14 @@ def translate_bridge_record(
 
     claim: ClaimCandidate | None = None
     if record.proposed_claim_tag is not None:
-        # validate_bridge_record() garantiert für diesen Pfad eine geladene
-        # Policy und einen bekannten, normalisierten Tag.
-        assert policy is not None
+        # Defense in depth: validate_bridge_record() prüft dies bereits. Die
+        # Übersetzung darf sich trotzdem nicht auf ein ``assert`` verlassen,
+        # das Python unter ``-O`` entfernen würde.
+        if type(policy) is not ClaimPolicy:
+            raise BridgeAdapterError(
+                "a loaded ClaimPolicy is required when proposing a ClaimCandidate",
+                [BridgeReason.CLAIM_POLICY_REQUIRED],
+            )
         tag = normalize_claim_tag(record.proposed_claim_tag, policy).tag
         claim = ClaimCandidate(
             claim_id=claim_id,
