@@ -122,7 +122,8 @@ component_claim:
   negative_path:
   raw_data_pointer:
   analysis_code_pointer:
-  receipt_type: bench | simulation      # Einordnung siehe §7
+  evidence_modality: bench | simulation # kein Receipt-Typ; Einordnung siehe §7
+  receipt_type: empirical_bundle | null # erst nach M5; Simulation bleibt null
   semantic_mapping: separate_bridge_record
   known_loss: []
   status: HOLD
@@ -144,8 +145,10 @@ Anspruch:
 
 Benötigt werden: Datenblatt oder Herstellungsweg, optischer Aufbau, Rohdaten,
 Kalibrierung, Wiederholungen, Temperaturabhängigkeit, Degradation, Drift und
-ein Negativpfad. Erst danach kann eine **digitale** Policy entscheiden, wie
-dieser Messwert verwendet wird.
+ein Negativpfad. Erst danach darf der Befund in M5 eingereicht und — nur bei
+dort festgestellter methodischer Eignung — über eine getrennte M1-Brücke einem
+M4-Governance-Review und einer ausdrücklich **menschlichen** Entscheidung
+vorgelegt werden. Eine digitale Policy entscheidet die Verwendung nicht.
 
 [CONTEXT] Dieser Satz ist ein Formulierungsbeispiel für den engsten Anspruch.
 Er ist keine Messankündigung, keine Beschaffungsempfehlung und keine
@@ -172,12 +175,14 @@ der M5-Evidenzleiter höchstens `BENCH_OR_FEASIBILITY` — niemals
 `REPLICATED_EVIDENCE` allein durch Wiederholung im selben Aufbau.
 
 **M6 ↔ M4 (Receipt-Einordnung):** Dieser ANNEX führt **kein eigenes
-Receipt-Vokabular** ein. `receipt_type: bench | simulation` ordnet sich in die
-bestehende M4-Typologie ein
+Receipt-Vokabular** ein. `bench | simulation` ist ausschließlich die
+`evidence_modality`. `receipt_type` verwendet die bestehende M4-Typologie
 (`docs/annex/SYNTHBIOSIS_MODULE_ADAPTER_MAP_v0_1.md` §2.4): Ein
-Bench-Ergebnis kann dort höchstens als `empirical_bundle` mit Relation
-`SUPPORTS` oder `CONTRADICTS` erscheinen — und auch das erst **nach**
-M5-Prüfung. Ein Simulationsergebnis bleibt Simulation.
+Bench-Ergebnis kann dort höchstens **nach** M5-Prüfung als
+`empirical_bundle` mit Relation `SUPPORTS` oder `CONTRADICTS` erscheinen.
+Vorher ist der Receipt-Typ `null`; für eine Simulation bleibt er `null`.
+Ein Simulationsergebnis bleibt Simulation und wird nicht durch das Dossier zu
+einem empirischen Receipt.
 
 **M6 ↔ ERK:** Ein Komponentenbefund kann später als `MaterialRef` mit einer
 `EvidenceRelation` in einen ERK-Flow eingehen
@@ -222,8 +227,9 @@ Sichtbare Verluste dieser reduzierten Fassung (`known_loss_required: true`):
 - Der externe Forschungspointer wurde nicht erneut aufgelöst.
 - Das `component_claim`-Schema wurde gegenüber der Quelle um
   `repetitions`, `degradation_and_drift`, `negative_path`, `known_loss` und
-  `status` ergänzt — als Strukturschärfung, nicht als neue inhaltliche
-  Anforderung; die Quelle nennt diese Punkte im Fließtext.
+  `status` ergänzt sowie um `evidence_modality` von der bestehenden
+  M4-`receipt_type`-Typologie getrennt — als Strukturschärfung, nicht als neue
+  inhaltliche Anforderung; die Quelle nennt diese Punkte im Fließtext.
 - Kein Messaufbau, keine Stückliste, kein Schaltplan, keine Rohdaten.
 
 ## 11. Exit-Semantik
