@@ -397,6 +397,55 @@ class TestPostInitValidation:
                 )
             )
 
+    def test_propose_with_approval_required_rejected(self):
+        # PROPOSE trägt nie eine Freigabepflicht (Builder-Invariante).
+        with pytest.raises(ActionGateError):
+            ActionProposal(
+                **self._valid_kwargs(
+                    guard_state=GUARD_PROPOSE,
+                    responsibility_class=ResponsibilityClass.COMPUTATIONAL.value,
+                    human_approval_required=True,
+                    reason_codes=("ACTION_PROPOSAL_ONLY", "HUMAN_APPROVAL_REQUIRED"),
+                )
+            )
+
+    def test_hold_without_approval_required_rejected(self):
+        # Jedes HOLD trägt eine Freigabepflicht.
+        with pytest.raises(ActionGateError):
+            ActionProposal(
+                **self._valid_kwargs(
+                    guard_state=GUARD_HOLD,
+                    responsibility_class=ResponsibilityClass.COMPUTATIONAL.value,
+                    human_approval_required=False,
+                    reason_codes=("ACTION_PROPOSAL_ONLY",),
+                )
+            )
+
+    def test_unpinned_version_descriptive_field_forces_hold(self):
+        # Deskriptives Feld: latest ist ungepinnt → PROPOSE inkohärent.
+        with pytest.raises(ActionGateError):
+            ActionProposal(
+                **self._valid_kwargs(
+                    requested_version="latest",
+                    guard_state=GUARD_PROPOSE,
+                    responsibility_class=ResponsibilityClass.COMPUTATIONAL.value,
+                    human_approval_required=False,
+                    reason_codes=("ACTION_PROPOSAL_ONLY",),
+                )
+            )
+
+    def test_unverified_descriptive_field_forces_hold(self):
+        with pytest.raises(ActionGateError):
+            ActionProposal(
+                **self._valid_kwargs(
+                    verification_status="unverified",
+                    guard_state=GUARD_PROPOSE,
+                    responsibility_class=ResponsibilityClass.COMPUTATIONAL.value,
+                    human_approval_required=False,
+                    reason_codes=("ACTION_PROPOSAL_ONLY",),
+                )
+            )
+
     def test_hold_implying_reason_code_with_propose_rejected(self):
         # REGISTRY_UNKNOWN etc. sind Builder-HOLD-Gründe; PROPOSE damit inkohärent.
         with pytest.raises(ActionGateError):

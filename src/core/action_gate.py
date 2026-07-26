@@ -279,6 +279,30 @@ class ActionProposal:
         if has_human_code != self.human_approval_required:
             raise ActionGateError("human_approval_required flag inconsistent with reason codes")
 
+        # Builder-Invariante: PROPOSE trägt nie eine Freigabepflicht, jedes HOLD
+        # trägt sie. Das bindet ``human_approval_required`` bikonditional an den
+        # Gate-Zustand — ein PROPOSE-Manifest mit Freigabepflicht (oder ein HOLD
+        # ohne) ist inkohärent.
+        if (self.guard_state == GUARD_HOLD) != self.human_approval_required:
+            raise ActionGateError(
+                "human_approval_required must match guard_state (PROPOSE→False, HOLD→True)"
+            )
+
+        # Deskriptive-Feld-Kohärenz, soweit **policy-frei** re-derivierbar (geteilte
+        # Helfer, keine externen Eingaben): eine nicht gepinnte Version oder eine
+        # unverifizierte Quelle impliziert im Builder HOLD. Registry-Zuordnung und
+        # Quell-Trust lassen sich hier bewusst NICHT re-derivieren — das Manifest
+        # führt die Policy-Eingabe (``known_registries``) bzw. den Quell-Trust nicht
+        # mit; das bleibt Sache von ``build_action_proposal`` (bzw. Provenienz/
+        # Signatur, Phase-2).
+        if not _is_pinned_version(self.requested_version) and self.guard_state != GUARD_HOLD:
+            raise ActionGateError("unpinned requested_version must be HOLD")
+        if (
+            self.verification_status.strip().lower() != VERIFICATION_VERIFIED
+            and self.guard_state != GUARD_HOLD
+        ):
+            raise ActionGateError("unverified source must be HOLD")
+
         # Ein HOLD-auslösender Reason-Code bindet den Gate-Zustand: das Manifest
         # muss HOLD + Freigabe tragen. So kann kein direkt/deserialisiert
         # gebautes Manifest einen vom Builder abgelehnten Grund als PROPOSE führen.
