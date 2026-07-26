@@ -123,7 +123,9 @@ component_claim:
   raw_data_pointer:
   analysis_code_pointer:
   evidence_modality: bench | simulation # kein Receipt-Typ; Einordnung siehe §7
-  receipt_type: empirical_bundle | null # erst nach M5; Simulation bleibt null
+  receipt_type: repo_hmac | p7_sha_chain | review_relay | status_receipt | empirical_bundle | null
+  # empirical_bundle nur für bench nach M5; andere M4-Typen belegen
+  # ausschließlich ihre Provenienz-/Kontextfunktion
   semantic_mapping: separate_bridge_record
   known_loss: []
   status: HOLD
@@ -147,8 +149,11 @@ Benötigt werden: Datenblatt oder Herstellungsweg, optischer Aufbau, Rohdaten,
 Kalibrierung, Wiederholungen, Temperaturabhängigkeit, Degradation, Drift und
 ein Negativpfad. Erst danach darf der Befund in M5 eingereicht und — nur bei
 dort festgestellter methodischer Eignung — über eine getrennte M1-Brücke einem
-M4-Governance-Review und einer ausdrücklich **menschlichen** Entscheidung
-vorgelegt werden. Eine digitale Policy entscheidet die Verwendung nicht.
+M4-Governance-Review vorgelegt werden. Sobald daraus Claim-Status oder
+Authority folgen sollen, ist eine ausdrücklich **menschliche** Entscheidung
+Pflicht. Policy darf syntaktische Übergänge und nicht-authority-verändernde
+Verarbeitung wie Analyse oder Visualisierung steuern; sie entscheidet weder
+Bedeutung noch Claim-Wahrheit.
 
 [CONTEXT] Dieser Satz ist ein Formulierungsbeispiel für den engsten Anspruch.
 Er ist keine Messankündigung, keine Beschaffungsempfehlung und keine
@@ -156,7 +161,7 @@ Terminzusage.
 
 ## 7. Verhältnis zu den anderen Modulen
 
-**Einziger zulässiger Hauptpfad:**
+**Einziger zulässiger Hauptpfad für Claim-/Authority-Wirkung:**
 
 ```
 physischer Komponentenbefund
@@ -166,7 +171,9 @@ physischer Komponentenbefund
 ```
 
 **Nicht zulässig:** `M6 → Authority`, `M6 → menschlicher Consent`,
-`M6 → moralische Wahrheit`, `M6 → M4` direkt.
+`M6 → moralische Wahrheit`, `M6 → M4` direkt mit Claim-/Authority-Wirkung.
+Analyse, Visualisierung und andere Verarbeitung ohne Authority-Änderung dürfen
+innerhalb ihres dokumentierten Scopes policy-gesteuert bleiben.
 
 **M6 ↔ M5:** M6 liefert Komponentenbefunde; M5 prüft methodische Prüfbarkeit,
 Voraussetzungen und externe Review-Reife
@@ -180,9 +187,11 @@ Receipt-Vokabular** ein. `bench | simulation` ist ausschließlich die
 (`docs/annex/SYNTHBIOSIS_MODULE_ADAPTER_MAP_v0_1.md` §2.4): Ein
 Bench-Ergebnis kann dort höchstens **nach** M5-Prüfung als
 `empirical_bundle` mit Relation `SUPPORTS` oder `CONTRADICTS` erscheinen.
-Vorher ist der Receipt-Typ `null`; für eine Simulation bleibt er `null`.
-Ein Simulationsergebnis bleibt Simulation und wird nicht durch das Dossier zu
-einem empirischen Receipt.
+Vor M5 und für Simulationen bleiben `repo_hmac`, `p7_sha_chain`,
+`review_relay` und `status_receipt` für genau ihre dort definierte
+Provenienz-/Kontextfunktion zulässig; `null` bedeutet, dass keine solche
+Receipt-Funktion vorliegt. Eine Simulation darf niemals `empirical_bundle`
+tragen und wird nicht durch Signatur, Status oder Review zu Empirie.
 
 **M6 ↔ ERK:** Ein Komponentenbefund kann später als `MaterialRef` mit einer
 `EvidenceRelation` in einen ERK-Flow eingehen
