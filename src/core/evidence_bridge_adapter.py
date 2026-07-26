@@ -29,7 +29,7 @@ from __future__ import annotations
 
 import hashlib
 from collections.abc import Mapping, Sequence
-from dataclasses import asdict, dataclass, field
+from dataclasses import MISSING, asdict, dataclass, field, fields
 from enum import Enum
 from typing import Any
 
@@ -113,6 +113,17 @@ DEFERRED_PROMOTION_REGISTERS = {
 # Relationen, die ohne weitere Prüfung immer zulässig sind.
 CONTEXT_ONLY_RELATIONS = frozenset({"MOTIVATES", "CONTEXTUALIZES", "PROVENANCE_ONLY"})
 
+_REGISTER_ALLOWED_RELATIONS = {
+    REGISTER_MYTH: CONTEXT_ONLY_RELATIONS,
+    REGISTER_METAPHOR: CONTEXT_ONLY_RELATIONS,
+    REGISTER_FORMAL: CONTEXT_ONLY_RELATIONS,
+    REGISTER_PHYSICAL: CONTEXT_ONLY_RELATIONS | PROMOTION_CAPABLE_RELATION_TYPES,
+    REGISTER_BIOLOGICAL: CONTEXT_ONLY_RELATIONS | PROMOTION_CAPABLE_RELATION_TYPES,
+    REGISTER_PSYCHOLOGICAL: CONTEXT_ONLY_RELATIONS,
+    REGISTER_GOVERNANCE: CONTEXT_ONLY_RELATIONS,
+    REGISTER_UI: CONTEXT_ONLY_RELATIONS,
+}
+
 # Materialart je Register für den erzeugten MaterialRef.
 _REGISTER_MATERIAL_KIND = {
     REGISTER_MYTH: "metaphor",
@@ -158,6 +169,17 @@ class BridgeReason(str, Enum):
     UNKNOWN_INTENDED_USE = "UNKNOWN_INTENDED_USE"
     UNKNOWN_VISIBILITY = "UNKNOWN_VISIBILITY"
     SOURCE_POINTER_REQUIRED = "SOURCE_POINTER_REQUIRED"
+    BRIDGE_ID_REQUIRED = "BRIDGE_ID_REQUIRED"
+    ACTOR_REQUIRED = "ACTOR_REQUIRED"
+    CLAIM_ID_REQUIRED = "CLAIM_ID_REQUIRED"
+    CLAIM_TEXT_REQUIRED = "CLAIM_TEXT_REQUIRED"
+    CLAIM_POLICY_REQUIRED = "CLAIM_POLICY_REQUIRED"
+    UNSUPPORTED_SCHEMA_VERSION = "UNSUPPORTED_SCHEMA_VERSION"
+    RELATION_NOT_ALLOWED_FOR_REGISTER = "RELATION_NOT_ALLOWED_FOR_REGISTER"
+    UNKNOWN_FIELD = "UNKNOWN_FIELD"
+    MISSING_REQUIRED_FIELD = "MISSING_REQUIRED_FIELD"
+    INVALID_MAPPING = "INVALID_MAPPING"
+    INVALID_BOOLEAN = "INVALID_BOOLEAN"
 
 
 class BridgeAdapterError(ValueError):
@@ -276,9 +298,19 @@ class BridgeTranslation:
 
 
 def _require_text(value: object, reason: BridgeReason, label: str) -> str:
-    if not isinstance(value, str) or not value.strip():
+    if type(value) is not str or not value.strip():
         raise BridgeAdapterError(f"{label} is required and must be non-empty", [reason])
     return value.strip()
+
+
+def _require_canonical_text(value: object, reason: BridgeReason, label: str) -> str:
+    text = _require_text(value, reason, label)
+    if value != text:
+        raise BridgeAdapterError(
+            f"{label} must not contain leading or trailing whitespace",
+            [reason],
+        )
+    return text
 
 
 def validate_bridge_record(record: BridgeRecord, *, policy: ClaimPolicy | None = None) -> None:
@@ -287,28 +319,62 @@ def validate_bridge_record(record: BridgeRecord, *, policy: ClaimPolicy | None =
     Prüft nicht, ob eine behauptete Relation sachlich trägt — das bleibt
     menschliche Review-Arbeit (und für Messfragen: M5).
     """
-    if record.source_register not in KNOWN_SOURCE_REGISTERS:
+    if type(record) is not BridgeRecord:
+        raise BridgeAdapterError(
+            "record must be a BridgeRecord; use bridge_record_from_mapping for JSON data",
+            [BridgeReason.INVALID_MAPPING],
+        )
+    if type(record.schema_version) is not str or (record.schema_version != BRIDGE_SCHEMA_VERSION):
+        raise BridgeAdapterError(
+            f"schema_version must equal {BRIDGE_SCHEMA_VERSION!r}",
+            [BridgeReason.UNSUPPORTED_SCHEMA_VERSION],
+        )
+
+    _require_canonical_text(record.bridge_id, BridgeReason.BRIDGE_ID_REQUIRED, "bridge_id")
+    _require_canonical_text(record.actor, BridgeReason.ACTOR_REQUIRED, "actor")
+
+    if type(record.source_register) is not str or (
+        record.source_register not in KNOWN_SOURCE_REGISTERS
+    ):
         raise BridgeAdapterError(
             f"unknown source_register: {record.source_register!r}",
             [BridgeReason.UNKNOWN_SOURCE_REGISTER],
         )
-    if record.relation_type not in RELATION_TYPES:
+    if type(record.relation_type) is not str or record.relation_type not in RELATION_TYPES:
         raise BridgeAdapterError(
             f"unknown relation_type: {record.relation_type!r}",
             [BridgeReason.UNKNOWN_RELATION_TYPE],
         )
-    if record.intended_use not in INTENDED_USES:
+    if type(record.intended_use) is not str or record.intended_use not in INTENDED_USES:
         raise BridgeAdapterError(
             f"unknown intended_use: {record.intended_use!r}",
             [BridgeReason.UNKNOWN_INTENDED_USE],
         )
-    if record.visibility not in KNOWN_VISIBILITIES:
+    if type(record.visibility) is not str or record.visibility not in KNOWN_VISIBILITIES:
         raise BridgeAdapterError(
             f"unknown visibility: {record.visibility!r}", [BridgeReason.UNKNOWN_VISIBILITY]
         )
+    if type(record.protected_origin) is not bool:
+        raise BridgeAdapterError("protected_origin must be a bool", [BridgeReason.INVALID_BOOLEAN])
+    if record.claim_id is not None:
+        _require_canonical_text(record.claim_id, BridgeReason.CLAIM_ID_REQUIRED, "claim_id")
+    if record.m5_review_pointer is not None:
+        _require_canonical_text(
+            record.m5_review_pointer,
+            BridgeReason.M5_REVIEW_REQUIRED,
+            "m5_review_pointer",
+        )
 
-    _require_text(record.source_pointer, BridgeReason.SOURCE_POINTER_REQUIRED, "source_pointer")
-    _require_text(record.source_digest, BridgeReason.SOURCE_DIGEST_REQUIRED, "source_digest")
+    _require_canonical_text(
+        record.source_pointer,
+        BridgeReason.SOURCE_POINTER_REQUIRED,
+        "source_pointer",
+    )
+    _require_canonical_text(
+        record.source_digest,
+        BridgeReason.SOURCE_DIGEST_REQUIRED,
+        "source_digest",
+    )
     _require_text(
         record.transferred_property,
         BridgeReason.TRANSFERRED_PROPERTY_REQUIRED,
@@ -324,7 +390,7 @@ def validate_bridge_record(record: BridgeRecord, *, policy: ClaimPolicy | None =
 
     # Ein blanker String ist iterierbar: ohne diese Prüfung würde
     # known_loss="Kantengewichte" zeichenweise als Liste durchgehen.
-    if isinstance(record.known_loss, str) or not isinstance(record.known_loss, (list, tuple)):
+    if type(record.known_loss) not in (list, tuple):
         raise BridgeAdapterError(
             "known_loss must be a list or tuple of strings, not a bare string",
             [BridgeReason.KNOWN_LOSS_MUST_BE_LIST],
@@ -333,7 +399,7 @@ def validate_bridge_record(record: BridgeRecord, *, policy: ClaimPolicy | None =
     # Known Loss ist Pflicht: Eine Brücke ohne sichtbaren Verlust behauptet
     # implizit Verlustfreiheit — und damit Identität.
     if not record.known_loss or not all(
-        isinstance(item, str) and item.strip() for item in record.known_loss
+        type(item) is str and item.strip() for item in record.known_loss
     ):
         raise BridgeAdapterError(
             "known_loss must list at least one concrete loss",
@@ -352,32 +418,43 @@ def _validate_register_reach(record: BridgeRecord) -> None:
     eine Entscheidung: Der Aufrufer sagte ``MEASURES``. Die Korrektur ist ein
     neuer, ausdrücklich anders lautender Record — von einem Menschen.
     """
-    if record.relation_type not in PROMOTION_CAPABLE_RELATION_TYPES:
-        return
-
+    allowed = _REGISTER_ALLOWED_RELATIONS[record.source_register]
     hint = (
-        f"Zulässig sind hier {sorted(CONTEXT_ONLY_RELATIONS)}. Der Adapter stuft "
+        f"Zulässig sind hier {sorted(allowed)}. Der Adapter stuft "
         "nicht selbst ab; ein Mensch kann einen neuen Record mit ausdrücklich "
         "diesem Relationstyp einreichen."
     )
 
-    if record.source_register in NON_PROMOTING_REGISTERS:
+    if record.relation_type not in allowed:
+        if (
+            record.relation_type in PROMOTION_CAPABLE_RELATION_TYPES
+            and record.source_register in NON_PROMOTING_REGISTERS
+        ):
+            raise BridgeAdapterError(
+                f"source_register {record.source_register!r} cannot carry a "
+                f"promotion-capable relation ({record.relation_type}). {hint}",
+                [BridgeReason.REGISTER_CANNOT_PROMOTE],
+            )
+        if (
+            record.relation_type in PROMOTION_CAPABLE_RELATION_TYPES
+            and record.source_register in DEFERRED_PROMOTION_REGISTERS
+        ):
+            condition = DEFERRED_PROMOTION_REGISTERS[record.source_register]
+            raise BridgeAdapterError(
+                f"source_register {record.source_register!r} is not promotion-enabled "
+                f"in v0.1 ({record.relation_type}): {condition}. {hint}",
+                [BridgeReason.PROMOTION_NOT_ENABLED_IN_V0_1],
+            )
         raise BridgeAdapterError(
-            f"source_register {record.source_register!r} cannot carry a "
-            f"promotion-capable relation ({record.relation_type}). {hint}",
-            [BridgeReason.REGISTER_CANNOT_PROMOTE],
+            f"relation_type {record.relation_type!r} is outside the allowed "
+            f"vocabulary for source_register {record.source_register!r}. {hint}",
+            [BridgeReason.RELATION_NOT_ALLOWED_FOR_REGISTER],
         )
 
-    if record.source_register in DEFERRED_PROMOTION_REGISTERS:
-        condition = DEFERRED_PROMOTION_REGISTERS[record.source_register]
-        raise BridgeAdapterError(
-            f"source_register {record.source_register!r} is not promotion-enabled "
-            f"in v0.1 ({record.relation_type}): {condition}. {hint}",
-            [BridgeReason.PROMOTION_NOT_ENABLED_IN_V0_1],
-        )
-
-    if record.source_register in M5_GATED_REGISTERS and not (
-        isinstance(record.m5_review_pointer, str) and record.m5_review_pointer.strip()
+    if (
+        record.source_register in M5_GATED_REGISTERS
+        and record.relation_type in PROMOTION_CAPABLE_RELATION_TYPES
+        and record.m5_review_pointer is None
     ):
         raise BridgeAdapterError(
             f"source_register {record.source_register!r} requires a documented "
@@ -388,15 +465,27 @@ def _validate_register_reach(record: BridgeRecord) -> None:
 
 def _validate_proposed_tag(record: BridgeRecord, policy: ClaimPolicy | None) -> None:
     if record.proposed_claim_tag is None:
-        return
-    tag = record.proposed_claim_tag
-    if policy is not None:
-        normalized = normalize_claim_tag(tag, policy)
-        if not normalized.known:
+        if record.claim_id is None:
             raise BridgeAdapterError(
-                f"unknown claim tag: {tag!r}", [BridgeReason.UNKNOWN_CLAIM_TAG]
+                "claim_id is required when no ClaimCandidate is emitted",
+                [BridgeReason.CLAIM_ID_REQUIRED],
             )
-        tag = normalized.tag
+        return
+    tag = _require_text(
+        record.proposed_claim_tag,
+        BridgeReason.UNKNOWN_CLAIM_TAG,
+        "proposed_claim_tag",
+    )
+    _require_text(record.claim_text, BridgeReason.CLAIM_TEXT_REQUIRED, "claim_text")
+    if type(policy) is not ClaimPolicy:
+        raise BridgeAdapterError(
+            "a loaded ClaimPolicy is required when proposing a ClaimCandidate",
+            [BridgeReason.CLAIM_POLICY_REQUIRED],
+        )
+    normalized = normalize_claim_tag(tag, policy)
+    if not normalized.known:
+        raise BridgeAdapterError(f"unknown claim tag: {tag!r}", [BridgeReason.UNKNOWN_CLAIM_TAG])
+    tag = normalized.tag
     if tag in ADAPTER_FORBIDDEN_CLAIM_TAGS:
         raise BridgeAdapterError(
             f"adapter must not assign claim tag {tag!r}; it requires evidence "
@@ -431,7 +520,8 @@ def translate_bridge_record(
 
     Args:
         record: vollständiger Bridge-Record.
-        policy: optionale Claim-Policy für Tag-Normalisierung.
+        policy: Claim-Policy für Tag-Normalisierung; Pflicht, sobald der Record
+            einen ``ClaimCandidate`` vorschlägt.
         trust: Trust-Level des Materials; Default ``UNTRUSTED`` (G5).
 
     Raises:
@@ -492,9 +582,15 @@ def translate_bridge_record(
 
     claim: ClaimCandidate | None = None
     if record.proposed_claim_tag is not None:
-        tag = record.proposed_claim_tag
-        if policy is not None:
-            tag = normalize_claim_tag(tag, policy).tag
+        # Defense in depth: validate_bridge_record() prüft dies bereits. Die
+        # Übersetzung darf sich trotzdem nicht auf ein ``assert`` verlassen,
+        # das Python unter ``-O`` entfernen würde.
+        if type(policy) is not ClaimPolicy:
+            raise BridgeAdapterError(
+                "a loaded ClaimPolicy is required when proposing a ClaimCandidate",
+                [BridgeReason.CLAIM_POLICY_REQUIRED],
+            )
+        tag = normalize_claim_tag(record.proposed_claim_tag, policy).tag
         claim = ClaimCandidate(
             claim_id=claim_id,
             schema_version=ERK_SCHEMA_VERSION,
@@ -541,15 +637,46 @@ def translate_bridge_record(
 
 def bridge_record_from_mapping(payload: Mapping[str, Any]) -> BridgeRecord:
     """Bridge-Record aus einem Mapping bauen (geschlossenes Feldschema)."""
+    if type(payload) is not dict:
+        raise BridgeAdapterError(
+            "bridge record payload must be a built-in dict",
+            [BridgeReason.INVALID_MAPPING],
+        )
+    if not all(type(key) is str for key in payload):
+        raise BridgeAdapterError(
+            "bridge record field names must be strings",
+            [BridgeReason.UNKNOWN_FIELD],
+        )
     allowed = set(BridgeRecord.__dataclass_fields__)
     unknown = set(payload) - allowed
     if unknown:
         raise BridgeAdapterError(
             f"bridge record has unknown fields: {sorted(unknown)}",
-            [BridgeReason.UNKNOWN_RELATION_TYPE],
+            [BridgeReason.UNKNOWN_FIELD],
+        )
+    required = {
+        item.name
+        for item in fields(BridgeRecord)
+        if item.default is MISSING and item.default_factory is MISSING
+    }
+    # Programmatic construction may use the dataclass default, but external
+    # JSON-shaped input must declare its semantics explicitly. Otherwise an
+    # unversioned payload would be interpreted silently as bridge.v0.1.
+    required.add("schema_version")
+    missing = required - set(payload)
+    if missing:
+        raise BridgeAdapterError(
+            f"bridge record is missing required fields: {sorted(missing)}",
+            [BridgeReason.MISSING_REQUIRED_FIELD],
         )
     data = dict(payload)
     known_loss = data.get("known_loss", [])
-    if isinstance(known_loss, (list, tuple)):
+    if type(known_loss) in (list, tuple):
         data["known_loss"] = list(known_loss)
-    return BridgeRecord(**data)
+    try:
+        return BridgeRecord(**data)
+    except TypeError as exc:
+        raise BridgeAdapterError(
+            "bridge record payload does not match bridge.v0.1",
+            [BridgeReason.INVALID_MAPPING],
+        ) from exc
