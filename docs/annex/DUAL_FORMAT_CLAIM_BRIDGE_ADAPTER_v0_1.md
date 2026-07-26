@@ -10,6 +10,7 @@
 **Source:** Synthbiosis Systematlas v1.1 / `01_DUAL_FORMAT_CLAIM_BRIDGE.md`
 (Bundle-Witness: `INBOX/INTAKE-2026-07-21-synthbiosis-system-atlas-v1_1.md`;
 Feld-Mapping: `docs/annex/SYNTHBIOSIS_MODULE_ADAPTER_MAP_v0_1.md` §2.1)
+**Validation-Refresh:** 2026-07-26 (Post-Merge-Hardening nach PR #325)
 
 ```yaml
 source_relation:
@@ -68,7 +69,14 @@ begrenzt. Promotionsfähig sind im Kernel nur `SUPPORTS`, `MEASURES` und
 | `ui` | **nie** promotionsfähig | unverändert — ein UI-Frame ist kein Wahrheitszeuge |
 | `formal` | nur Kontext/Provenienz | `SUPPORTS`/`IMPLEMENTS` erst mit formalem Review-Witness und gebundener Zieldomäne; **niemals pauschal** `MEASURES` |
 | `governance` | nur `CONTEXTUALIZES`, `MOTIVATES`, `PROVENANCE_ONLY` | höchstens `IMPLEMENTS` innerhalb explizit dokumentierter Authority-/Scope-Grenzen |
-| `physical`, `biological` | Promotion nur mit `m5_review_pointer` | unverändert |
+| `physical`, `biological` | `CONTEXTUALIZES`, `MOTIVATES`, `PROVENANCE_ONLY` ohne M5; `SUPPORTS`, `MEASURES`, `IMPLEMENTS` nur mit `m5_review_pointer`; `CONTRADICTS` ist in v0.1 nicht geöffnet | unverändert |
+
+[FACT] Diese Matrix ist als geschlossenes, registerbezogenes Vokabular
+implementiert. Dass eine Relation im Kernel bekannt oder nicht
+promotionsfähig ist, reicht nicht: `CONTRADICTS` darf beispielsweise nicht aus
+einem Bridge-Record am Register-Gate vorbeilaufen. Da v0.1 dafür in keinem
+Register eine explizite Öffnungsbedingung definiert, wird die Relation überall
+abgelehnt.
 
 [FACT] **In v0.1 ist damit kein Register ohne dokumentiertes Gate
 promotionsfähig.** Der Grund liegt im Kernel: `evaluate_transition_request()`
@@ -125,9 +133,27 @@ Er ist iterierbar und ginge sonst zeichenweise als Liste durch.
 - **Verbotene Tags:** Der Adapter vergibt `[FACT]`, `[SPEC]` und `[CANON]`
   niemals selbst — auch nicht über einen Alias wie `[FAKT]`. Ein
   `ClaimCandidate` trägt höchstens ein Einstiegstag; jede Höherstufung läuft
-  über Guard und `HumanDecision`.
+  über Guard und `HumanDecision`. Sobald ein Candidate vorgeschlagen wird, ist
+  eine geladene `ClaimPolicy` Pflicht; ohne Policy fällt der Adapter
+  fail-closed aus, statt Alias-/Unknown-Tag-Prüfung zu überspringen.
+- **Claim-Bindung:** Ohne neuen `ClaimCandidate` ist eine nicht-leere
+  `claim_id` Pflicht. Mit Candidate ist nicht-leerer `claim_text` Pflicht; nur
+  auf diesem Pfad darf die Claim-ID deterministisch aus `bridge_id` abgeleitet
+  werden.
+- **Identität und Attribution:** `bridge_id` und `actor` müssen nicht-leere,
+  kanonische Strings ohne Rand-Whitespace sein. Das gilt ebenso für Claim-ID,
+  Quell-/Digest- und M5-Pointer. So kollidieren keine anonymen oder optisch
+  identischen IDs und es entstehen keine ERK-Vorschläge mit ungültiger
+  Attribution.
+- **Schema-Pin:** Nur `bridge.v0.1` wird interpretiert. Ein externes
+  Eingabe-Mapping muss `schema_version` ausdrücklich mitsenden; die
+  Dataclass-Vorgabe gilt nur für direkte programmatische Konstruktion.
+  Unversionierte, zukünftige oder unbekannte Payloads werden nicht still unter
+  v0.1-Semantik umgedeutet.
 - **Geschlossenes Feldschema:** Unbekannte Felder im Eingabe-Mapping werden
-  abgelehnt.
+  mit `UNKNOWN_FIELD`, fehlende Pflichtfelder mit `MISSING_REQUIRED_FIELD`
+  abgelehnt. Mapping-Intake akzeptiert nur ein eingebautes `dict`, damit ein
+  frei implementiertes Mapping beim Lesen keinen Aufrufercode ausführen kann.
 
 ## 6. Zwei getrennte Befundvokabulare
 

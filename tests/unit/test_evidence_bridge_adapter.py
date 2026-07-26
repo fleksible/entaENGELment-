@@ -35,6 +35,7 @@ def make_record(**overrides):
         "falsifier": "Ein Gegenbeispiel mit vertauschter Nachbarschaft",
         "rollback": "HumanDecision(WITHDRAW) auf req-001",
         "intended_use": "explain",
+        "claim_id": "clm-existing-001",
     }
     data.update(overrides)
     return BridgeRecord(**data)
@@ -93,12 +94,81 @@ class TestStructuralValidation:
     def test_unknown_fields_are_rejected(self):
         payload = dataclasses.asdict(make_record())
         payload["secret_score"] = 0.9
-        with pytest.raises(BridgeAdapterError):
+        with pytest.raises(BridgeAdapterError) as excinfo:
             bridge_record_from_mapping(payload)
+        assert BridgeReason.UNKNOWN_FIELD in excinfo.value.reasons
+
+    @pytest.mark.parametrize(
+        "field", ["bridge_id", "source_pointer", "known_loss", "schema_version"]
+    )
+    def test_missing_mapping_fields_are_structured_errors(self, field):
+        payload = dataclasses.asdict(make_record())
+        del payload[field]
+        with pytest.raises(BridgeAdapterError) as excinfo:
+            bridge_record_from_mapping(payload)
+        assert BridgeReason.MISSING_REQUIRED_FIELD in excinfo.value.reasons
+
+    def test_non_dict_mapping_is_rejected_without_invoking_it(self):
+        class ExecutableMapping(dict):
+            def __iter__(self):  # pragma: no cover - must not run
+                raise AssertionError("custom mapping executed")
+
+        with pytest.raises(BridgeAdapterError) as excinfo:
+            bridge_record_from_mapping(ExecutableMapping(dataclasses.asdict(make_record())))
+        assert BridgeReason.INVALID_MAPPING in excinfo.value.reasons
 
     def test_mapping_roundtrip(self):
         payload = dataclasses.asdict(make_record())
         assert bridge_record_from_mapping(payload) == make_record()
+
+    def test_blank_bridge_id_is_rejected_before_id_derivation(self):
+        with pytest.raises(BridgeAdapterError) as excinfo:
+            validate_bridge_record(make_record(bridge_id="  "))
+        assert BridgeReason.BRIDGE_ID_REQUIRED in excinfo.value.reasons
+
+    @pytest.mark.parametrize(
+        ("field", "reason"),
+        [
+            ("bridge_id", BridgeReason.BRIDGE_ID_REQUIRED),
+            ("actor", BridgeReason.ACTOR_REQUIRED),
+            ("claim_id", BridgeReason.CLAIM_ID_REQUIRED),
+            ("source_pointer", BridgeReason.SOURCE_POINTER_REQUIRED),
+            ("source_digest", BridgeReason.SOURCE_DIGEST_REQUIRED),
+            ("m5_review_pointer", BridgeReason.M5_REVIEW_REQUIRED),
+        ],
+    )
+    def test_identity_and_pointer_fields_reject_edge_whitespace(self, field, reason):
+        with pytest.raises(BridgeAdapterError) as excinfo:
+            validate_bridge_record(make_record(**{field: " value "}))
+        assert reason in excinfo.value.reasons
+
+    @pytest.mark.parametrize("actor", ["", "  ", None, 7])
+    def test_actor_must_be_nonempty_text(self, actor):
+        with pytest.raises(BridgeAdapterError) as excinfo:
+            validate_bridge_record(make_record(actor=actor))
+        assert BridgeReason.ACTOR_REQUIRED in excinfo.value.reasons
+
+    @pytest.mark.parametrize("version", ["bridge.v9.9", None, [], 7])
+    def test_unsupported_schema_version_is_rejected(self, version):
+        with pytest.raises(BridgeAdapterError) as excinfo:
+            validate_bridge_record(make_record(schema_version=version))
+        assert BridgeReason.UNSUPPORTED_SCHEMA_VERSION in excinfo.value.reasons
+
+    @pytest.mark.parametrize(
+        ("field", "value", "reason"),
+        [
+            ("source_register", [], BridgeReason.UNKNOWN_SOURCE_REGISTER),
+            ("relation_type", {}, BridgeReason.UNKNOWN_RELATION_TYPE),
+            ("intended_use", [], BridgeReason.UNKNOWN_INTENDED_USE),
+            ("visibility", {}, BridgeReason.UNKNOWN_VISIBILITY),
+            ("protected_origin", "false", BridgeReason.INVALID_BOOLEAN),
+            ("claim_id", [], BridgeReason.CLAIM_ID_REQUIRED),
+        ],
+    )
+    def test_json_shaped_type_errors_fail_closed(self, field, value, reason):
+        with pytest.raises(BridgeAdapterError) as excinfo:
+            validate_bridge_record(make_record(**{field: value}))
+        assert reason in excinfo.value.reasons
 
 
 class TestRegisterReach:
@@ -134,6 +204,55 @@ class TestRegisterReach:
     def test_formal_and_governance_may_carry_context_and_provenance(self, register):
         for relation in ("CONTEXTUALIZES", "MOTIVATES", "PROVENANCE_ONLY"):
             validate_bridge_record(make_record(source_register=register, relation_type=relation))
+
+    @pytest.mark.parametrize(
+        "register",
+        [
+            "myth",
+            "metaphor",
+            "formal",
+            "physical",
+            "biological",
+            "psychological",
+            "governance",
+            "ui",
+        ],
+    )
+    def test_contradicts_is_rejected_for_every_register_in_v0_1(self, register):
+        with pytest.raises(BridgeAdapterError) as excinfo:
+            validate_bridge_record(
+                make_record(
+                    source_register=register,
+                    relation_type="CONTRADICTS",
+                    m5_review_pointer=(
+                        "docs/annex/RESEARCH_VALIDATION_GATE_v0_1.md#bench-001"
+                        if register in {"physical", "biological"}
+                        else None
+                    ),
+                )
+            )
+        assert BridgeReason.RELATION_NOT_ALLOWED_FOR_REGISTER in excinfo.value.reasons
+
+    @pytest.mark.parametrize("register", ["physical", "biological"])
+    def test_invalid_gated_relation_names_complete_allowed_vocabulary(self, register):
+        with pytest.raises(BridgeAdapterError) as excinfo:
+            validate_bridge_record(
+                make_record(
+                    source_register=register,
+                    relation_type="CONTRADICTS",
+                    m5_review_pointer=("docs/annex/RESEARCH_VALIDATION_GATE_v0_1.md#bench-001"),
+                )
+            )
+        message = str(excinfo.value)
+        for relation in (
+            "CONTEXTUALIZES",
+            "MOTIVATES",
+            "PROVENANCE_ONLY",
+            "SUPPORTS",
+            "MEASURES",
+            "IMPLEMENTS",
+        ):
+            assert relation in message
 
     @pytest.mark.parametrize("register", ["formal", "governance"])
     def test_deferred_registers_name_their_opening_condition(self, register):
@@ -186,27 +305,61 @@ class TestRegisterReach:
 class TestClaimTagBoundary:
     @pytest.mark.parametrize("tag", ["[FACT]", "[SPEC]", "[CANON]"])
     def test_adapter_must_not_assign_strong_tags(self, tag):
+        policy = load_claim_policy()
         with pytest.raises(BridgeAdapterError) as excinfo:
-            validate_bridge_record(make_record(proposed_claim_tag=tag))
+            validate_bridge_record(
+                make_record(proposed_claim_tag=tag, claim_text="Unzulässiger Satz."),
+                policy=policy,
+            )
         assert BridgeReason.ADAPTER_CANNOT_ASSIGN_TAG in excinfo.value.reasons
 
     def test_alias_is_normalized_before_the_ban_applies(self):
         # [FAKT] normalisiert auf [FACT] und muss ebenso abgelehnt werden.
         policy = load_claim_policy()
         with pytest.raises(BridgeAdapterError) as excinfo:
-            validate_bridge_record(make_record(proposed_claim_tag="[FAKT]"), policy=policy)
+            validate_bridge_record(
+                make_record(proposed_claim_tag="[FAKT]", claim_text="Unzulässiger Satz."),
+                policy=policy,
+            )
         assert BridgeReason.ADAPTER_CANNOT_ASSIGN_TAG in excinfo.value.reasons
 
     def test_unknown_tag_fails_closed(self):
         policy = load_claim_policy()
         with pytest.raises(BridgeAdapterError) as excinfo:
-            validate_bridge_record(make_record(proposed_claim_tag="[TOTALLY-NEW]"), policy=policy)
+            validate_bridge_record(
+                make_record(proposed_claim_tag="[TOTALLY-NEW]", claim_text="Offener Satz."),
+                policy=policy,
+            )
         assert BridgeReason.UNKNOWN_CLAIM_TAG in excinfo.value.reasons
 
     def test_weak_tags_are_allowed(self):
         policy = load_claim_policy()
         for tag in ("[METAPHER]", "[ROSETTA]", "[HYPOTHESE]", "[MODEL]"):
-            validate_bridge_record(make_record(proposed_claim_tag=tag), policy=policy)
+            validate_bridge_record(
+                make_record(proposed_claim_tag=tag, claim_text="Prüfbarer Satz."),
+                policy=policy,
+            )
+
+    def test_claim_policy_is_required_for_every_proposed_tag(self):
+        with pytest.raises(BridgeAdapterError) as excinfo:
+            validate_bridge_record(
+                make_record(proposed_claim_tag="[FAKT]", claim_text="Alias-Bypass.")
+            )
+        assert BridgeReason.CLAIM_POLICY_REQUIRED in excinfo.value.reasons
+
+    def test_claim_text_is_required_for_candidate(self):
+        policy = load_claim_policy()
+        with pytest.raises(BridgeAdapterError) as excinfo:
+            validate_bridge_record(
+                make_record(proposed_claim_tag="[HYPOTHESE]", claim_text="  "),
+                policy=policy,
+            )
+        assert BridgeReason.CLAIM_TEXT_REQUIRED in excinfo.value.reasons
+
+    def test_existing_claim_id_is_required_without_candidate(self):
+        with pytest.raises(BridgeAdapterError) as excinfo:
+            validate_bridge_record(make_record(claim_id=None))
+        assert BridgeReason.CLAIM_ID_REQUIRED in excinfo.value.reasons
 
 
 class TestTranslation:
@@ -220,6 +373,16 @@ class TestTranslation:
         assert translation.claim is None
         # Nichts wurde geschrieben:
         assert list(tmp_path.iterdir()) == []
+
+    def test_translation_fails_closed_without_candidate_policy(self):
+        with pytest.raises(BridgeAdapterError) as excinfo:
+            translate_bridge_record(
+                make_record(
+                    proposed_claim_tag="[HYPOTHESE]",
+                    claim_text="Prüfbarer Satz.",
+                )
+            )
+        assert BridgeReason.CLAIM_POLICY_REQUIRED in excinfo.value.reasons
 
     def test_source_expression_never_leaves_the_bridge(self):
         translation = translate_bridge_record(make_record())
@@ -296,6 +459,19 @@ class TestTranslation:
         assert translation.claim is not None
         assert translation.claim.claim_tag == "[HYPOTHESE]"
         assert translation.claim.material_refs == [translation.material.material_id]
+
+    def test_candidate_may_derive_claim_id_when_none_is_supplied(self):
+        policy = load_claim_policy()
+        translation = translate_bridge_record(
+            make_record(
+                claim_id=None,
+                proposed_claim_tag="[HYPOTHESE]",
+                claim_text="Beispielsatz.",
+            ),
+            policy=policy,
+        )
+        assert translation.claim is not None
+        assert translation.relation.claim_id == translation.claim.claim_id
 
     def test_translation_is_deterministic(self):
         first = translate_bridge_record(make_record())
@@ -374,6 +550,7 @@ class TestSourceModuleMinimalTests:
             relation_type="MOTIVATES",
             known_loss=["Keine Aussage über Ladungstransport oder Theologie"],
             proposed_claim_tag="[METAPHER]",
+            claim_text="Die Barriere dient hier ausschließlich als Metapher.",
         )
         translation = translate_bridge_record(record, policy=policy)
         assert translation.promotion_capable is False
