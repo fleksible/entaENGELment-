@@ -84,7 +84,7 @@ Verletzung fail-closed auf `HOLD`:
 | Bedingung | Reason-Code | Wirkung |
 |---|---|---|
 | Registry passt nicht zum Ökosystem / unbekanntes Ökosystem | `REGISTRY_UNKNOWN` | HOLD |
-| Version nicht vollständig gepinnt (`1`, `1.2`, `1.x`, Ranges) | `VERSION_UNVERIFIABLE` | HOLD |
+| Version nicht sauber aufgelöst (`1`, `1.2`, `1.x`, `foo.bar.1`, `1.2.3/evil`, `1.2.3+`, Ranges) | `VERSION_UNVERIFIABLE` | HOLD |
 | Quelle nicht `verified` | `SOURCE_UNVERIFIED` | HOLD |
 | Netzwerk erforderlich | `NETWORK_REQUIRED` | HOLD + HUMAN_ONLY |
 | Dateisystemeffekt | `FILESYSTEM_EFFECT` | HOLD + HUMAN_ONLY |
@@ -119,10 +119,10 @@ inerter Text), Kollektionen enthalten nur Strings und werden zu Tupeln
 normalisiert, `schema_version`/`guard_state`/`responsibility_class`/`visibility`
 und das Reason-Code-Vokabular sind geschlossen, und die
 `HUMAN_APPROVAL_REQUIRED`-Kohärenz gilt. Zusätzlich wird die **Invariante**
-erzwungen, dass ein Manifest mit realer Nebenwirkung oder Irreversibilität
-`HOLD` + `HUMAN_ONLY` + menschliche Freigabe tragen muss — so kann ein
-deserialisiertes/direkt gebautes Manifest eine solche Aktion nicht als
-`PROPOSE`/`COMPUTATIONAL` am Gate vorbei routen. Das ist eine Invarianzprüfung,
+erzwungen, dass ein Manifest mit realer Nebenwirkung oder Irreversibilität —
+oder mit deklarierter Klasse `HUMAN_ONLY` — `HOLD` + `HUMAN_ONLY` + menschliche
+Freigabe tragen muss, so kann ein deserialisiertes/direkt gebautes Manifest eine
+solche Aktion nicht als `PROPOSE`/`COMPUTATIONAL` am Gate vorbei routen. Das ist eine Invarianzprüfung,
 keine Neuberechnung der vollen Ladder; die abgeleitete Gate-Entscheidung bleibt
 allein Sache von `build_action_proposal`.
 

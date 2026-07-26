@@ -274,10 +274,18 @@ class TestPinnedVersionHelper:
             "==1.2.3",
             "foo.bar.1",
             "a.b.c",
+            "1foo.2bar.3baz",
+            "1.2.3/evil",
+            "1.2.3+",
+            "1.2 3",
         ],
     )
     def test_unpinned(self, value):
         assert _is_pinned_version(value) is False
+
+    @pytest.mark.parametrize("value", ["1.2.3", "0.1.0a", "1.2.3-rc1", "1.2.3+build.5"])
+    def test_pinned_release_forms(self, value):
+        assert _is_pinned_version(value) is True
 
 
 class TestEcosystemRegistryMatch:
@@ -384,6 +392,19 @@ class TestPostInitValidation:
                     reversibility="irreversible",
                     guard_state=GUARD_PROPOSE,
                     responsibility_class=ResponsibilityClass.COMPUTATIONAL.value,
+                    human_approval_required=False,
+                    reason_codes=("ACTION_PROPOSAL_ONLY",),
+                )
+            )
+
+    def test_declared_human_only_without_approval_rejected(self):
+        # HUMAN_ONLY ohne Nebenwirkung/Irreversibilität, aber als PROPOSE/ohne
+        # Freigabe deklariert → abweisen (die deklarierte Klasse bindet).
+        with pytest.raises(ActionGateError):
+            ActionProposal(
+                **self._valid_kwargs(
+                    responsibility_class=ResponsibilityClass.HUMAN_ONLY.value,
+                    guard_state=GUARD_PROPOSE,
                     human_approval_required=False,
                     reason_codes=("ACTION_PROPOSAL_ONLY",),
                 )

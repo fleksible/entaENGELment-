@@ -87,6 +87,12 @@ _UNPINNED_VERSION_TOKENS = frozenset({"", "latest", "*", "any", "x", "unknown", 
 # gelten hier fail-closed als nicht gepinnt.
 _MIN_PINNED_VERSION_COMPONENTS = 3
 
+# Konservativer Zeichensatz einer aufgelösten Version (nach Lowercasing). Alles
+# außerhalb (z.B. ``/``, Whitespace) markiert keine gepinnte Version. Dies ist
+# bewusst KEIN vollständiger ökosystemspezifischer Semver-Parser, sondern der
+# kleinste deterministische Struktur-Check.
+_VERSION_CHARSET = frozenset("0123456789abcdefghijklmnopqrstuvwxyz.+-")
+
 # Verifikationsstatus, der eine überprüfte Quelle bezeugt.
 VERIFICATION_VERIFIED = "verified"
 
@@ -275,6 +281,15 @@ class ActionProposal:
                     "side-effect/irreversible proposal must require human approval"
                 )
 
+        # Auch die *deklarierte* Verantwortungsklasse bindet: HUMAN_ONLY ist per
+        # Definition menschlich freizugeben — ein direkt/deserialisiert gebautes
+        # HUMAN_ONLY-Manifest darf niemals PROPOSE ohne Freigabe sein.
+        if self.responsibility_class == ResponsibilityClass.HUMAN_ONLY.value:
+            if self.guard_state != GUARD_HOLD:
+                raise ActionGateError("HUMAN_ONLY proposal must be HOLD")
+            if not self.human_approval_required:
+                raise ActionGateError("HUMAN_ONLY proposal must require human approval")
+
     def to_manifest(self) -> dict[str, object]:
         """Kanonische, serialisierbare (JSON-native) Manifest-Darstellung.
 
@@ -321,6 +336,9 @@ def _is_pinned_version(value: str) -> bool:
     # Range-/Wildcard-Operatoren markieren keine feste Version.
     if any(op in token for op in ("^", "~", ">", "<", "*", "=", " - ", "||", ",")):
         return False
+    # Fremde Zeichen (``/``, Whitespace o.Ä.) markieren keine feste Version.
+    if any(ch not in _VERSION_CHARSET for ch in token):
+        return False
     parts = token.split(".")
     # Eingebettete Wildcard- oder leere Komponenten (``1.x``, ``1.2.x``, ``x``)
     # sind nicht gepinnt, obwohl sie eine Ziffer enthalten.
@@ -329,9 +347,15 @@ def _is_pinned_version(value: str) -> bool:
     # Teilweise Versionen (``1``, ``1.2``) sind X-Ranges, keine feste Version.
     if len(parts) < _MIN_PINNED_VERSION_COMPONENTS:
         return False
-    # Die ersten drei (Release-)Komponenten müssen numerisch beginnen; sonst ist
-    # es keine aufgelöste Major.Minor.Patch-Version (``foo.bar.1`` → ungepinnt).
-    return all(part[:1].isdigit() for part in parts[:_MIN_PINNED_VERSION_COMPONENTS])
+    major, minor, patch = parts[0], parts[1], parts[2]
+    # Major/Minor müssen reine Ziffernblöcke sein; der Patch darf ein
+    # angehängtes Prerelease tragen (``0.1.0a``), muss aber mit einer Ziffer
+    # beginnen und alphanumerisch enden — so scheitern ``1foo.2bar.3baz`` und
+    # ``1.2.3+`` fail-closed. Ein vollständiger ökosystemspezifischer
+    # Versionsparser ist bewusst NICHT Teil dieses minimalen Gates.
+    if not (major.isdigit() and minor.isdigit()):
+        return False
+    return bool(patch) and patch[:1].isdigit() and patch[-1:].isalnum()
 
 
 def _normalize_effects(effects: Sequence[str] | None) -> list[str]:
