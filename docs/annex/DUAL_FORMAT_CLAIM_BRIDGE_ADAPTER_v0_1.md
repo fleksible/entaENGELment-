@@ -61,27 +61,63 @@ damit Identität zwischen den Registern.
 begrenzt. Promotionsfähig sind im Kernel nur `SUPPORTS`, `MEASURES` und
 `IMPLEMENTS`.
 
-| Quellregister | promotionsfähige Relation? | Begründung |
+| Quellregister | Entscheidung für v0.1 | spätere Öffnung |
 |---|---|---|
-| `myth`, `metaphor` | **nie** | Metapher ist keine Evidenz (Invariante 3) |
-| `psychological` | **nie** | keine Diagnose, kein Claim über eine Person |
-| `ui` | **nie** | ein UI-Frame ist kein Wahrheitszeuge |
-| `physical`, `biological` | nur mit `m5_review_pointer` | kein Weg an der methodischen Prüfung vorbei |
-| `formal`, `governance` | ja (strukturell) | inhaltliche Tragfähigkeit bleibt Review-Frage |
+| `myth`, `metaphor` | **nie** promotionsfähig | unverändert — Metapher ist keine Evidenz (Invariante 3) |
+| `psychological` | **nie** promotionsfähig | unverändert — keine Diagnose, kein Claim über eine Person |
+| `ui` | **nie** promotionsfähig | unverändert — ein UI-Frame ist kein Wahrheitszeuge |
+| `formal` | nur Kontext/Provenienz | `SUPPORTS`/`IMPLEMENTS` erst mit formalem Review-Witness und gebundener Zieldomäne; **niemals pauschal** `MEASURES` |
+| `governance` | nur `CONTEXTUALIZES`, `MOTIVATES`, `PROVENANCE_ONLY` | höchstens `IMPLEMENTS` innerhalb explizit dokumentierter Authority-/Scope-Grenzen |
+| `physical`, `biological` | Promotion nur mit `m5_review_pointer` | unverändert |
 
-[FACT] Ein Verstoß führt zum Abbruch, **nicht** zu stiller Degradierung: Der
-Adapter schreibt eine unzulässige Relation nicht heimlich auf einen
-schwächeren Typ um, sondern verweigert und nennt den Grund.
+[FACT] **In v0.1 ist damit kein Register ohne dokumentiertes Gate
+promotionsfähig.** Der Grund liegt im Kernel: `evaluate_transition_request()`
+prüft für `PROPOSE` strukturell nur, ob die Relation promotionsfähig ist, ob
+die Materialart keine Metapher ist und ob Trust nicht `UNTRUSTED` lautet. Ein
+`REVIEWED`-Governance-Dokument könnte dort sonst mit `MEASURES` ein
+strukturell grünes Signal erhalten, das seine Reichweite überschätzt — es
+promoviert zwar nicht autonom (die `HumanDecision` bleibt), aber das Signal
+wäre irreführend.
+
+[INFERENZ] Für `formal` fehlt dem Record derzeit die entscheidende
+Unterscheidung: Er kennt weder `target_register`/`claim_domain` noch einen
+formalen Review-Pointer und kann deshalb „Beweis einer Grapheneigenschaft"
+nicht von „Formel stützt Behauptung über die Welt" trennen. Bis diese Bindung
+existiert: Kontext, nicht Promotion.
+
+[FACT] Ein Verstoß führt zum **Abbruch, nicht zur Degradierung** — auch nicht
+zu einer sichtbaren. Eine automatische Abstufung wäre keine Übersetzung mehr,
+sondern eine Entscheidung: Der Aufrufer sagte `MEASURES`, der Adapter
+erzeugte `CONTEXTUALIZES`. Stattdessen nennt der Fehlertext die zulässigen
+Relationstypen und weist darauf hin, dass ein **Mensch** einen neuen,
+ausdrücklich anders lautenden Record einreichen kann.
 
 Zusätzlich setzt der Adapter für mythische und metaphorische Register die
 Materialart auf `metaphor`. Damit greift der Kernel-Guard
 (`NON_EVIDENCE_MATERIAL_KINDS`) **unabhängig vom Adapter** — die Grenze hält
 auch dann, wenn jemand den Adapter umgeht und das Material direkt registriert.
 
-## 4. Weitere Grenzen
+## 4. Der Kontext überlebt die Übersetzung
+
+[FACT] `BridgeTranslation` trägt einen unveränderlichen `BridgeContext` mit den
+sechs Brückenantworten plus `m5_review_pointer`. Er erscheint auch in
+`to_dict()`.
+
+Ohne ihn wäre die Übersetzung eine Behauptung ohne Beschriftung: Man sähe die
+Relation, aber weder die übertragene Eigenschaft noch den Verlust, den
+Falsifikator, den Rücknahmeweg — und bei physischen Registern auch nicht, **aus
+welchem Grund das M5-Gate passiert werden durfte**. Ein validierter und danach
+verworfener `known_loss` widerspricht der Regel „Known Loss muss sichtbar
+bleiben" direkt.
+
+`known_loss` wird intern als Tupel geführt. Ein blanker String wird abgelehnt:
+Er ist iterierbar und ginge sonst zeichenweise als Liste durch.
+
+## 5. Weitere Grenzen
 
 - **Kein Rohinhalt:** Es gehen nur `source_pointer`, `source_digest` und
   Metadaten weiter. Der Quellausdruck selbst wird nie übernommen.
+  `source_digest` ist Pflichttext.
 - **`protected_origin`** setzt die Sichtbarkeit auf `private` — nach unten,
   nie nach oben.
 - **Trust-Default `UNTRUSTED`** (G5). Untrusted Material kann keine
@@ -93,7 +129,7 @@ auch dann, wenn jemand den Adapter umgeht und das Material direkt registriert.
 - **Geschlossenes Feldschema:** Unbekannte Felder im Eingabe-Mapping werden
   abgelehnt.
 
-## 5. Zwei getrennte Befundvokabulare
+## 6. Zwei getrennte Befundvokabulare
 
 [ANNEX] Der Adapter braucht Begriffe für Übersetzungsfehler, die der Kernel
 nicht kennt. Diese leben in einem **eigenen** Enum `BridgeReason` und
@@ -110,7 +146,7 @@ Ein Test hält diese Trennung fest.
 Entscheidungsleiter — es ist adapter-lokal, wie `HOLD` im Change-Gate
 gate-lokal ist.
 
-## 6. Verhältnis zu den anderen Modulen
+## 7. Verhältnis zu den anderen Modulen
 
 **M1 ↔ ERK:** Der Adapter erzeugt Vorschläge; der Kernel entscheidet über
 Struktur (Guard) und der Mensch über Geltung (`HumanDecision`). Der Adapter
@@ -125,7 +161,7 @@ Register brauchen für Promotionsfähigkeit einen dokumentierten
 **M1 ↔ tesser3TAKT:** Keine Berührung. Der Adapter kennt kein
 Navigationsvokabular und übersetzt keines.
 
-## 7. Known Loss
+## 8. Known Loss
 
 - Der Adapter prüft **Struktur, nicht Inhalt**: ob eine behauptete Relation
   sachlich trägt, entscheidet er nicht.
@@ -138,14 +174,14 @@ Navigationsvokabular und übersetzt keines.
 - Die Registerliste ist ein erster Schnitt und braucht menschliche
   Bestätigung.
 
-## 8. Rücknahme
+## 9. Rücknahme
 
 Modul, Test und dieses Dokument nach `NICHTRAUM/archive/` verschieben und den
 additiven Export-Block in `src/core/__init__.py` zurücknehmen (G3). Kein
 bestehendes Modul importiert den Adapter; der Kernel bleibt unverändert
 lauffähig.
 
-## 9. Offene Punkte
+## 10. Offene Punkte
 
 - [ ] ☐ Menschenlesbare Bridge-Anzeige (Exit-Kriterium des Quellmoduls).
 - [ ] ☐ Ein Aufrufpfad, der Vorschläge tatsächlich als Events schreibt, ist

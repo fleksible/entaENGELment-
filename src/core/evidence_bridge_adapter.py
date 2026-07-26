@@ -84,14 +84,31 @@ KNOWN_SOURCE_REGISTERS = frozenset(
 NON_EVIDENCE_REGISTERS = frozenset({REGISTER_MYTH, REGISTER_METAPHOR})
 
 # Register, die erst nach dokumentierter methodischer Prüfung (M5) eine
-# promotionsfähige Relation tragen dürfen.
+# promotionsfähige Relation tragen dürfen. In v0.1 sind das die einzigen
+# Register, die überhaupt promotionsfähig werden können.
 M5_GATED_REGISTERS = frozenset({REGISTER_PHYSICAL, REGISTER_BIOLOGICAL})
 
-# Register ohne jede promotionsfähige Reichweite: Sie können Kontext geben oder
-# motivieren, aber niemals stützen oder messen.
+# Register ohne jede promotionsfähige Reichweite — auch später nicht. Sie können
+# Kontext geben oder motivieren, aber niemals stützen oder messen.
 NON_PROMOTING_REGISTERS = frozenset(
     {REGISTER_MYTH, REGISTER_METAPHOR, REGISTER_PSYCHOLOGICAL, REGISTER_UI}
 )
+
+# Register, die in v0.1 nur Kontext und Provenienz tragen, deren spätere
+# Öffnung aber an eine benannte Bedingung geknüpft ist. Der Kernel prüft für
+# ``PROPOSE`` strukturell nur Relationstyp, Materialart und Trust — ein
+# ``REVIEWED``-Dokument könnte dort sonst ein grünes Signal erhalten, das seine
+# Reichweite überschätzt. Bis die jeweilige Bindung existiert: kein Proposal.
+DEFERRED_PROMOTION_REGISTERS = {
+    REGISTER_FORMAL: (
+        "Öffnung erst mit formalem Review-Witness und gebundener Zieldomäne "
+        "(target_register/claim_domain); niemals pauschal MEASURES"
+    ),
+    REGISTER_GOVERNANCE: (
+        "Öffnung höchstens für IMPLEMENTS innerhalb explizit dokumentierter "
+        "Authority-/Scope-Grenzen"
+    ),
+}
 
 # Relationen, die ohne weitere Prüfung immer zulässig sind.
 CONTEXT_ONLY_RELATIONS = frozenset({"MOTIVATES", "CONTEXTUALIZES", "PROVENANCE_ONLY"})
@@ -127,8 +144,11 @@ class BridgeReason(str, Enum):
     UNKNOWN_SOURCE_REGISTER = "UNKNOWN_SOURCE_REGISTER"
     UNKNOWN_RELATION_TYPE = "UNKNOWN_RELATION_TYPE"
     REGISTER_CANNOT_PROMOTE = "REGISTER_CANNOT_PROMOTE"
+    PROMOTION_NOT_ENABLED_IN_V0_1 = "PROMOTION_NOT_ENABLED_IN_V0_1"
     M5_REVIEW_REQUIRED = "M5_REVIEW_REQUIRED"
     KNOWN_LOSS_REQUIRED = "KNOWN_LOSS_REQUIRED"
+    KNOWN_LOSS_MUST_BE_LIST = "KNOWN_LOSS_MUST_BE_LIST"
+    SOURCE_DIGEST_REQUIRED = "SOURCE_DIGEST_REQUIRED"
     FALSIFIER_REQUIRED = "FALSIFIER_REQUIRED"
     ROLLBACK_REQUIRED = "ROLLBACK_REQUIRED"
     TRANSFERRED_PROPERTY_REQUIRED = "TRANSFERRED_PROPERTY_REQUIRED"
@@ -185,6 +205,40 @@ class BridgeRecord:
 
 
 @dataclass(frozen=True)
+class BridgeContext:
+    """Die sechs Brückenfragen, die mit der Übersetzung erhalten bleiben.
+
+    Ohne diesen Kontext wäre die Übersetzung eine Behauptung ohne Beschriftung:
+    Man sähe die Relation, aber weder die übertragene Eigenschaft noch den
+    Verlust, den Falsifikator, den Rücknahmeweg — und bei physischen Registern
+    auch nicht, warum das M5-Gate passiert werden durfte.
+    """
+
+    source_register: str
+    transferred_property: str
+    preserved_relation: str
+    known_loss: tuple[str, ...]
+    falsifier: str
+    rollback: str
+    intended_use: str
+    protected_origin: bool
+    m5_review_pointer: str | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "source_register": self.source_register,
+            "transferred_property": self.transferred_property,
+            "preserved_relation": self.preserved_relation,
+            "known_loss": list(self.known_loss),
+            "falsifier": self.falsifier,
+            "rollback": self.rollback,
+            "intended_use": self.intended_use,
+            "protected_origin": self.protected_origin,
+            "m5_review_pointer": self.m5_review_pointer,
+        }
+
+
+@dataclass(frozen=True)
 class BridgeTranslation:
     """Ergebnis einer Übersetzung — Vorschläge, kein Vollzug."""
 
@@ -194,7 +248,13 @@ class BridgeTranslation:
     relation: EvidenceRelation
     claim: ClaimCandidate | None
     promotion_capable: bool
+    context: BridgeContext
     notes: tuple[BridgeReason, ...] = field(default=())
+
+    @property
+    def known_loss(self) -> tuple[str, ...]:
+        """Der benannte Verlust bleibt am Ergebnis sichtbar."""
+        return self.context.known_loss
 
     def to_dict(self) -> dict[str, Any]:
         data: dict[str, Any] = {
@@ -204,6 +264,7 @@ class BridgeTranslation:
             "relation": asdict(self.relation),
             "claim": asdict(self.claim) if self.claim is not None else None,
             "promotion_capable": self.promotion_capable,
+            "context": self.context.to_dict(),
             "notes": [note.value for note in self.notes],
         }
         return data
@@ -247,6 +308,7 @@ def validate_bridge_record(record: BridgeRecord, *, policy: ClaimPolicy | None =
         )
 
     _require_text(record.source_pointer, BridgeReason.SOURCE_POINTER_REQUIRED, "source_pointer")
+    _require_text(record.source_digest, BridgeReason.SOURCE_DIGEST_REQUIRED, "source_digest")
     _require_text(
         record.transferred_property,
         BridgeReason.TRANSFERRED_PROPERTY_REQUIRED,
@@ -259,6 +321,14 @@ def validate_bridge_record(record: BridgeRecord, *, policy: ClaimPolicy | None =
     )
     _require_text(record.falsifier, BridgeReason.FALSIFIER_REQUIRED, "falsifier")
     _require_text(record.rollback, BridgeReason.ROLLBACK_REQUIRED, "rollback")
+
+    # Ein blanker String ist iterierbar: ohne diese Prüfung würde
+    # known_loss="Kantengewichte" zeichenweise als Liste durchgehen.
+    if isinstance(record.known_loss, str) or not isinstance(record.known_loss, (list, tuple)):
+        raise BridgeAdapterError(
+            "known_loss must be a list or tuple of strings, not a bare string",
+            [BridgeReason.KNOWN_LOSS_MUST_BE_LIST],
+        )
 
     # Known Loss ist Pflicht: Eine Brücke ohne sichtbaren Verlust behauptet
     # implizit Verlustfreiheit — und damit Identität.
@@ -275,21 +345,35 @@ def validate_bridge_record(record: BridgeRecord, *, policy: ClaimPolicy | None =
 
 
 def _validate_register_reach(record: BridgeRecord) -> None:
-    """Erzwingt, wie weit ein Quellregister relational reichen darf."""
+    """Erzwingt, wie weit ein Quellregister relational reichen darf.
+
+    Bei Verstoß wird abgebrochen, nicht abgestuft. Eine automatische
+    Degradierung auf ``CONTEXTUALIZES`` wäre keine Übersetzung mehr, sondern
+    eine Entscheidung: Der Aufrufer sagte ``MEASURES``. Die Korrektur ist ein
+    neuer, ausdrücklich anders lautender Record — von einem Menschen.
+    """
     if record.relation_type not in PROMOTION_CAPABLE_RELATION_TYPES:
         return
 
+    hint = (
+        f"Zulässig sind hier {sorted(CONTEXT_ONLY_RELATIONS)}. Der Adapter stuft "
+        "nicht selbst ab; ein Mensch kann einen neuen Record mit ausdrücklich "
+        "diesem Relationstyp einreichen."
+    )
+
     if record.source_register in NON_PROMOTING_REGISTERS:
-        reason = (
-            BridgeReason.REGISTER_CANNOT_PROMOTE
-            if record.source_register not in NON_EVIDENCE_REGISTERS
-            else BridgeReason.REGISTER_CANNOT_PROMOTE
-        )
         raise BridgeAdapterError(
             f"source_register {record.source_register!r} cannot carry a "
-            f"promotion-capable relation ({record.relation_type}); "
-            f"allowed: {sorted(CONTEXT_ONLY_RELATIONS)}",
-            [reason],
+            f"promotion-capable relation ({record.relation_type}). {hint}",
+            [BridgeReason.REGISTER_CANNOT_PROMOTE],
+        )
+
+    if record.source_register in DEFERRED_PROMOTION_REGISTERS:
+        condition = DEFERRED_PROMOTION_REGISTERS[record.source_register]
+        raise BridgeAdapterError(
+            f"source_register {record.source_register!r} is not promotion-enabled "
+            f"in v0.1 ({record.relation_type}): {condition}. {hint}",
+            [BridgeReason.PROMOTION_NOT_ENABLED_IN_V0_1],
         )
 
     if record.source_register in M5_GATED_REGISTERS and not (
@@ -297,7 +381,7 @@ def _validate_register_reach(record: BridgeRecord) -> None:
     ):
         raise BridgeAdapterError(
             f"source_register {record.source_register!r} requires a documented "
-            "m5_review_pointer before a promotion-capable relation is allowed",
+            f"m5_review_pointer before a promotion-capable relation is allowed. {hint}",
             [BridgeReason.M5_REVIEW_REQUIRED],
         )
 
@@ -429,6 +513,20 @@ def translate_bridge_record(
         and normalized_trust != TRUST_UNTRUSTED
     )
 
+    # Die sechs Brückenfragen bleiben am Ergebnis sichtbar — insbesondere der
+    # Verlust und der Grund, aus dem ein physisches Register das Gate passierte.
+    context = BridgeContext(
+        source_register=record.source_register,
+        transferred_property=record.transferred_property.strip(),
+        preserved_relation=record.preserved_relation.strip(),
+        known_loss=tuple(item.strip() for item in record.known_loss),
+        falsifier=record.falsifier.strip(),
+        rollback=record.rollback.strip(),
+        intended_use=record.intended_use,
+        protected_origin=record.protected_origin,
+        m5_review_pointer=record.m5_review_pointer,
+    )
+
     return BridgeTranslation(
         bridge_id=record.bridge_id,
         schema_version=BRIDGE_SCHEMA_VERSION,
@@ -436,6 +534,7 @@ def translate_bridge_record(
         relation=relation,
         claim=claim,
         promotion_capable=promotion_capable,
+        context=context,
         notes=tuple(notes),
     )
 

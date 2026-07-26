@@ -13,6 +13,7 @@ Zusätzlich: Evidence Routing Kernel v0.1a (bewusst kleine, stabile Exports).
 
 from .evidence_bridge_adapter import (
     BridgeAdapterError,
+    BridgeContext,
     BridgeReason,
     BridgeRecord,
     BridgeTranslation,
@@ -79,6 +80,7 @@ __all__ = [
     # Dual-Format Claim Bridge Adapter v0.1 (M1 -> ERK)
     "BridgeRecord",
     "BridgeTranslation",
+    "BridgeContext",
     "BridgeReason",
     "BridgeAdapterError",
     "validate_bridge_record",

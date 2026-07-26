@@ -69,6 +69,18 @@ class TestStructuralValidation:
         with pytest.raises(BridgeAdapterError):
             validate_bridge_record(make_record(known_loss=["  "]))
 
+    def test_bare_string_known_loss_is_rejected(self):
+        # Ein String ist iterierbar: ohne diese Prüfung ginge er zeichenweise
+        # als Liste durch.
+        with pytest.raises(BridgeAdapterError) as excinfo:
+            validate_bridge_record(make_record(known_loss="Kantengewichte"))
+        assert BridgeReason.KNOWN_LOSS_MUST_BE_LIST in excinfo.value.reasons
+
+    def test_source_digest_is_mandatory(self):
+        with pytest.raises(BridgeAdapterError) as excinfo:
+            validate_bridge_record(make_record(source_digest="   "))
+        assert BridgeReason.SOURCE_DIGEST_REQUIRED in excinfo.value.reasons
+
     def test_unknown_register_and_relation_fail_closed(self):
         with pytest.raises(BridgeAdapterError) as excinfo:
             validate_bridge_record(make_record(source_register="astrology"))
@@ -105,6 +117,49 @@ class TestRegisterReach:
             make_record(source_register=register, relation_type="CONTEXTUALIZES")
         )
         validate_bridge_record(make_record(source_register=register, relation_type="MOTIVATES"))
+
+    @pytest.mark.parametrize("register", ["formal", "governance"])
+    @pytest.mark.parametrize("relation", sorted(PROMOTION_CAPABLE_RELATION_TYPES))
+    def test_formal_and_governance_are_not_promotion_enabled_in_v0_1(self, register, relation):
+        """Der Kernel prüft für PROPOSE nur Relationstyp, Materialart und Trust.
+
+        Ein REVIEWED-Governance-Dokument könnte dort sonst ein strukturell
+        grünes Signal bekommen, das seine Reichweite überschätzt.
+        """
+        with pytest.raises(BridgeAdapterError) as excinfo:
+            validate_bridge_record(make_record(source_register=register, relation_type=relation))
+        assert BridgeReason.PROMOTION_NOT_ENABLED_IN_V0_1 in excinfo.value.reasons
+
+    @pytest.mark.parametrize("register", ["formal", "governance"])
+    def test_formal_and_governance_may_carry_context_and_provenance(self, register):
+        for relation in ("CONTEXTUALIZES", "MOTIVATES", "PROVENANCE_ONLY"):
+            validate_bridge_record(make_record(source_register=register, relation_type=relation))
+
+    @pytest.mark.parametrize("register", ["formal", "governance"])
+    def test_deferred_registers_name_their_opening_condition(self, register):
+        """Der Fehlertext nennt die Bedingung, unter der später geöffnet wird."""
+        with pytest.raises(BridgeAdapterError) as excinfo:
+            validate_bridge_record(make_record(source_register=register, relation_type="SUPPORTS"))
+        message = str(excinfo.value)
+        assert "v0.1" in message
+        if register == "formal":
+            assert "MEASURES" in message  # niemals pauschal
+        else:
+            assert "IMPLEMENTS" in message
+
+    def test_no_register_is_promotion_enabled_without_a_gate(self):
+        """In v0.1 kommt kein Register ohne dokumentierte Prüfung durch."""
+        for register in ("myth", "metaphor", "psychological", "ui", "formal", "governance"):
+            with pytest.raises(BridgeAdapterError):
+                validate_bridge_record(
+                    make_record(source_register=register, relation_type="SUPPORTS")
+                )
+        # Physisch/biologisch nur mit M5-Pointer:
+        for register in ("physical", "biological"):
+            with pytest.raises(BridgeAdapterError):
+                validate_bridge_record(
+                    make_record(source_register=register, relation_type="SUPPORTS")
+                )
 
     @pytest.mark.parametrize("register", ["physical", "biological"])
     def test_physical_registers_need_m5_pointer_for_promotion(self, register):
@@ -171,19 +226,24 @@ class TestTranslation:
         serialized = str(translation.to_dict())
         assert "source_expression" not in serialized
 
+    def _gated_record(self, **overrides):
+        """Der einzige in v0.1 promotionsfähige Pfad: physisch plus M5-Pointer."""
+        data = {
+            "source_register": "physical",
+            "relation_type": "MEASURES",
+            "m5_review_pointer": "docs/annex/RESEARCH_VALIDATION_GATE_v0_1.md#bench-001",
+        }
+        data.update(overrides)
+        return make_record(**data)
+
     def test_trust_defaults_to_untrusted_and_blocks_promotion(self):
-        translation = translate_bridge_record(
-            make_record(relation_type="IMPLEMENTS", source_register="formal")
-        )
+        translation = translate_bridge_record(self._gated_record())
         assert translation.material.trust == "UNTRUSTED"
         assert translation.promotion_capable is False
         assert ReasonCode.UNTRUSTED_MATERIAL.value in translation.relation.reason_codes
 
     def test_reviewed_trust_allows_promotion_capability(self):
-        translation = translate_bridge_record(
-            make_record(relation_type="IMPLEMENTS", source_register="formal"),
-            trust=TRUST_REVIEWED,
-        )
+        translation = translate_bridge_record(self._gated_record(), trust=TRUST_REVIEWED)
         assert translation.promotion_capable is True
 
     def test_protected_origin_forces_private_visibility(self):
@@ -241,6 +301,63 @@ class TestTranslation:
         first = translate_bridge_record(make_record())
         second = translate_bridge_record(make_record())
         assert first.to_dict() == second.to_dict()
+
+
+class TestContextSurvivesTranslation:
+    """Das Beschriftungsschild bleibt Teil des Bauwerks."""
+
+    def test_all_six_bridge_answers_survive(self):
+        record = make_record()
+        translation = translate_bridge_record(record)
+        context = translation.context
+        assert context.source_register == record.source_register
+        assert context.transferred_property == record.transferred_property
+        assert context.preserved_relation == record.preserved_relation
+        assert context.known_loss == tuple(record.known_loss)
+        assert context.falsifier == record.falsifier
+        assert context.rollback == record.rollback
+
+    def test_known_loss_is_reachable_from_the_translation(self):
+        translation = translate_bridge_record(make_record())
+        assert translation.known_loss == ("Kantengewichte gehen verloren",)
+
+    def test_serialized_output_carries_the_context(self):
+        payload = translate_bridge_record(make_record()).to_dict()
+        context = payload["context"]
+        for key in (
+            "source_register",
+            "transferred_property",
+            "preserved_relation",
+            "known_loss",
+            "falsifier",
+            "rollback",
+            "intended_use",
+            "protected_origin",
+            "m5_review_pointer",
+        ):
+            assert key in context
+        assert context["known_loss"] == ["Kantengewichte gehen verloren"]
+
+    def test_m5_pointer_is_preserved_as_the_reason_the_gate_opened(self):
+        pointer = "docs/annex/RESEARCH_VALIDATION_GATE_v0_1.md#bench-001"
+        translation = translate_bridge_record(
+            make_record(
+                source_register="physical",
+                relation_type="MEASURES",
+                m5_review_pointer=pointer,
+            ),
+            trust=TRUST_REVIEWED,
+        )
+        assert translation.promotion_capable is True
+        # Ohne diesen Pointer im Ergebnis wäre nicht mehr nachvollziehbar,
+        # warum die Relation das Gate passieren durfte.
+        assert translation.context.m5_review_pointer == pointer
+        assert translation.to_dict()["context"]["m5_review_pointer"] == pointer
+
+    def test_context_is_immutable(self):
+        translation = translate_bridge_record(make_record())
+        with pytest.raises(dataclasses.FrozenInstanceError):
+            translation.context.known_loss = ()  # type: ignore[misc]
 
 
 class TestSourceModuleMinimalTests:
