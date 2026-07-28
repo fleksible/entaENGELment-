@@ -36,15 +36,35 @@ VERIFIED — The current workspace policy includes explicit `pnpm` overrides and
 exceptions, not ordinary patch updates. They must remain isolated, documented,
 and rollbackable.
 
+### Major compatibility tracks
+
+| Category | Check | PR #298 — TypeScript 7 | PR #339 — ESLint 10 |
+|---|---|---|---|
+| HOLD | workspace tests | not accepted; required workflow is red | not accepted; required workflow is red |
+| HOLD | lint/config/plugins | `@typescript-eslint/typescript-estree@8.60.1` crashes on TS 7 (`Cjs`) | `eslint-plugin-react@7.37.5` calls removed context API |
+| HOLD | typecheck | Next build reaches typecheck, then reports the required TypeScript package unavailable | not reached after lint failure |
+| HOLD | build/packaging | compile stage alone is insufficient; typecheck/package acceptance absent | build and Electron packaging acceptance absent |
+| HOLD | lockfile consistency | changed lockfile is not accepted while compatibility checks fail | changed lockfile is not accepted while compatibility checks fail |
+| HOLD | audit result | no successful head-specific audit witness | no successful head-specific audit witness |
+| HOLD | breaking changes | demonstrated parser/toolchain incompatibility | demonstrated plugin API incompatibility |
+| HOLD | rollback | leave unmerged or close PR; `main` stays unchanged | leave unmerged or close PR; `main` stays unchanged |
+
 ## VOID/QDOT re-entry
 
-| Category | Entry | Status | Smallest closable part | Blocker / review boundary |
-|---|---|---|---|---|
-| VERIFIED | VOID-027 | `IN_PROGRESS` | stable receipt pointer | CI validates the pointer; Owner/human review before any status change |
-| HOLD | VOID-027 remaining work | open | none in this change | 1xn slice, Apex, calibrated EFS/MVI, decision bar remain separately unevidenced |
-| HOLD | VOID-010 | `IN_PROGRESS`, target 2026-07-15 | literature/data evidence slice | physics review boundary |
-| HOLD | VOID-011 | `IN_PROGRESS`, target 2026-07-15 | simulation receipt/export slice | quantitative-method review boundary |
-| HOLD | VOID-024–029 and VOID-LOGZN-001 | open as recorded | per-entry scoped review | no aggregate closure |
+| Category | Entry / status | Open required parts | Current evidence | Smallest closable part | Blocker | Review boundary |
+|---|---|---|---|---|---|---|
+| HOLD | VOID-010 / `IN_PROGRESS` | cited CSV and evidence bundle | `docs/voids/VOID-010_taxonomy_and_spectra.md` | sources-first CSV schema with at least five cited sources | overdue 2026-07-15; empirical source binding | physics/literature review |
+| HOLD | VOID-011 / `IN_PROGRESS` | deterministic metric export and `SIMULATION_PROXY` receipt | metrics code, toy dataset, unit test, VOID note | one deterministic claim-tagged export/receipt | evidence boundary, not implementation stub | quantitative-method review |
+| HOLD | VOID-015 / `OPEN` | lint rules, fixtures, coverage receipt | none | one trigger-term fixture with Reason/Transform/Input binding | target thresholds remain SPEC | claim-hygiene/governance review |
+| HOLD | VOID-016 / `OPEN` | τ retention rules, autophagy/V+ interaction, deletion receipts | none | one explicit τ_fast retention rule and negative fixture | “essence” and deletion semantics are not operationally bound | governance/privacy review |
+| HOLD | VOID-017 / `OPEN` | Δ components and non-peak tipping tests | none | one negative fixture proving magnitude alone does not tip | threshold/components remain SPEC | math/control review |
+| HOLD | VOID-024 / `OPEN` | consent policy, bounds, reason codes, kill-switch, safe-text fallback, receipt | none | consent + STOP fallback schema fixture | heuristic frequency/PLV values lack an evidence path | safety/human review |
+| HOLD | VOID-025 / `OPEN` | modality fields, deterministic serialization, hash basis, autophagy invariants, receipt fixtures | none | canonical UTF-8 NFC text fixture | cross-modality identity and heuristics unresolved | governance/cryptographic review |
+| HOLD | VOID-026 / `OPEN` | ADR, model, Kraehennest order, tests, receipt | none | ADR invariant: SailObservation precedes KraehennestObservation | runtime/control model not authorized | architecture/governance review |
+| VERIFIED | VOID-027 / `IN_PROGRESS` | 1xn slice, Apex, calibrated EFS/MVI, decision bar remain open | HUD/frame code, fixtures/tests, README, new receipt pointer | stable repo-relative receipt pointer | remaining UI/calibration elements are separately unevidenced | Owner/human review before status change |
+| HOLD | VOID-028 / `OPEN` | normalized deltas, calibration factors, thresholds, three fixtures, `SIMULATION_PROXY` receipt | none | bind metric definitions before calibrating thresholds | false-precision risk and VOID-011 dependency | math/quantitative review |
+| HOLD | VOID-029 / `OPEN` | cross-instance receipt schema/instance and allowed reuse scope | none | one receipt instance with `human_commit_required=true` | source poles/protected-origin scope unresolved | governance/Owner review |
+| HOLD | VOID-LOGZN-001 / `OPEN` | tests, metrics/claim tags, receipt or replay witness | two cited RZT/tesser3TAKT documents | one claim-tagged test plus receipt | current evidence is documentary only | math/claim review |
 
 VERIFIED — No additional diagram, calibration, or narrative extension is started by this
 change.
