@@ -12,7 +12,7 @@ import re
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import PurePosixPath
-from typing import Any
+from typing import Any, cast
 
 from .evidence_bridge_adapter import (
     KNOWN_SOURCE_REGISTERS,
@@ -98,7 +98,7 @@ def _fail(message: str, reason: BridgeViewReason) -> None:
 def _require_text(value: object, *, label: str, reason: BridgeViewReason) -> str:
     if type(value) is not str or not value.strip() or value != value.strip():
         _fail(f"{label} must be non-empty canonical text", reason)
-    return value
+    return cast(str, value)
 
 
 def _require_canonical_id(value: object, *, label: str) -> str:
