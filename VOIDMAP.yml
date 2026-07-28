@@ -18,7 +18,7 @@ description: >
 
 metadata:
   maintainer: entaENGELment
-  last_updated: "2026-07-22"
+  last_updated: "2026-07-28"
   generated_doc: docs/voids_backlog.md
   reconciliation_notes: |
     [SPEC] 2026-06-24 consolidation:
@@ -493,6 +493,7 @@ voids:
       - "ui-app/test/tesser3takt-frame.test.mjs"
       - "ui-app/test/tesser3takt-hud.test.mjs"
       - "ui-app/README.md"
+      - "receipts/2026-07-28_void027_bridge_view_v0_1.json"
     created: "2026-06-24"
     closed: null
     notes: |
@@ -510,9 +511,13 @@ voids:
       [PARTIAL] Present evidence covers the canonical frame, 7x9/Kenogram HUD,
       exact-state collision semantics, boundary pairs, structured provenance,
       fixtures, tests, and a read-only route.
+      [REPO-FACT 2026-07-28] The repo-relative receipt pointer
+      receipts/2026-07-28_void027_bridge_view_v0_1.json resolves to an
+      existing artifact and is covered by tools/verify_pointers.py. It closes
+      only the receipt-link sublever and implies no truth, promotion, or canon.
       [VOID] The declared 1xn traversal slice, Apex marker, calibrated EFS/MVI
-      axis, decision bar, and resolvable receipt link are not jointly evidenced.
-      VOID-027 therefore remains IN_PROGRESS and must not be marked CLOSED.
+      axis, and decision bar are not jointly evidenced. VOID-027 therefore
+      remains IN_PROGRESS and must not be marked CLOSED.
   - id: VOID-028
     title: "EFS/MVI Grüneisen-Axis Calibration"
     status: OPEN
