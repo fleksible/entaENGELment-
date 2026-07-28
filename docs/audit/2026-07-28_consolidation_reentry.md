@@ -53,12 +53,12 @@ change.
 
 | Category | Primary class | Document ID | Internal document date | Drive upload / modified date | Rationale |
 |---|---|---|---|---|---|
-| VERIFIED | WORKING_DRAFT | `1FakZrgPWLvJgTZevIXfm0rCnlVVROrtFT1taoUTGMlI` | 2026-07-22 | connected metadata | internal read-only shadow catalog; no authority |
+| VERIFIED | WORKING_DRAFT | `1FakZrgPWLvJgTZevIXfm0rCnlVVROrtFT1taoUTGMlI` | 2026-07-22 | 2026-07-22 created/modified | internal read-only shadow catalog; no authority |
 | HISTORICAL_REFERENCE | HISTORICAL_REFERENCE | `1vXrSyu4o--5pA-FulYG46AEGUzVaOmOw` | 2026-05-20 | 2026-07-19 upload | upload map, not current repository state |
-| HISTORICAL_REFERENCE | HISTORICAL_REFERENCE | `1bRRzGSm7KXJE0CFviuQyfckkTWfrd1UG` | snapshot at `main@96bbdb9` | connected metadata | contradicts the current verified main SHA |
-| HISTORICAL_REFERENCE | HISTORICAL_REFERENCE | `1wsipMetHXM6y4Lo66amlh7Qph1z72zlt` | snapshot date in document | connected metadata | VOID/QDOT states are stale against `VOIDMAP.yml` |
-| HISTORICAL_REFERENCE | HISTORICAL_REFERENCE | `14TTRVr7zbOdna1Z-cyorweQC4q_Moq3d` | 2026-07-25 | connected metadata | protected save state, but repo/PR snapshot is stale |
-| HISTORICAL_REFERENCE | HISTORICAL_REFERENCE | `1ku9YAmiYjkuk2rZkB9jDzM8xYT-pJce6` | 2026-01-26 | connected metadata | research indexer snapshot does not represent the current repo |
+| HISTORICAL_REFERENCE | HISTORICAL_REFERENCE | `1bRRzGSm7KXJE0CFviuQyfckkTWfrd1UG` | snapshot at `main@96bbdb9` | 2026-07-19 created/modified | contradicts the current verified main SHA |
+| HISTORICAL_REFERENCE | HISTORICAL_REFERENCE | `1wsipMetHXM6y4Lo66amlh7Qph1z72zlt` | snapshot date in document | 2026-07-19 created/modified | VOID/QDOT states are stale against `VOIDMAP.yml` |
+| HISTORICAL_REFERENCE | HISTORICAL_REFERENCE | `14TTRVr7zbOdna1Z-cyorweQC4q_Moq3d` | 2026-07-25 | 2026-07-26 created/modified | protected save state, but repo/PR snapshot is stale |
+| HISTORICAL_REFERENCE | HISTORICAL_REFERENCE | `1ku9YAmiYjkuk2rZkB9jDzM8xYT-pJce6` | 2026-01-26 | 2026-07-26 created/modified | research indexer snapshot does not represent the current repo |
 | HOLD | QUARANTINE_OVERCLAIM_REVIEW | `1GX8xBBudyNK0Im_EU_Rhpw5bBNbRuU-p` | 2025-12-16 | 2026-07-26 upload | quantitative, physical, biological, TRL, and “proof” language lacks a bound repo/lab evidence chain |
 | NARRATIVE | NARRATIVE_LAYER | `1lOW9L35WQ2KtWFdBXr_wZfKr7AHrQaAR` | date in document | 2026-07-19 upload | document self-labels model/Rosetta/guard/wordknot/narrative material and disclaims scientific proof |
 | NARRATIVE | NARRATIVE_LAYER | `10ySaVb8S2NnagB5L--jQ9V4kifv6EM2Q` | not treated as canon date | 2026-07-26 modified | private Grimm reading surface; not an evidence source |
@@ -66,6 +66,10 @@ change.
 HOLD — The classification creates no canon. Source-of-Truth admission still requires
 technical/content review, Claude/Diogenes review, explicit Owner decision,
 documented receipt, and a rollback path.
+
+HOLD — Drive metadata reported `source_visibility_status=access_not_verified`
+for these records. The primary class is a content/re-entry classification, not
+a sharing or confidentiality guarantee.
 
 ## Action-Gate boundary
 
