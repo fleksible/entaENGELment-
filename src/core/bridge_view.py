@@ -120,9 +120,7 @@ def _require_repo_pointer(
 ) -> str:
     text = _require_text(value, label=label, reason=missing_reason)
     if "\\" in text or "://" in text:
-        _fail(
-            f"{label} must be a repo-relative pointer", BridgeViewReason.POINTER_INVALID
-        )
+        _fail(f"{label} must be a repo-relative pointer", BridgeViewReason.POINTER_INVALID)
 
     path_text, separator, fragment = text.partition("#")
     if separator and (not fragment or "#" in fragment):
@@ -134,9 +132,7 @@ def _require_repo_pointer(
         or not path.name
         or any(segment in {"", ".", ".."} for segment in segments)
     ):
-        _fail(
-            f"{label} must stay inside the repository", BridgeViewReason.POINTER_INVALID
-        )
+        _fail(f"{label} must stay inside the repository", BridgeViewReason.POINTER_INVALID)
     if receipt and (segments[0] != "receipts" or path.suffix not in _RECEIPT_SUFFIXES):
         _fail(
             "receipt must point into receipts/ with a supported text suffix",
@@ -204,8 +200,7 @@ def project_bridge_view(
         type(known_loss) is not tuple
         or not known_loss
         or not all(
-            type(item) is str and item.strip() and item == item.strip()
-            for item in known_loss
+            type(item) is str and item.strip() and item == item.strip() for item in known_loss
         )
     ):
         _fail(
@@ -238,26 +233,17 @@ def project_bridge_view(
             missing_reason=BridgeViewReason.REVIEW_POINTER_REQUIRED,
         )
 
-    if (
-        relation in PROMOTION_CAPABLE_RELATION_TYPES
-        and register not in M5_GATED_REGISTERS
-    ):
+    if relation in PROMOTION_CAPABLE_RELATION_TYPES and register not in M5_GATED_REGISTERS:
         _fail(
             f"register {register!r} may not project promotion eligibility",
             BridgeViewReason.PROMOTION_NOT_ALLOWED,
         )
-    if (
-        register in NON_PROMOTING_REGISTERS
-        and relation in PROMOTION_CAPABLE_RELATION_TYPES
-    ):
+    if register in NON_PROMOTING_REGISTERS and relation in PROMOTION_CAPABLE_RELATION_TYPES:
         _fail(
             f"register {register!r} is non-promoting",
             BridgeViewReason.PROMOTION_NOT_ALLOWED,
         )
-    if (
-        translation.promotion_capable
-        and relation not in PROMOTION_CAPABLE_RELATION_TYPES
-    ):
+    if translation.promotion_capable and relation not in PROMOTION_CAPABLE_RELATION_TYPES:
         _fail(
             "promotion flag contradicts the relation vocabulary",
             BridgeViewReason.PROMOTION_NOT_ALLOWED,
@@ -269,9 +255,7 @@ def project_bridge_view(
         )
 
     promotion_eligibility = (
-        PROMOTION_HUMAN_REVIEW
-        if translation.promotion_capable
-        else PROMOTION_NOT_ELIGIBLE
+        PROMOTION_HUMAN_REVIEW if translation.promotion_capable else PROMOTION_NOT_ELIGIBLE
     )
     return BridgeView(
         schema_version=BRIDGE_VIEW_SCHEMA_VERSION,
