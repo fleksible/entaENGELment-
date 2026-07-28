@@ -43,7 +43,7 @@ def assert_reason(excinfo, reason):
     assert reason in excinfo.value.reasons
 
 
-def test_complete_valid_record_is_projected_without_promotion():
+def test_complete_valid_record_is_projected_for_human_review():
     view = project_bridge_view(make_translation(), receipt=RECEIPT)
 
     assert view.complete is True
