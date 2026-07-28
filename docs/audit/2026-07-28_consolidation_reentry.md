@@ -69,6 +69,11 @@ and rollbackable.
 VERIFIED — No additional diagram, calibration, or narrative extension is started by this
 change.
 
+HOLD — No separate canonical QDOT registry was verified in the inspected repo
+sources. QDOT statements in Drive document
+`1wsipMetHXM6y4Lo66amlh7Qph1z72zlt` remain historical reference and do not
+close or promote a repo entry.
+
 ## Connected Drive classification
 
 | Category | Primary class | Document ID | Internal document date | Drive upload / modified date | Rationale |
