@@ -104,7 +104,10 @@ def _require_text(value: object, *, label: str, reason: BridgeViewReason) -> str
 def _require_canonical_id(value: object, *, label: str) -> str:
     text = _require_text(value, label=label, reason=BridgeViewReason.NON_CANONICAL_ID)
     if _CANONICAL_ID_RE.fullmatch(text) is None:
-        _fail(f"{label} is not a canonical kebab-case id", BridgeViewReason.NON_CANONICAL_ID)
+        _fail(
+            f"{label} is not a canonical kebab-case id",
+            BridgeViewReason.NON_CANONICAL_ID,
+        )
     return text
 
 
@@ -117,7 +120,9 @@ def _require_repo_pointer(
 ) -> str:
     text = _require_text(value, label=label, reason=missing_reason)
     if "\\" in text or "://" in text:
-        _fail(f"{label} must be a repo-relative pointer", BridgeViewReason.POINTER_INVALID)
+        _fail(
+            f"{label} must be a repo-relative pointer", BridgeViewReason.POINTER_INVALID
+        )
 
     path_text, separator, fragment = text.partition("#")
     if separator and (not fragment or "#" in fragment):
@@ -129,7 +134,9 @@ def _require_repo_pointer(
         or not path.name
         or any(segment in {"", ".", ".."} for segment in segments)
     ):
-        _fail(f"{label} must stay inside the repository", BridgeViewReason.POINTER_INVALID)
+        _fail(
+            f"{label} must stay inside the repository", BridgeViewReason.POINTER_INVALID
+        )
     if receipt and (segments[0] != "receipts" or path.suffix not in _RECEIPT_SUFFIXES):
         _fail(
             "receipt must point into receipts/ with a supported text suffix",
@@ -182,7 +189,10 @@ def project_bridge_view(
         reason=BridgeViewReason.STATUS_INVALID,
     )
     if _CANONICAL_STATUS_RE.fullmatch(status) is None:
-        _fail("status must use the canonical uppercase vocabulary", BridgeViewReason.STATUS_INVALID)
+        _fail(
+            "status must use the canonical uppercase vocabulary",
+            BridgeViewReason.STATUS_INVALID,
+        )
     if translation.material.status != status:
         _fail(
             "material and relation status must match",
@@ -244,7 +254,10 @@ def project_bridge_view(
             f"register {register!r} is non-promoting",
             BridgeViewReason.PROMOTION_NOT_ALLOWED,
         )
-    if translation.promotion_capable and relation not in PROMOTION_CAPABLE_RELATION_TYPES:
+    if (
+        translation.promotion_capable
+        and relation not in PROMOTION_CAPABLE_RELATION_TYPES
+    ):
         _fail(
             "promotion flag contradicts the relation vocabulary",
             BridgeViewReason.PROMOTION_NOT_ALLOWED,
