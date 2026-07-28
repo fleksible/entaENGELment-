@@ -11,6 +11,7 @@ the date of this audit, and canon status are independent fields.
 | VERIFIED | `main` | `eade3b7726dfa70b9d226f8ba3421aa1012edb2f` | commit `docs: bound security and resonance claims (#331)` | none |
 | VERIFIED | PR #321 exact-version thread | implementation accepts only complete npm SemVer 2.0.0 or conservative PyPI PEP 440 public identifiers; target thread resolved after verification | PR #321, commit `325adcfd6d4447b05f4c129749110065da13e9d6` | no code follow-up |
 | VERIFIED | PR #334 | open, mergeable, ready for review; 7/7 observed head workflows successful | PR #334, head `76a1a884b1563b60074bec690c436d7247921489` | Owner review; no autonomous merge |
+| DRAFT | PR #340 | open draft, unmerged; this consolidation branch | PR #340 | complete CI and human review; no autonomous merge |
 | VERIFIED | Dependency PRs #335–#338 | patch updates; expected file scope; 9/9 observed checks successful on each head | PRs #335–#338 | review and merge individually |
 | HOLD | Dependency PR #298 | `MAJOR_COMPATIBILITY_HOLD`; TypeScript 7 breaks lint/typecheck compatibility | PR #298 workflow logs | separate compatibility track |
 | HOLD | Dependency PR #339 | `MAJOR_COMPATIBILITY_HOLD`; ESLint 10 conflicts with `eslint-plugin-react@7.37.5` | PR #339 workflow logs | separate compatibility track |
