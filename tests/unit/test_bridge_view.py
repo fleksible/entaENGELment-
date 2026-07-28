@@ -53,10 +53,7 @@ def test_complete_valid_record_is_projected_for_human_review():
     assert view.register == "physical"
     assert view.status == "ACTIVE"
     assert view.known_loss == ("raw samples are not included",)
-    assert (
-        view.review_pointer
-        == "docs/annex/DUAL_FORMAT_CLAIM_BRIDGE_ADAPTER_v0_1.md#m5-review"
-    )
+    assert view.review_pointer == "docs/annex/DUAL_FORMAT_CLAIM_BRIDGE_ADAPTER_v0_1.md#m5-review"
     assert view.promotion_eligibility == PROMOTION_HUMAN_REVIEW
 
 
