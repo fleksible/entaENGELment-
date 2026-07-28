@@ -29,7 +29,7 @@ def make_record(**overrides):
         "falsifier": "the documented ordering cannot be reproduced",
         "rollback": "revert the introducing commit and withdraw the receipt",
         "claim_id": "clm-existing-001",
-        "m5_review_pointer": "docs/reviews/m5-bridge-001.md",
+        "m5_review_pointer": "docs/annex/DUAL_FORMAT_CLAIM_BRIDGE_ADAPTER_v0_1.md#m5-review",
     }
     data.update(overrides)
     return BridgeRecord(**data)
@@ -53,7 +53,10 @@ def test_complete_valid_record_is_projected_for_human_review():
     assert view.register == "physical"
     assert view.status == "ACTIVE"
     assert view.known_loss == ("raw samples are not included",)
-    assert view.review_pointer == "docs/reviews/m5-bridge-001.md"
+    assert (
+        view.review_pointer
+        == "docs/annex/DUAL_FORMAT_CLAIM_BRIDGE_ADAPTER_v0_1.md#m5-review"
+    )
     assert view.promotion_eligibility == PROMOTION_HUMAN_REVIEW
 
 
