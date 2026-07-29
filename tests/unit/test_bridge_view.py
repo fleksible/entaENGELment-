@@ -81,6 +81,19 @@ def test_unknown_relation_is_not_guessed():
     assert_reason(excinfo, BridgeViewReason.UNKNOWN_RELATION)
 
 
+def test_relation_must_be_allowed_for_register():
+    translation = make_translation()
+    translation = replace(
+        translation,
+        relation=replace(translation.relation, relation_type="CONTRADICTS"),
+        promotion_capable=False,
+    )
+
+    with pytest.raises(BridgeViewError) as excinfo:
+        project_bridge_view(translation, receipt=RECEIPT)
+    assert_reason(excinfo, BridgeViewReason.RELATION_NOT_ALLOWED)
+
+
 def test_noncanonical_id_is_rejected():
     translation = make_translation()
     translation = replace(
@@ -93,6 +106,34 @@ def test_noncanonical_id_is_rejected():
     assert_reason(excinfo, BridgeViewReason.NON_CANONICAL_ID)
 
 
+def test_nested_models_are_validated_before_dereference():
+    translation = replace(make_translation(), material=None)
+
+    with pytest.raises(BridgeViewError) as excinfo:
+        project_bridge_view(translation, receipt=RECEIPT)
+    assert_reason(excinfo, BridgeViewReason.INVALID_NESTED_MODEL)
+
+
+def test_source_schema_versions_must_match_projection_contract():
+    translation = make_translation()
+    variants = (
+        replace(translation, schema_version="bridge.v9"),
+        replace(
+            translation,
+            material=replace(translation.material, schema_version="erk.v9"),
+        ),
+        replace(
+            translation,
+            relation=replace(translation.relation, schema_version="erk.v9"),
+        ),
+    )
+
+    for variant in variants:
+        with pytest.raises(BridgeViewError) as excinfo:
+            project_bridge_view(variant, receipt=RECEIPT)
+        assert_reason(excinfo, BridgeViewReason.UNSUPPORTED_SCHEMA_VERSION)
+
+
 def test_existing_target_id_vocabulary_is_preserved():
     view = project_bridge_view(
         make_translation(claim_id="clm-A"),
@@ -102,7 +143,7 @@ def test_existing_target_id_vocabulary_is_preserved():
     assert view.target == "clm-A"
 
 
-def test_impermissible_promotion_is_rejected():
+def test_impermissible_promotion_relation_is_rejected():
     translation = make_translation(
         source_register="formal",
         relation_type="CONTEXTUALIZES",
@@ -116,7 +157,7 @@ def test_impermissible_promotion_is_rejected():
 
     with pytest.raises(BridgeViewError) as excinfo:
         project_bridge_view(translation, receipt=RECEIPT)
-    assert_reason(excinfo, BridgeViewReason.PROMOTION_NOT_ALLOWED)
+    assert_reason(excinfo, BridgeViewReason.RELATION_NOT_ALLOWED)
 
 
 def test_untrusted_material_cannot_claim_review_eligibility():
@@ -134,6 +175,32 @@ def test_untrusted_material_cannot_claim_review_eligibility():
 
 def test_promotion_flag_must_match_reviewed_material():
     translation = replace(make_translation(), promotion_capable=False)
+
+    with pytest.raises(BridgeViewError) as excinfo:
+        project_bridge_view(translation, receipt=RECEIPT)
+    assert_reason(excinfo, BridgeViewReason.PROMOTION_NOT_ALLOWED)
+
+
+def test_material_kind_must_match_source_register():
+    translation = make_translation()
+    translation = replace(
+        translation,
+        material=replace(translation.material, kind="metaphor"),
+    )
+
+    with pytest.raises(BridgeViewError) as excinfo:
+        project_bridge_view(translation, receipt=RECEIPT)
+    assert_reason(excinfo, BridgeViewReason.MATERIAL_KIND_MISMATCH)
+
+
+def test_inactive_material_cannot_claim_review_eligibility():
+    translation = make_translation()
+    translation = replace(
+        translation,
+        material=replace(translation.material, status="RETRACTED"),
+        relation=replace(translation.relation, status="RETRACTED"),
+        promotion_capable=True,
+    )
 
     with pytest.raises(BridgeViewError) as excinfo:
         project_bridge_view(translation, receipt=RECEIPT)
