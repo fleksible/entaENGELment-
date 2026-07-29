@@ -16,7 +16,7 @@ the date of this audit, and canon status are independent fields.
 | HOLD | Dependency PR #298 | `MAJOR_COMPATIBILITY_HOLD`; TypeScript 7 breaks lint/typecheck compatibility | PR #298 workflow logs | separate compatibility track |
 | HOLD | Dependency PR #339 | `MAJOR_COMPATIBILITY_HOLD`; ESLint 10 conflicts with `eslint-plugin-react@7.37.5` | PR #339 workflow logs | separate compatibility track |
 | HOLD | Security settings/advisories | repository settings-side CodeQL and Private Vulnerability Reporting posture not exposed by the connected evidence | open issue #332; last audit witness in PR #329 | Owner/settings verification |
-| VERIFIED | VOID-027 | `IN_PROGRESS`; receipt-link sublever addressed by a repo-relative receipt; remaining declared components stay open | `VOIDMAP.yml` and `receipts/2026-07-28_void027_bridge_view_v0_1.json` | validate in CI; do not close VOID |
+| VERIFIED | VOID-027 | `IN_PROGRESS`; stable repo-relative receipt evidence exists, but HUD receipt-link rendering and the remaining declared components stay open | `VOIDMAP.yml` and `receipts/2026-07-28_void027_bridge_view_v0_1.json` | validate in CI; do not close VOID |
 | HOLD | VOID-010/011 | overdue and still `IN_PROGRESS` | `VOIDMAP.yml`, issue #311 | scoped evidence review |
 | VERIFIED | Notion re-entry mirror | connected mirror records PRs #326–#331 and issues #332/#333; it explicitly defers authority to repo/VOIDMAP | Notion page `3a9a6554-a786-8105-a411-e5745c6319f5` | reference only |
 | HOLD | Linear | no matching entaENGELment project or issue was found in the connected workspace | connected Linear search | no issue creation without Owner choice |
