@@ -32,12 +32,17 @@ M5 pointer. It does not mean approved, authorized, promoted, canonical, or true.
   projection is never represented as complete.
 - Adapter-derived source IDs must be canonical kebab-case IDs. Existing target
   IDs retain the adapter's non-empty, whitespace-trimmed stable-ID vocabulary.
+- Translation and nested ERK schema versions must match the supported v0.1
+  contracts, and nested records must have their exact model types.
 - Relations and registers must be members of their existing closed
-  vocabularies; no relation is guessed or silently downgraded.
+  vocabularies. Each relation must also be allowed for its source register; no
+  relation is guessed or silently downgraded.
+- Material kind must match the adapter's source-register mapping.
 - Myth, metaphor, psychology, and UI cannot produce promotion eligibility.
 - Physical and biological projections require the documented review pointer.
   A missing pointer is an error, not a downgrade.
 - Material and relation status must agree.
+- Only an `ACTIVE` translation can display human-review eligibility.
 - Receipt and review pointers must be explicit repo-relative paths. Drive-prefixed
   and URI-scheme-like paths are rejected. Receipt targets are limited to supported
   text files under `receipts/`.
