@@ -24,13 +24,14 @@ from modular_app_structure import EventSystem
 # Abhängigkeiten (headless CI), wird nur ihre Import-Oberfläche gestubbt, damit die
 # Logik trotzdem geprüft wird.
 _GUI_STUBS = {
-    "tkinter": ("tkinter", "tkinter.ttk"),
+    # backend_tkagg ist ein Tk-Backend — ohne tkinter nicht importierbar, auch wenn
+    # matplotlib selbst vorhanden ist.
+    "tkinter": ("tkinter", "tkinter.ttk", "matplotlib.backends.backend_tkagg"),
     "matplotlib": (
         "matplotlib",
         "matplotlib.pyplot",
         "matplotlib.figure",
         "matplotlib.backends",
-        "matplotlib.backends.backend_tkagg",
     ),
     "pygame": ("pygame",),
 }
