@@ -255,24 +255,13 @@ pnpm --filter entaengelment-ui dev
 
 ## IX. Roadmap
 
-**Now:**
-- DeepJump v1.2 stabilisieren (Verify + Status + Snapshot)
-- Port-Matrix Linter (K0..K4) ausrollen
-- Guards-Integration in CI (Metatron, Annex)
+Der aktuelle Arbeitsstand wird in [`VOIDMAP.yml`](VOIDMAP.yml) geführt. Die Datei ist die Source of Truth für offene Lücken, Status, Prioritäten, Verantwortliche, Closing Paths und Evidence.
 
-**Next:**
-- Receipt-Viewer mit Signatur-Verifizierung
-- Resonanz-Metriken stabilisieren (VOID-011: MI, PLV, FD)
-- CI-Pipeline Integration (VOID-002)
+- [`VOIDMAP.yml`](VOIDMAP.yml) – verbindliche Status-Registry
+- [`docs/voids_backlog.md`](docs/voids_backlog.md) – lesbare, abgeleitete Backlog-Ansicht
+- [GitHub Issues](https://github.com/fleksible/entaENGELment-/issues) – Umsetzungs- und Review-Threads
 
-**Later:**
-- Sensor-Architektur (VOID-013, BOM + Protokoll)
-- Taxonomie & Spektren (VOID-010, Literatur-Scan)
-- Protein-Design Exploration (VOID-014, in-silico only)
-
-**Mehr:**
-- [GitHub Issues](https://github.com/fleksible/entaENGELment-/issues)
-- [`VOIDMAP.yml`](VOIDMAP.yml) für vollständigen Backlog
+Eine zweite statische `Now / Next / Later`-Liste wird hier bewusst nicht gepflegt, weil sie von der Registry abdriften kann. Narrative Orientierung bleibt in [`WELCOME.md`](WELCOME.md).
 
 ---
 
