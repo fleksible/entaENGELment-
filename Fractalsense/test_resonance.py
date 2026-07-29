@@ -286,12 +286,51 @@ class TestApp:
         })
         self.status_label.config(text=f"Lautstärke auf {volume:.2f} gesetzt")
     
+    def _ensure_audio_ready(self):
+        """Initialisiert den pygame-Mixer, falls noch nicht geschehen.
+
+        Returns:
+            bool: True, wenn Audio verfügbar ist. False, wenn kein Audiogerät
+            existiert (headless/CI) — die Handler überspringen dann die Wiedergabe,
+            statt die UI mit einer Exception abzubrechen.
+        """
+        if pygame.mixer.get_init() is not None:
+            return True
+
+        try:
+            pygame.mixer.init(frequency=44100, size=-16, channels=1, buffer=1024)
+        except pygame.error as exc:
+            print(f"Audio nicht verfügbar: {exc}")
+            return False
+
+        return True
+
+    def _render_colormap(self, cmap, title):
+        """Zeichnet eine Farbkarte als Gradient in die Matplotlib-Achse.
+
+        Args:
+            cmap: Anzuzeigende Farbkarte
+            title: Titel über der Achse
+        """
+        self.ax.clear()
+
+        gradient = np.linspace(0, 1, 256)
+        gradient = np.vstack((gradient, gradient))
+
+        self.ax.imshow(gradient, aspect='auto', cmap=cmap)
+        self.ax.set_title(title)
+        self.ax.set_yticks([])
+        self.ax.set_xticks([])
+
+        self.canvas.draw()
+
     def on_test_sound(self):
         """Event-Handler für den Testton-Button."""
         # Erzeuge einen Testton mit dem SoundGenerator
-        if pygame.mixer.get_init() is None:
-            pygame.mixer.init(frequency=44100, size=-16, channels=1, buffer=1024)
-        
+        if not self._ensure_audio_ready():
+            self.status_label.config(text="Audio nicht verfügbar — kein Testton")
+            return
+
         # Erzeuge verschiedene Testtöne je nach ausgewähltem Modus
         if hasattr(self, 'test_sound_mode'):
             self.test_sound_mode = (self.test_sound_mode + 1) % 5
@@ -343,27 +382,14 @@ class TestApp:
     def on_show_colormap(self):
         """Event-Handler für den Farbkarte-anzeigen-Button."""
         color_mode = self.color_mode_var.get()
-        
-        # Achse leeren
-        self.ax.clear()
-        
-        # Farbkarte abrufen
+
+        # Farbkarte abrufen — Fallback auf die Matplotlib-Farbkarte gleichen Namens
         cmap = self.color_generator.get_colormap(color_mode)
         if cmap is None:
             cmap = plt.get_cmap(color_mode)
-        
-        # Farbkarte anzeigen
-        gradient = np.linspace(0, 1, 256)
-        gradient = np.vstack((gradient, gradient))
-        
-        self.ax.imshow(gradient, aspect='auto', cmap=cmap)
-        self.ax.set_title(f"Farbkarte: {color_mode}")
-        self.ax.set_yticks([])
-        self.ax.set_xticks([])
-        
-        # Canvas aktualisieren
-        self.canvas.draw()
-        
+
+        self._render_colormap(cmap, f"Farbkarte: {color_mode}")
+
         self.status_label.config(text=f"Farbkarte '{color_mode}' angezeigt")
     
     def on_sensor_changed(self, event):
@@ -396,3 +422,118 @@ class TestApp:
         self.status_label.config(
             text=f"Sensordaten gesendet (|a|={accel_magnitude:.2f}, |ω|={gyro_magnitude:.2f})"
         )
+
+    def on_fractal_changed(self, event):
+        """Event-Handler für Änderungen an den Fraktal-Parametern."""
+        # Fraktaldaten werden erst beim Klicken auf den Button gesendet
+        pass
+
+    def on_send_fractal_data(self):
+        """Event-Handler für den Fraktaldaten-senden-Button."""
+        center = complex(self.center_real_var.get(), self.center_imag_var.get())
+        zoom = self.zoom_var.get()
+
+        # Event senden — integration.py leitet daraus die Klangparameter ab
+        self.event_system.emit_event("fractal_updated", {"center": center, "zoom": zoom})
+
+        self.status_label.config(
+            text=(
+                f"Fraktaldaten gesendet (Zentrum={center.real:.2f}{center.imag:+.2f}i, "
+                f"Zoom={zoom:.2f})"
+            )
+        )
+
+    def on_colormap_updated(self, event_type, event_data):
+        """Event-Handler für aktualisierte Farbkarten.
+
+        Args:
+            event_type: Typ des Events
+            event_data: Event-Daten
+        """
+        colormap = event_data.get("colormap", self.color_mode_var.get())
+
+        # UI-Auswahl nachziehen und Farbkarte anzeigen
+        self.color_mode_var.set(colormap)
+        self.on_show_colormap()
+
+        self.status_label.config(text=f"Farbkarte '{colormap}' aus Event übernommen")
+
+    def on_generate_fractal_sound(self, event_type, event_data):
+        """Event-Handler für die fraktale Klangerzeugung.
+
+        Args:
+            event_type: Typ des Events
+            event_data: Event-Daten
+        """
+        if self.audio_var.get() != "Ein":
+            self.status_label.config(text="Fraktaler Klang unterdrückt (Audio aus)")
+            return
+
+        base_frequency = event_data.get("base_frequency", 220.0)
+        modulation_index = event_data.get("modulation_index", 1.0)
+        volume = self.volume_var.get()
+
+        if not self._ensure_audio_ready():
+            self.status_label.config(text="Audio nicht verfügbar — kein fraktaler Klang")
+            return
+
+        # base_frequency/modulation_index stammen aus den Fraktal-Parametern
+        wave = self.sound_generator.generate_fm_wave(
+            base_frequency, base_frequency / 4.0, modulation_index, 1.0, volume
+        )
+        wave = self.sound_generator.apply_envelope(wave, 0.1, 0.2, 0.7, 0.3)
+        self.sound_generator.play_sound_async(wave)
+
+        self.status_label.config(
+            text=(
+                f"Fraktaler Klang: {base_frequency:.1f} Hz, "
+                f"Modulationsindex {modulation_index:.2f}"
+            )
+        )
+
+    def on_update_resonance_parameters(self, event_type, event_data):
+        """Event-Handler für aktualisierte Resonanz-Parameter (aus Sensordaten).
+
+        Args:
+            event_type: Typ des Events
+            event_data: Event-Daten
+        """
+        sensor_data = {
+            key: event_data.get(key, 0.0)
+            for key in ("accel_x", "accel_y", "accel_z", "gyro_x", "gyro_y", "gyro_z")
+        }
+        accel_magnitude = event_data.get("accel_magnitude", 0.0)
+        gyro_magnitude = event_data.get("gyro_magnitude", 0.0)
+
+        # Sensorbasierte Farbkarte erzeugen und anzeigen
+        cmap = self.color_generator.create_sensor_based_colormap(
+            sensor_data, self.zoom_var.get()
+        )
+        self._render_colormap(cmap, "Farbkarte: sensorbasiert")
+
+        self.status_label.config(
+            text=(
+                f"Resonanz aktualisiert (|a|={accel_magnitude:.2f}, "
+                f"|ω|={gyro_magnitude:.2f})"
+            )
+        )
+
+    def on_close(self):
+        """Räumt beim Schließen des Fensters auf."""
+        self.sound_generator.stop_sound()
+
+        if pygame.mixer.get_init() is not None:
+            pygame.mixer.quit()
+
+        plt.close(self.fig)
+        self.root.destroy()
+
+
+def main():
+    """Startet die ResonanceEnhancer-Testanwendung."""
+    app = TestApp()
+    app.root.mainloop()
+
+
+if __name__ == "__main__":
+    main()

@@ -408,7 +408,11 @@ class SoundGenerator:
         self.current_thread.start()
 
     def stop_sound(self) -> None:
-        """Stoppt den aktuell abgespielten Sound."""
-        if pygame is not None:
+        """Stoppt den aktuell abgespielten Sound.
+
+        Ist der Mixer nie initialisiert worden (kein Audiogerät, headless), gibt es
+        nichts zu stoppen — pygame.mixer.stop() würde dann werfen.
+        """
+        if pygame is not None and pygame.mixer.get_init() is not None:
             pygame.mixer.stop()
         self.is_playing = False

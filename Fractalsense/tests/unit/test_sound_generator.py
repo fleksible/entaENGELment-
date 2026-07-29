@@ -14,6 +14,7 @@ Tests cover:
 
 import sys
 from pathlib import Path
+from unittest.mock import MagicMock
 
 import numpy as np
 import pytest
@@ -391,3 +392,33 @@ class TestEdgeCases:
         wave = sound_generator.generate_sine_wave(0.0, 0.1)
         # All values should be zero (sin(0) = 0)
         assert np.allclose(wave, 0)
+
+
+class TestStopSound:
+    """Tests for stop_sound."""
+
+    def test_no_error_when_mixer_never_initialized(self, sound_generator, monkeypatch):
+        """Should be a no-op instead of raising when the mixer was never initialized."""
+        import sound_generator as sg_module
+
+        fake_pygame = MagicMock()
+        fake_pygame.mixer.get_init.return_value = None
+        fake_pygame.mixer.stop.side_effect = AssertionError("stop() must not be called")
+        monkeypatch.setattr(sg_module, "pygame", fake_pygame)
+
+        sound_generator.stop_sound()
+
+        assert sound_generator.is_playing is False
+
+    def test_stops_when_mixer_initialized(self, sound_generator, monkeypatch):
+        """Should stop playback when the mixer is up."""
+        import sound_generator as sg_module
+
+        fake_pygame = MagicMock()
+        fake_pygame.mixer.get_init.return_value = (44100, -16, 1)
+        monkeypatch.setattr(sg_module, "pygame", fake_pygame)
+
+        sound_generator.stop_sound()
+
+        fake_pygame.mixer.stop.assert_called_once()
+        assert sound_generator.is_playing is False

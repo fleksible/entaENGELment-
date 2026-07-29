@@ -23,39 +23,75 @@ Sensor-Slider der Test-UI waren damit wirkungslos.
 - [x] Statusleiste meldet die resultierenden Magnituden (`|a|`, `|ω|`) — analog zu den
       Nachbar-Handlern `on_volume_changed` / `on_color_mode_changed`
 - [x] Unit-Tests ergänzt: `Fractalsense/tests/unit/test_resonance_app.py` (3 Tests)
-- [x] `make verify` grün; Fractalsense-Suite grün (143 passed)
+- [x] `make verify` grün; Fractalsense-Suite grün (165 passed)
+
+## Nachtrag: fehlende Methoden ergänzt (auf Anweisung)
+
+Der zunächst als „nicht getan" dokumentierte Folgedefekt wurde auf ausdrückliche
+Anweisung mitbehoben. `TestApp` referenzierte sechs nie definierte Methoden; die
+Klasse brach bereits in `__init__` mit `AttributeError` ab.
+
+- [x] `on_colormap_updated` — übernimmt Farbkarte aus Event, zieht UI-Auswahl nach
+- [x] `on_generate_fractal_sound` — FM-Klang aus `base_frequency`/`modulation_index`
+- [x] `on_update_resonance_parameters` — sensorbasierte Farbkarte aus Magnituden
+- [x] `on_fractal_changed` — sendet bewusst nicht (Button-getrieben, wie beim Sensor)
+- [x] `on_send_fractal_data` — emittiert `fractal_updated` (Consumer: `integration.py`)
+- [x] `on_close` — stoppt Audio, schließt Figur, zerstört Fenster
+- [x] `main()` + `__main__`-Guard — die Anwendung ist wieder startbar
+
+Dabei fielen drei weitere blockierende Defekte auf, die mitbehoben wurden:
+
+- [x] **`ColorGenerator.get_colormap` fehlte komplett** — das bereits vorhandene
+      `on_show_colormap` rief die Methode auf. Ergänzt in `color_generator.py`.
+- [x] **`SoundGenerator.stop_sound` warf ohne initialisierten Mixer** —
+      `pygame.mixer.stop()` ohne `get_init()`-Prüfung; ließ `on_close` abstürzen.
+- [x] **`pygame.mixer.init()` ohne Audiogerät warf** (headless) — die Audio-Pfade
+      degradieren jetzt kontrolliert statt die UI abzubrechen.
+
+Zwei kleine Helfer entkoppeln Wiederverwendetes: `_ensure_audio_ready()` und
+`_render_colormap()`; `on_test_sound` und `on_show_colormap` nutzen sie mit.
+
+**Verifikation:** Die Anwendung wurde real unter Xvfb gebaut (`TestApp()`, echtes
+Tk-Fenster) und jeder Handler durchlaufen, inkl. Dispatch über das EventSystem und
+sauberem `on_close`. Suite: 165 passed — sowohl mit gestubbten als auch mit echten
+GUI-Abhängigkeiten (letzteres entspricht der CI-Konfiguration).
 
 ## Nicht getan
 
-- **Fehlende Handler in `test_resonance.py` nicht ergänzt.** Die Datei referenziert
-  sechs Methoden, die nie definiert wurden: `on_colormap_updated`,
-  `on_generate_fractal_sound`, `on_update_resonance_parameters` (via
-  `register_handler` in `__init__`) sowie `on_fractal_changed`,
-  `on_send_fractal_data`, `on_close`. `TestApp()` ist dadurch nicht
-  instanziierbar — die Datei bricht bereits in `__init__` mit `AttributeError` ab.
-  Das ist ein eigener Defekt, kein Teil dieses TODOs → G4 (Fokus-Switch): nicht
-  angefasst, hier dokumentiert.
-- Kein `main()`-Entrypoint ergänzt (die Datei endet ohne einen solchen).
-- Bestehende Lint-Befunde in `test_resonance.py` (unsortierte Imports, ungenutzte
-  Importe `time`, `threading`, `Figure`) nicht behoben — vorbestehend und außerhalb
-  des Fokus.
+- **`integration.py` erzeugt pro Event ein neues `EventSystem()`.** Da die
+  Handler-Registry instanzgebunden ist (`EventSystem.__init__` setzt ein eigenes
+  `_event_handlers`), laufen die Weiterleitungen dort ins Leere: die Kette
+  UI → `integration` → zurück in die App schließt sich nicht. Die App-seitigen
+  Handler funktionieren (über den gemeinsamen Bus verifiziert), aber die
+  Integrationsschicht bleibt inert. Das ist eine architektonische Änderung
+  (Singleton oder Injektion des geteilten Bus) → G0/G4: nicht ohne Rücksprache.
+- Bestehende Lint-Befunde (unsortierte Imports, ungenutzte Importe `time`,
+  `threading`, `Figure` in `test_resonance.py`; `C401` in
+  `tests/unit/test_color_generator.py:188`) nicht behoben — vorbestehend und
+  außerhalb des Fokus.
 
 ## Risiken
 
-- **Gering.** Die Änderung ist additiv und auf einen bisher leeren Handler begrenzt.
-- Der Handler ist im laufenden GUI nicht erreichbar, solange die oben genannten
-  fehlenden Methoden `TestApp.__init__` scheitern lassen. Die Logik selbst ist durch
-  die neuen Tests abgedeckt.
+- **Gering–mittel.** Überwiegend additiv (zuvor fehlende Methoden). Angefasst wurde
+  bestehender Code nur an drei Stellen: `on_test_sound` und `on_show_colormap` nutzen
+  jetzt die neuen Helfer, und `stop_sound` prüft zusätzlich `get_init()`.
+- `on_test_sound` bricht bei fehlendem Audiogerät nun früh mit Statusmeldung ab,
+  statt bis zur Wiedergabe zu laufen (dort wurde der Fehler vorher verschluckt) —
+  bewusste Verhaltensänderung zugunsten einer sichtbaren Rückmeldung.
 - `Fractalsense/` liegt außerhalb der `testpaths` des Root-`pytest` — die neuen Tests
   laufen über `npm run test:py`, nicht über `make verify`.
 
 ## Offene Punkte
 
-- [ ] ☐ Fehlende `TestApp`-Methoden und `main()` ergänzen, damit die Testanwendung
-      wieder startfähig ist
+- [ ] ☐ `integration.py`: geteiltes `EventSystem` statt Neuinstanziierung pro Event
+      (blockiert die Rückkopplung UI → Integration → UI)
 - [ ] ☐ Prüfen, ob `Fractalsense/tests/` in ein CI-Gate aufgenommen werden soll
 
 ## Artefakte
 
 - `Fractalsense/test_resonance.py`
+- `Fractalsense/color_generator.py`
+- `Fractalsense/sound_generator.py`
 - `Fractalsense/tests/unit/test_resonance_app.py`
+- `Fractalsense/tests/unit/test_color_generator.py`
+- `Fractalsense/tests/unit/test_sound_generator.py`

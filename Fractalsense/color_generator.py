@@ -219,6 +219,19 @@ class ColorGenerator:
             "mereotopological", mereotopological_colors
         )
 
+    def get_colormap(self, name: str):
+        """Gibt eine benutzerdefinierte Farbkarte zurück.
+
+        Args:
+            name: Name der Farbkarte
+
+        Returns:
+            LinearSegmentedColormap | None: Die Farbkarte, oder None wenn unter diesem
+            Namen keine benutzerdefinierte Farbkarte registriert ist. Aufrufer können
+            in dem Fall auf eine Matplotlib-Farbkarte zurückfallen.
+        """
+        return self.custom_colormaps.get(name)
+
     def create_dynamic_colormap(
         self, base_hsv: tuple[float, float, float], shift_factor: float, name: str = "dynamic"
     ) -> LinearSegmentedColormap:
