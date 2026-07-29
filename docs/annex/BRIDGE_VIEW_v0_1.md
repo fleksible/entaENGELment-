@@ -23,22 +23,24 @@ promotion, or change any status.
 | `receipt` | explicit repo-relative pointer supplied by the caller |
 
 `ELIGIBLE_FOR_HUMAN_REVIEW` means only that the existing translation has a
-promotion-capable relation, reviewed material trust, and the required M5
-pointer. It does not mean approved, authorized, promoted, canonical, or true.
+promotion-capable relation, trusted or reviewed material, and the required
+M5 pointer. It does not mean approved, authorized, promoted, canonical, or true.
 
 ## Fail-closed invariants
 
 - No view is emitted when `known_loss` is absent or malformed. A failed
   projection is never represented as complete.
-- Source and target IDs must be canonical kebab-case IDs.
+- Adapter-derived source IDs must be canonical kebab-case IDs. Existing target
+  IDs retain the adapter's non-empty, whitespace-trimmed stable-ID vocabulary.
 - Relations and registers must be members of their existing closed
   vocabularies; no relation is guessed or silently downgraded.
 - Myth, metaphor, psychology, and UI cannot produce promotion eligibility.
 - Physical and biological projections require the documented review pointer.
   A missing pointer is an error, not a downgrade.
 - Material and relation status must agree.
-- Receipt and review pointers must be explicit repo-relative paths. Receipt
-  targets are limited to supported text files under `receipts/`.
+- Receipt and review pointers must be explicit repo-relative paths. Drive-prefixed
+  and URI-scheme-like paths are rejected. Receipt targets are limited to supported
+  text files under `receipts/`.
 - The projection never adds authority. Promotion remains a separate human
   decision behind existing governance gates.
 
