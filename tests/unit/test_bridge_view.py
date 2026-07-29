@@ -11,7 +11,7 @@ from src.core.bridge_view import (
     project_bridge_view,
 )
 from src.core.evidence_bridge_adapter import BridgeRecord, translate_bridge_record
-from src.core.evidence_routing import TRUST_REVIEWED
+from src.core.evidence_routing import TRUST_REVIEWED, TRUST_UNTRUSTED
 
 RECEIPT = "receipts/2026-07-28_void027_bridge_view_v0_1.json"
 
@@ -93,6 +93,15 @@ def test_noncanonical_id_is_rejected():
     assert_reason(excinfo, BridgeViewReason.NON_CANONICAL_ID)
 
 
+def test_existing_target_id_vocabulary_is_preserved():
+    view = project_bridge_view(
+        make_translation(claim_id="clm-A"),
+        receipt=RECEIPT,
+    )
+
+    assert view.target == "clm-A"
+
+
 def test_impermissible_promotion_is_rejected():
     translation = make_translation(
         source_register="formal",
@@ -104,6 +113,27 @@ def test_impermissible_promotion_is_rejected():
         relation=replace(translation.relation, relation_type="SUPPORTS"),
         promotion_capable=True,
     )
+
+    with pytest.raises(BridgeViewError) as excinfo:
+        project_bridge_view(translation, receipt=RECEIPT)
+    assert_reason(excinfo, BridgeViewReason.PROMOTION_NOT_ALLOWED)
+
+
+def test_untrusted_material_cannot_claim_review_eligibility():
+    translation = make_translation()
+    translation = replace(
+        translation,
+        material=replace(translation.material, trust=TRUST_UNTRUSTED),
+        promotion_capable=True,
+    )
+
+    with pytest.raises(BridgeViewError) as excinfo:
+        project_bridge_view(translation, receipt=RECEIPT)
+    assert_reason(excinfo, BridgeViewReason.PROMOTION_NOT_ALLOWED)
+
+
+def test_promotion_flag_must_match_reviewed_material():
+    translation = replace(make_translation(), promotion_capable=False)
 
     with pytest.raises(BridgeViewError) as excinfo:
         project_bridge_view(translation, receipt=RECEIPT)
@@ -130,3 +160,26 @@ def test_rollback_and_receipt_references_are_preserved_exactly():
 
     assert view.rollback == "revert commit abc123 and retain its history"
     assert view.receipt == RECEIPT
+
+
+@pytest.mark.parametrize(
+    "review_pointer",
+    [
+        "C:/outside/review.md",
+        "file:/etc/review.md",
+        "https:example.com/review.md",
+    ],
+)
+def test_uri_like_review_pointer_is_rejected(review_pointer):
+    translation = make_translation()
+    translation = replace(
+        translation,
+        context=replace(
+            translation.context,
+            m5_review_pointer=review_pointer,
+        ),
+    )
+
+    with pytest.raises(BridgeViewError) as excinfo:
+        project_bridge_view(translation, receipt=RECEIPT)
+    assert_reason(excinfo, BridgeViewReason.POINTER_INVALID)
