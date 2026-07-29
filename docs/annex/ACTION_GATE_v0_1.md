@@ -190,6 +190,25 @@ BoundaryTransition (ERK-Spec §11) und teilt weder Typen noch Vokabular mit ihne
 Das eigene `ActionReasonCode`-Enum ist bewusst getrennt vom `ReasonCode` des
 Claim-Kernels.
 
+Die beiden unverhandelbaren Grenzen lauten:
+
+```text
+PROPOSE != AUTHORIZE
+PROPOSE != EXECUTE
+```
+
+Alle folgenden Re-entry-Punkte bleiben bis zu einer getrennten Prüfung und
+ausdrücklichen Autorisierung geschlossen:
+
+| Re-entry-Punkt | Status | Grenze |
+|---|---|---|
+| Payload-Limits | `HOLD` | keine belastbare Größen-/Komplexitätsgrenze in v0.1 |
+| Registry-Signaturprüfung | `HOLD` | keine kryptografische Registry-Authentisierung |
+| Consumer-Authentizität | `HOLD` | kein authentifizierter Consumer-Witness |
+| Ausführende Runtime-Grenze | `HOLD` | kein ausführender Consumer wird implementiert |
+| Ledger- oder UI-Kopplung | `HOLD` | nur über separat genehmigte Adapter |
+| Installations- oder Deploymentpfad | `HOLD` | kein Pfad in v0.1 |
+
 Insbesondere ist `PROPOSE` **keine Ausführungsautorisierung**. Paketname,
 Effektdeklarationen, `verification_status` und der inerte Command-Text bleiben
 Beschreibungen des Aufrufers; v0.1 vergleicht den Command nicht semantisch mit

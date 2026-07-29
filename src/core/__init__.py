@@ -19,6 +19,12 @@ from .action_gate import (
     ResponsibilityClass,
     build_action_proposal,
 )
+from .bridge_view import (
+    BridgeView,
+    BridgeViewError,
+    BridgeViewReason,
+    project_bridge_view,
+)
 from .evidence_bridge_adapter import (
     BridgeAdapterError,
     BridgeContext,
@@ -99,4 +105,9 @@ __all__ = [
     "BridgeAdapterError",
     "validate_bridge_record",
     "translate_bridge_record",
+    # BRIDGE_VIEW v0.1 — reine, menschenlesbare Projektion
+    "BridgeView",
+    "BridgeViewReason",
+    "BridgeViewError",
+    "project_bridge_view",
 ]

@@ -1,0 +1,38 @@
+{
+  "receipt_id": "rcpt-void-027-bridge-view-v0-1-20260728",
+  "schema_version": "receipt.v0.1",
+  "subject": "VOID-027",
+  "created_date": "2026-07-28",
+  "status": "IN_PROGRESS",
+  "evidence_category": "VERIFIED",
+  "scope": "Stable repo-relative receipt pointer and read-only BRIDGE_VIEW v0.1 projection only",
+  "artifact": {
+    "path": "docs/annex/BRIDGE_VIEW_v0_1.md",
+    "implementation": "src/core/bridge_view.py",
+    "tests": "tests/unit/test_bridge_view.py"
+  },
+  "effects": {
+    "claim_effect": "none",
+    "authority_effect": "none",
+    "promotion_effect": "none",
+    "runtime_effect": "none",
+    "canon_effect": "none",
+    "publication_effect": "none"
+  },
+  "does_not_prove": [
+    "VOID-027 is closed",
+    "the remaining 1xn, Apex, EFS/MVI, or decision-bar work is complete",
+    "any scientific, semantic, biological, or physical claim is true",
+    "any artifact is canon or Source of Truth"
+  ],
+  "validation": [
+    "python3 tools/verify_pointers.py --strict",
+    "pytest -q tests/unit/test_bridge_view.py"
+  ],
+  "human_review_required": true,
+  "promotion_eligibility": "none",
+  "rollback": {
+    "method": "Revert the introducing commit and remove this path from VOIDMAP.yml evidence in the same revert",
+    "preserve_history": true
+  }
+}
