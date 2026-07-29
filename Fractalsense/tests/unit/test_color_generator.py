@@ -438,3 +438,22 @@ class TestEdgeCases:
         # Should still produce valid colors
         color = cmap(0.5)
         assert all(0 <= c <= 1 for c in color)
+
+
+class TestGetColormap:
+    """Tests for colormap lookup."""
+
+    def test_returns_registered_colormap(self, color_generator):
+        """Should return a colormap created by create_default_colormaps."""
+        cmap = color_generator.get_colormap("resonant")
+        assert cmap is not None
+        assert len(cmap(0.5)) == 4  # RGBA
+
+    def test_returns_none_for_unknown_name(self, color_generator):
+        """Should return None so callers can fall back to a matplotlib colormap."""
+        assert color_generator.get_colormap("definitely_not_a_colormap") is None
+
+    def test_finds_all_default_colormaps(self, color_generator):
+        """All default colormaps should be retrievable by name."""
+        for name in ("resonant", "harmonic", "spectral", "fractal", "mereotopological"):
+            assert color_generator.get_colormap(name) is not None, name
