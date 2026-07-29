@@ -20,7 +20,12 @@ from .evidence_bridge_adapter import (
     NON_PROMOTING_REGISTERS,
     BridgeTranslation,
 )
-from .evidence_routing import PROMOTION_CAPABLE_RELATION_TYPES, RELATION_TYPES
+from .evidence_routing import (
+    KNOWN_TRUST_LEVELS,
+    PROMOTION_CAPABLE_RELATION_TYPES,
+    RELATION_TYPES,
+    TRUST_UNTRUSTED,
+)
 
 BRIDGE_VIEW_SCHEMA_VERSION = "bridge_view.v0.1"
 PROMOTION_NOT_ELIGIBLE = "NOT_ELIGIBLE"
@@ -28,6 +33,7 @@ PROMOTION_HUMAN_REVIEW = "ELIGIBLE_FOR_HUMAN_REVIEW"
 
 _CANONICAL_ID_RE = re.compile(r"^[a-z][a-z0-9]*(?:-[a-z0-9]+)+$", re.ASCII)
 _CANONICAL_STATUS_RE = re.compile(r"^[A-Z][A-Z0-9_]*$", re.ASCII)
+_URI_SCHEME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:", re.ASCII)
 _RECEIPT_SUFFIXES = frozenset({".json", ".md", ".yaml", ".yml"})
 
 
@@ -41,6 +47,7 @@ class BridgeViewReason(str, Enum):
     UNKNOWN_REGISTER = "UNKNOWN_REGISTER"
     STATUS_INVALID = "STATUS_INVALID"
     STATUS_MISMATCH = "STATUS_MISMATCH"
+    TRUST_INVALID = "TRUST_INVALID"
     KNOWN_LOSS_REQUIRED = "KNOWN_LOSS_REQUIRED"
     REVIEW_POINTER_REQUIRED = "REVIEW_POINTER_REQUIRED"
     POINTER_INVALID = "POINTER_INVALID"
@@ -119,7 +126,7 @@ def _require_repo_pointer(
     receipt: bool = False,
 ) -> str:
     text = _require_text(value, label=label, reason=missing_reason)
-    if "\\" in text or "://" in text:
+    if "\\" in text or "://" in text or _URI_SCHEME_RE.match(text):
         _fail(f"{label} must be a repo-relative pointer", BridgeViewReason.POINTER_INVALID)
 
     path_text, separator, fragment = text.partition("#")
@@ -159,7 +166,14 @@ def project_bridge_view(
         )
 
     source = _require_canonical_id(translation.material.material_id, label="source")
-    target = _require_canonical_id(translation.relation.claim_id, label="target")
+    # Material IDs are adapter-derived kebab-case IDs. Claim IDs are existing
+    # stable ERK identifiers and intentionally retain the adapter's broader
+    # non-empty, whitespace-trimmed vocabulary.
+    target = _require_text(
+        translation.relation.claim_id,
+        label="target",
+        reason=BridgeViewReason.NON_CANONICAL_ID,
+    )
     if translation.relation.material_id != source:
         _fail(
             "relation material_id does not match projected source",
@@ -251,6 +265,20 @@ def project_bridge_view(
     if translation.promotion_capable and register not in M5_GATED_REGISTERS:
         _fail(
             "promotion flag would create authority outside the reviewed registers",
+            BridgeViewReason.PROMOTION_NOT_ALLOWED,
+        )
+
+    trust = translation.material.trust
+    if type(trust) is not str or trust not in KNOWN_TRUST_LEVELS:
+        _fail("material trust is not canonical", BridgeViewReason.TRUST_INVALID)
+    expected_promotion_capable = (
+        relation in PROMOTION_CAPABLE_RELATION_TYPES
+        and register in M5_GATED_REGISTERS
+        and trust != TRUST_UNTRUSTED
+    )
+    if translation.promotion_capable is not expected_promotion_capable:
+        _fail(
+            "promotion flag contradicts relation, register, or material trust",
             BridgeViewReason.PROMOTION_NOT_ALLOWED,
         )
 
