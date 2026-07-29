@@ -15,16 +15,25 @@ from pathlib import PurePosixPath
 from typing import Any, cast
 
 from .evidence_bridge_adapter import (
+    _REGISTER_ALLOWED_RELATIONS,
+    _REGISTER_MATERIAL_KIND,
+    BRIDGE_SCHEMA_VERSION,
     KNOWN_SOURCE_REGISTERS,
     M5_GATED_REGISTERS,
     NON_PROMOTING_REGISTERS,
+    BridgeContext,
     BridgeTranslation,
 )
 from .evidence_routing import (
+    ERK_SCHEMA_VERSION,
     KNOWN_TRUST_LEVELS,
+    NON_EVIDENCE_MATERIAL_KINDS,
     PROMOTION_CAPABLE_RELATION_TYPES,
     RELATION_TYPES,
     TRUST_UNTRUSTED,
+    ClaimCandidate,
+    EvidenceRelation,
+    MaterialRef,
 )
 
 BRIDGE_VIEW_SCHEMA_VERSION = "bridge_view.v0.1"
@@ -41,10 +50,14 @@ class BridgeViewReason(str, Enum):
     """Closed reason vocabulary for projection failures."""
 
     INVALID_TRANSLATION = "INVALID_TRANSLATION"
+    INVALID_NESTED_MODEL = "INVALID_NESTED_MODEL"
+    UNSUPPORTED_SCHEMA_VERSION = "UNSUPPORTED_SCHEMA_VERSION"
     NON_CANONICAL_ID = "NON_CANONICAL_ID"
     IDENTIFIER_MISMATCH = "IDENTIFIER_MISMATCH"
     UNKNOWN_RELATION = "UNKNOWN_RELATION"
+    RELATION_NOT_ALLOWED = "RELATION_NOT_ALLOWED"
     UNKNOWN_REGISTER = "UNKNOWN_REGISTER"
+    MATERIAL_KIND_MISMATCH = "MATERIAL_KIND_MISMATCH"
     STATUS_INVALID = "STATUS_INVALID"
     STATUS_MISMATCH = "STATUS_MISMATCH"
     TRUST_INVALID = "TRUST_INVALID"
@@ -164,6 +177,32 @@ def project_bridge_view(
             "translation must be a BridgeTranslation",
             BridgeViewReason.INVALID_TRANSLATION,
         )
+    if translation.schema_version != BRIDGE_SCHEMA_VERSION:
+        _fail(
+            "translation schema version is unsupported",
+            BridgeViewReason.UNSUPPORTED_SCHEMA_VERSION,
+        )
+    if (
+        type(translation.material) is not MaterialRef
+        or type(translation.relation) is not EvidenceRelation
+        or type(translation.context) is not BridgeContext
+        or (translation.claim is not None and type(translation.claim) is not ClaimCandidate)
+    ):
+        _fail(
+            "translation contains an invalid nested model",
+            BridgeViewReason.INVALID_NESTED_MODEL,
+        )
+    if (
+        translation.material.schema_version != ERK_SCHEMA_VERSION
+        or translation.relation.schema_version != ERK_SCHEMA_VERSION
+        or (
+            translation.claim is not None and translation.claim.schema_version != ERK_SCHEMA_VERSION
+        )
+    ):
+        _fail(
+            "nested ERK schema version is unsupported",
+            BridgeViewReason.UNSUPPORTED_SCHEMA_VERSION,
+        )
 
     source = _require_canonical_id(translation.material.material_id, label="source")
     # Material IDs are adapter-derived kebab-case IDs. Claim IDs are existing
@@ -192,6 +231,16 @@ def project_bridge_view(
     register = translation.context.source_register
     if type(register) is not str or register not in KNOWN_SOURCE_REGISTERS:
         _fail(f"unknown register: {register!r}", BridgeViewReason.UNKNOWN_REGISTER)
+    if relation not in _REGISTER_ALLOWED_RELATIONS[register]:
+        _fail(
+            f"relation {relation!r} is not allowed for register {register!r}",
+            BridgeViewReason.RELATION_NOT_ALLOWED,
+        )
+    if translation.material.kind != _REGISTER_MATERIAL_KIND[register]:
+        _fail(
+            "material kind contradicts the source register",
+            BridgeViewReason.MATERIAL_KIND_MISMATCH,
+        )
 
     status = _require_text(
         translation.relation.status,
@@ -275,6 +324,8 @@ def project_bridge_view(
         relation in PROMOTION_CAPABLE_RELATION_TYPES
         and register in M5_GATED_REGISTERS
         and trust != TRUST_UNTRUSTED
+        and translation.material.kind not in NON_EVIDENCE_MATERIAL_KINDS
+        and status == "ACTIVE"
     )
     if translation.promotion_capable is not expected_promotion_capable:
         _fail(
