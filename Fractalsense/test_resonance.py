@@ -373,5 +373,26 @@ class TestApp:
     
     def on_send_sensor_data(self):
         """Event-Handler für den Sensordaten-senden-Button."""
-        # TODO: Implement sensor data sending
-        pass
+        # Aktuelle Slider-Werte als Sensordaten einsammeln
+        sensor_data = {
+            "accel_x": self.accel_x_var.get(),
+            "accel_y": self.accel_y_var.get(),
+            "accel_z": self.accel_z_var.get(),
+            "gyro_x": self.gyro_x_var.get(),
+            "gyro_y": self.gyro_y_var.get(),
+            "gyro_z": self.gyro_z_var.get(),
+        }
+
+        # Event senden — integration.py mappt daraus die Resonanz-Parameter
+        self.event_system.emit_event("sensor_data_updated", sensor_data)
+
+        accel_magnitude = (
+            sensor_data["accel_x"] ** 2 + sensor_data["accel_y"] ** 2 + sensor_data["accel_z"] ** 2
+        ) ** 0.5
+        gyro_magnitude = (
+            sensor_data["gyro_x"] ** 2 + sensor_data["gyro_y"] ** 2 + sensor_data["gyro_z"] ** 2
+        ) ** 0.5
+
+        self.status_label.config(
+            text=f"Sensordaten gesendet (|a|={accel_magnitude:.2f}, |ω|={gyro_magnitude:.2f})"
+        )
