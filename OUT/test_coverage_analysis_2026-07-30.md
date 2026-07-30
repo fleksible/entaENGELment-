@@ -428,12 +428,25 @@ wirkungslos, jetzt ist er sichtbar bei 0 und kann mit jedem echten Test angehobe
 | `tools/port_lint.py` | OK |
 | `tools/verify_pointers.py --strict` | alle Core-Pointer valide |
 
-Nicht lokal ausgeführt: `pnpm turbo run … test` (kein `node_modules`/Workspace-Install in
-dieser Sandbox). Verifiziert wurden stattdessen die beiden Bausteine einzeln — das
-`ui-app`-`test`-Script läuft grün, und `ui-app` ist das einzige Workspace-Paket mit
-`test`-Script (`packages/*` haben keins und werden von Turbo übersprungen). Die
-`electron-packaging-glob-compat`-Suite scheitert in dieser Sandbox nur an fehlendem
-`electron-builder`; in CI ist die Dependency vorhanden.
+`pnpm turbo run … test` war lokal nicht ausführbar (kein Workspace-Install in dieser
+Sandbox) — dafür ist es **in CI auf diesem Commit belegt**:
+
+- `CI — JS/TS Workspace` (Run 30513800187, PR + Push): `success`.
+  Log: `Running typecheck, lint, build, test in 3 packages` → `entaengelment-ui:test`
+  → `# tests 23 · # pass 23 · # fail 0` → `Tasks: 5 successful, 5 total`
+  (vorher 4 Tasks, s. `OUT/PR260_stabilization_report.md`). Die 23 `ui-app`-Tests
+  gaten also ab jetzt real.
+- `Tests` (Run 30513800212): alle 6 Jobs `success`, inkl. Schritt
+  „Run JavaScript tests with coverage". Die Coverage-Tabelle ist in CI jetzt
+  **gefüllt statt leer** — `app.js` und `sensor-simulator.js` erscheinen mit 0 %, und
+  die drei nicht parsebaren Dateien werden mit `SyntaxError` protokolliert. Der
+  Coverage-Artifact enthält 21 Dateien.
+  `Test Suites: 3 passed · Tests: 50 passed` — Discovery unverändert (die
+  `electron-packaging-glob-compat`-Suite läuft in CI mit, weil `electron-builder` dort
+  installiert ist; in dieser Sandbox fehlte nur diese Dependency).
+
+Damit ist beides belegt: die Messung ist jetzt echt (P0-1) und die `ui-app`-Tests
+laufen im Gate (P0-2) — bei durchgehend grüner CI.
 
 ## Artefakte
 
