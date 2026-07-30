@@ -37,7 +37,7 @@ make verify-all
 
 [FACT] `make verify` bleibt der stabile Core-Entry-Point für Ports, Tests, Pointer und Claim-Lint. Governance- und JS/TS-Workspace-Checks sind eigene Membranen, damit kleine lokale Änderungen bedienbar bleiben und UI-/Dependency-PRs nicht versehentlich durch einen Python-only-Run als geprüft gelten.
 
-[FACT] `make verify-js` erzwingt `pnpm install --frozen-lockfile` und danach `pnpm turbo run typecheck lint build`. Damit werden UI-App- und Package-Änderungen an die gleiche Lockfile-/Workspace-Disziplin gebunden wie die PR-CI.
+[FACT] `make verify-js` erzwingt `pnpm install --frozen-lockfile` und danach `pnpm turbo run typecheck lint build test`. Damit werden UI-App- und Package-Änderungen an die gleiche Lockfile-/Workspace-Disziplin gebunden wie die PR-CI. Die `test`-Task deckt aktuell `ui-app` ab (23 `node:test`-Fälle); Packages ohne `test`-Script überspringt Turbo.
 
 [FACT] `make verify-governance` bündelt Workflow-Posture-Check und VOID-Backlog-Drift-Check. Es prüft keine inhaltliche VOID-Schließung, sondern ob die Repo-Artefakte synchron und posture-stabil bleiben.
 

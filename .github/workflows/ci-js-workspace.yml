@@ -51,5 +51,8 @@ jobs:
       - name: Install (frozen lockfile)
         run: pnpm install --frozen-lockfile
 
-      - name: Typecheck · Lint · Build
-        run: pnpm turbo run typecheck lint build
+      # `test` was missing here: turbo.json defines the task and ui-app has a
+      # `test` script (23 node:test cases), but no workflow ever invoked it, so
+      # those tests had no gate. See OUT/test_coverage_analysis_2026-07-30.md (P0-2).
+      - name: Typecheck · Lint · Build · Test
+        run: pnpm turbo run typecheck lint build test
