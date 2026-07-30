@@ -33,31 +33,26 @@ module.exports = {
   coverageDirectory: 'coverage/js',
   coverageReporters: ['text', 'lcov', 'html'],
 
-  // Coverage thresholds — HONEST BASELINE, bewusst auf 0.
+  // Coverage thresholds — uncovered-count ratchet at the measured baseline.
   //
-  // Die vorherigen Werte (branches 50 / functions 60 / lines 60 / statements 60)
-  // haben NIE gegriffen: durch das zu enge `roots` wurde keine Datei
-  // instrumentiert, und Jest prueft den Threshold dann gegen "0 von 0" — gruen,
-  // ohne zu messen. Mit korrigiertem `roots` wird jetzt real gemessen, und das
-  // gemessene Ergebnis ist 0 %:
+  // Jest interprets negative thresholds as the maximum number of uncovered
+  // entities allowed. This preserves the honest 0%-coverage baseline without
+  // using a no-op 0% percentage threshold: adding untested code, or restoring
+  // one of the currently non-parseable files without tests, makes CI fail.
+  // Additional tests can only improve the baseline; lowering these absolute
+  // counts later tightens the gate further.
   //
-  //   - Kein Test importiert die Fractalsense-Quellen. __tests__/unit/
-  //     fractal-math.test.js re-implementiert `calculateMandelbrot` inline
-  //     statt `fractal-visualizer.js` zu laden.
-  //   - 3 der 5 Dateien sind ausserdem syntaktisch unvollstaendig und lassen
-  //     sich nicht parsen ("Failed to collect coverage from ..." im Log):
-  //     fractal-visualizer.js, presentation-mode.js, resonance-enhancer.js.
-  //
-  // 0 ist daher der einzige Wert, der die Lage nicht falsch darstellt. Er ist
-  // als Ratchet-Boden gedacht, nicht als Zielwert: sobald echte Tests gegen die
-  // Quellen laufen, hier auf den dann gemessenen Ist-Wert anheben.
-  // See OUT/test_coverage_analysis_2026-07-30.md (P0-1).
+  // Baseline from CI artifact on 2026-07-30 (instrumentable files only):
+  //   statements 181, branches 28, functions 51, lines 170 — all uncovered.
+  // Three files currently fail parsing and are therefore not counted:
+  // fractal-visualizer.js, presentation-mode.js, resonance-enhancer.js.
+  // See OUT/test_coverage_analysis_2026-07-30_ratchet_addendum.md.
   coverageThreshold: {
     global: {
-      branches: 0,
-      functions: 0,
-      lines: 0,
-      statements: 0
+      branches: -28,
+      functions: -51,
+      lines: -170,
+      statements: -181
     }
   },
 
