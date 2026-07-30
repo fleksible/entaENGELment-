@@ -7,7 +7,7 @@ H ?= 0.84
 DMI ?= 4.7
 PHI ?= 0.72
 REFRACTORY ?= 120
-JS_VERIFY_CMD ?= pnpm turbo run typecheck lint build
+JS_VERIFY_CMD ?= pnpm turbo run typecheck lint build test
 
 .PHONY: help install install-dev install-hooks test test-unit test-integration test-ethics coverage lint format type-check clean gate-test port-lint frame-lint voids-backlog voids-backlog-check voidmap-ui-drift-check pipeline-essentials workflow-posture-check verify verify-core verify-governance verify-js verify-all verify-pointers claim-lint verify-json status status-verify snapshot all deepjump benchmark-replay intake demo erk-drill erk-intake
 

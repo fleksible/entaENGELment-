@@ -69,7 +69,7 @@ A checklist that keeps additions error-free and CEI-positive (see
    apps. No cycles.
 5. **Type-only stays type-only** unless you deliberately add runtime values —
    then update consumers' `transpilePackages`.
-6. Run `pnpm turbo run typecheck lint build` before committing.
+6. Run `pnpm turbo run typecheck lint build test` before committing.
 
 ---
 

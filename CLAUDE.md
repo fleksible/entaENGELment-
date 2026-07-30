@@ -279,7 +279,7 @@ pnpm-Workspace (`pnpm@10.33.0`, via `corepack enable`). Turbo-Pipelines in [`tur
 corepack enable
 pnpm install --frozen-lockfile
 pnpm --filter entaengelment-ui dev      # Next.js UI → http://localhost:3000
-pnpm turbo run typecheck lint build     # = der JS_VERIFY_CMD aus verify-js
+pnpm turbo run typecheck lint build test  # = der JS_VERIFY_CMD aus verify-js
 ```
 
 > Wichtig: PRs, die das JS/TS-Workspace-Wiring berühren — `ui-app/`, `packages/`,
