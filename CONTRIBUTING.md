@@ -1,6 +1,16 @@
 # Contributing to entaENGELment Framework
 
-Dieses Repository folgt dem Inner-Codex und strengen Qualitätsstandards.
+Danke, dass du darüber nachdenkst, etwas beizutragen.
+
+Ein Tippfehler zählt. Eine unklare Formulierung zählt. Eine kritische Frage zählt. Ein zusätzlicher Test zählt.
+
+Du musst GitHub nicht souverän beherrschen, bevor du etwas bemerken darfst. Wenn du noch nie einen Pull Request gemacht hast, ist das keine Eintrittsprüfung. Niemand muss beim ersten Besuch gleich einen Compiler mitbringen.
+
+Die Standards unten bleiben trotzdem bewusst streng: **Sie gelten für Änderungen am Projekt, nicht als Bewertung der Person, die sie vorschlägt.**
+
+Wenn du nur eine Frage oder Beobachtung hast, darf sie zuerst eine Frage bleiben.
+
+---
 
 ## Entwicklungsumgebung einrichten
 
@@ -17,6 +27,8 @@ source .venv/bin/activate  # Linux/Mac
 # Development Dependencies installieren
 make install-dev
 ```
+
+Wenn du gerade erst GitHub kennenlernst, hilft [`docs/START_HERE.md`](docs/START_HERE.md) mit den wichtigsten Begriffen und dem technischen Einstieg.
 
 ## Code-Qualität
 
@@ -53,7 +65,7 @@ Commits folgen dem Format: `type(scope): message`
 - `chore`: Build/Config-Änderungen
 
 **Beispiele:**
-```
+```text
 feat(metrics): add trust decay function
 fix(gate): correct phi threshold validation
 docs(readme): update installation instructions
@@ -68,6 +80,8 @@ PRs nur nach vorheriger Absprache. Jeder PR muss:
 2. Tests für neue Features/Fixes enthalten
 3. Dokumentation aktualisieren
 4. Von CODEOWNERS reviewt werden
+
+Für eine kleine Beobachtung musst du nicht sofort einen fertigen PR liefern. Eine Frage oder ein Issue kann der bessere erste Schritt sein.
 
 ## Architektonische Prinzipien
 

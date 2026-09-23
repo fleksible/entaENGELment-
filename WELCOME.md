@@ -1,40 +1,123 @@
-# Welcome to entaENGELment
+# Willkommen bei entaENGELment
 
-entaENGELment is an experimental consent-first, audit-first and anti-capture framework for human-guided, verifiable and mythopoetic systems.
+Falls du mit dem Wort **Repository** ungefähr so viel anfangen kannst, wie ich lange Zeit:
 
-It is not a finished product, not a production security system, and not empirical proof of its symbolic models.
+**Willkommen. Ich lerne die Mechanik davon ehrlich gesagt bis heute noch.**
 
-It is also not intended to become a surveillance engine, semantic profiling tool, hidden personalization loop, or enterprise lock-in architecture.
+Fürs Erste reicht völlig: Das hier ist ein Ort, an dem Dinge liegen. Manche sind fertig, manche werden ausprobiert, manche widersprechen einander, und manche bleiben absichtlich offen.
 
-This repository is a research and governance framework in active formation. This welcome file is a gentle orientation; authoritative rules remain in `README.md`, `CLAUDE.md`, policies, tests, schemas and CI gates.
+Du musst keinen Code verstehen, nichts installieren und nicht wissen, wie GitHub funktioniert. Du darfst lesen, springen, Fragen stellen, widersprechen, einen einzelnen Gedanken mitnehmen oder wieder gehen.
+
+Es gibt hier keine richtige Reihenfolge und keinen Test am Eingang.
 
 ---
 
-## Core layers
+## Was möchtest du gerade tun?
+
+Du musst dich nicht erst als Entwickler:in, Philosoph:in, Reviewer:in oder irgendetwas anderes einordnen.
+
+- **Ich möchte nur schauen.**  
+  Dann bleib einfach hier und folge dem, was interessant wirkt.
+
+- **Ich möchte verstehen, worum es geht.**  
+  Starte mit [`REPOSITORY_ESSENZ_ANALYSE.md`](REPOSITORY_ESSENZ_ANALYSE.md).
+
+- **Ich möchte wissen, ob das solide ist.**  
+  Schau in [`tests/`](tests/), [`docs/audit/`](docs/audit/) und [`CLAUDE.md`](CLAUDE.md).
+
+- **Ich möchte technisch einsteigen.**  
+  [`docs/START_HERE.md`](docs/START_HERE.md) ist die Werkstatt.
+
+- **Ich möchte etwas beitragen.**  
+  [`CONTRIBUTING.md`](CONTRIBUTING.md) erklärt die Spielregeln.
+
+- **Ich weiß noch nicht, wonach ich suche.**  
+  Auch das ist ein gültiger Ausgangspunkt.
+
+Keiner dieser Wege ist der „richtige“.
+
+---
+
+## Was ist entaENGELment?
+
+entaENGELment ist ein experimentelles, consent-first und anti-capture orientiertes Forschungs- und Governance-Framework für menschengeführte, überprüfbare und teilweise mythopoetische Systeme.
+
+Einige Teile sind Code. Andere sind Governance, Tests, Forschung, Philosophie, Narration oder bewusst offene Fragen.
+
+Das Projekt ist **kein** fertiges Produkt, **kein** Production-Security-System und **kein** empirischer Beweis seiner symbolischen Modelle.
+
+Es soll auch nicht zu einer Überwachungsarchitektur, einem semantischen Profiling-System, einer versteckten Personalisierungsschleife oder einer Lock-in-Maschine werden.
+
+Symbolische Sprache ist willkommen. Sie ersetzt hier aber keine Evidenz.
+
+---
+
+## Wer spricht hier eigentlich?
+
+Dieses Projekt entsteht in einem dokumentierten Dialog zwischen einem Menschen und verschiedenen KI-Instanzen.
+
+Das wird nicht versteckt und nicht als Qualitäts- oder Autoritätsargument verwendet.
+
+KI-Beiträge werden nicht dadurch wahrer, dass sie von einer KI stammen. Menschliche Beiträge werden nicht dadurch richtiger, dass sie menschlich sind. Was in dieses Repository übernommen wird, bleibt als menschlicher Commit, Review und nachvollziehbare Entscheidung sichtbar.
+
+Du musst KI weder mögen noch ihr vertrauen, um das Projekt lesen oder kritisieren zu können.
+
+Das Ziel dieser Transparenz ist nicht, Skepsis auszuräumen. Sie soll nur verhindern, dass über die Herkunft einer Formulierung oder Struktur eine falsche Geschichte erzählt wird.
+
+---
+
+## Was hier zuerst zählt
+
+> Beziehung ohne Vereinnahmung.  
+> Übersetzung ohne Identitätsbehauptung.  
+> Herkunft sichtbar lassen.  
+> Offenen Rest erlauben.  
+> Grenzen und Rückzug respektieren.
+
+Technisch zeigt sich das unter anderem in:
+
+- Consent- und Boundary-Guards,
+- Claim-Status und Provenienz,
+- Tests und auditierbaren Receipts,
+- geschützten offenen Zuständen (VOIDs / Kenogramme),
+- reversiblen Revisionen und Forks,
+- Anti-Capture- und Privacy-Grenzen.
+
+Das sind Designziele und Arbeitsregeln, keine Behauptung einer universalen Ontologie.
+
+---
+
+## Die Schichten des Hauses
 
 1. **Governance**  
-   Consent, boundaries, review gates, claim-status discipline and anti-overclaim rules.
+   Consent, Grenzen, Review-Gates, Claim-Status und Anti-Overclaim-Regeln.
 
 2. **Verification**  
-   Repeatable checks such as `make verify`, pointer validation, claim linting, tests, receipts and ledger-integrity checks where implemented.
+   Wiederholbare Checks wie `make verify`, Pointer-Validierung, Claim-Linting, Tests und Receipts.
 
 3. **Gläserne Agora & Receipt-Ledger**  
-   A user-sovereign claim space. The system must not define meaning for the user. Claims should be added with visible status, origin, membrane context and revision/fork paths. Where implemented, the Receipt-Ledger is append-only and tamper-evident rather than silently overwritable.
+   Ein user-souveräner Claim-Raum. Bedeutungen sollen hinzugefügt, revidiert, geforkt oder zurückgenommen werden können, ohne ältere Aussagen still zu überschreiben.
 
 4. **Essence Architecture**  
-   Public symbolic and image-generation grammar: schemas, prompt modules, visual operators, policy gates and tests. This layer may be open and auditable without receiving private user data.
+   Öffentliche symbolische und visuelle Grammatik, Schemas, Prompt-Module, Operatoren, Gates und Tests.
 
 5. **Commons & Anti-Capture**  
-   The project supports open development while resisting extractive capture: surveillance, profiling, hidden personalization, private-user-data extraction and lock-in.
+   Offene Entwicklung ohne Profiling, versteckte Personalisierung, private-data extraction oder Lock-in als Designziel.
 
 6. **Exploration**  
-   A symbolic and conceptual research space for resonance, membranes, voids, tesser3TAKT, Grimm Narration 2.0 and multi-agent coordination.
+   Der Forschungsraum für Resonanz, Membranen, VOID, tesser3TAKT, Grimm Narration 2.0 und Mensch–KI-Koordination.
+
+Du musst diese Schichten nicht in dieser Reihenfolge lesen.
 
 ---
 
-## Start here
+## Wenn du wirklich Code ausführen möchtest
 
-For a fast technical check:
+Wenn du jetzt freiwillig `git clone` lesen möchtest: **Ab hier beginnt die Werkstatt.**
+
+Der praktische technische Einstieg lebt in [`docs/START_HERE.md`](docs/START_HERE.md).
+
+Der kürzeste Verify-Pfad ist:
 
 ```bash
 git clone https://github.com/fleksible/entaENGELment-.git
@@ -43,7 +126,7 @@ make install-dev
 make verify
 ```
 
-For the optional UI / lab interface:
+Für die optionale UI:
 
 ```bash
 corepack enable
@@ -51,175 +134,61 @@ pnpm install --frozen-lockfile
 pnpm --filter entaengelment-ui dev
 ```
 
-Then open:
-
-```text
-http://localhost:3000
-```
+Wenn du nur lesen möchtest, brauchst du davon nichts.
 
 ---
 
-## What matters most
+## GitHub als öffentlicher Raum
 
-> No claim without status.  
-> No handover without receipt.  
-> No merge without verification.  
-> No resonance without boundary.  
-> No GitHub without privacy reduction.  
-> No open architecture without anti-capture guard.
+GitHub wird hier als öffentlicher Entwicklungs-, Dokumentations- und Witness-Layer verwendet.
 
-Important terms:
+Es darf öffentlichen Code, Dokumentation, Schemas, Tests, reduzierte Integrity-Anker und Audit-Notizen enthalten.
 
-- **User-Claim** means the claim belongs to the user, not to the system.
-- **Gläserne Agora** is the user-facing claim space where meanings may be added, forked, revised or withdrawn without silently overwriting prior claims.
-- **Receipt-Ledger** stores claim events without treating any single entry as the final definition.
-- **verifyLedger** is the intended integrity check for hash-chain, structure and references where the ledger implementation exists.
-- **materialPointers** may show which active lab materials shaped a claim, without turning those materials into authority or evidence by default.
-- **VOIDMAP** tracks open gaps, risks and unresolved system questions.
-- **DeepJump** describes the verify -> status -> snapshot workflow.
-- **Receipts** document evidence, state transitions or claim events, depending on module context.
-- **Guards G0-G6** define consent, focus, boundary and merge discipline.
-- **ANNEX vs GOLD** separates changeable work zones from protected canonical material.
+Es soll **nicht** zum semantischen Generator privater Nutzerdaten werden.
 
----
+Standardmäßig nicht nach GitHub gehören:
 
-## GitHub Use Policy
+- private rohe User-Claims,
+- private Nutzerbilder,
+- persönliche symbolische Profile,
+- Embeddings privater Inhalte,
+- inferierte psychologische Profile,
+- private Ledger-Exporte,
+- versteckte Personalisierungsschleifen,
+- aus privaten Nutzerdaten erzeugte Prompt-Seeds.
 
-GitHub is used as a public development, documentation and witness layer. It may contain public code, documentation, schemas, tests, visual grammar modules, prompt-compiler logic and reduced integrity anchors.
+> GitHub darf Integrität bezeugen, aber nicht heimlich Bedeutung aus privaten Nutzerdaten erzeugen.
 
-GitHub must not become a semantic generator of private user data.
-
-Allowed in GitHub:
-
-- public source code
-- public schemas
-- public tests
-- public governance documents
-- public essence/image architecture
-- prompt-compiler logic without private user data
-- reduced hash or snapshot manifests
-- documentation and audit notes
-
-Not allowed in GitHub by default:
-
-- private raw User-Claims
-- private user images
-- personal symbolic profiles
-- embeddings of private content
-- inferred psychological profiles
-- private ledger exports
-- hidden personalization loops
-- generated prompt seeds derived from private user data
-
-Core rule:
-
-> GitHub may witness integrity, but must not become a semantic generator of private user data.
-
-See also: [`GITHUB_USE_POLICY.md`](GITHUB_USE_POLICY.md) and [`PRIVACY_BOUNDARY.md`](PRIVACY_BOUNDARY.md).
+Siehe auch [`GITHUB_USE_POLICY.md`](GITHUB_USE_POLICY.md) und [`PRIVACY_BOUNDARY.md`](PRIVACY_BOUNDARY.md).
 
 ---
 
-## Anti-Capture Position
+## Anti-Capture
 
-Commercial use and extractive capture are not identical. The project is primarily concerned with capture, surveillance, profiling, hidden personalization, semantic extraction and lock-in.
+Kommerzielle Nutzung und extractive capture sind nicht dasselbe.
 
-entaENGELment should not be used to support extractive personalization, behavioral manipulation, semantic profiling, enterprise lock-in or the conversion of private meaning into commercial advantage.
+Das Projekt richtet sich gegen Überwachung, Profiling, versteckte Personalisierung, semantische Extraktion und Lock-in. Was davon rechtlich durchsetzbar ist, hängt von Lizenz, Contribution-Regeln und konkretem Deployment ab.
 
-This is a governance position. Legal enforceability depends on the actual project license, contribution rules, hosted-service terms and separate policy documents.
-
-Current license review is required before claiming that anti-capture obligations are legally enforceable.
-
-See also: [`ANTI_CAPTURE_POLICY.md`](ANTI_CAPTURE_POLICY.md) and [`LICENSE_REVIEW.md`](LICENSE_REVIEW.md).
+Siehe [`ANTI_CAPTURE_POLICY.md`](ANTI_CAPTURE_POLICY.md) und [`LICENSE_REVIEW.md`](LICENSE_REVIEW.md).
 
 ---
 
-## What this project is not
+## Wenn du etwas beitragen möchtest
 
-entaENGELment is not:
+Kleine, fokussierte Beiträge sind ausdrücklich willkommen.
 
-- a finished product,
-- a general-purpose framework,
-- a production security system,
-- an empirical proof of its symbolic models,
-- a claim that metaphor equals evidence,
-- a startup funnel,
-- a surveillance engine,
-- a private-user-data extraction pipeline,
-- a semantic profiling tool,
-- an enterprise lock-in architecture,
-- or a system for turning user meaning into hidden personalization loops.
+Ein Tippfehler zählt. Eine unklare Stelle zählt. Eine kritische Frage zählt. Ein Test zählt.
 
-Symbolic language is allowed here, but it must not replace verification.
+Niemand muss beim ersten Besuch gleich einen Compiler mitbringen.
+
+Die vollständigen Regeln stehen in [`CONTRIBUTING.md`](CONTRIBUTING.md). Die technischen und Governance-Grenzen bleiben dort absichtlich streng; sie schützen Änderungen, nicht den Status einer Person.
+
+Wenn du unsicher bist, wähle die kleinere Änderung — oder öffne erst eine Frage.
 
 ---
 
-## Recommended paths
+## Noch ein letzter Satz
 
-If you are a developer, start with:
+Du musst dieses Projekt nicht mögen, übernehmen oder vollständig verstehen, um hier willkommen zu sein.
 
-- `README.md`
-- `Makefile`
-- `tests/`
-- `tools/`
-
-If you are reviewing governance, start with:
-
-- `CLAUDE.md`
-- `policies/`
-- `VOIDMAP.yml`
-- `docs/guards/`
-- `GITHUB_USE_POLICY.md`
-- `ANTI_CAPTURE_POLICY.md`
-- `PRIVACY_BOUNDARY.md`
-- `LICENSE_REVIEW.md`
-
-If you are reviewing the claim-space architecture, look for:
-
-- the Gläserne Agora UI
-- the Receipt-Ledger implementation
-- ledger-integrity checks such as `verifyLedger`
-- Governance Cockpit / Ledger Integrity Block
-- JSONL export/import logic
-
-If a path does not exist yet, open a small PR or VOID instead of inventing structure silently.
-
-If you are exploring the conceptual layer, start with:
-
-- `REPOSITORY_ESSENZ_ANALYSE.md`
-- `docs/`
-- `index/`
-- `spec/`
-
----
-
-## Contribution style
-
-Small, focused pull requests are preferred. Full guidelines live in [`CONTRIBUTING.md`](CONTRIBUTING.md).
-
-Good PRs usually do one thing:
-
-- fix a typo,
-- add a test,
-- clarify a claim,
-- improve privacy boundaries,
-- improve anti-overclaim wording,
-- update one dependency,
-- close one VOID with evidence,
-- improve one documented workflow,
-- strengthen GitHub witness-only separation,
-- improve UI accessibility,
-- improve schema validation,
-- or improve import/export safety.
-
-PRs must not:
-
-- upload private User-Claims to GitHub,
-- add telemetry for private claims,
-- create hidden personalization from private ledger data,
-- remove claim-status visibility,
-- mutate old receipts,
-- weaken ledger-integrity checks without explicit review,
-- turn analogy into evidence,
-- or turn GitHub into a user-data feedback loop.
-
-When unsure, choose the smaller change.
+**Die Tür ist ein Angebot, kein Funnel.**
