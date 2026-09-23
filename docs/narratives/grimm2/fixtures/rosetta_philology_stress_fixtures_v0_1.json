@@ -1,0 +1,344 @@
+{
+  "schemaVersion": "0.1",
+  "status": "[ANNEX]",
+  "claimLayer": "[ROSETTA]",
+  "authorityStatus": "DERIVED",
+  "purpose": "Philological and anti-collapse stress fixtures for Rosetta taxonomy separation. Historical content is a review target, not canonical philology.",
+  "invariants": {
+    "observedDeltaNotKnownCause": true,
+    "mappingCardinalityNotSemanticIdentity": true,
+    "languageAffordanceNotDeterminism": true,
+    "historicalPathNotTruthInheritance": true,
+    "readerRebindingIsNewEvent": true,
+    "promotionEffect": "NONE",
+    "humanCommitRequired": true
+  },
+  "evidenceCatalog": {
+    "sepSubstance": "https://plato.stanford.edu/entries/substance/",
+    "sepAristotleMetaphysics": "https://plato.stanford.edu/entries/aristotle-metaphysics/",
+    "ocdLogos": "https://academic.oup.com/edited-volume/61673/chapter-abstract/549651385",
+    "brillTaylor": "https://brill.com/view/journals/jpt/7/2/article-p180_3.xml?language=en",
+    "taylorPlotinus": "https://thecollectivepress.org/source/25"
+  },
+  "fixtures": [
+    {
+      "id": "ousia-split-stress",
+      "title": "ousia — Split ohne Ursachen-Kurzschluss",
+      "questionProvenance": {
+        "questionId": "q-ousia-001",
+        "askedByRef": "reviewer:philology",
+        "questionTextRef": "question:how-is-ousia-partitioned-across-target-vocabularies"
+      },
+      "source": {
+        "language": "grc",
+        "term": "οὐσία",
+        "ref": "term:ousia"
+      },
+      "targets": [
+        {
+          "language": "la",
+          "term": "substantia",
+          "ref": "term:substantia"
+        },
+        {
+          "language": "la",
+          "term": "essentia",
+          "ref": "term:essentia"
+        }
+      ],
+      "transformationDelta": {
+        "preserved": [
+          "candidate relation to being/what-a-thing-is vocabulary within declared sources"
+        ],
+        "lost": [
+          "a single Greek lexical node is no longer represented by one target token"
+        ],
+        "introduced": []
+      },
+      "mappingTopology": {
+        "cardinality": "ONE_TO_MANY",
+        "coverage": "PARTIAL_WITHIN_SCOPE"
+      },
+      "attributionCandidates": [
+        {
+          "factor": "HISTORICAL_PATH",
+          "actorOrContextRef": "tradition:latin-philosophical-vocabulary",
+          "status": "SUPPORTED",
+          "evidenceRefs": [
+            "sepSubstance",
+            "sepAristotleMetaphysics"
+          ],
+          "counterevidenceRefs": []
+        },
+        {
+          "factor": "LANGUAGE_AFFORDANCE",
+          "actorOrContextRef": "language:latin",
+          "status": "PARTIAL",
+          "evidenceRefs": [
+            "sepSubstance"
+          ],
+          "counterevidenceRefs": []
+        }
+      ],
+      "expected": {
+        "verdict": "HOLD",
+        "semanticIdentity": false,
+        "causationAssigned": false,
+        "promotion": false
+      }
+    },
+    {
+      "id": "energeia-reader-rebinding",
+      "title": "energeia — vertrautes Zeichen, späteres Rebinding",
+      "questionProvenance": {
+        "questionId": "q-energeia-001",
+        "askedByRef": "reviewer:philology",
+        "questionTextRef": "question:what-changes-when-energy-is-read-anachronistically"
+      },
+      "source": {
+        "language": "grc",
+        "term": "ἐνέργεια",
+        "ref": "term:energeia"
+      },
+      "target": {
+        "language": "en",
+        "term": "energy",
+        "ref": "term:taylor-energy"
+      },
+      "transformationDelta": {
+        "preserved": [
+          "candidate activity/actuality role in the historical philosophical context"
+        ],
+        "lost": [
+          "parts of the Greek semantic field may not be recoverable from the modern English surface form alone"
+        ],
+        "introduced": []
+      },
+      "mappingTopology": {
+        "cardinality": "ONE_TO_ONE",
+        "coverage": "PARTIAL_WITHIN_SCOPE"
+      },
+      "attributionCandidates": [
+        {
+          "factor": "INTERPRETER",
+          "actorOrContextRef": "person:thomas-taylor",
+          "status": "SUPPORTED",
+          "evidenceRefs": [
+            "taylorPlotinus"
+          ],
+          "counterevidenceRefs": []
+        }
+      ],
+      "laterEvent": {
+        "kind": "READER_REBINDING",
+        "sourceVersionRef": "term:taylor-energy",
+        "targetVersionRef": "reading:modern-physical-energy",
+        "transformationDelta": {
+          "preserved": [
+            "surface token energy"
+          ],
+          "lost": [
+            "historical philosophical context"
+          ],
+          "introduced": [
+            "modern physical-science sense as default reading"
+          ]
+        },
+        "attributionCandidates": [
+          {
+            "factor": "READER_REBINDING",
+            "actorOrContextRef": "reader:modern-default",
+            "status": "PARTIAL",
+            "evidenceRefs": [
+              "taylorPlotinus"
+            ],
+            "counterevidenceRefs": []
+          }
+        ]
+      },
+      "expected": {
+        "verdict": "HOLD",
+        "sourceIntentionRecovered": false,
+        "readerEventSeparate": true,
+        "promotion": false
+      }
+    },
+    {
+      "id": "logos-relational-role",
+      "title": "logos — relational role vor Wörterbuchgleichheit",
+      "questionProvenance": {
+        "questionId": "q-logos-001",
+        "askedByRef": "reviewer:philology",
+        "questionTextRef": "question:can-one-target-token-carry-logos-across-contexts"
+      },
+      "source": {
+        "language": "grc",
+        "term": "λόγος",
+        "ref": "term:logos"
+      },
+      "targets": [
+        {
+          "language": "en",
+          "term": "speech",
+          "ref": "gloss:speech"
+        },
+        {
+          "language": "en",
+          "term": "account",
+          "ref": "gloss:account"
+        },
+        {
+          "language": "en",
+          "term": "reason",
+          "ref": "gloss:reason"
+        }
+      ],
+      "transformationDelta": {
+        "preserved": [
+          "context-dependent relational role must be declared before a target gloss is accepted"
+        ],
+        "lost": [
+          "single-token translation cannot preserve the full attested semantic range"
+        ],
+        "introduced": []
+      },
+      "mappingTopology": {
+        "cardinality": "ONE_TO_MANY",
+        "coverage": "PARTIAL_WITHIN_SCOPE"
+      },
+      "attributionCandidates": [
+        {
+          "factor": "EDITORIAL_CHOICE",
+          "actorOrContextRef": "context:local-passage",
+          "status": "SUPPORTED",
+          "evidenceRefs": [
+            "ocdLogos",
+            "sepAristotleMetaphysics"
+          ],
+          "counterevidenceRefs": []
+        }
+      ],
+      "expected": {
+        "verdict": "HOLD",
+        "requiresContext": true,
+        "lexicalInvariantSufficient": false,
+        "promotion": false
+      }
+    },
+    {
+      "id": "hen-agathon-interpretive-synthesis",
+      "title": "hen/agathon — Traditionspfad ist keine Lexikidentität",
+      "questionProvenance": {
+        "questionId": "q-hen-agathon-001",
+        "askedByRef": "reviewer:philology",
+        "questionTextRef": "question:when-does-a-tradition-synthesis-get-misattributed-to-the-source"
+      },
+      "source": {
+        "language": "grc",
+        "refs": [
+          "term:hen",
+          "term:agathon"
+        ],
+        "labels": [
+          "ἕν",
+          "ἀγαθόν"
+        ]
+      },
+      "targetClaimCandidate": {
+        "ref": "claim:one-good-identity",
+        "text": "The One and the Good are treated as identical without attribution."
+      },
+      "transformationDelta": {
+        "preserved": [
+          "a documented later Platonist concern with the relation between One/Good may be tracked"
+        ],
+        "lost": [
+          "differences between source text, later commentary, and translator framing"
+        ],
+        "introduced": [
+          "unqualified identity attribution to the earliest source"
+        ]
+      },
+      "mappingTopology": {
+        "cardinality": "MANY_TO_ONE",
+        "coverage": "PARTIAL_WITHIN_SCOPE"
+      },
+      "attributionCandidates": [
+        {
+          "factor": "HISTORICAL_PATH",
+          "actorOrContextRef": "path:plato-neoplatonism-taylor",
+          "status": "PARTIAL",
+          "evidenceRefs": [
+            "brillTaylor"
+          ],
+          "counterevidenceRefs": []
+        },
+        {
+          "factor": "INTERPRETER",
+          "actorOrContextRef": "person:thomas-taylor",
+          "status": "PARTIAL",
+          "evidenceRefs": [
+            "brillTaylor"
+          ],
+          "counterevidenceRefs": []
+        }
+      ],
+      "expected": {
+        "verdict": "HOLD",
+        "lexicalIdentity": false,
+        "sourceAttributionAllowed": false,
+        "pathMustRemainVisible": true,
+        "promotion": false
+      }
+    },
+    {
+      "id": "universal-harmony-collapse",
+      "title": "Universal-Harmony Collapse",
+      "questionProvenance": {
+        "questionId": "q-collapse-001",
+        "askedByRef": "reviewer:red-team",
+        "questionTextRef": "question:does-pairwise-resonance-license-global-identity"
+      },
+      "sourceRelations": [
+        [
+          "A",
+          "B",
+          "candidate-resonance"
+        ],
+        [
+          "B",
+          "C",
+          "candidate-resonance"
+        ],
+        [
+          "C",
+          "D",
+          "candidate-resonance"
+        ]
+      ],
+      "invalidDerivation": "A = B = C = D",
+      "transformationDelta": {
+        "preserved": [
+          "pairwise candidate relations remain individually inspectable"
+        ],
+        "lost": [
+          "distinct relational content is erased by universal identity collapse"
+        ],
+        "introduced": [
+          "global equivalence not present in the source relations"
+        ]
+      },
+      "mappingTopology": {
+        "cardinality": "MANY_TO_MANY",
+        "coverage": "PARTIAL_WITHIN_SCOPE"
+      },
+      "attributionCandidates": [],
+      "expected": {
+        "verdict": "STOP",
+        "distinctionErasure": true,
+        "equivalenceClosureAllowed": false,
+        "promotion": false
+      }
+    }
+  ]
+}
