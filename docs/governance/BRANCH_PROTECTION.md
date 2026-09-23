@@ -1,54 +1,54 @@
 # Branch Protection Setup
 
-## Required Steps (GitHub UI)
+**Status:** proposed settings; live enforcement is UNVERIFIED.
+**Reviewed:** 2026-09-23. See `BRANCH_EXPECTED_STATE.yml` and issue #278.
 
-Go to: Repository → Settings → Branches → Add branch protection rule
+Repository files describe the desired posture; they cannot activate protection.
+Check Settings → Branches / Rulesets for `main` before changing configuration.
 
-### Branch name pattern
-`main`
+## Required checks
 
-### Settings to enable
+Use the **published job names**, confirmed on a current pull request. Internal
+YAML job IDs and workflow titles are not interchangeable with check contexts.
 
-- [x] Require a pull request before merging
-  - [x] Require approvals: 1 (or 0 if solo maintainer)
-- [x] Require status checks to pass before merging
-  - [x] Require branches to be up to date before merging
-  - Required checks:
-    - `Verify Pointers & Lint (blocking)` (from deepjump-ci.yml)
-    - `verify` (from ci.yml)
-    - `build` (from ci.yml)
-    - `security` (from ci.yml)
-    - `Metatron Guard` (from metatron-guard.yml)
-- [x] Do not allow bypassing the above settings
+| Check context | PR coverage |
+|---|---|
+| `Verify Pointers & Lint (blocking)` | Pointers, claims, ports |
+| `deepjump-audit / deepjump-audit` | Reusable verification, receipts, tests, snapshot |
+| `All Tests Pass` | JavaScript, Fractalsense Python matrix, UI build |
+| `Lint · Format · Types · SAST` | Python quality and Bandit |
+| `Check PR for FOKUS marker` | PR focus marker |
 
-### Optional (recommended)
-- [x] Require signed commits
-- [x] Include administrators
+[FACT] The legacy `ci.yml` `verify`, `build`, and `security` jobs are skipped on
+pull requests. They are not substitutes for the dedicated PR checks above.
+Claim and receipt lint are steps within jobs, not separate published contexts.
+The signed DeepJump path is intentionally skipped on PRs; it must not be required
+as though pull requests receive signing secrets.
 
-## CLI Alternative (gh)
+## Conditional checks
+
+`workspace`, `JS dependency audit (pnpm)`, and
+`Python dependency audit (pip-audit)` run for their workflow path filters.
+Require their success whenever they execute. Do not configure them as globally
+required contexts while the entire workflow can be skipped by a paths filter;
+that can leave unrelated PRs waiting forever. An always-running dispatcher with
+an explicit affected/unaffected outcome is a separate implementation step.
+
+## Settings and readback
+
+- Require pull requests and up-to-date checks.
+- Choose the review count deliberately (solo maintainer: zero may be appropriate).
+- Include administrators and disallow bypass according to the chosen rule.
+- If signed commits are required, verify that the actual merge method supports it.
+- Re-read the active branch/ruleset settings and compare names to a fresh PR.
+
+Optional read-only verification with an authenticated GitHub CLI:
 
 ```bash
-gh api repos/{owner}/{repo}/branches/main/protection \
-  --method PUT \
-  --field required_status_checks='{"strict":true,"contexts":["Verify Pointers & Lint (blocking)","verify","build","security","Metatron Guard"]}' \
-  --field enforce_admins=true \
-  --field required_pull_request_reviews='{"required_approving_review_count":0}' \
-  --field restrictions=null
+gh api repos/fleksible/entaENGELment-/branches/main/protection
+gh api repos/fleksible/entaENGELment-/rulesets
 ```
 
-Replace `{owner}/{repo}` with `fleksible/entaENGELment-`.
-
-## Verification
-
-After setting protection:
-
-```bash
-gh api repos/{owner}/{repo}/branches/main/protection --jq '.required_status_checks.contexts'
-```
-
-Expected output: list of all required check names.
-
-## Note
-
-This must be configured manually via GitHub UI or API.
-It cannot be set via repository files alone.
+A 403/404 or unavailable connector action is an unresolved access/setting check,
+not evidence that protection is enabled or disabled. This maintenance pass does
+not write repository settings.

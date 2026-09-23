@@ -109,7 +109,16 @@ jobs:
   all-tests-pass:
     name: All Tests Pass
     needs: [test-javascript, test-python, ui-build]
+    if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
-      - name: All tests passed
-        run: echo "All JavaScript, Python, and UI build checks passed successfully!"
+      - name: Require every test job to succeed
+        env:
+          JS_RESULT: ${{ needs.test-javascript.result }}
+          PYTHON_RESULT: ${{ needs.test-python.result }}
+          UI_RESULT: ${{ needs.ui-build.result }}
+        run: |
+          test "$JS_RESULT" = success
+          test "$PYTHON_RESULT" = success
+          test "$UI_RESULT" = success
+          echo "All JavaScript, Python, and UI build checks passed successfully!"
