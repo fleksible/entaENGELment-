@@ -2,7 +2,22 @@
 
 > Consent-First Framework für resonante Systeme mit auditierbarem Proof-Protokoll
 
-> New here? Start with [WELCOME.md](WELCOME.md) for a gentle orientation.
+## Erst einmal ankommen
+
+Falls du mit dem Wort **Repository** ungefähr so viel anfangen kannst, wie ich lange Zeit: willkommen. Ich lerne die Mechanik davon ehrlich gesagt bis heute noch.
+
+Für den Anfang reicht: **Hier liegen Dinge.** Manche sind fertig, manche werden geprüft, manche widersprechen einander, und manche bleiben absichtlich offen.
+
+Du musst nichts installieren, keinen Code verstehen und auch nichts beitragen, um hier lesen zu dürfen.
+
+- **Einfach ankommen:** [WELCOME.md](WELCOME.md)
+- **Die Grundidee verstehen:** [REPOSITORY_ESSENZ_ANALYSE.md](REPOSITORY_ESSENZ_ANALYSE.md)
+- **Technisch einsteigen:** [docs/START_HERE.md](docs/START_HERE.md)
+- **Prüfen oder kritisieren:** [docs/audit/](docs/audit/) · [tests/](tests/) · [CLAUDE.md](CLAUDE.md)
+- **Etwas beitragen:** [CONTRIBUTING.md](CONTRIBUTING.md)
+- **Noch nicht wissen, wonach du suchst:** ebenfalls ein gültiger Einstieg.
+
+> Du musst die Sprache des Hauses nicht sprechen, um eintreten zu dürfen.
 
 ![DeepJump CI](https://github.com/fleksible/entaENGELment-/actions/workflows/deepjump-ci.yml/badge.svg)
 ![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)
