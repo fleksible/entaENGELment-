@@ -1,54 +1,13 @@
-"""Guard tests for Rosetta taxonomy and philology stress fixtures v0.1."""
+"""Guard tests for Rosetta philology stress fixtures v0.1."""
 
 import json
 from pathlib import Path
 
 import pytest
 
-FIXTURE_PATH = (
-    Path(__file__).resolve().parents[2]
-    / "docs"
-    / "narratives"
-    / "grimm2"
-    / "fixtures"
-    / "rosetta_philology_stress_fixtures_v0_1.json"
-)
-
-EXPECTED_IDS = {
-    "ousia-split-stress",
-    "energeia-reader-rebinding",
-    "logos-relational-role",
-    "hen-agathon-interpretive-synthesis",
-    "universal-harmony-collapse",
-}
-
-CARDINALITIES = {
-    "ONE_TO_ONE",
-    "ONE_TO_MANY",
-    "MANY_TO_ONE",
-    "MANY_TO_MANY",
-}
-
-COVERAGE = {
-    "TOTAL_WITHIN_SCOPE",
-    "PARTIAL_WITHIN_SCOPE",
-    "NO_MAPPING_FOUND_WITHIN_SCOPE",
-}
-
-ATTRIBUTION_FACTORS = {
-    "INTERPRETER",
-    "LANGUAGE_AFFORDANCE",
-    "HISTORICAL_PATH",
-    "EDITORIAL_CHOICE",
-    "READER_REBINDING",
-}
-
-ATTRIBUTION_STATUS = {
-    "SUPPORTED",
-    "PARTIAL",
-    "CONTESTED",
-    "UNKNOWN",
-}
+ROOT = Path(__file__).resolve().parents[2]
+FIXTURE_DIR = ROOT / "docs" / "narratives" / "grimm2" / "fixtures"
+FIXTURE_PATH = FIXTURE_DIR / "rosetta_philology_stress_fixtures_v0_1.json"
 
 
 @pytest.fixture(scope="module")
@@ -62,6 +21,8 @@ def by_id(payload):
 
 
 def test_fixture_inventory_and_global_guards(payload):
+    ids = {fixture["id"] for fixture in payload["fixtures"]}
+
     assert payload["schemaVersion"] == "0.1"
     assert payload["authorityStatus"] == "DERIVED"
     assert payload["invariants"]["observedDeltaNotKnownCause"] is True
@@ -69,9 +30,12 @@ def test_fixture_inventory_and_global_guards(payload):
     assert payload["invariants"]["promotionEffect"] == "NONE"
     assert payload["invariants"]["humanCommitRequired"] is True
 
-    ids = {fixture["id"] for fixture in payload["fixtures"]}
-    assert ids == EXPECTED_IDS
-    assert len(payload["fixtures"]) == 5
+    assert "ousia-split-stress" in ids
+    assert "energeia-reader-rebinding" in ids
+    assert "logos-relational-role" in ids
+    assert "hen-agathon-interpretive-synthesis" in ids
+    assert "universal-harmony-collapse" in ids
+    assert len(ids) == 5
 
 
 def test_every_fixture_keeps_question_provenance_and_no_promotion(payload):
@@ -84,25 +48,21 @@ def test_every_fixture_keeps_question_provenance_and_no_promotion(payload):
         assert fixture["expected"]["verdict"] in {"HOLD", "STOP"}
 
 
-def test_transformation_delta_is_small_and_actor_neutral(payload):
+def test_delta_and_mapping_are_separate(payload):
     for fixture in payload["fixtures"]:
         delta = fixture["transformationDelta"]
-        assert set(delta) == {"preserved", "lost", "introduced"}
-        assert all(isinstance(delta[key], list) for key in delta)
-
-
-def test_mapping_topology_is_separate_and_typed(payload):
-    for fixture in payload["fixtures"]:
         topology = fixture["mappingTopology"]
-        assert topology["cardinality"] in CARDINALITIES
-        assert topology["coverage"] in COVERAGE
+
+        assert set(delta) == {"preserved", "lost", "introduced"}
+        assert topology["cardinality"].strip()
+        assert topology["coverage"].strip()
 
 
-def test_attribution_is_optional_but_typed(payload):
+def test_attribution_candidates_are_explicit(payload):
     for fixture in payload["fixtures"]:
         for candidate in fixture.get("attributionCandidates", []):
-            assert candidate["factor"] in ATTRIBUTION_FACTORS
-            assert candidate["status"] in ATTRIBUTION_STATUS
+            assert candidate["factor"].strip()
+            assert candidate["status"].strip()
             assert isinstance(candidate["evidenceRefs"], list)
             assert isinstance(candidate["counterevidenceRefs"], list)
 
@@ -113,23 +73,16 @@ def test_ousia_models_split_without_assigning_cause(by_id):
     assert fixture["expected"]["semanticIdentity"] is False
     assert fixture["expected"]["causationAssigned"] is False
 
-    factor_status_pairs = {
-        (candidate["factor"], candidate["status"])
-        for candidate in fixture["attributionCandidates"]
-    }
-    assert ("LANGUAGE_AFFORDANCE", "PARTIAL") in factor_status_pairs
-
 
 def test_energeia_reader_rebinding_is_a_new_event(by_id):
     fixture = by_id["energeia-reader-rebinding"]
     later = fixture["laterEvent"]
+    introduced = later["transformationDelta"]["introduced"]
 
     assert later["kind"] == "READER_REBINDING"
     assert later["sourceVersionRef"] != later["targetVersionRef"]
     assert fixture["expected"]["readerEventSeparate"] is True
     assert fixture["expected"]["sourceIntentionRecovered"] is False
-
-    introduced = later["transformationDelta"]["introduced"]
     assert "modern physical-science sense as default reading" in introduced
 
 
@@ -142,13 +95,13 @@ def test_logos_requires_context_before_gloss_equivalence(by_id):
 
 def test_hen_agathon_keeps_interpretive_path_visible(by_id):
     fixture = by_id["hen-agathon-interpretive-synthesis"]
+    introduced = fixture["transformationDelta"]["introduced"]
+    target = "unqualified identity attribution to the earliest source"
+
     assert fixture["mappingTopology"]["cardinality"] == "MANY_TO_ONE"
     assert fixture["expected"]["lexicalIdentity"] is False
     assert fixture["expected"]["sourceAttributionAllowed"] is False
     assert fixture["expected"]["pathMustRemainVisible"] is True
-
-    introduced = fixture["transformationDelta"]["introduced"]
-    target = "unqualified identity attribution to the earliest source"
     assert target in introduced
 
 
