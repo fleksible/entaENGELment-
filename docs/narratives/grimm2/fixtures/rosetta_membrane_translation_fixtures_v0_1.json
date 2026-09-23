@@ -1,0 +1,369 @@
+{
+  "schemaVersion": "0.1",
+  "status": "[ANNEX]",
+  "claimLayer": "[ROSETTA]",
+  "authorityStatus": "DERIVED",
+  "purpose": "Negative and boundary fixtures for a context-indexed semipermeable Rosetta translation membrane.",
+  "invariants": {
+    "translationNotIdentity": true,
+    "translationNotEvidence": true,
+    "translationNotAuthority": true,
+    "similarityNotEquivalence": true,
+    "universalProcedureNotUniversalTranslatability": true,
+    "reverseRelationNotLosslessInverse": true,
+    "untranslatedRemainderNotFailure": true,
+    "silenceNotConsent": true,
+    "humanCommitRequired": true,
+    "promotionEffect": "NONE"
+  },
+  "fixtures": [
+    {
+      "id": "same-word-different-lore",
+      "title": "Gleiches Wort, andere Lore",
+      "questionProvenance": {
+        "questionId": "q-meaning-001",
+        "askedByRef": "reader:A",
+        "questionTextRef": "question:what-does-light-mean-here"
+      },
+      "sourceLoreRef": "lore:technical-optics",
+      "targetLoreRef": "lore:mythic-light",
+      "sourceItems": [
+        "light"
+      ],
+      "targetItems": [
+        "light"
+      ],
+      "translationEdges": [],
+      "untranslatedSource": [
+        "light"
+      ],
+      "untranslatedTarget": [
+        "light"
+      ],
+      "expected": {
+        "verdict": "HOLD",
+        "identityClaim": false,
+        "translationEstablished": false,
+        "reason": "Lexical equality is insufficient to establish a translation relation."
+      },
+      "guards": [
+        "similarity != equivalence",
+        "translation != identity"
+      ]
+    },
+    {
+      "id": "different-words-preserved-relation",
+      "title": "Andere Wörter, tragende Relation",
+      "questionProvenance": {
+        "questionId": "q-boundary-001",
+        "askedByRef": "reader:B",
+        "questionTextRef": "question:how-is-a-boundary-preserved"
+      },
+      "sourceLoreRef": "lore:membrane",
+      "targetLoreRef": "lore:threshold",
+      "sourceItems": [
+        "semipermeable membrane"
+      ],
+      "targetItems": [
+        "reversible threshold"
+      ],
+      "translationEdges": [
+        {
+          "sourceRef": "semipermeable membrane",
+          "targetRef": "reversible threshold",
+          "preservedRelation": "Selective passage while preserving a boundary.",
+          "knownLoss": [
+            "Biological membrane mechanism is not transferred.",
+            "Threshold does not imply cellular transport."
+          ],
+          "reversibilityStatus": "PARTIAL"
+        }
+      ],
+      "untranslatedSource": [],
+      "untranslatedTarget": [],
+      "expected": {
+        "verdict": "HOLD",
+        "translationCandidate": true,
+        "identityClaim": false,
+        "promotion": false
+      },
+      "guards": [
+        "translation != identity",
+        "translation != evidence",
+        "translation != authority"
+      ]
+    },
+    {
+      "id": "one-to-many-translation",
+      "title": "One-to-many bleibt mehrdeutig",
+      "questionProvenance": {
+        "questionId": "q-navigation-001",
+        "askedByRef": "reader:C",
+        "questionTextRef": "question:how-does-orientation-work"
+      },
+      "sourceLoreRef": "lore:north-star",
+      "targetLoreRef": "lore:technical-navigation",
+      "sourceItems": [
+        "north-star"
+      ],
+      "targetItems": [
+        "reference-bearing",
+        "error-signal"
+      ],
+      "translationEdges": [
+        {
+          "sourceRef": "north-star",
+          "targetRef": "reference-bearing",
+          "preservedRelation": "Provides orientation without being the destination.",
+          "knownLoss": [
+            "Astronomical object properties are not transferred."
+          ],
+          "reversibilityStatus": "PARTIAL"
+        },
+        {
+          "sourceRef": "north-star",
+          "targetRef": "error-signal",
+          "preservedRelation": "Supports correction relative to a reference.",
+          "knownLoss": [
+            "An error signal is dynamic and need not be a stable external reference."
+          ],
+          "reversibilityStatus": "LOSSY"
+        }
+      ],
+      "untranslatedSource": [],
+      "untranslatedTarget": [],
+      "expected": {
+        "verdict": "HOLD",
+        "cardinality": "ONE_TO_MANY",
+        "functionLike": false,
+        "ambiguityPreserved": true
+      },
+      "guards": [
+        "universal_procedure != universal_translatability",
+        "translation != identity"
+      ]
+    },
+    {
+      "id": "round-trip-loss",
+      "title": "Rückübersetzung ist kein verlustloses Inverses",
+      "questionProvenance": {
+        "questionId": "q-roundtrip-001",
+        "askedByRef": "reader:D",
+        "questionTextRef": "question:does-the-translation-return-the-same-form"
+      },
+      "sourceLoreRef": "lore:A",
+      "targetLoreRef": "lore:B",
+      "sourceItems": [
+        "A0"
+      ],
+      "targetItems": [
+        "B0"
+      ],
+      "translationEdges": [
+        {
+          "sourceRef": "A0",
+          "targetRef": "B0",
+          "preservedRelation": "A scoped relational feature survives the forward translation.",
+          "knownLoss": [
+            "Source-specific context C_A is dropped."
+          ],
+          "reversibilityStatus": "LOSSY"
+        }
+      ],
+      "reverseTranslation": {
+        "sourceRef": "B0",
+        "targetRef": "A1",
+        "knownLoss": [
+          "Reverse translation reconstructs A1, not original A0."
+        ]
+      },
+      "untranslatedSource": [],
+      "untranslatedTarget": [],
+      "expected": {
+        "verdict": "HOLD",
+        "roundTripIdentity": false,
+        "originalRef": "A0",
+        "returnedRef": "A1"
+      },
+      "guards": [
+        "reverse_relation != lossless_inverse",
+        "untranslated_remainder != failure"
+      ]
+    },
+    {
+      "id": "untranslated-remainder",
+      "title": "Unübersetzter Rest bleibt geschützt offen",
+      "questionProvenance": {
+        "questionId": "q-remainder-001",
+        "askedByRef": "reader:E",
+        "questionTextRef": "question:what-can-be-carried-across"
+      },
+      "sourceLoreRef": "lore:source-rich",
+      "targetLoreRef": "lore:target-narrow",
+      "sourceItems": [
+        "s1",
+        "s2",
+        "s3"
+      ],
+      "targetItems": [
+        "t1",
+        "t2"
+      ],
+      "translationEdges": [
+        {
+          "sourceRef": "s1",
+          "targetRef": "t1",
+          "preservedRelation": "r1",
+          "knownLoss": [
+            "surface-form"
+          ],
+          "reversibilityStatus": "PARTIAL"
+        },
+        {
+          "sourceRef": "s2",
+          "targetRef": "t2",
+          "preservedRelation": "r2",
+          "knownLoss": [
+            "context-tone"
+          ],
+          "reversibilityStatus": "PARTIAL"
+        }
+      ],
+      "untranslatedSource": [
+        "s3"
+      ],
+      "untranslatedTarget": [],
+      "expected": {
+        "verdict": "HOLD",
+        "loreCompletionForbidden": true,
+        "remainderStatus": "OPEN_KENOGRAM"
+      },
+      "guards": [
+        "untranslated_remainder != failure",
+        "translation != identity"
+      ]
+    },
+    {
+      "id": "question-shift",
+      "title": "Fragewechsel verändert zulässige Übersetzungskanten",
+      "questionProvenance": {
+        "questionId": "q-shift-root",
+        "askedByRef": "reader:F",
+        "questionTextRef": "question:compare-two-contexts"
+      },
+      "sourceLoreRef": "lore:A",
+      "targetLoreRef": "lore:B",
+      "contexts": [
+        {
+          "questionId": "q1-structure",
+          "translationEdges": [
+            {
+              "sourceRef": "a1",
+              "targetRef": "b1",
+              "preservedRelation": "structural-neighborhood",
+              "knownLoss": [
+                "affective-tone"
+              ],
+              "reversibilityStatus": "PARTIAL"
+            },
+            {
+              "sourceRef": "a2",
+              "targetRef": "b2",
+              "preservedRelation": "ordering",
+              "knownLoss": [
+                "historical-origin"
+              ],
+              "reversibilityStatus": "PARTIAL"
+            }
+          ]
+        },
+        {
+          "questionId": "q2-use",
+          "translationEdges": [
+            {
+              "sourceRef": "a1",
+              "targetRef": "b1",
+              "preservedRelation": "operational-reference",
+              "knownLoss": [
+                "structural-detail"
+              ],
+              "reversibilityStatus": "PARTIAL"
+            },
+            {
+              "sourceRef": "a3",
+              "targetRef": "b4",
+              "preservedRelation": "reader-action",
+              "knownLoss": [
+                "narrative-context"
+              ],
+              "reversibilityStatus": "LOSSY"
+            }
+          ]
+        }
+      ],
+      "untranslatedSource": [],
+      "untranslatedTarget": [],
+      "expected": {
+        "verdict": "HOLD",
+        "contextIndexed": true,
+        "edgeSetsEqual": false,
+        "sharedEdgePairs": [
+          [
+            "a1",
+            "b1"
+          ]
+        ]
+      },
+      "guards": [
+        "translation != identity",
+        "similarity != equivalence"
+      ]
+    },
+    {
+      "id": "protected-origin-public-reduction",
+      "title": "Geschützte Herkunft bleibt nicht rückrechenbar",
+      "questionProvenance": {
+        "questionId": "q-public-001",
+        "askedByRef": "reader:G",
+        "questionTextRef": "question:what-public-rule-may-survive"
+      },
+      "sourceLoreRef": "protected-origin:private",
+      "targetLoreRef": "public-safe:reduced-rule",
+      "protectedOrigin": true,
+      "publicReconstructionAllowed": false,
+      "sourceItems": [
+        "protected-private-origin"
+      ],
+      "targetItems": [
+        "translation-offer-preserves-difference"
+      ],
+      "translationEdges": [
+        {
+          "sourceRef": "protected-private-origin",
+          "targetRef": "translation-offer-preserves-difference",
+          "preservedRelation": "Relation may be offered without requiring total translation or ownership.",
+          "knownLoss": [
+            "Biographical particulars are intentionally withheld.",
+            "Experiential content is not reconstructed."
+          ],
+          "reversibilityStatus": "UNTESTED"
+        }
+      ],
+      "untranslatedSource": [
+        "private-context-remainder"
+      ],
+      "untranslatedTarget": [],
+      "expected": {
+        "verdict": "HOLD",
+        "publicRelationAllowed": true,
+        "originReconstructionForbidden": true,
+        "promotion": false
+      },
+      "guards": [
+        "translation != authority",
+        "translation != evidence",
+        "untranslated_remainder != failure"
+      ]
+    }
+  ]
+}
