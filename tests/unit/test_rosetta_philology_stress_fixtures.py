@@ -22,12 +22,19 @@ EXPECTED_IDS = {
     "universal-harmony-collapse",
 }
 
-CARDINALITIES = {"ONE_TO_ONE", "ONE_TO_MANY", "MANY_TO_ONE", "MANY_TO_MANY"}
+CARDINALITIES = {
+    "ONE_TO_ONE",
+    "ONE_TO_MANY",
+    "MANY_TO_ONE",
+    "MANY_TO_MANY",
+}
+
 COVERAGE = {
     "TOTAL_WITHIN_SCOPE",
     "PARTIAL_WITHIN_SCOPE",
     "NO_MAPPING_FOUND_WITHIN_SCOPE",
 }
+
 ATTRIBUTION_FACTORS = {
     "INTERPRETER",
     "LANGUAGE_AFFORDANCE",
@@ -35,7 +42,13 @@ ATTRIBUTION_FACTORS = {
     "EDITORIAL_CHOICE",
     "READER_REBINDING",
 }
-ATTRIBUTION_STATUS = {"SUPPORTED", "PARTIAL", "CONTESTED", "UNKNOWN"}
+
+ATTRIBUTION_STATUS = {
+    "SUPPORTED",
+    "PARTIAL",
+    "CONTESTED",
+    "UNKNOWN",
+}
 
 
 @pytest.fixture(scope="module")
@@ -99,11 +112,12 @@ def test_ousia_models_split_without_assigning_cause(by_id):
     assert fixture["mappingTopology"]["cardinality"] == "ONE_TO_MANY"
     assert fixture["expected"]["semanticIdentity"] is False
     assert fixture["expected"]["causationAssigned"] is False
-    assert any(
-        candidate["factor"] == "LANGUAGE_AFFORDANCE"
-        and candidate["status"] == "PARTIAL"
+
+    factor_status_pairs = {
+        (candidate["factor"], candidate["status"])
         for candidate in fixture["attributionCandidates"]
-    )
+    }
+    assert ("LANGUAGE_AFFORDANCE", "PARTIAL") in factor_status_pairs
 
 
 def test_energeia_reader_rebinding_is_a_new_event(by_id):
@@ -114,10 +128,9 @@ def test_energeia_reader_rebinding_is_a_new_event(by_id):
     assert later["sourceVersionRef"] != later["targetVersionRef"]
     assert fixture["expected"]["readerEventSeparate"] is True
     assert fixture["expected"]["sourceIntentionRecovered"] is False
-    assert (
-        "modern physical-science sense as default reading"
-        in later["transformationDelta"]["introduced"]
-    )
+
+    introduced = later["transformationDelta"]["introduced"]
+    assert "modern physical-science sense as default reading" in introduced
 
 
 def test_logos_requires_context_before_gloss_equivalence(by_id):
@@ -133,10 +146,10 @@ def test_hen_agathon_keeps_interpretive_path_visible(by_id):
     assert fixture["expected"]["lexicalIdentity"] is False
     assert fixture["expected"]["sourceAttributionAllowed"] is False
     assert fixture["expected"]["pathMustRemainVisible"] is True
-    assert (
-        "unqualified identity attribution to the earliest source"
-        in fixture["transformationDelta"]["introduced"]
-    )
+
+    introduced = fixture["transformationDelta"]["introduced"]
+    target = "unqualified identity attribution to the earliest source"
+    assert target in introduced
 
 
 def test_universal_harmony_collapse_fails_closed(by_id):
