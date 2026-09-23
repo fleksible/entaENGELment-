@@ -75,3 +75,14 @@ Zwischenstand folgt noch keine Merge-Freigabe der JS-Integration.
 `corepack pnpm audit --json`: 867 Dependencies, keine gemeldeten Advisories
 (0 critical/high/moderate/low/info, keine muted Advisories). Dies ist ein
 zeitgebundener Registry-Befund, keine allgemeine Sicherheitsgarantie.
+
+## Integrationskorrektur vor Merge
+
+[FACT] Der erste Integrationslauf `a5cc3301` scheiterte fail-closed bei
+`pnpm install --frozen-lockfile`: `ERR_PNPM_PATCH_FAILED`. Die unveränderte
+5.0.8-Patchvorlage passte nicht auf die 5.0.9-Dateien (geänderter Hunk und
+fehlende abschließende Newline im Upstream). Der Patch wurde gegen das originale
+5.0.9-Paket neu erzeugt, statt die Installprüfung zu umgehen. Er passt nur die
+CJS-/ESM-Exports an. Lock-Prüfsumme mit pnpm 10.33.0 offline neu erzeugt;
+`git apply --reverse --check` auf dem bearbeiteten Upstream erfolgreich.
+Der fehlgeschlagene Lauf bleibt Teil der Provenienz und ist keine Freigabe.
