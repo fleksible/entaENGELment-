@@ -355,83 +355,275 @@ class ResonanceEnhancer {
     
     // Farb-Vorschau aktualisieren
     updateColorPreview() {
-        // Animation stoppen, falls vorhanden
         if (this.colorAnimationId) {
             cancelAnimationFrame(this.colorAnimationId);
+            this.colorAnimationId = null;
         }
-        
-        // Gradient basierend auf Modus
+
+        if (this.colorParams.mode === 'cosmic') {
+            this.animateCosmicTheme();
+            return;
+        }
+
+        this.clearCosmicTheme();
+
         let gradient;
-        
         switch (this.colorParams.mode) {
             case 'resonant':
-                gradient = `linear-gradient(45deg, 
-                    hsl(280, ${this.colorParams.intensity * 10}%, 50%), 
-                    hsl(180, ${this.colorParams.intensity * 10}%, 60%), 
+                gradient = `linear-gradient(45deg,
+                    hsl(280, ${this.colorParams.intensity * 10}%, 50%),
+                    hsl(180, ${this.colorParams.intensity * 10}%, 60%),
                     hsl(45, ${this.colorParams.intensity * 10}%, 60%))`;
                 break;
-                
             case 'harmonic':
-                // Basierend auf Fibonacci-Sequenz / goldenem Schnitt
-                gradient = `linear-gradient(135deg, 
-                    hsl(45, ${this.colorParams.intensity * 10}%, 50%), 
-                    hsl(135, ${this.colorParams.intensity * 10}%, 60%), 
-                    hsl(225, ${this.colorParams.intensity * 10}%, 50%), 
+                gradient = `linear-gradient(135deg,
+                    hsl(45, ${this.colorParams.intensity * 10}%, 50%),
+                    hsl(135, ${this.colorParams.intensity * 10}%, 60%),
+                    hsl(225, ${this.colorParams.intensity * 10}%, 50%),
                     hsl(315, ${this.colorParams.intensity * 10}%, 60%))`;
                 break;
-                
             case 'spectral':
-                // Basierend auf Lichtspektrum
-                gradient = `linear-gradient(to right, 
-                    hsl(0, ${this.colorParams.intensity * 10}%, 50%), 
-                    hsl(60, ${this.colorParams.intensity * 10}%, 50%), 
-                    hsl(120, ${this.colorParams.intensity * 10}%, 50%), 
-                    hsl(180, ${this.colorParams.intensity * 10}%, 50%), 
-                    hsl(240, ${this.colorParams.intensity * 10}%, 50%), 
+                gradient = `linear-gradient(to right,
+                    hsl(0, ${this.colorParams.intensity * 10}%, 50%),
+                    hsl(60, ${this.colorParams.intensity * 10}%, 50%),
+                    hsl(120, ${this.colorParams.intensity * 10}%, 50%),
+                    hsl(180, ${this.colorParams.intensity * 10}%, 50%),
+                    hsl(240, ${this.colorParams.intensity * 10}%, 50%),
                     hsl(300, ${this.colorParams.intensity * 10}%, 50%))`;
                 break;
-                
             case 'fractal':
-                // Fraktale Farbgebung
-                gradient = `radial-gradient(circle at 30% 40%, 
-                    hsl(280, ${this.colorParams.intensity * 10}%, 30%), 
-                    hsl(220, ${this.colorParams.intensity * 10}%, 40%), 
+                gradient = `radial-gradient(circle at 30% 40%,
+                    hsl(280, ${this.colorParams.intensity * 10}%, 30%),
+                    hsl(220, ${this.colorParams.intensity * 10}%, 40%),
                     hsl(180, ${this.colorParams.intensity * 10}%, 20%))`;
                 break;
-                
-            case 'cosmic':
-                // Kosmisches Thema mit Sternen
-                this.animateCosmicTheme();
-                return;
-                
             default:
-                gradient = `linear-gradient(45deg, 
-                    hsl(280, ${this.colorParams.intensity * 10}%, 50%), 
-                    hsl(180, ${this.colorParams.intensity * 10}%, 60%), 
+                gradient = `linear-gradient(45deg,
+                    hsl(280, ${this.colorParams.intensity * 10}%, 50%),
+                    hsl(180, ${this.colorParams.intensity * 10}%, 60%),
                     hsl(45, ${this.colorParams.intensity * 10}%, 60%))`;
         }
-        
+
         this.colorPreview.style.background = gradient;
     }
-    
-    // Kosmisches Thema animieren
-    animateCosmicTheme() {
-        // Hintergrund
-        this.colorPreview.style.background = `radial-gradient(ellipse at center, 
-            hsl(240, ${this.colorParams.intensity * 10}%, 10%), 
-            hsl(260, ${this.colorParams.intensity * 10}%, 5%))`;
-        
-        // Sterne entfernen, falls vorhanden
+
+    clearCosmicTheme() {
         while (this.colorPreview.firstChild) {
             this.colorPreview.removeChild(this.colorPreview.firstChild);
         }
-        
-        // Sterne hinzufügen
-        const numStars = 50 + this.colorParams.intensity * 10;
+
+        const animationStyle = document.getElementById('twinkle-animation');
+        if (animationStyle) {
+            animationStyle.remove();
+        }
+    }
+
+    // Kosmisches Thema animieren
+    animateCosmicTheme() {
+        const intensity = Math.max(
+            1,
+            Math.min(10, Number(this.colorParams.intensity) || 1)
+        );
+
+        this.clearCosmicTheme();
+
+        this.colorPreview.style.background = `radial-gradient(ellipse at center,
+            hsl(240, ${intensity * 10}%, 10%),
+            hsl(260, ${intensity * 10}%, 5%))`;
+
+        const numStars = 50 + intensity * 10;
         for (let i = 0; i < numStars; i++) {
             const star = document.createElement('div');
             star.className = 'star';
-            
-            // Zufällige Position
-   
-(Content truncated due to size limit. Use line ranges to read in chunks)
+
+            const x = Math.random() * 100;
+            const y = Math.random() * 100;
+            const size = 1 + Math.random() * 3;
+            const duration = 2 + Math.random() * 8;
+
+            star.style.cssText = `
+                position: absolute;
+                left: ${x}%;
+                top: ${y}%;
+                width: ${size}px;
+                height: ${size}px;
+                background-color: white;
+                border-radius: 50%;
+                opacity: ${0.5 + Math.random() * 0.5};
+                animation: twinkle ${duration}s infinite alternate;
+            `;
+
+            this.colorPreview.appendChild(star);
+        }
+
+        const numNebulas = 2 + Math.floor(intensity / 3);
+        for (let i = 0; i < numNebulas; i++) {
+            const nebula = document.createElement('div');
+            nebula.className = 'nebula';
+
+            const x = 20 + Math.random() * 60;
+            const y = 20 + Math.random() * 60;
+            const size = 30 + Math.random() * 40;
+            const hue = 180 + Math.random() * 180;
+
+            nebula.style.cssText = `
+                position: absolute;
+                left: ${x}%;
+                top: ${y}%;
+                width: ${size}px;
+                height: ${size}px;
+                background: radial-gradient(circle,
+                    hsla(${hue}, 100%, 70%, 0.3),
+                    hsla(${hue}, 100%, 50%, 0.1),
+                    transparent 70%);
+                border-radius: 50%;
+                filter: blur(5px);
+            `;
+
+            this.colorPreview.appendChild(nebula);
+        }
+
+        if (!document.getElementById('twinkle-animation')) {
+            const style = document.createElement('style');
+            style.id = 'twinkle-animation';
+            style.textContent = `
+                @keyframes twinkle {
+                    0% { opacity: 0.2; }
+                    100% { opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    }
+
+    // Klangwellenform visualisieren
+    animateSoundWave() {
+        const wavePaths = {
+            harmonic: 'M0,40 C30,20 10,60 40,40 C70,20 60,60 90,40 C120,20 110,60 140,40 C170,20 160,60 190,40 C220,20 210,60 240,40 C270,20 260,60 290,40',
+            fractal: 'M0,40 C10,10 20,70 30,40 C35,20 40,60 45,40 C50,30 55,50 60,40 C70,10 80,70 90,40 C100,20 110,60 120,40 C130,30 140,50 150,40',
+            resonant: 'M0,40 C30,40 30,10 60,10 C90,10 90,70 120,70 C150,70 150,10 180,10 C210,10 210,70 240,70 C270,70 270,40 300,40',
+            spectral: 'M0,40 C30,10 60,70 90,10 C120,70 150,10 180,70 C210,10 240,70 270,10 C300,70 330,10 360,40'
+        };
+
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('viewBox', '0 300 80');
+        svg.setAttribute('width', '100%');
+        svg.setAttribute('height', '100%');
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        const soundType = this.soundParams.type in wavePaths ? this.soundParams.type : 'harmonic';
+        path.setAttribute('d', wavePaths[soundType]);
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke', '#9d00ff');
+        path.setAttribute('stroke-width', '2');
+
+        const animate = document.createElementNS('http://www.w3.org/2000/svg', 'animate');
+        animate.setAttribute('attributeName', 'd');
+        animate.setAttribute('dur', '2s');
+        animate.setAttribute('repeatCount', 'indefinite');
+
+        const randomPath = wavePaths[soundType].split(' ').map(part => {
+            if (part.startsWith('M') || part.startsWith('C')) {
+                const command = part.substring(0, 1);
+                const coordinates = part.substring(1).split(',');
+                const x = coordinates[0];
+                const y = parseInt(coordinates[1]) + Math.random() * 20 - 10;
+                return `${command}${x},${y}`;
+            }
+            return part;
+        }).join(' ');
+
+        animate.setAttribute(
+            'values',
+            `${wavePaths[soundType]};${randomPath};${wavePaths[soundType]}`
+        );
+        path.appendChild(animate);
+        svg.appendChild(path);
+
+        this.soundWave.innerHTML = '';
+        this.soundWave.appendChild(svg);
+
+        this.waveAnimationId = requestAnimationFrame(() => this.animateSoundWave());
+    }
+
+    // Sensordaten in laufende Klang-/Farbausgabe einbeziehen
+    onSensorDataUpdate(sensorData) {
+        if (!this.isPlaying) return;
+
+        if (this.oscillator) {
+            const frequencyFactor = 1 + sensorData.accelY * 0.1;
+            this.oscillator.frequency.value = this.soundParams.baseFrequency * frequencyFactor;
+        }
+
+        if (this.soundParams.harmonics.length > 0) {
+            for (let i = 0; i < this.soundParams.harmonics.length; i++) {
+                const harmonic = this.soundParams.harmonics[i];
+
+                if (harmonic.oscillator) {
+                    const frequencyFactor = 1 + sensorData.gyroX * 0.05;
+                    const currentFrequency = harmonic.oscillator.frequency.value;
+                    harmonic.oscillator.frequency.value = currentFrequency * frequencyFactor;
+                }
+
+                if (harmonic.gain) {
+                    harmonic.gain.gain.value =
+                        Math.max(0.1, Math.min(1, 0.5 + sensorData.gyroZ * 0.1)) * 0.2;
+                }
+            }
+        }
+
+        const hueRotation = sensorData.accelX * 20;
+        const saturation = sensorData.gyroY * 5;
+        this.colorPreview.style.filter =
+            `hue-rotate(${hueRotation}deg) saturate(${100 + saturation}%)`;
+    }
+
+    // Fraktalparameter in Resonanzdarstellung abbilden
+    onFractalUpdate(fractalData) {
+        if (fractalData.center) {
+            const x = fractalData.center.x;
+            const y = fractalData.center.y;
+            this.soundParams.baseFrequency = 220 * (1 + x * 0.2);
+
+            if (y > 0.5) {
+                this.soundParams.type = 'harmonic';
+            } else if (y < -0.5) {
+                this.soundParams.type = 'fractal';
+            } else if (x > 0.5) {
+                this.soundParams.type = 'resonant';
+            } else if (x < -0.5) {
+                this.soundParams.type = 'spectral';
+            }
+
+            this.soundTypeSelect.value = this.soundParams.type;
+            this.baseFrequencySlider.value = this.soundParams.baseFrequency;
+
+            if (this.isPlaying) {
+                this.updateSound();
+            }
+        }
+
+        if (fractalData.zoom) {
+            const zoom = fractalData.zoom;
+
+            if (zoom > 10) {
+                this.colorParams.mode = 'cosmic';
+            } else if (zoom > 5) {
+                this.colorParams.mode = 'fractal';
+            } else if (zoom > 2) {
+                this.colorParams.mode = 'spectral';
+            } else if (zoom > 1) {
+                this.colorParams.mode = 'harmonic';
+            } else {
+                this.colorParams.mode = 'resonant';
+            }
+
+            this.colorParams.intensity = Math.min(10, Math.max(1, Math.floor(zoom)));
+            this.colorModeSelect.value = this.colorParams.mode;
+            this.colorIntensitySlider.value = this.colorParams.intensity;
+            this.updateColorPreview();
+        }
+    }
+}
+
+window.ResonanceEnhancer = ResonanceEnhancer;

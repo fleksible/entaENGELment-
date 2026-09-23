@@ -33,26 +33,44 @@ module.exports = {
   coverageDirectory: 'coverage/js',
   coverageReporters: ['text', 'lcov', 'html'],
 
-  // Coverage thresholds — uncovered-count ratchet at the measured baseline.
+  // Coverage thresholds — split ratchet after #345 recovery.
   //
-  // Jest interprets negative thresholds as the maximum number of uncovered
-  // entities allowed. This preserves the honest 0%-coverage baseline without
-  // using a no-op 0% percentage threshold: adding untested code, or restoring
-  // one of the currently non-parseable files without tests, makes CI fail.
-  // Additional tests can only improve the baseline; lowering these absolute
-  // counts later tightens the gate further.
+  // The global uncovered-count budget remains unchanged for the pre-existing
+  // instrumentable surface (app.js + sensor-simulator.js). Jest subtracts files
+  // with path-specific thresholds from the global calculation, so restoring the
+  // previously non-parseable browser modules does not silently loosen that guard.
   //
-  // Baseline from CI artifact on 2026-07-30 (instrumentable files only):
-  //   statements 181, branches 28, functions 51, lines 170 — all uncovered.
-  // Three files currently fail parsing and are therefore not counted:
-  // fractal-visualizer.js, presentation-mode.js, resonance-enhancer.js.
-  // See OUT/test_coverage_analysis_2026-07-30_ratchet_addendum.md.
+  // The three recovered modules use floor percentages from the first successful
+  // characterization run on 2026-09-23:
+  //   fractal-visualizer.js 66.39/59.37/60.86/65.94
+  //   presentation-mode.js  57.94/45.26/54.83/62.08
+  //   resonance-enhancer.js  46.33/31.25/35.48/47.05
+  // (statements/branches/functions/lines). Future changes may tighten these
+  // numbers, but should not reduce them without an explicit coverage review.
   coverageThreshold: {
     global: {
       branches: -28,
       functions: -51,
       lines: -170,
       statements: -181
+    },
+    './Fractalsense/fractal-visualizer.js': {
+      statements: 66,
+      branches: 59,
+      functions: 60,
+      lines: 65
+    },
+    './Fractalsense/presentation-mode.js': {
+      statements: 57,
+      branches: 45,
+      functions: 54,
+      lines: 62
+    },
+    './Fractalsense/resonance-enhancer.js': {
+      statements: 46,
+      branches: 31,
+      functions: 35,
+      lines: 47
     }
   },
 
