@@ -114,9 +114,10 @@ def test_energeia_reader_rebinding_is_a_new_event(by_id):
     assert later["sourceVersionRef"] != later["targetVersionRef"]
     assert fixture["expected"]["readerEventSeparate"] is True
     assert fixture["expected"]["sourceIntentionRecovered"] is False
-    assert "modern physical-science sense as default reading" in later[
-        "transformationDelta"
-    ]["introduced"]
+    assert (
+        "modern physical-science sense as default reading"
+        in later["transformationDelta"]["introduced"]
+    )
 
 
 def test_logos_requires_context_before_gloss_equivalence(by_id):
@@ -132,9 +133,10 @@ def test_hen_agathon_keeps_interpretive_path_visible(by_id):
     assert fixture["expected"]["lexicalIdentity"] is False
     assert fixture["expected"]["sourceAttributionAllowed"] is False
     assert fixture["expected"]["pathMustRemainVisible"] is True
-    assert "unqualified identity attribution to the earliest source" in fixture[
-        "transformationDelta"
-    ]["introduced"]
+    assert (
+        "unqualified identity attribution to the earliest source"
+        in fixture["transformationDelta"]["introduced"]
+    )
 
 
 def test_universal_harmony_collapse_fails_closed(by_id):
