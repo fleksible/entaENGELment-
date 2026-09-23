@@ -377,10 +377,8 @@ class PresentationMode {
     // Slide-Aktionen ausführen
     executeSlideActions(actions) {
         if (!actions || !actions.length) return;
-        
-        // Jede Aktion ausführen
+
         actions.forEach(action => {
-            // Sofort ausführen oder verzögern
             const executeAction = () => {
                 switch (action.type) {
                     case 'showFractal':
@@ -402,5 +400,134 @@ class PresentationMode {
                         this.activateSound(action.params);
                         break;
                     case 'changeSoundType':
-     
-(Content truncated due to size limit. Use line ranges to read in chunks)
+                        this.changeSoundType(action.params);
+                        break;
+                    case 'changeColorMode':
+                        this.changeColorMode(action.params);
+                        break;
+                    case 'activateAllModules':
+                        this.activateAllModules();
+                        break;
+                    case 'resetAll':
+                        this.resetAll();
+                        break;
+                    default:
+                        throw new Error(`Unknown presentation action: ${action.type}`);
+                }
+            };
+
+            if (action.delay) {
+                setTimeout(executeAction, action.delay);
+            } else {
+                executeAction();
+            }
+        });
+    }
+
+    showFractal(params) {
+        if (this.fractalVisualizer) {
+            this.fractalVisualizer.updateParams(params);
+        }
+    }
+
+    zoomFractal(zoomIn) {
+        if (!this.fractalVisualizer) return;
+
+        const params = this.fractalVisualizer.getParams();
+        const zoom = zoomIn ? params.zoom * 1.5 : params.zoom / 1.5;
+        this.fractalVisualizer.updateParams({ zoom });
+    }
+
+    activateSensors() {
+        if (!this.sensorSimulator) return;
+
+        this.sensorSimulator.setRandomValues();
+        this.sensorSimulator.startSimulation();
+    }
+
+    simulateSensorMovement() {
+        if (!this.sensorSimulator) return;
+
+        if (!this.sensorSimulator.isSimulating) {
+            this.sensorSimulator.startSimulation();
+        }
+
+        const speed = parseInt(this.sensorSimulator.speedSlider.value);
+        this.sensorSimulator.speedSlider.value = Math.min(10, speed + 2);
+        this.sensorSimulator.simulationSpeed = parseInt(this.sensorSimulator.speedSlider.value);
+        this.sensorSimulator.restartSimulation();
+    }
+
+    activateSound(params) {
+        if (!this.resonanceEnhancer) return;
+
+        if (params && params.type) {
+            this.resonanceEnhancer.soundTypeSelect.value = params.type;
+            this.resonanceEnhancer.soundParams.type = params.type;
+        }
+
+        if (!this.resonanceEnhancer.isPlaying) {
+            this.resonanceEnhancer.playSound();
+        }
+    }
+
+    changeSoundType(params) {
+        if (!this.resonanceEnhancer || !params || !params.type) return;
+
+        this.resonanceEnhancer.soundTypeSelect.value = params.type;
+        this.resonanceEnhancer.soundParams.type = params.type;
+        this.resonanceEnhancer.updateSound();
+    }
+
+    changeColorMode(params) {
+        if (!this.resonanceEnhancer || !params || !params.mode) return;
+
+        this.resonanceEnhancer.colorModeSelect.value = params.mode;
+        this.resonanceEnhancer.colorParams.mode = params.mode;
+        this.resonanceEnhancer.updateColorPreview();
+    }
+
+    activateAllModules() {
+        if (this.fractalVisualizer) {
+            this.fractalVisualizer.updateParams({
+                center: { x: -0.5, y: 0 },
+                zoom: 1.5,
+                fractalType: 'mandelbrot'
+            });
+        }
+
+        if (this.sensorSimulator) {
+            this.sensorSimulator.setRandomValues();
+            this.sensorSimulator.startSimulation();
+        }
+
+        if (this.resonanceEnhancer) {
+            this.resonanceEnhancer.soundTypeSelect.value = 'harmonic';
+            this.resonanceEnhancer.soundParams.type = 'harmonic';
+
+            if (!this.resonanceEnhancer.isPlaying) {
+                this.resonanceEnhancer.playSound();
+            }
+
+            this.resonanceEnhancer.colorModeSelect.value = 'resonant';
+            this.resonanceEnhancer.colorParams.mode = 'resonant';
+            this.resonanceEnhancer.updateColorPreview();
+        }
+    }
+
+    resetAll() {
+        if (this.fractalVisualizer) {
+            this.fractalVisualizer.reset();
+        }
+
+        if (this.sensorSimulator) {
+            this.sensorSimulator.stopSimulation();
+        }
+
+        if (this.resonanceEnhancer && this.resonanceEnhancer.isPlaying) {
+            this.resonanceEnhancer.stopSound();
+        }
+    }
+}
+
+window.PresentationMode = PresentationMode;
