@@ -10,8 +10,11 @@ on:
     paths:
       - "package.json"
       - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "patches/**"
       - "ui-app/package.json"
       - "packages/**/package.json"
+      - "pyproject.toml"
       - "requirements.txt"
       - "requirements-dev.txt"
       - ".github/workflows/security-audit.yml"
@@ -19,8 +22,11 @@ on:
     paths:
       - "package.json"
       - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "patches/**"
       - "ui-app/package.json"
       - "packages/**/package.json"
+      - "pyproject.toml"
       - "requirements.txt"
       - "requirements-dev.txt"
       - ".github/workflows/security-audit.yml"

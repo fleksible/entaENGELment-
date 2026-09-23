@@ -91,13 +91,13 @@ Nur bereits implementierte Checks dürfen als live kommuniziert werden.
 
 - `policies/claim_tags_v0_2.yaml`
 - `docs/governance/CLAIM_LEITER_v0_1.md`
-- `docs/governance/ANTI_CAPTURE_BREADCRUMB_LINT_claim_tags_v0_2.md`
-- `docs/governance/GUARD_DRILL_CONTRACT_v0_1.md`
+- `docs/governance/BREADCRUMB_LINT_claim_tags_v0_2.md`
+- `docs/governance/GUARD_CHECK_CONTRACT_v0_1.md`
 - `spec/runtime_eventlog_v0_1.json`
 - `docs/runbooks/AGENT_PENETRATION_RUNBOOK_v0_1.md`
 - `docs/runbooks/BODENTEST_PROTOCOL_v0_1.md`
-- `docs/governance/BRANCH_PROTECTION_EXPECTED_STATE.yml`
-- `docs/annex/RESONANCE_WITHOUT_CAPTURE_zN_SATURN_HEXAGON_v0_1.md`
+- `docs/governance/BRANCH_EXPECTED_STATE.yml`
+- `docs/annex/ROSETTA_INTERVALS_v0_1.md`
 
 ---
 

@@ -1,7 +1,7 @@
 version: "0.1"
 status: "draft"
 claim_status: "[SPEC-WIP]"
-updated: "2026-07-04"
+updated: "2026-09-23"
 purpose: "Document expected repository review posture as policy-as-code. This file does not prove that settings are active."
 
 branch: "main"
@@ -9,10 +9,15 @@ expected:
   pull_request_review: true
   include_admins: true
   required_checks:
-    - "Verify Pointers & Lint"
-    - "DeepJump Verify"
-    - "Claim-Lint"
-    - "Receipt-Lint"
+    - "Verify Pointers & Lint (blocking)"
+    - "deepjump-audit / deepjump-audit"
+    - "All Tests Pass"
+    - "Lint · Format · Types · SAST"
+    - "Check PR for FOKUS marker"
+  conditional_checks:
+    - "workspace"
+    - "JS dependency audit (pnpm)"
+    - "Python dependency audit (pip-audit)"
   future_checks:
     - "Guard-Check-Lint"
     - "Branch-State-Drift-Check"
@@ -26,3 +31,4 @@ expected:
 
 notes:
   - "This file describes target posture and must be compared to live repository settings before enforcement is claimed."
+  - "Conditional checks use workflow path filters; do not require them globally without an always-running dispatcher. Verify exact contexts on a current PR before changing settings."

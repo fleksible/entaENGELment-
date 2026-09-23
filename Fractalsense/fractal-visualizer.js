@@ -457,5 +457,17 @@ class FractalVisualizer {
             center: this.center,
             zoom: this.zoom,
             maxIterations: this.maxIterations,
-            resolution: this.resol
-(Content truncated due to size limit. Use line ranges to read in chunks)
+            resolution: this.resolution,
+            fractalType: this.fractalType
+        };
+    }
+
+    // Auf den dokumentierten Ausgangszustand zurücksetzen.
+    reset() {
+        this.center = { x: -0.75, y: 0 };
+        this.zoom = 1.0;
+        this.render();
+    }
+}
+
+window.FractalVisualizer = FractalVisualizer;
