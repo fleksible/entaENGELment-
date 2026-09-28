@@ -11,4 +11,4 @@ jsonschema>=4.0
 
 # Security scanning tools
 bandit>=1.7.0
-safety>=2.3.0
+safety>=3.8.1
