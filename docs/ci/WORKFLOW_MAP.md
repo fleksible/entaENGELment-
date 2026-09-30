@@ -43,6 +43,7 @@ void-sync.yml:
 | `.github/workflows/ci-evidence-bundle.yml` | Evidence bundle generation | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
 | `.github/workflows/ci-js-workspace.yml` | JS/TS workspace membrane: frozen pnpm install plus Turbo typecheck/lint/build for UI/package changes | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
 | `.github/workflows/ci-policy-lint.yml` | Policy JSON lint | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
+| `.github/workflows/ci-python-runtime.yml` | Complete core tests and dependency consistency on Python 3.9–3.12 for PRs and main, without quality-tool interpreter constraints | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
 | `.github/workflows/ci-smoke.yml` | Python smoke tests | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
 | `.github/workflows/deepjump-audit.reusable.yml` | Reusable DeepJump audit core; HMAC secret is step-scoped and missing keys fail trusted runs | `contents: read` | literal `deepjump-audit-reusable-${{ github.ref }}`, cancel in progress |
 | `.github/workflows/deepjump-ci.yml` | DeepJump verify/lint plus separate reusable audit calls: PRs pass no secrets mapping; trusted events pass only `ENTA_HMAC_SECRET` | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |

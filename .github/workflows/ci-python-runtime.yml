@@ -1,0 +1,46 @@
+name: Python Runtime Matrix
+
+# Test supported runtime interpreters on PRs as well as main. The legacy full
+# CI is advisory on PRs, so a Python 3.9 install failure could otherwise first
+# appear after merge. Keep format/type/security tools in the quality workflow.
+on:
+  push:
+    branches: ["main", "claude/**"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  runtime-tests:
+    name: Runtime tests (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-test.txt
+            pyproject.toml
+      - name: Install runtime and test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-test.txt
+          python -m pip install -e .
+          python -m pip check
+      - name: Test supported runtime
+        run: python -m pytest tests/ -v --tb=short
