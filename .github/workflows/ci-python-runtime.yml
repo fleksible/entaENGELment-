@@ -33,14 +33,37 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: pip
           cache-dependency-path: |
-            requirements.txt
-            requirements-test.txt
+            uv.lock
             pyproject.toml
       - name: Install runtime and test dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements-test.txt
-          python -m pip install -e .
-          python -m pip check
+        uses: ./.github/actions/python-locked
+        with:
+          group: test
       - name: Test supported runtime
         run: python -m pytest tests/ -v --tb=short
+
+  reproducibility:
+    name: Fresh locked environment reproducibility
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.11"
+      - name: Install first fresh test environment
+        uses: ./.github/actions/python-locked
+        with:
+          group: test
+      - name: Compare second fresh installation receipt
+        run: |
+          UV_PROJECT_ENVIRONMENT=.repro-venv python tools/python_lock.py sync --group test
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          first = json.loads(Path(".venv/lock-receipt.json").read_text())
+          second = json.loads(Path(".repro-venv/lock-receipt.json").read_text())
+          if first != second:
+              raise SystemExit("FAIL: fresh locked installation receipts differ")
+          print("PASS: fresh locked installation receipts are identical")
+          PY

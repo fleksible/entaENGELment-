@@ -15,8 +15,11 @@ on:
       - "ui-app/package.json"
       - "packages/**/package.json"
       - "pyproject.toml"
+      - "uv.lock"
       - "requirements.txt"
       - "requirements-dev.txt"
+      - ".github/actions/python-locked/**"
+      - "tools/python_lock.py"
       - ".github/workflows/security-audit.yml"
   pull_request:
     paths:
@@ -27,8 +30,11 @@ on:
       - "ui-app/package.json"
       - "packages/**/package.json"
       - "pyproject.toml"
+      - "uv.lock"
       - "requirements.txt"
       - "requirements-dev.txt"
+      - ".github/actions/python-locked/**"
+      - "tools/python_lock.py"
       - ".github/workflows/security-audit.yml"
   schedule:
     - cron: "0 6 * * 1"
@@ -81,7 +87,9 @@ jobs:
           python-version: "3.11"
 
       - name: Install pip-audit
-        run: python -m pip install --upgrade pip pip-audit
+        uses: ./.github/actions/python-locked
+        with:
+          group: audit
 
       - name: Audit gate (requirements.txt)
-        run: pip-audit -r requirements.txt
+        run: pip-audit --no-deps --disable-pip -r requirements.txt

@@ -55,6 +55,16 @@ void-sync.yml:
 
 ## Maintenance rule
 
+[FACT] Blocking CI and managed local Python environments use the pinned
+uv 0.12.18 manager and the sole
+`uv.lock`. The local composite action `.github/actions/python-locked` rejects
+lock/export drift before syncing an explicit dependency group. Only the lock
+manager bootstrap is installed with pip; project/build/CI/SBOM dependencies
+come from the lock. The existing release and VOID-writing automations retain
+their old installs pending explicit approval; #333 remains open for those
+exceptions. See `docs/ci/PYTHON_LOCK.md` for the proposed diffs, refresh and
+receipt rules.
+
 [FACT] New workflows must document any permission broader than `contents: read`
 in the machine-readable exception contract above. The exact workflow/job scope
 and permission mapping must match; a filename mention alone grants nothing.

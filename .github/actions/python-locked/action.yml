@@ -1,0 +1,20 @@
+name: Locked Python environment
+description: Install the repository's Python dependencies from uv.lock, rejecting source/export drift.
+inputs:
+  group:
+    description: Dependency group (runtime, test, dev, fractalsense, audit, sbom).
+    required: false
+    default: runtime
+runs:
+  using: composite
+  steps:
+    - name: Bootstrap pinned lock manager
+      shell: bash
+      run: python -m pip install "uv==0.12.18"
+    - name: Sync locked environment and expose executables
+      shell: bash
+      env:
+        LOCK_GROUP: ${{ inputs.group }}
+      run: |
+        python tools/python_lock.py sync --group "$LOCK_GROUP"
+        echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
