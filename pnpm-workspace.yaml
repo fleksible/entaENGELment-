@@ -17,15 +17,15 @@ overrides:
   "@eslint/eslintrc@3.3.5>js-yaml": "5.2.2"
   "builder-util@26.15.3>js-yaml": "5.2.2"
   "dmg-builder@26.15.3>js-yaml": "5.2.2"
-  "undici@<6.28.0": "6.28.0"
-  "undici@>=7.0.0 <7.29.0": "7.29.0"
+  "undici@<6.28.1": "6.28.1"
+  "undici@>=7.0.0 <7.29.1": "7.29.1"
   "brace-expansion@<1.1.16": "^1.1.16"
   "brace-expansion@>=2.0.0 <2.1.2": "^2.1.2"
-  "minimatch@3.1.5>brace-expansion": "5.0.9"
-  "minimatch@5.1.9>brace-expansion": "5.0.9"
-  "minimatch@9.0.9>brace-expansion": "5.0.9"
-  "minimatch@10.2.5>brace-expansion": "5.0.9"
-  "fast-uri@>=3.0.0 <3.1.6": "3.1.6"
+  "minimatch@3.1.5>brace-expansion": "5.0.11"
+  "minimatch@5.1.9>brace-expansion": "5.0.11"
+  "minimatch@9.0.9>brace-expansion": "5.0.11"
+  "minimatch@10.2.5>brace-expansion": "5.0.11"
+  "fast-uri@>=3.0.0 <3.1.7": "3.1.7"
   "sharp@<0.35.4": "0.35.4"
   "tar@<=7.5.20": "7.5.22"
   "nanoid@<3.3.18": "3.3.18"
@@ -38,4 +38,4 @@ overrides:
 # restore both legacy shapes; the packaging glob regression test covers the
 # CommonJS consumers and @electron/universal's published ESM entry.
 patchedDependencies:
-  brace-expansion@5.0.9: patches/brace-expansion@5.0.9.patch
+  brace-expansion@5.0.11: patches/brace-expansion@5.0.11.patch

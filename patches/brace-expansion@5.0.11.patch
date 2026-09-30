@@ -1,0 +1,30 @@
+diff --git a/dist/commonjs/index.js b/dist/commonjs/index.js
+index e1be3060e8a4c310d744ba8664344e7a9abd4d75..57b6ddf1020108c2f76bce9fcc6c54fb60104acf 100644
+--- a/dist/commonjs/index.js
++++ b/dist/commonjs/index.js
+@@ -317,4 +317,11 @@
+     }
+     return acc;
+ }
+-//# sourceMappingURL=index.js.map
+\ No newline at end of file
++// Keep the v1/v2 CommonJS callable shape while exposing the v5 named API.
++// Only adapt exports; retain upstream expansion limits and security fixes.
++module.exports = Object.assign(expand, {
++    EXPANSION_MAX: exports.EXPANSION_MAX,
++    EXPANSION_MAX_LENGTH: exports.EXPANSION_MAX_LENGTH,
++    expand,
++});
++//# sourceMappingURL=index.js.map
+diff --git a/dist/esm/index.js b/dist/esm/index.js
+index 41b710e894534124ba5adce2586173c17e37277e..e17d59cd8991bb92b3b8ee6d3e73addb450e96a0 100644
+--- a/dist/esm/index.js
++++ b/dist/esm/index.js
+@@ -313,4 +313,5 @@
+     }
+     return acc;
+ }
+-//# sourceMappingURL=index.js.map
+\ No newline at end of file
++export default expand;
++//# sourceMappingURL=index.js.map
