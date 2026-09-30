@@ -43,6 +43,45 @@ dev = [
     "jsonschema>=4.0",
 ]
 
+# Canonical CI/environment groups. The published legacy [dev] extra above is
+# retained for compatibility; repository workflows use these locked groups.
+[dependency-groups]
+test = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "jsonschema>=4.0",
+]
+dev = [
+    {include-group = "test"},
+    "black==26.5.1",
+    "ruff>=0.1.0",
+    "mypy>=1.0",
+    "types-PyYAML>=6.0.12.20260906",
+    "bandit>=1.7.0",
+    "safety>=3.8.1",
+]
+fractalsense = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.1.0",
+    "pytest-mock>=3.15.1",
+    "numpy>=1.24.0",
+    "matplotlib>=3.8.0",
+    "pygame>=2.5.0",
+]
+audit = ["pip-audit", "bandit>=1.7.0"]
+sbom = ["cyclonedx-bom==7.3.1"]
+build = ["setuptools>=61.0", "wheel"]
+
+[tool.uv]
+required-version = "==0.12.18"
+fork-strategy = "requires-python"
+
+[tool.uv.dependency-groups]
+dev = {requires-python = ">=3.10"}
+fractalsense = {requires-python = ">=3.10"}
+audit = {requires-python = ">=3.11"}
+sbom = {requires-python = ">=3.11"}
+
 [project.urls]
 Homepage = "https://github.com/fleksible/entaENGELment-"
 Repository = "https://github.com/fleksible/entaENGELment-"

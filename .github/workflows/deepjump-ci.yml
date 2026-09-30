@@ -35,9 +35,9 @@ jobs:
           python-version: "3.11"
 
       - name: Install Dependencies
-        run: |
-          pip install pyyaml pytest
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        uses: ./.github/actions/python-locked
+        with:
+          group: test
 
       - name: Verify Pointers (blocking)
         run: python3 tools/verify_pointers.py --strict

@@ -1,6 +1,8 @@
 name: SBOM Generation
 
 on:
+  pull_request:
+    branches: [main]
   push:
     branches: [main]
   release:
@@ -25,18 +27,19 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Generate Python SBOM
+      - name: Install locked runtime
+        uses: ./.github/actions/python-locked
+
+      - name: Generate and reconcile Python SBOM
         run: |
-          python -m venv .sbom-venv
-          .sbom-venv/bin/python -m pip install --upgrade pip
-          .sbom-venv/bin/python -m pip install -r requirements.txt
-          python -m pip install "cyclonedx-bom==7.3.1"
-          cyclonedx-py environment .sbom-venv/bin/python \
+          UV_PROJECT_ENVIRONMENT=.sbom-tools python tools/python_lock.py sync --group sbom
+          .sbom-tools/bin/cyclonedx-py environment .venv/bin/python \
             --pyproject pyproject.toml \
             --spec-version 1.6 \
             --output-reproducible \
             --output-format JSON \
             --output-file sbom-python.cdx.json
+          python tools/python_lock.py verify-sbom --sbom sbom-python.cdx.json
 
       - name: Upload SBOM
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1

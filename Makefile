@@ -78,11 +78,10 @@ help:
 
 # === Setup ===
 install:
-	pip install -e .
+	$(PY) tools/python_lock.py sync --group runtime
 
 install-dev:
-	pip install -r requirements-dev.txt
-	pip install -e .
+	$(PY) tools/python_lock.py sync --group dev
 
 # === Hooks ===
 install-hooks:

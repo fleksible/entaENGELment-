@@ -1,7 +1,15 @@
 version: 2
 updates:
-  - package-ecosystem: "pip"
+  - package-ecosystem: "uv"
     directory: "/"
+    exclude-paths:
+      - "NICHTRAUM/archive/**"
+    groups:
+      python-lock:
+        patterns: ["*"]
+      python-lock-security:
+        applies-to: security-updates
+        patterns: ["*"]
     schedule:
       interval: "weekly"
       day: "monday"
