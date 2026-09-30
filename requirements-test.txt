@@ -1,0 +1,8 @@
+# Runtime and test dependencies for the supported Python 3.9–3.12 matrix.
+# Quality/security tooling belongs in requirements-dev.txt and is not needed
+# to test runtime compatibility on older supported interpreters.
+-r requirements.txt
+
+pytest>=7.0
+pytest-cov>=4.0
+jsonschema>=4.0
