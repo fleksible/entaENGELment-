@@ -31,13 +31,17 @@ Out of scope:
 
 Please open a GitHub issue when the finding can be public without increasing risk.
 
-Use a private channel or contact the maintainer first when the report includes:
+Use [GitHub private vulnerability reporting](https://github.com/fleksible/entaENGELment-/security/advisories) when the report includes:
 
 - exploitable details
 - secrets, tokens, or credentials
 - bypass steps for a live workflow
 - personal data
 - sensitive screenshots or logs
+
+On the repository's **Security and quality** page, select **Report a vulnerability** to open the private reporting form. Repository administrators may instead see **New draft security advisory**.
+
+If the private reporting form is unavailable, open a public issue asking for a private contact route without including sensitive details.
 
 Do not paste secrets, credentials, tokens, private keys, or unrelated personal data into issues or pull requests.
 
