@@ -269,6 +269,13 @@ Adapter.
   `APPROVE`. `apply_approved_transition()` behandelt jedes übergebene `WITHDRAW`
   des Requests ebenso, da ein `APPROVE` nach `WITHDRAW` im Stream unzulässig ist.
   (Entscheidung Kevin/Fleks 2026-10-02, Audit AUD-01.)
+- **Letzter Stand zählt** ([ADR-0005](../decisions/ADR-0005-erk-human-decision-precedence.md), A2):
+  Folgt dem referenzierten `APPROVE` im Stream noch eine andere Entscheidung
+  desselben Requests als `APPROVE` (`REJECT`, `DEFER`), wird der Retag nicht
+  angewendet (`EVENT_ORDER_INVALID`) — unabhängig vom `human_actor`-Label.
+  Umentscheiden bleibt möglich: Ein späteres `APPROVE` nach `REJECT`/`DEFER` ist
+  anwendbar, der Retag muss dann dieses spätere `APPROVE` referenzieren.
+  `apply_approved_transition()` liest `human_decisions` in Stream-Reihenfolge.
 - Der Kernel selbst ist ANNEX: Er kann durch Entfernen der Aufrufe deaktiviert
   werden, ohne GOLD-Bereiche, Policies oder Receipts zu berühren.
 - Bereits geschriebene Events bleiben als Historie bestehen (G3: nie löschen).

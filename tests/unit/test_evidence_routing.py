@@ -852,3 +852,98 @@ class TestWithdrawalBoundary:
                 human_decisions=[approve, withdraw],
             )
         assert ReasonCode.EVENT_ORDER_INVALID in excinfo.value.reason_codes
+
+
+class TestDecisionPrecedence:
+    """ADR-0005 (A2): Der letzte Stand im Stream zählt.
+
+    Nach dem referenzierten APPROVE darf keine andere Entscheidung als APPROVE
+    folgen; Umentscheiden (REJECT/DEFER → APPROVE) bleibt möglich. Synthetische
+    Events beweisen keine reale Zustimmung oder Ablehnung.
+    """
+
+    @staticmethod
+    def _human_event(decision, decision_id, *, actor="role:project_initiator"):
+        payload = make_human_decision(
+            decision_id, decision=decision, human_actor=actor
+        ).to_payload()
+        return {
+            "type": "HUMAN_DECISION_RECORDED",
+            "event_id": f"evt-p-{decision_id}",
+            "timestamp": 1752900005.5,
+            "payload": payload,
+        }
+
+    def _parts(self):
+        events = load_fixture("human_approved_retag.jsonl")
+        assert events[5]["payload"]["decision"] == "APPROVE"
+        return events[:5], events[5], events[6]
+
+    @pytest.mark.parametrize(
+        ("decision", "actor"),
+        [
+            ("REJECT", "role:project_initiator"),
+            ("REJECT", "role:reviewer"),
+            ("DEFER", "role:project_initiator"),
+        ],
+    )
+    def test_later_non_approve_blocks_retag(self, decision, actor):
+        before, approve, retag = self._parts()
+        later = self._human_event(decision, "hd-002", actor=actor)
+        state = replay_events([*before, approve, later, retag])
+        assert state.current_tag("clm-001") == "[HYPOTHESE]"
+        assert state.retag_history == []
+        assert state.rejected_events[-1]["reason_codes"] == [ReasonCode.EVENT_ORDER_INVALID.value]
+
+    @pytest.mark.parametrize("decision", ["REJECT", "DEFER"])
+    def test_reconsidered_approval_still_applies(self, decision):
+        before, approve, retag = self._parts()
+        earlier = self._human_event(decision, "hd-000")
+        state = replay_events([*before, earlier, approve, retag])
+        assert state.current_tag("clm-001") == "[MODEL]"
+        assert state.rejected_events == []
+
+    def test_retag_must_reference_approval_after_last_reject(self):
+        before, approve, retag = self._parts()
+        reject = self._human_event("REJECT", "hd-002")
+        reapprove = self._human_event("APPROVE", "hd-003")
+        stale = [*before, approve, reject, reapprove, retag]
+        assert replay_events(stale).current_tag("clm-001") == "[HYPOTHESE]"
+
+        fresh_retag = json.loads(json.dumps(retag))
+        fresh_retag["payload"]["human_decision_id"] = "hd-003"
+        fresh = replay_events([*before, approve, reject, reapprove, fresh_retag])
+        assert fresh.current_tag("clm-001") == "[MODEL]"
+
+    def test_apply_refuses_approval_followed_by_reject(self):
+        policy = load_claim_policy()
+        request = make_request()
+        guard = evaluate(request, policy=policy)
+        approve = make_human_decision()
+        reject = make_human_decision("hd-002", decision="REJECT")
+        with pytest.raises(EvidenceRoutingError) as excinfo:
+            apply_approved_transition(
+                request,
+                policy=policy,
+                claims={"clm-001": make_claim()},
+                guard_decision=guard,
+                human_decision=approve,
+                human_decisions=[approve, reject],
+            )
+        assert ReasonCode.EVENT_ORDER_INVALID in excinfo.value.reason_codes
+
+    def test_apply_accepts_approval_after_reject(self):
+        policy = load_claim_policy()
+        request = make_request()
+        guard = evaluate(request, policy=policy)
+        reject = make_human_decision("hd-000", decision="REJECT")
+        approve = make_human_decision()
+        payload = apply_approved_transition(
+            request,
+            policy=policy,
+            claims={"clm-001": make_claim()},
+            guard_decision=guard,
+            human_decision=approve,
+            human_decisions=[reject, approve],
+        )
+        assert payload["human_decision_id"] == "hd-001"

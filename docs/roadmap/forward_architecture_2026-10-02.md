@@ -64,7 +64,7 @@ S6 Hygiene: ADR-0001, Branches, AUD-06 ── jederzeit, menschliche Entscheidun
 
 ### S4 — Mehr-Akteur-Entscheidungsregel
 
-> **Stand 2026-10-02:** als [ADR-0005](../decisions/ADR-0005-erk-human-decision-precedence.md) angelegt (*Proposed*, Empfehlung A2).
+> **Stand 2026-10-02:** [ADR-0005](../decisions/ADR-0005-erk-human-decision-precedence.md) *Accepted* (A2) und umgesetzt.
 
 | Feld | Inhalt |
 |---|---|
@@ -109,4 +109,4 @@ Validator vorgeschlagen; einziger Kandidat wäre der S2-Prüfer, zunächst als W
 - [ ] ☐ S1: Stream-Ordnung als maßgeblich bestätigen?
 - [ ] ☐ S2: Ist Quellbytes-Bindung Ziel?
 - [ ] ☐ S3: Variante a oder b?
-- [ ] ☐ S4: ADR-0005 entscheiden (A1–A4)?
+- [x] S4: ADR-0005 entschieden (A2) und umgesetzt

@@ -798,6 +798,11 @@ def apply_approved_transition(
 
     Fail-closed: jede verletzte Bedingung führt zu EvidenceRoutingError.
     Die Funktion verändert selbst keinen Zustand und schreibt kein Event.
+
+    ``human_decisions`` gilt als in Stream-Reihenfolge übergeben: Jedes
+    ``WITHDRAW`` des Requests blockiert; folgt dem ``human_decision`` darin
+    eine andere Entscheidung als ``APPROVE``, blockiert sie ebenfalls
+    (ADR-0005, A2).
     """
     claim = claims.get(request.claim_id)
     if claim is None:
@@ -848,6 +853,17 @@ def apply_approved_transition(
         if other.request_id == request.request_id and other.decision == HUMAN_WITHDRAW:
             raise EvidenceRoutingError(
                 "approval was withdrawn by a human decision",
+                [ReasonCode.EVENT_ORDER_INVALID],
+            )
+    # ADR-0005 (A2): ``human_decisions`` is read in stream order. If it
+    # contains the approval, no later non-APPROVE decision may follow it.
+    same_request = [other for other in human_decisions if other.request_id == request.request_id]
+    decision_ids = [other.decision_id for other in same_request]
+    if human_decision.decision_id in decision_ids:
+        following = same_request[decision_ids.index(human_decision.decision_id) + 1 :]
+        if any(other.decision != HUMAN_APPROVE for other in following):
+            raise EvidenceRoutingError(
+                "approval was superseded by a later human decision",
                 [ReasonCode.EVENT_ORDER_INVALID],
             )
     for retraction in retractions:
@@ -1420,13 +1436,23 @@ def _apply_retag_event(state: ReplayState, payload: Mapping[str, Any], policy: C
             f"retag without matching human APPROVE: {request_id}",
             [ReasonCode.HUMAN_REFERENCE_MISMATCH, ReasonCode.HUMAN_DECISION_REQUIRED],
         )
-    for record in _human_decisions_for_request(state, request_id):
+    decisions = _human_decisions_for_request(state, request_id)
+    for record in decisions:
         # Stream order is authoritative: every WITHDRAW already replayed for
         # this request precedes the retag, whatever its asserted decided_at.
         if record.get("decision") == HUMAN_WITHDRAW:
             raise EvidenceRoutingError(
                 f"retag after withdrawal: {request_id}", [ReasonCode.EVENT_ORDER_INVALID]
             )
+    # ADR-0005 (A2): the latest state counts. Once the referenced APPROVE has
+    # been replayed, no later non-APPROVE decision for the request may follow.
+    decision_ids = [record.get("decision_id") for record in decisions]
+    later = decisions[decision_ids.index(human_id) + 1 :]
+    if any(record.get("decision") != HUMAN_APPROVE for record in later):
+        raise EvidenceRoutingError(
+            f"approval superseded by a later human decision: {request_id}",
+            [ReasonCode.EVENT_ORDER_INVALID],
+        )
 
     from_tag = retag_from.tag
     to_tag = retag_to.tag

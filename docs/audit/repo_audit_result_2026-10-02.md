@@ -146,7 +146,7 @@ keine Fixture verändert (die Tests konstruieren Zusatz-Events in-memory).
 
 ### R4 — Mehr-Akteur-Regel (AUD-03)
 
-> **Status-Nachtrag 2026-10-02:** angelegt als `docs/decisions/ADR-0005-erk-human-decision-precedence.md` (*Proposed*); Entscheidung offen.
+> **Status-Nachtrag 2026-10-02:** angelegt als `docs/decisions/ADR-0005-erk-human-decision-precedence.md`; Kevin/Fleks hat A2 entschieden, umgesetzt im Folge-Commit (`TestDecisionPrecedence`).
 
 - **Klasse:** SEMANTIC_REVIEW_REQUIRED. ADR-0005 mit drei Alternativen (Roadmap S4). Kein Code vorab.
 

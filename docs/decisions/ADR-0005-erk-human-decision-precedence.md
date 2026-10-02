@@ -1,15 +1,16 @@
 # ADR-0005: Wirkung späterer Human-Entscheidungen auf eine Freigabe (ERK v0.1a)
 
-- **Status:** Proposed
+- **Status:** Accepted (A2, umgesetzt)
 - **Datum:** 2026-10-02
 - **Kontext-Fokus:** REJECT/DEFER nach APPROVE im Evidence Routing Kernel
 - **Herkunft:** Audit 2026-10-02, Befund AUD-03 / Review-Paket R4
   ([`../audit/repo_audit_2026-10-02.md`](../audit/repo_audit_2026-10-02.md),
   [`../audit/repo_audit_result_2026-10-02.md`](../audit/repo_audit_result_2026-10-02.md))
-- **Entscheidung durch:** Kevin/Fleks (offen)
+- **Entscheidung durch:** Kevin/Fleks, 2026-10-02: **A2**
 
-> Dieses ADR beschreibt eine offene Governance-Frage und Alternativen. Es ändert
-> keinen Code und keine Policy. Die Empfehlung unten ist ein Vorschlag, keine Freigabe.
+> Entschieden am 2026-10-02 durch Kevin/Fleks: A2. Umsetzung im Folge-Commit auf
+> dem Audit-Branch (PR #377). Abschnitte „Context“ bis „Vorschlag“ dokumentieren den
+> Stand vor der Entscheidung.
 
 ## Context
 
@@ -68,6 +69,19 @@ Kleinstes technisches Delta bei Annahme (erst nach Entscheidung umsetzen):
   Test) oder dort weiterhin nur `WITHDRAW` prüfen und die volle Regel dem Replay überlassen.
 - Tests: die fünf Fälle der Tabelle als Gegenfälle in `TestWithdrawalBoundary` bzw. einer
   eigenen Klasse.
+
+## Umsetzung (A2)
+
+- `_apply_retag_event`: Nach dem referenzierten `APPROVE` darf in
+  `_human_decisions_for_request()` keine Entscheidung ≠ `APPROVE` folgen; sonst
+  `EVENT_ORDER_INVALID`. Kein neuer Reason-Code, kein neues Feld.
+- Unterfrage `apply_approved_transition`: `human_decisions` ist als **stream-geordnet**
+  definiert (Docstring). Enthält die Sequenz die referenzierte Freigabe, blockiert jede
+  spätere Entscheidung ≠ `APPROVE`; jedes `WITHDRAW` blockiert weiterhin (AUD-01).
+- Präzisierung gegenüber dem Vorschlagstext: Maßgeblich ist, dass dem referenzierten
+  `APPROVE` keine Nicht-`APPROVE`-Entscheidung folgt. Ein weiteres `APPROVE` danach hebt
+  die referenzierte Freigabe nicht auf.
+- Tests: `tests/unit/test_evidence_routing.py::TestDecisionPrecedence`.
 
 ## Folgen
 
