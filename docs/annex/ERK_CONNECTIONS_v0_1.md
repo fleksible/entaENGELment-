@@ -42,7 +42,9 @@ Vokabular stammt aus `spec/runtime_eventlog_v0_1.json`, der Transport ist die
 replaybaren Eventgeschichte.
 
 - Kein Ersatz für `make status` (HMAC-Receipt); nur eine Eventspur.
-- Das Event dokumentiert, dass ein Lauf stattfand — es macht kein Ergebnis wahr.
+- Das Event dokumentiert die Angabe des Aufrufers, dass ein Lauf stattfand. Der
+  Emitter führt selbst keinen Verify-Lauf aus und prüft keinen Exitcode — es
+  macht kein Ergebnis wahr.
 - `actor` ist ein Rollen-Label, keine authentifizierte Identität (siehe
   Kernel-Spec §9.1).
 

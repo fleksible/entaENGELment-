@@ -32,6 +32,7 @@ from src.core.evidence_routing import (
     replay_events,
     validate_evidence_relations,
 )
+from src.core.ledger import Ledger, load_ledger
 
 FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "erk"
 
@@ -762,3 +763,267 @@ class TestDuplicateStableIds:
             lambda state: state.relations,
             lambda relations: relations["rel-001"]["relation_type"] == "SUPPORTS",
         )
+
+
+class TestWithdrawalBoundary:
+    """Gegenfälle zur Rücknahme (Kernel-Spec §8, §13): WITHDRAW vor Anwendung.
+
+    Maßgeblich ist die Stream-Ordnung, nicht das behauptete ``decided_at``
+    (Audit 2026-10-02 AUD-01).
+
+    Die Tests nutzen die vorhandene Fixture ``human_approved_retag.jsonl``
+    (Events 1–6 bis APPROVE, Event 7 = CLAIM_RETAGGED) und fügen nur
+    synthetische HumanDecision-Events ein. Ein synthetisches APPROVE/WITHDRAW
+    beweist keine reale Einwilligung oder Rücknahme.
+    """
+
+    @staticmethod
+    def _human_event(decision, decided_at, decision_id):
+        payload = make_human_decision(
+            decision_id, decision=decision, decided_at=decided_at
+        ).to_payload()
+        return {
+            "type": "HUMAN_DECISION_RECORDED",
+            "event_id": f"evt-w-{decision_id}",
+            "timestamp": 1752900005.5,
+            "payload": payload,
+        }
+
+    def _split_fixture(self):
+        events = load_fixture("human_approved_retag.jsonl")
+        assert events[5]["payload"]["decision"] == "APPROVE"
+        assert events[6]["type"] == "CLAIM_RETAGGED"
+        return events[:6], events[6]
+
+    def test_withdraw_after_approve_blocks_retag_in_replay(self):
+        before_retag, retag = self._split_fixture()
+        withdraw = self._human_event("WITHDRAW", 1752900005.5, "hd-002")
+        state = replay_events([*before_retag, withdraw, retag])
+        assert state.current_tag("clm-001") == "[HYPOTHESE]"
+        assert state.retag_history == []
+        assert state.rejected_events[-1]["reason_codes"] == [ReasonCode.EVENT_ORDER_INVALID.value]
+
+    def test_approve_after_withdraw_is_rejected_in_replay(self):
+        before_retag, retag = self._split_fixture()
+        withdraw = self._human_event("WITHDRAW", 1752900004.5, "hd-000")
+        events = [*before_retag[:5], withdraw, before_retag[5], retag]
+        state = replay_events(events)
+        assert state.current_tag("clm-001") == "[HYPOTHESE]"
+        assert "hd-001" not in state.human_decisions
+        assert state.retag_history == []
+
+    def test_apply_refuses_when_later_withdraw_is_known(self):
+        policy = load_claim_policy()
+        request = make_request()
+        guard = evaluate(request, policy=policy)
+        approve = make_human_decision()
+        withdraw = make_human_decision("hd-002", decision="WITHDRAW", decided_at=1752900006.0)
+        with pytest.raises(EvidenceRoutingError) as excinfo:
+            apply_approved_transition(
+                request,
+                policy=policy,
+                claims={"clm-001": make_claim()},
+                guard_decision=guard,
+                human_decision=approve,
+                human_decisions=[approve, withdraw],
+            )
+        assert ReasonCode.EVENT_ORDER_INVALID in excinfo.value.reason_codes
+
+    def test_withdraw_appended_before_retag_blocks_even_with_older_decided_at(self):
+        before_retag, retag = self._split_fixture()
+        withdraw = self._human_event("WITHDRAW", 1752900004.0, "hd-002")
+        state = replay_events([*before_retag, withdraw, retag])
+        assert state.current_tag("clm-001") == "[HYPOTHESE]"
+        assert state.retag_history == []
+        assert state.rejected_events[-1]["reason_codes"] == [ReasonCode.EVENT_ORDER_INVALID.value]
+
+    def test_apply_refuses_withdraw_with_older_decided_at(self):
+        policy = load_claim_policy()
+        request = make_request()
+        guard = evaluate(request, policy=policy)
+        approve = make_human_decision()
+        withdraw = make_human_decision("hd-002", decision="WITHDRAW", decided_at=1752900004.0)
+        with pytest.raises(EvidenceRoutingError) as excinfo:
+            apply_approved_transition(
+                request,
+                policy=policy,
+                claims={"clm-001": make_claim()},
+                guard_decision=guard,
+                human_decision=approve,
+                human_decisions=[approve, withdraw],
+            )
+        assert ReasonCode.EVENT_ORDER_INVALID in excinfo.value.reason_codes
+
+
+class TestDecisionPrecedence:
+    """ADR-0005 (A2): Der letzte Stand im Stream zählt.
+
+    Ein Retag muss genau die letzte Human-Entscheidung des Requests als APPROVE
+    referenzieren. Umentscheiden (REJECT/DEFER → APPROVE) bleibt möglich.
+    Synthetische Events beweisen keine reale Zustimmung oder Ablehnung.
+    """
+
+    @staticmethod
+    def _human_event(decision, decision_id, *, actor="role:project_initiator"):
+        payload = make_human_decision(
+            decision_id, decision=decision, human_actor=actor
+        ).to_payload()
+        return {
+            "type": "HUMAN_DECISION_RECORDED",
+            "event_id": f"evt-p-{decision_id}",
+            "timestamp": 1752900005.5,
+            "payload": payload,
+        }
+
+    def _parts(self):
+        events = load_fixture("human_approved_retag.jsonl")
+        assert events[5]["payload"]["decision"] == "APPROVE"
+        return events[:5], events[5], events[6]
+
+    @staticmethod
+    def _retag_referencing(retag, decision_id):
+        event = json.loads(json.dumps(retag))
+        event["payload"]["human_decision_id"] = decision_id
+        return event
+
+    @pytest.mark.parametrize(
+        ("decision", "actor"),
+        [
+            ("REJECT", "role:project_initiator"),
+            ("REJECT", "role:reviewer"),
+            ("DEFER", "role:project_initiator"),
+        ],
+    )
+    def test_later_non_approve_blocks_retag(self, decision, actor):
+        before, approve, retag = self._parts()
+        later = self._human_event(decision, "hd-002", actor=actor)
+        state = replay_events([*before, approve, later, retag])
+        assert state.current_tag("clm-001") == "[HYPOTHESE]"
+        assert state.retag_history == []
+        assert state.rejected_events[-1]["reason_codes"] == [ReasonCode.EVENT_ORDER_INVALID.value]
+
+    @pytest.mark.parametrize("decision", ["REJECT", "DEFER"])
+    def test_reconsidered_approval_still_applies(self, decision):
+        before, approve, retag = self._parts()
+        earlier = self._human_event(decision, "hd-000")
+        state = replay_events([*before, earlier, approve, retag])
+        assert state.current_tag("clm-001") == "[MODEL]"
+        assert state.rejected_events == []
+
+    def test_retag_must_reference_approval_after_last_reject(self):
+        before, approve, retag = self._parts()
+        reject = self._human_event("REJECT", "hd-002")
+        reapprove = self._human_event("APPROVE", "hd-003")
+        stale = [*before, approve, reject, reapprove, retag]
+        assert replay_events(stale).current_tag("clm-001") == "[HYPOTHESE]"
+
+        fresh_retag = self._retag_referencing(retag, "hd-003")
+        fresh = replay_events([*before, approve, reject, reapprove, fresh_retag])
+        assert fresh.current_tag("clm-001") == "[MODEL]"
+
+    def test_retag_must_reference_the_latest_of_two_approvals(self):
+        before, approve, retag = self._parts()
+        second = self._human_event("APPROVE", "hd-002")
+        older = replay_events([*before, approve, second, retag])
+        assert older.current_tag("clm-001") == "[HYPOTHESE]"
+        assert older.rejected_events[-1]["reason_codes"] == [ReasonCode.EVENT_ORDER_INVALID.value]
+
+        latest = self._retag_referencing(retag, "hd-002")
+        state = replay_events([*before, approve, second, latest])
+        assert state.current_tag("clm-001") == "[MODEL]"
+
+    def test_state_digest_binds_human_decision_order(self):
+        before, approve, _ = self._parts()
+        reject = self._human_event("REJECT", "hd-002")
+        approve_first = replay_events([*before, approve, reject])
+        reject_first = replay_events([*before, reject, approve])
+        assert approve_first.human_decisions == reject_first.human_decisions
+        assert approve_first.state_digest != reject_first.state_digest
+        assert replay_events([*before, approve, reject]).state_digest == (
+            approve_first.state_digest
+        )
+
+    def test_state_digest_order_survives_ledger_roundtrip(self, tmp_path):
+        before, approve, _ = self._parts()
+        reject = self._human_event("REJECT", "hd-002")
+        stream = [*before, approve, reject]
+        path = tmp_path / "erk_events.jsonl"
+        ledger = Ledger(path)
+        for event in stream:
+            ledger.event(
+                event["type"],
+                event["payload"],
+                event_id=event["event_id"],
+                timestamp=event["timestamp"],
+            )
+        assert replay_events(load_ledger(path)).state_digest == (replay_events(stream).state_digest)
+
+
+class TestApplyDecisionHistory:
+    """Scope von ``apply_approved_transition(human_decisions=...)`` (ADR-0005, A2).
+
+    Eine übergebene Historie ist vollständig und stream-geordnet; sie muss die
+    Freigabe enthalten, und diese muss die letzte Entscheidung des Requests sein.
+    """
+
+    @staticmethod
+    def _apply(approve, history):
+        policy = load_claim_policy()
+        request = make_request()
+        return apply_approved_transition(
+            request,
+            policy=policy,
+            claims={"clm-001": make_claim()},
+            guard_decision=evaluate(request, policy=policy),
+            human_decision=approve,
+            human_decisions=history,
+        )
+
+    def _assert_refused(self, approve, history, code):
+        with pytest.raises(EvidenceRoutingError) as excinfo:
+            self._apply(approve, history)
+        assert code in excinfo.value.reason_codes
+
+    @pytest.mark.parametrize("decision", ["REJECT", "DEFER"])
+    def test_refuses_approval_followed_by_non_approve(self, decision):
+        approve = make_human_decision()
+        later = make_human_decision("hd-002", decision=decision)
+        self._assert_refused(approve, [approve, later], ReasonCode.EVENT_ORDER_INVALID)
+
+    def test_refuses_history_without_approval_anchor(self):
+        approve = make_human_decision()
+        reject = make_human_decision("hd-002", decision="REJECT")
+        self._assert_refused(approve, [reject], ReasonCode.HUMAN_REFERENCE_MISMATCH)
+
+    def test_refuses_foreign_request_history_without_anchor(self):
+        approve = make_human_decision()
+        foreign = make_human_decision("hd-009", request_id="req-999")
+        self._assert_refused(approve, [foreign], ReasonCode.HUMAN_REFERENCE_MISMATCH)
+
+    def test_refuses_altered_anchor_in_history(self):
+        approve = make_human_decision()
+        altered = make_human_decision(human_actor="role:other")
+        self._assert_refused(approve, [altered], ReasonCode.HUMAN_REFERENCE_MISMATCH)
+
+    def test_refuses_older_of_two_approvals(self):
+        approve = make_human_decision()
+        second = make_human_decision("hd-002")
+        self._assert_refused(approve, [approve, second], ReasonCode.EVENT_ORDER_INVALID)
+
+    def test_foreign_request_decisions_do_not_supersede(self):
+        approve = make_human_decision()
+        foreign = make_human_decision("hd-009", request_id="req-999", decision="REJECT")
+        payload = self._apply(approve, [approve, foreign])
+        assert payload["human_decision_id"] == "hd-001"
+
+    def test_accepts_consistent_history_with_reconsidered_approval(self):
+        reject = make_human_decision("hd-000", decision="REJECT")
+        approve = make_human_decision()
+        payload = self._apply(approve, [reject, approve])
+        assert payload["human_decision_id"] == "hd-001"
+
+    def test_empty_history_checks_no_precedence(self):
+        # Dokumentierter Default: keine Historie übergeben, keine Aussage über
+        # spätere Entscheidungen; Replay bleibt die maßgebliche Prüfung.
+        payload = self._apply(make_human_decision(), [])
+        assert payload["status"] == "APPLIED"

@@ -7,7 +7,9 @@ append-only in einen JSONL-Eventstream auf — über die öffentliche
 ``ledger.event()``-API mit vorhandener Hash-Chain.
 
 Grenzen:
-  - Das Event dokumentiert, dass ein Lauf stattfand; es macht kein Ergebnis wahr.
+  - Das Event dokumentiert die Angabe des Aufrufers, dass ein Lauf stattfand.
+    Der Emitter führt selbst keinen Verify-Lauf aus und prüft keinen Exitcode;
+    es macht kein Ergebnis wahr.
   - Kein Ersatz für ``make status`` (HMAC-Receipt) — nur eine Eventspur.
   - ``event_id`` und ``timestamp`` liegen im Ledger-Envelope; das Payload trägt
     ``actor``, ``scope``, ``commit_sha`` (und bei unsigned einen ``reason``).

@@ -798,6 +798,15 @@ def apply_approved_transition(
 
     Fail-closed: jede verletzte Bedingung führt zu EvidenceRoutingError.
     Die Funktion verändert selbst keinen Zustand und schreibt kein Event.
+
+    ``human_decisions`` ist die vollständige, in Stream-Reihenfolge übergebene
+    Human-Entscheidungshistorie. Ist sie nicht leer, muss sie ``human_decision``
+    unverändert enthalten (sonst ``HUMAN_REFERENCE_MISMATCH``), und die letzte
+    Entscheidung desselben Requests muss genau diese Freigabe sein (ADR-0005,
+    A2; sonst ``EVENT_ORDER_INVALID``). Jedes ``WITHDRAW`` des Requests
+    blockiert. Eine leere Sequenz (Default) bedeutet: keine Historie geprüft —
+    die Funktion behauptet dann nichts über spätere Entscheidungen; maßgeblich
+    bleibt ``replay_events()`` über den vollständigen Stream.
     """
     claim = claims.get(request.claim_id)
     if claim is None:
@@ -841,14 +850,30 @@ def apply_approved_transition(
             [ReasonCode.POLICY_DIGEST_MISMATCH],
         )
 
-    for later in human_decisions:
-        if (
-            later.request_id == request.request_id
-            and later.decision == HUMAN_WITHDRAW
-            and later.decided_at >= human_decision.decided_at
-        ):
+    # Stream order, not the asserted decided_at, decides: an APPROVE after a
+    # WITHDRAW is invalid in replay, so any known WITHDRAW for this request
+    # precedes application and blocks it.
+    for other in human_decisions:
+        if other.request_id == request.request_id and other.decision == HUMAN_WITHDRAW:
             raise EvidenceRoutingError(
-                "approval was withdrawn by a later human decision",
+                "approval was withdrawn by a human decision",
+                [ReasonCode.EVENT_ORDER_INVALID],
+            )
+    # ADR-0005 (A2): a supplied history is the full stream-ordered record. It
+    # must contain the approval as passed, and the latest decision for this
+    # request must be exactly that approval. An empty history checks nothing.
+    if human_decisions:
+        if human_decision not in human_decisions:
+            raise EvidenceRoutingError(
+                "approval is missing from the supplied decision history",
+                [ReasonCode.HUMAN_REFERENCE_MISMATCH],
+            )
+        same_request = [
+            other for other in human_decisions if other.request_id == request.request_id
+        ]
+        if same_request[-1] != human_decision:
+            raise EvidenceRoutingError(
+                "approval is not the latest human decision for this request",
                 [ReasonCode.EVENT_ORDER_INVALID],
             )
     for retraction in retractions:
@@ -1421,14 +1446,21 @@ def _apply_retag_event(state: ReplayState, payload: Mapping[str, Any], policy: C
             f"retag without matching human APPROVE: {request_id}",
             [ReasonCode.HUMAN_REFERENCE_MISMATCH, ReasonCode.HUMAN_DECISION_REQUIRED],
         )
-    approved_at = approval.get("decided_at", 0.0)
-    for record in _human_decisions_for_request(state, request_id):
-        if record.get("decision") == HUMAN_WITHDRAW and record.get("decided_at", 0.0) >= float(
-            approved_at
-        ):
+    decisions = _human_decisions_for_request(state, request_id)
+    for record in decisions:
+        # Stream order is authoritative: every WITHDRAW already replayed for
+        # this request precedes the retag, whatever its asserted decided_at.
+        if record.get("decision") == HUMAN_WITHDRAW:
             raise EvidenceRoutingError(
                 f"retag after withdrawal: {request_id}", [ReasonCode.EVENT_ORDER_INVALID]
             )
+    # ADR-0005 (A2): the latest state counts. The referenced APPROVE must be
+    # the last human decision replayed for this request.
+    if decisions[-1].get("decision_id") != human_id:
+        raise EvidenceRoutingError(
+            f"approval is not the latest human decision: {request_id}",
+            [ReasonCode.EVENT_ORDER_INVALID],
+        )
 
     from_tag = retag_from.tag
     to_tag = retag_to.tag
@@ -1471,6 +1503,10 @@ def compute_state_digest(state: ReplayState) -> str:
     der State-Digest identifiziert den rekonstruierten Zustand. Volatile Felder
     (Objektadressen, Laufzeit) sind ausgeschlossen, weil nur serialisierte
     Inhalte eingehen.
+
+    ``sort_keys`` entfernt die Einfügereihenfolge der Dictionaries. Weil die
+    Reihenfolge der Human-Entscheidungen entscheidungsrelevant ist (ADR-0005),
+    geht sie als geordnete ID-Liste ``human_decision_order`` gesondert ein.
     """
     canonical = {
         "schema_version": state.schema_version,
@@ -1482,6 +1518,7 @@ def compute_state_digest(state: ReplayState) -> str:
         "requests": state.requests,
         "guard_decisions": state.guard_decisions,
         "human_decisions": state.human_decisions,
+        "human_decision_order": list(state.human_decisions),
         "retractions": state.retractions,
         "retag_history": state.retag_history,
         "rejected_events": state.rejected_events,

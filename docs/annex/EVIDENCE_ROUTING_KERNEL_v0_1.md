@@ -174,6 +174,9 @@ Ledger-Hash und State-Digest dieselbe Funktion haben.
 
 Der `state_digest` entsteht aus einer kanonisch sortierten JSON-Darstellung des
 rekonstruierten Zustands (ohne volatile Felder wie Laufzeit oder Objektadressen).
+Weil die Schlüsselsortierung die Einfügereihenfolge entfernt, geht die
+entscheidungsrelevante Reihenfolge der Human-Entscheidungen zusätzlich als geordnete
+ID-Liste (`human_decision_order`) ein (ADR-0005).
 Wenn der Aufrufer keine historische Policy übergibt, lädt Replay verpflichtend
 die Repository-Policy; einen policy-freien Retag-Pfad gibt es nicht.
 
@@ -262,6 +265,22 @@ Adapter.
 - Ein genehmigter Übergang wird durch `HumanDecision(WITHDRAW)` (vor Anwendung)
   oder `Retraction` (nach Anwendung) zurückgenommen — beides append-only, nichts
   wird gelöscht oder überschrieben.
+- „Vor Anwendung" bemisst sich an der **Reihenfolge im Eventstream**, nicht am
+  vom Aufrufer angegebenen `decided_at`: Jedes vor dem `CLAIM_RETAGGED`
+  aufgezeichnete `WITHDRAW` desselben Requests blockiert den Retag
+  (`EVENT_ORDER_INVALID`), auch wenn sein `decided_at` älter ist als das des
+  `APPROVE`. `apply_approved_transition()` behandelt jedes übergebene `WITHDRAW`
+  des Requests ebenso, da ein `APPROVE` nach `WITHDRAW` im Stream unzulässig ist.
+  (Entscheidung Kevin/Fleks 2026-10-02, Audit AUD-01.)
+- **Letzter Stand zählt** ([ADR-0005](../decisions/ADR-0005-erk-human-decision-precedence.md), A2):
+  Ein Retag ist nur anwendbar, wenn das referenzierte `APPROVE` die im Stream
+  letzte Human-Entscheidung desselben Requests ist; sonst `EVENT_ORDER_INVALID` —
+  unabhängig vom `human_actor`-Label. Umentscheiden bleibt möglich: Nach
+  `REJECT`/`DEFER` ist ein neues `APPROVE` anwendbar, wenn der Retag genau dieses
+  referenziert. `apply_approved_transition()` behandelt eine übergebene
+  `human_decisions`-Historie als vollständig und stream-geordnet (Freigabe muss
+  enthalten und letzte Entscheidung des Requests sein); eine leere Historie prüft
+  keine Präzedenz, maßgeblich bleibt dann Replay.
 - Der Kernel selbst ist ANNEX: Er kann durch Entfernen der Aufrufe deaktiviert
   werden, ohne GOLD-Bereiche, Policies oder Receipts zu berühren.
 - Bereits geschriebene Events bleiben als Historie bestehen (G3: nie löschen).
