@@ -40,7 +40,7 @@ void-sync.yml:
 | Workflow file | Purpose | Permissions | Concurrency |
 |---------------|---------|-------------|-------------|
 | `.github/workflows/ci.yml` | Legacy/advisory CI plus non-PR verify/build/security/gate-policy jobs | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
-| `.github/workflows/ci-evidence-bundle.yml` | Evidence bundle generation | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
+| `.github/workflows/ci-evidence-bundle.yml` | Policy/spec source snapshot with commit provenance, SHA-256 checksums and a 14-day CI artifact; DERIVED, no validation assertion | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
 | `.github/workflows/ci-js-workspace.yml` | JS/TS workspace membrane: frozen pnpm install plus Turbo typecheck/lint/build for UI/package changes | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
 | `.github/workflows/ci-policy-lint.yml` | Policy JSON lint | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
 | `.github/workflows/ci-python-runtime.yml` | Complete core tests and dependency consistency on Python 3.9–3.12 for PRs and main, without quality-tool interpreter constraints | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
