@@ -17,3 +17,18 @@ jobs:
       - name: Run bundler
         run: |
           bash scripts/evidence_bundle.sh
+      - name: Record bundle provenance and checksums
+        run: |
+          printf 'source_commit=%s\nauthority=DERIVED\nvalidation=NOT_ASSERTED\n' "$GITHUB_SHA" > evidence/PROVENANCE.txt
+          (
+            cd evidence
+            find policies spec -type f -print0 | LC_ALL=C sort -z | xargs -0 sha256sum > SHA256SUMS
+            sha256sum --check SHA256SUMS
+          )
+      - name: Upload evidence bundle
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: evidence-bundle
+          path: evidence/
+          if-no-files-found: error
+          retention-days: 14
