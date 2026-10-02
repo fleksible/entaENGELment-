@@ -152,6 +152,30 @@ keine Fixture verändert (die Tests konstruieren Zusatz-Events in-memory).
 
 ### R5 — Hygiene (AUD-06, AUD-07, AUD-10)
 
+> **Status-Nachtrag 2026-10-02 („R5 umsetzen“):**
+> - **AUD-10:** ADR-0001 auf *Accepted* gesetzt.
+> - **AUD-06:** Die in `docs/ci/PYTHON_LOCK.md` vorbereiteten Diffs für `release.yml` und
+>   `void-sync.yml` wurden lokal validiert: Release-Gates G1–G7 liefen im gelockten
+>   `dev`-Environment grün (647 passed), der VOID-Monitor im `runtime`-Environment mit
+>   Exit 0 (Scratch-Kopie, ohne Issue-Schreiben). Das Anwenden wurde von der
+>   Berechtigungsprüfung der Agent-Session blockiert (Workflows mit `contents: write` /
+>   `issues: write`). **Nicht angewendet**; bleibt manuell oder nach Freigabe in der Session.
+> - **AUD-07:** Keine Löschung ohne ausdrückliche Bestätigung. Tip-SHAs zur Wiederherstellung
+>   (alle Ancestors von `origin/main`, geprüft 2026-10-02):
+>
+> | Branch | Tip-SHA |
+> |---|---|
+> | `claude/align-coverage-policy` | `fb471aa683775ad8bb5f8ef4c64230692d5529ca` |
+> | `claude/analyze-repo-essence-LKgK4` | `dd28e79ef64deabddbafad69540f742b5050b992` |
+> | `claude/refactor-codebase-011CV4t3cQACpBAxqgu1MX1D` | `9fbf1de83a49f49a84a7b76e2a6b2089223ca235` |
+> | `claude/repo-maintenance-consolidation-LA2ek` | `315e8dc9646a69d87e761c2515d95f94d316175c` |
+> | `codex/update-markdown-file-in-repository` | `68395d792e7d949f7da2904781e1f03b4c49865f` |
+> | `codex/update-readme-for-deepjump-integration` | `723f8bc1b5ca860e803d153f09081dfbf194d771` |
+> | `dependabot/github_actions/actions/setup-node-6.4.0` | `5a6f000245cb89e0ccbabe11383ad11adc69c782` |
+> | `phase0/foundation-pack` | `b808c507c26a73ede7c78a6752ea1c100d62114b` |
+>
+> Wiederherstellung: `git push origin <SHA>:refs/heads/<branch>`.
+
 - **Klasse:** HUMAN_AUTHORIZATION_REQUIRED / SEMANTIC_REVIEW_REQUIRED.
   AUD-06: `release.yml` Gate-Job und `void-sync.yml` auf `./.github/actions/python-locked` umstellen
   (Release-Lauf lokal nicht testbar → nur mit Tag-Probe auf Fork/Test-Tag).

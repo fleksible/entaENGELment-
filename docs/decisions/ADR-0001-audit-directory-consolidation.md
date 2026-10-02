@@ -1,6 +1,6 @@
 # ADR-0001: Audit-Reports in `docs/audit/` konsolidieren (statt neuem `docs/audits/`)
 
-- **Status:** Proposed (Review-Frage offen, siehe Audit §10)
+- **Status:** Accepted (2026-10-02, Kevin/Fleks über Audit-Paket R5)
 - **Datum:** 2026-06-16
 - **Kontext-Fokus:** Revolutionary Repository Audit
 
@@ -49,7 +49,17 @@ Kanon-Begriff berührt. Claim-Disziplin und symbolische Architektur unverändert
 - [FAKT] Rein struktureller Safe Patch — kein Kanon-, Spec-, VOID-, Claim- oder
   Roadmap-Inhalt verändert.
 
+## Update 2026-10-02 (Annahme)
+
+- Kevin/Fleks hat mit „R5 umsetzen“ (Audit 2026-10-02, Befund AUD-10) die
+  Entscheidung angenommen: `docs/audit/` (Singular) ist der Audit-Pfad; `docs/audits/`
+  wird nicht angelegt.
+- Stand des Belegs: `git check-ignore docs/audit/new.md` → nicht ignoriert (Revision
+  `6f4347f`); der Audit 2026-10-02 liegt unter `docs/audit/`.
+- Keine Datei verschoben oder umbenannt; eine Pluralisierung bliebe eigene ADR.
+
 ## Linked VOID / Spec / Claim
 
 - Audit: `docs/audit/revolutionary_repo_audit_2026-06-16.md` §4, §8, §10
+- Audit: `docs/audit/repo_audit_2026-10-02.md` AUD-10
 - Kein VOID, keine Spec berührt.
