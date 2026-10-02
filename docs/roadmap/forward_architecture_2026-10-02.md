@@ -29,6 +29,8 @@ S6 Hygiene: ADR-0001, Branches, AUD-06 ── jederzeit, menschliche Entscheidun
 
 ### S1 — Rücknahme an Stream-Ordnung binden
 
+> **Stand 2026-10-02:** umgesetzt (`be7b25e`, Spec §13).
+
 | Feld | Inhalt |
 |---|---|
 | Zweck | WITHDRAW vor Anwendung blockiert den Retag unabhängig vom behaupteten `decided_at` |
@@ -53,6 +55,8 @@ S6 Hygiene: ADR-0001, Branches, AUD-06 ── jederzeit, menschliche Entscheidun
 
 ### S3 — Verify-Event an tatsächlichen Lauf koppeln
 
+> **Stand 2026-10-02:** Variante a (Doku) umgesetzt (`bc87b67`); Variante b offen.
+
 | Feld | Inhalt |
 |---|---|
 | Zweck | `VERIFY_PASS` nur, wenn der Emitter selbst einen Exitcode 0 beobachtet hat |
@@ -64,7 +68,7 @@ S6 Hygiene: ADR-0001, Branches, AUD-06 ── jederzeit, menschliche Entscheidun
 
 ### S4 — Mehr-Akteur-Entscheidungsregel
 
-> **Stand 2026-10-02:** [ADR-0005](../decisions/ADR-0005-erk-human-decision-precedence.md) *Accepted* (A2) und umgesetzt.
+> **Stand 2026-10-02:** [ADR-0005](../decisions/ADR-0005-erk-human-decision-precedence.md) *Accepted* (A2) und umgesetzt; nach Review PR #377 auf die entschiedene Fassung („referenziertes APPROVE ist letzte Entscheidung“) korrigiert.
 
 | Feld | Inhalt |
 |---|---|
@@ -83,7 +87,7 @@ authentifizierten Identität bleibt jede reale Nebenwirkung HUMAN_AUTHORIZATION_
 
 ### S6 — Hygiene (menschliche Entscheidungen, kein Code)
 
-- ADR-0001 annehmen/ändern (AUD-10).
+- ADR-0001 annehmen/ändern (AUD-10). — **Stand 2026-10-02:** *Accepted* (`9da5a57`).
 - 8 vollständig gemergte Remote-Branches löschen oder behalten (AUD-07) — Löschung nur durch Owner.
 - AUD-06 / Issue #333: Release- und VOID-Workflow auf `python-locked` umstellen — Freigabe ausdrücklich offen laut #373.
 
@@ -106,7 +110,7 @@ Validator vorgeschlagen; einziger Kandidat wäre der S2-Prüfer, zunächst als W
 
 ## Offene Punkte
 
-- [ ] ☐ S1: Stream-Ordnung als maßgeblich bestätigen?
+- [x] S1: Stream-Ordnung bestätigt und umgesetzt
 - [ ] ☐ S2: Ist Quellbytes-Bindung Ziel?
-- [ ] ☐ S3: Variante a oder b?
+- [x] S3a umgesetzt · [ ] ☐ S3b offen
 - [x] S4: ADR-0005 entschieden (A2) und umgesetzt

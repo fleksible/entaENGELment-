@@ -7,6 +7,52 @@
 
 ---
 
+## Aktueller Abschlussstand (maßgeblich; ersetzt die Zeitangaben der Abschnitte darunter)
+
+Die Abschnitte ab „Ziel“ dokumentieren den Stand bei Audit-Abschluss (lokal, ungepusht).
+Danach hat Kevin/Fleks Push, Draft-PR und mehrere Review-Pakete freigegeben. Stand dieses
+Blocks: Korrektur-Commit nach `9da5a57` auf PR #377 (seine eigene ID steht im PR, nicht hier).
+
+| Commit | Inhalt | Freigabe |
+|---|---|---|
+| `86d8bd6` | WITHDRAW-Gegenfalltests (AUD-02), xfail für AUD-01 | Auftrag (SAFE_LOCAL_PATCH) |
+| `abc7ed7` | Audit-, Ergebnis-, Roadmap-Bericht | Auftrag |
+| `be7b25e` | R1: WITHDRAW an Stream-Ordnung (AUD-01), Spec §13 | Kevin/Fleks |
+| `bc87b67` | R3: Verify-Emitter als Aufruferangabe (AUD-04) | Kevin/Fleks |
+| `ccb3581` | ADR-0005 angelegt (AUD-03) | Kevin/Fleks |
+| `36c8569` | A2 umgesetzt — lockerere Variante, später korrigiert | Kevin/Fleks (A2) |
+| `9da5a57` | R5 teilweise: ADR-0001 *Accepted*, Branch-SHAs | Kevin/Fleks |
+| Korrektur-Commit | Review PR #377: A2 in entschiedener Fassung, Apply-Historienscope, State-Digest bindet Entscheidungsreihenfolge, dieser Block | Review PR #377 |
+
+**Geänderte Dateien gesamt:** `src/core/evidence_routing.py`, `tools/erk_verify_emit.py`
+(nur Docstring), `tests/unit/test_evidence_routing.py`,
+`docs/annex/EVIDENCE_ROUTING_KERNEL_v0_1.md` (§8, §13), `docs/annex/ERK_CONNECTIONS_v0_1.md` (§2),
+`docs/decisions/ADR-0001-…` (Status), `docs/decisions/ADR-0005-…` (neu),
+drei Audit-/Roadmap-Berichte (neu). Nicht berührt: Workflows, Policies, GOLD, Receipts,
+VOIDMAP, `NICHTRAUM/`.
+
+**Tests am Korrekturstand (lokal, isolierte venv):** `make verify` 657 passed, 165 subtests;
+ERK-Suiten (unit/ethics/integration) 97 passed; ruff, mypy, black sauber. Gegen den Kernel
+von `9da5a57` schlagen genau die sechs neuen Review-Regressionstests fehl. GitHub-CI für den
+Korrekturstand: siehe PR.
+
+| Paket | Stand |
+|---|---|
+| R1 (AUD-01) | umgesetzt |
+| R2 (AUD-05, Quellbytes) | offen |
+| R3 (AUD-04) | Variante a umgesetzt; S3b (Kopplung an echten Lauf) offen |
+| R4 (AUD-03) | ADR-0005 *Accepted* (A2), umgesetzt und per Review korrigiert |
+| R5 / AUD-10 | ADR-0001 *Accepted* |
+| R5 / AUD-06 | Diffs validiert, **nicht angewendet** (Agent-Berechtigung blockiert Workflow-Änderung) |
+| R5 / AUD-07 | 8 gemergte Branches **nicht gelöscht**; Bestätigung offen |
+| PR #377 | Draft; Merge nur durch Kevin/Fleks |
+
+Technik, semantische Review und menschliche Freigabe bleiben getrennt: Grüne Tests belegen
+das Kernel-Verhalten an synthetischen Streams, keine reale Einwilligung oder authentifizierte
+Akteure.
+
+---
+
 ## Ziel
 
 Struktur, Branches, Workflows, Doku und Code an fester Revision prüfen; nachweisbare

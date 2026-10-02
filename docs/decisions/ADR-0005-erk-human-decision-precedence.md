@@ -70,18 +70,45 @@ Kleinstes technisches Delta bei Annahme (erst nach Entscheidung umsetzen):
 - Tests: die fünf Fälle der Tabelle als Gegenfälle in `TestWithdrawalBoundary` bzw. einer
   eigenen Klasse.
 
+## Maßgebliche Fassung (A2)
+
+**Ein `CLAIM_RETAGGED` ist nur anwendbar, wenn das referenzierte `APPROVE` die im
+Stream letzte Human-Entscheidung desselben Requests ist.** Das ist die Fassung aus der
+Alternativentabelle, die Kevin/Fleks am 2026-10-02 entschieden hat.
+
+Folgen daraus:
+
+| Stream vor dem Retag | Retag referenziert | Ergebnis |
+|---|---|---|
+| APPROVE(1) → REJECT/DEFER | 1 | abgewiesen |
+| REJECT/DEFER → APPROVE(1) | 1 | angewendet |
+| APPROVE(1) → REJECT → APPROVE(3) | 1 / 3 | abgewiesen / angewendet |
+| APPROVE(1) → APPROVE(2) | 1 / 2 | abgewiesen / angewendet |
+
 ## Umsetzung (A2)
 
-- `_apply_retag_event`: Nach dem referenzierten `APPROVE` darf in
-  `_human_decisions_for_request()` keine Entscheidung ≠ `APPROVE` folgen; sonst
-  `EVENT_ORDER_INVALID`. Kein neuer Reason-Code, kein neues Feld.
-- Unterfrage `apply_approved_transition`: `human_decisions` ist als **stream-geordnet**
-  definiert (Docstring). Enthält die Sequenz die referenzierte Freigabe, blockiert jede
-  spätere Entscheidung ≠ `APPROVE`; jedes `WITHDRAW` blockiert weiterhin (AUD-01).
-- Präzisierung gegenüber dem Vorschlagstext: Maßgeblich ist, dass dem referenzierten
-  `APPROVE` keine Nicht-`APPROVE`-Entscheidung folgt. Ein weiteres `APPROVE` danach hebt
-  die referenzierte Freigabe nicht auf.
-- Tests: `tests/unit/test_evidence_routing.py::TestDecisionPrecedence`.
+- `_apply_retag_event`: Das referenzierte `APPROVE` muss der letzte Eintrag von
+  `_human_decisions_for_request()` (Einfügereihenfolge = Stream-Ordnung) sein; sonst
+  `EVENT_ORDER_INVALID`. Kein neuer Reason-Code, kein neues Event-Feld.
+- `apply_approved_transition(human_decisions=...)`: Eine übergebene Historie gilt als
+  vollständig und stream-geordnet. Sie muss die Freigabe unverändert enthalten
+  (sonst `HUMAN_REFERENCE_MISMATCH`), und die Freigabe muss die letzte Entscheidung des
+  Requests darin sein (sonst `EVENT_ORDER_INVALID`). Entscheidungen anderer Requests
+  zählen nicht. Eine **leere** Historie (Default) prüft keine Präzedenz und behauptet
+  nichts über spätere Entscheidungen; maßgeblich bleibt `replay_events()`.
+- `compute_state_digest()`: Die Reihenfolge der Human-Entscheidungen geht als geordnete
+  ID-Liste `human_decision_order` in den State-Digest ein (Spec §8). Zuvor erzeugten
+  A→R und R→A mit gleichen Records denselben Digest, obwohl dasselbe Folge-Retag
+  unterschiedlich anwendbar war (Review R377-01). Digest-Werte ändern sich dadurch für
+  Streams mit Human-Entscheidungen; im Repo sind keine Digest-Werte persistiert.
+- Tests: `tests/unit/test_evidence_routing.py::TestDecisionPrecedence` und
+  `::TestApplyDecisionHistory`.
+
+**Korrekturhinweis:** Commit `36c8569` hatte eine lockerere Variante umgesetzt („nach dem
+referenzierten `APPROVE` kein `REJECT`/`DEFER`“, ein weiteres `APPROVE` danach unschädlich)
+und sie hier als „Präzisierung“ geführt. Das entsprach nicht der entschiedenen Fassung; der
+Review von PR #377 (R377-03) hat die Abweichung aufgedeckt. Der Code folgt seit dem
+Korrektur-Commit der maßgeblichen Fassung oben.
 
 ## Folgen
 
