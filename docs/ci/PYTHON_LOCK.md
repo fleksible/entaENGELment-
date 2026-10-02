@@ -85,39 +85,30 @@ tested resolution; they do not make claims about conceptual framework status.
 The PR runtime workflow checks this using two fresh Python 3.11 test-group
 environments; the SBOM reconciliation also runs before merge.
 
-## Pending automation installation changes
+## Automation installation coverage
 
-Issue #333 remains open because `.github/workflows/release.yml` still uses its
-previous, unfrozen `pip install -e ".[dev]"` entry point. The automated approval
-review rejected uploading that workflow because it contains an existing job
-which publishes public releases with `contents: write` on version tags. The
-workflow and its publication behavior are therefore left unchanged.
+The initial lock PR left the Release Gate and VOID Deadline Monitor untouched
+after automated approval review rejected writes to workflows with existing
+release/issue-writing permissions. Those rejected changes were recorded as
+pending work, not as implemented coverage.
 
-Only this dependency-installation diff is prepared for explicit approval:
+On 2026-10-02, the maintainer changed the Release Gate to create draft releases.
+[PR #378](https://github.com/fleksible/entaENGELment-/pull/378), merged the same
+day, replaced its unfrozen installation with the pinned uv manager and locked
+`dev` group. All nine observed PR workflow runs succeeded on its final head.
+The tag-triggered Release Gate itself was not executed by those PR runs; its
+configuration and the shared lock installer were checked without creating a tag.
 
-```diff
-       - name: Install dependencies
-         run: |
--          python -m pip install --upgrade pip
--          python -m pip install -e ".[dev]"
-+          python -m pip install "uv==0.12.18"
-+          python tools/python_lock.py sync --group dev
-+          echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
-```
+The VOID Deadline Monitor uses `./.github/actions/python-locked` with the
+default `runtime` group, which includes PyYAML. Its schedule, permissions,
+deadline logic and issue-writing steps retain their existing behavior. A PR
+check does not execute the scheduled monitor or prove an issue was created.
 
-The same approval restriction also applies to the existing weekly
-`.github/workflows/void-sync.yml` automation: its dependency change was
-rejected because it contains `issues: write` and creates or updates GitHub
-issues. Its existing `pip install pyyaml` entry point remains unchanged.
-The prepared change is:
+Repository-managed Python installations now use the same lock contract.
+The pinned `pip install "uv==0.12.18"` bootstrap installs the lock manager;
+project and build dependencies are installed from `uv.lock`. See the baseline
+above for the tested Python/platform range and reproducibility limitations.
 
-```diff
-       - name: Install dependencies
--        run: pip install pyyaml
-+        uses: ./.github/actions/python-locked
-```
-
-These changes affect only dependency installation. They change neither tag
-or schedule triggers, gates, permissions, publication nor issue-writing steps.
-Applying them creates neither a tag, a release nor an issue. After explicit
-approval, apply them through a separate checked PR before closing #333.
+Before closing #333, confirm that this monitor change has merged and its PR
+checks pass. A merge or green CI does not authorize a public release or promote
+framework claims to Source of Truth.
