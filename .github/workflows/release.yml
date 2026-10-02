@@ -122,6 +122,6 @@ jobs:
               tag_name: tag,
               name: `EntaENGELment ${tag}`,
               body: process.env.RELEASE_NOTES,
-              draft: false,
+              draft: true,
               prerelease: tag.includes('-rc')
             });
