@@ -841,14 +841,13 @@ def apply_approved_transition(
             [ReasonCode.POLICY_DIGEST_MISMATCH],
         )
 
-    for later in human_decisions:
-        if (
-            later.request_id == request.request_id
-            and later.decision == HUMAN_WITHDRAW
-            and later.decided_at >= human_decision.decided_at
-        ):
+    # Stream order, not the asserted decided_at, decides: an APPROVE after a
+    # WITHDRAW is invalid in replay, so any known WITHDRAW for this request
+    # precedes application and blocks it.
+    for other in human_decisions:
+        if other.request_id == request.request_id and other.decision == HUMAN_WITHDRAW:
             raise EvidenceRoutingError(
-                "approval was withdrawn by a later human decision",
+                "approval was withdrawn by a human decision",
                 [ReasonCode.EVENT_ORDER_INVALID],
             )
     for retraction in retractions:
@@ -1421,11 +1420,10 @@ def _apply_retag_event(state: ReplayState, payload: Mapping[str, Any], policy: C
             f"retag without matching human APPROVE: {request_id}",
             [ReasonCode.HUMAN_REFERENCE_MISMATCH, ReasonCode.HUMAN_DECISION_REQUIRED],
         )
-    approved_at = approval.get("decided_at", 0.0)
     for record in _human_decisions_for_request(state, request_id):
-        if record.get("decision") == HUMAN_WITHDRAW and record.get("decided_at", 0.0) >= float(
-            approved_at
-        ):
+        # Stream order is authoritative: every WITHDRAW already replayed for
+        # this request precedes the retag, whatever its asserted decided_at.
+        if record.get("decision") == HUMAN_WITHDRAW:
             raise EvidenceRoutingError(
                 f"retag after withdrawal: {request_id}", [ReasonCode.EVENT_ORDER_INVALID]
             )

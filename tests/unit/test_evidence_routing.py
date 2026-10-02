@@ -767,6 +767,9 @@ class TestDuplicateStableIds:
 class TestWithdrawalBoundary:
     """Gegenfälle zur Rücknahme (Kernel-Spec §8, §13): WITHDRAW vor Anwendung.
 
+    Maßgeblich ist die Stream-Ordnung, nicht das behauptete ``decided_at``
+    (Audit 2026-10-02 AUD-01).
+
     Die Tests nutzen die vorhandene Fixture ``human_approved_retag.jsonl``
     (Events 1–6 bis APPROVE, Event 7 = CLAIM_RETAGGED) und fügen nur
     synthetische HumanDecision-Events ein. Ein synthetisches APPROVE/WITHDRAW
@@ -825,17 +828,27 @@ class TestWithdrawalBoundary:
             )
         assert ReasonCode.EVENT_ORDER_INVALID in excinfo.value.reason_codes
 
-    @pytest.mark.xfail(
-        strict=True,
-        reason=(
-            "Audit 2026-10-02 AUD-01: Rücknahme wird über das aufrufer-behauptete "
-            "decided_at statt über die Stream-Reihenfolge gebunden; ein später "
-            "angehängtes WITHDRAW mit älterem decided_at blockiert den Retag nicht. "
-            "Fix nur nach Review (Consent-/Rücknahme-Semantik)."
-        ),
-    )
     def test_withdraw_appended_before_retag_blocks_even_with_older_decided_at(self):
         before_retag, retag = self._split_fixture()
         withdraw = self._human_event("WITHDRAW", 1752900004.0, "hd-002")
         state = replay_events([*before_retag, withdraw, retag])
         assert state.current_tag("clm-001") == "[HYPOTHESE]"
+        assert state.retag_history == []
+        assert state.rejected_events[-1]["reason_codes"] == [ReasonCode.EVENT_ORDER_INVALID.value]
+
+    def test_apply_refuses_withdraw_with_older_decided_at(self):
+        policy = load_claim_policy()
+        request = make_request()
+        guard = evaluate(request, policy=policy)
+        approve = make_human_decision()
+        withdraw = make_human_decision("hd-002", decision="WITHDRAW", decided_at=1752900004.0)
+        with pytest.raises(EvidenceRoutingError) as excinfo:
+            apply_approved_transition(
+                request,
+                policy=policy,
+                claims={"clm-001": make_claim()},
+                guard_decision=guard,
+                human_decision=approve,
+                human_decisions=[approve, withdraw],
+            )
+        assert ReasonCode.EVENT_ORDER_INVALID in excinfo.value.reason_codes

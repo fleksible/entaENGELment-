@@ -262,6 +262,13 @@ Adapter.
 - Ein genehmigter Übergang wird durch `HumanDecision(WITHDRAW)` (vor Anwendung)
   oder `Retraction` (nach Anwendung) zurückgenommen — beides append-only, nichts
   wird gelöscht oder überschrieben.
+- „Vor Anwendung" bemisst sich an der **Reihenfolge im Eventstream**, nicht am
+  vom Aufrufer angegebenen `decided_at`: Jedes vor dem `CLAIM_RETAGGED`
+  aufgezeichnete `WITHDRAW` desselben Requests blockiert den Retag
+  (`EVENT_ORDER_INVALID`), auch wenn sein `decided_at` älter ist als das des
+  `APPROVE`. `apply_approved_transition()` behandelt jedes übergebene `WITHDRAW`
+  des Requests ebenso, da ein `APPROVE` nach `WITHDRAW` im Stream unzulässig ist.
+  (Entscheidung Kevin/Fleks 2026-10-02, Audit AUD-01.)
 - Der Kernel selbst ist ANNEX: Er kann durch Entfernen der Aufrufe deaktiviert
   werden, ohne GOLD-Bereiche, Policies oder Receipts zu berühren.
 - Bereits geschriebene Events bleiben als Historie bestehen (G3: nie löschen).

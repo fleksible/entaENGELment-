@@ -87,6 +87,11 @@ keine Fixture verändert (die Tests konstruieren Zusatz-Events in-memory).
 
 ### R1 — Rücknahme an Stream-Ordnung binden (AUD-01)
 
+> **Status-Nachtrag 2026-10-02:** Entscheidung Kevin/Fleks „Stream-Ordnung ist maßgeblich".
+> Umgesetzt im Folge-Commit dieses Branches (Replay-Pfad wie unten; `apply_approved_transition`
+> nach Variante a: jedes übergebene `WITHDRAW` des Requests blockiert). xfail-Marker entfernt,
+> Spec §13 ergänzt. Der folgende Text beschreibt den Stand vor der Umsetzung.
+
 - **Klasse:** SEMANTIC_REVIEW_REQUIRED + TECHNICAL_REVIEW_REQUIRED
 - **Vorschlag (Replay-Pfad), im Scratch geprüft:**
 
