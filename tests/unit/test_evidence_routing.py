@@ -762,3 +762,80 @@ class TestDuplicateStableIds:
             lambda state: state.relations,
             lambda relations: relations["rel-001"]["relation_type"] == "SUPPORTS",
         )
+
+
+class TestWithdrawalBoundary:
+    """Gegenfälle zur Rücknahme (Kernel-Spec §8, §13): WITHDRAW vor Anwendung.
+
+    Die Tests nutzen die vorhandene Fixture ``human_approved_retag.jsonl``
+    (Events 1–6 bis APPROVE, Event 7 = CLAIM_RETAGGED) und fügen nur
+    synthetische HumanDecision-Events ein. Ein synthetisches APPROVE/WITHDRAW
+    beweist keine reale Einwilligung oder Rücknahme.
+    """
+
+    @staticmethod
+    def _human_event(decision, decided_at, decision_id):
+        payload = make_human_decision(
+            decision_id, decision=decision, decided_at=decided_at
+        ).to_payload()
+        return {
+            "type": "HUMAN_DECISION_RECORDED",
+            "event_id": f"evt-w-{decision_id}",
+            "timestamp": 1752900005.5,
+            "payload": payload,
+        }
+
+    def _split_fixture(self):
+        events = load_fixture("human_approved_retag.jsonl")
+        assert events[5]["payload"]["decision"] == "APPROVE"
+        assert events[6]["type"] == "CLAIM_RETAGGED"
+        return events[:6], events[6]
+
+    def test_withdraw_after_approve_blocks_retag_in_replay(self):
+        before_retag, retag = self._split_fixture()
+        withdraw = self._human_event("WITHDRAW", 1752900005.5, "hd-002")
+        state = replay_events([*before_retag, withdraw, retag])
+        assert state.current_tag("clm-001") == "[HYPOTHESE]"
+        assert state.retag_history == []
+        assert state.rejected_events[-1]["reason_codes"] == [ReasonCode.EVENT_ORDER_INVALID.value]
+
+    def test_approve_after_withdraw_is_rejected_in_replay(self):
+        before_retag, retag = self._split_fixture()
+        withdraw = self._human_event("WITHDRAW", 1752900004.5, "hd-000")
+        events = [*before_retag[:5], withdraw, before_retag[5], retag]
+        state = replay_events(events)
+        assert state.current_tag("clm-001") == "[HYPOTHESE]"
+        assert "hd-001" not in state.human_decisions
+        assert state.retag_history == []
+
+    def test_apply_refuses_when_later_withdraw_is_known(self):
+        policy = load_claim_policy()
+        request = make_request()
+        guard = evaluate(request, policy=policy)
+        approve = make_human_decision()
+        withdraw = make_human_decision("hd-002", decision="WITHDRAW", decided_at=1752900006.0)
+        with pytest.raises(EvidenceRoutingError) as excinfo:
+            apply_approved_transition(
+                request,
+                policy=policy,
+                claims={"clm-001": make_claim()},
+                guard_decision=guard,
+                human_decision=approve,
+                human_decisions=[approve, withdraw],
+            )
+        assert ReasonCode.EVENT_ORDER_INVALID in excinfo.value.reason_codes
+
+    @pytest.mark.xfail(
+        strict=True,
+        reason=(
+            "Audit 2026-10-02 AUD-01: Rücknahme wird über das aufrufer-behauptete "
+            "decided_at statt über die Stream-Reihenfolge gebunden; ein später "
+            "angehängtes WITHDRAW mit älterem decided_at blockiert den Retag nicht. "
+            "Fix nur nach Review (Consent-/Rücknahme-Semantik)."
+        ),
+    )
+    def test_withdraw_appended_before_retag_blocks_even_with_older_decided_at(self):
+        before_retag, retag = self._split_fixture()
+        withdraw = self._human_event("WITHDRAW", 1752900004.0, "hd-002")
+        state = replay_events([*before_retag, withdraw, retag])
+        assert state.current_tag("clm-001") == "[HYPOTHESE]"
