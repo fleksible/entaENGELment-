@@ -127,6 +127,10 @@ keine Fixture verändert (die Tests konstruieren Zusatz-Events in-memory).
 
 ### R3 — Evidenzformulierung Verify-Emitter (AUD-04)
 
+> **Status-Nachtrag 2026-10-02:** Formulierung von Kevin/Fleks übernommen; umgesetzt in
+> `docs/annex/ERK_CONNECTIONS_v0_1.md` §2 und im Modul-Docstring von `tools/erk_verify_emit.py`.
+> Kein Verhaltenswechsel; die Kopplung an einen echten Lauf (Roadmap S3b) bleibt offen.
+
 - **Klasse:** SEMANTIC_REVIEW_REQUIRED.
 - **Vorschlag** (`docs/annex/ERK_CONNECTIONS_v0_1.md` §2 und Docstring `tools/erk_verify_emit.py`):
 
