@@ -64,6 +64,8 @@ S6 Hygiene: ADR-0001, Branches, AUD-06 ── jederzeit, menschliche Entscheidun
 
 ### S4 — Mehr-Akteur-Entscheidungsregel
 
+> **Stand 2026-10-02:** als [ADR-0005](../decisions/ADR-0005-erk-human-decision-precedence.md) angelegt (*Proposed*, Empfehlung A2).
+
 | Feld | Inhalt |
 |---|---|
 | Zweck | Klären, ob REJECT/DEFER nach APPROVE (anderer oder gleicher Akteur) Wirkung hat |
@@ -107,4 +109,4 @@ Validator vorgeschlagen; einziger Kandidat wäre der S2-Prüfer, zunächst als W
 - [ ] ☐ S1: Stream-Ordnung als maßgeblich bestätigen?
 - [ ] ☐ S2: Ist Quellbytes-Bindung Ziel?
 - [ ] ☐ S3: Variante a oder b?
-- [ ] ☐ S4: ADR-0005 anstoßen?
+- [ ] ☐ S4: ADR-0005 entscheiden (A1–A4)?
