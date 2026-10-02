@@ -26,11 +26,11 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install dependencies
+     - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install -e ".[dev]"
-
+          python -m pip install "uv==0.12.18"
+          python tools/python_lock.py sync --group dev
+          echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
       - name: Gate 1 — Pointer Integrity
         run: python3 tools/verify_pointers.py --strict
 
