@@ -5,6 +5,12 @@
   "hash_alg": "sha256",
   "reveal_root": ".claude/skills/eval",
   "evaluation_kind": "sealed behavioral evaluation (not blind)",
+  "commitment_scheme": "sha256 over the exact file bytes (UTF-8, LF). Every public file carries its own 128-bit random nonce line, so short contents cannot be confirmed by guessing. Hidden files were requested to carry a nonce too; this is not verifiable before reveal.",
+  "reveal_rule": "All public entries are revealed together after all evaluation runs; a partial reveal fails the guard. FREEZE.json itself is never edited after the freeze.",
+  "external_anchors": [
+    "The human keeps an independent copy of the public plaintext with SHA256SUMS.",
+    "The hidden hashes were supplied by the human from files held outside the repo."
+  ],
   "limitations": [
     "The skill author knows the metrics and public cases P1-P4 from the design phase.",
     "H1/H2 are the held-out generalisation test; they were authored outside the skill author's view.",
