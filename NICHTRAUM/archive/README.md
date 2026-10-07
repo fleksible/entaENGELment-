@@ -36,3 +36,13 @@ loads the non-minified `app.js`; Jest coverage explicitly excludes `*.min.js`).
 Generated/minified artifacts do not belong in version control. The
 human-readable sources (`*.js`) remain in `Fractalsense/`. Restore only if a
 no-build deploy of the minified bundles is reintroduced.
+
+## Branch-Archiv (archived 2026-10-07)
+
+- `branches_2026-10-07/MANIFEST.md` — 16 veraltete Remote-Branches mit letztem Commit-SHA
+- `branches_2026-10-07/repo_audit_2026-04-06.md` — war `OUT/repo_audit_2026-04-06.md` auf
+  `claude/repo-audit-analysis-oiW6K` (nie in `main` gelandet)
+
+**Reason:** Branch-Hygiene. Alle 16 Branches sind in `main` enthalten oder durch neuere
+Implementierungen in `main` überholt. Vor dem Entfernen werden sie als Tags `archive/<branch>`
+gesichert (siehe `OUT/branch_cleanup_2026-10-07.md`), damit sie jederzeit wiederherstellbar sind.
