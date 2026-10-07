@@ -1,0 +1,14 @@
+interface:
+  display_name: Corpus Gate
+  short_description: Prüft Herkunft und Status eingehender Artefakte
+  default_prompt: Prüfe dieses Artefakt mit corpus-gate. Erstelle ein Intake-Receipt
+    und markiere offene Fragen ohne Statuspromotion.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

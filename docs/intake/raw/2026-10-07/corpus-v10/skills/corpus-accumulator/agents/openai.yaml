@@ -1,0 +1,14 @@
+interface:
+  display_name: Corpus Accumulator
+  short_description: Sammelt unsere Projektdaten mit Herkunft und Lesestand
+  default_prompt: Nutze $corpus-accumulator, um unsere verfügbaren entaENGELment-Unterlagen
+    portionsweise zu erschließen und den Korpusindex fortzuschreiben.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

@@ -1,0 +1,95 @@
+{
+  "schema_version": "corpus-export-manifest/0.1",
+  "artifact_role": "generated_manifest",
+  "authority": "DERIVED",
+  "reimport_as_independent_evidence": false,
+  "origin_sha256": "f7f3aaa4773ab073c55a7e6a7e911f4764e50a830d0c4bb3cf9153345e402a54",
+  "manifest_scope": "Bundle files excluding this self-referential MANIFEST.json; paths are relative to bundle root.",
+  "files": [
+    {
+      "path": "EXPORT.md",
+      "bytes": 5430,
+      "sha256": "3afd7e1692b63c01f0158247ede62cce97d0c3ebfc3535713014155d5592228f"
+    },
+    {
+      "path": "README.md",
+      "bytes": 9789,
+      "sha256": "f0cdc3cda87e5caf095ea785a97473cbb305bfbc836b085850aa0d8a6b078823"
+    },
+    {
+      "path": "WORKFLOW.md",
+      "bytes": 4729,
+      "sha256": "f9aae5c51c018545adde2a196608a440d3e6f974fe23ef388e645da4dd4ccfdd"
+    },
+    {
+      "path": "corpus-matrix.csv",
+      "bytes": 26368,
+      "sha256": "d845799be16b6f1f1e812d855b4d674eef2b18d308923c93494511e14b8dc9ab"
+    },
+    {
+      "path": "corpus-snapshot.json",
+      "bytes": 428765,
+      "sha256": "15f26dec84d1f392625b4e5928d7e65701473b802197fb9a8fc8a96050d8de5e"
+    },
+    {
+      "path": "skills/complementarity-review/SKILL.md",
+      "bytes": 6093,
+      "sha256": "0b1edc3c093adc641d14f0a248e4c84ad770f844ab9c89f113bab495450af678"
+    },
+    {
+      "path": "skills/complementarity-review/agents/openai.yaml",
+      "bytes": 418,
+      "sha256": "1261b3074490085c1f1af3851b7c26856cf7280d6ce510878a9d8f3e36efbc00"
+    },
+    {
+      "path": "skills/complementarity-review/assets/icon.svg",
+      "bytes": 420,
+      "sha256": "e9301497fa98ef56aaca7ede0857b9a18dc06c34040f0679c609a6bf49b1d38b"
+    },
+    {
+      "path": "skills/complementarity-review/references/cross-thread-review.md",
+      "bytes": 4267,
+      "sha256": "ba0e41642d91de1e8b2d2bca649eb89975c3ae9e223e6826056fee3860041f0a"
+    },
+    {
+      "path": "skills/complementarity-review/references/service-routing.md",
+      "bytes": 3100,
+      "sha256": "557bdc1c5fc3996eb2d55e455eabe785aa8c01dd6b6409580d832c91292e88a3"
+    },
+    {
+      "path": "skills/corpus-accumulator/SKILL.md",
+      "bytes": 9193,
+      "sha256": "15372182533c755984eb338e038c8f58a7187bc97cad61cb2f35084fefccd5ae"
+    },
+    {
+      "path": "skills/corpus-accumulator/agents/openai.yaml",
+      "bytes": 440,
+      "sha256": "e109615d2d991599eefb8f90c60167110dfa270b18723239bf2b748429c9c2d8"
+    },
+    {
+      "path": "skills/corpus-accumulator/assets/icon.svg",
+      "bytes": 420,
+      "sha256": "e9301497fa98ef56aaca7ede0857b9a18dc06c34040f0679c609a6bf49b1d38b"
+    },
+    {
+      "path": "skills/corpus-accumulator/references/index-format.md",
+      "bytes": 4279,
+      "sha256": "9659627a7b0bbd7d6420fb77b3591c6a1a93640346bf75e2fe289534710d7e23"
+    },
+    {
+      "path": "skills/corpus-gate/SKILL.md",
+      "bytes": 6326,
+      "sha256": "0364ba5199a918c1c51087fced1d1a3dbbbd9b419253a2997fffedaa62047279"
+    },
+    {
+      "path": "skills/corpus-gate/agents/openai.yaml",
+      "bytes": 402,
+      "sha256": "1a553b71a4a4faa1ac8159d6161a336168a12a793153295bed6fc01e1b7ef3cf"
+    },
+    {
+      "path": "skills/corpus-gate/assets/icon.svg",
+      "bytes": 843,
+      "sha256": "0cdb7990dea3ad89ead04743eeac2dc58c119fb0b8b4a01499a21237f155bc1a"
+    }
+  ]
+}
