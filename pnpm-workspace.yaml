@@ -12,30 +12,43 @@ overrides:
   "form-data@>=4.0.0 <4.0.6": ">=4.0.6"
   "postcss@<8.5.23": "8.5.23"
   "js-yaml@<=4.1.1": ">=4.2.0"
-  "app-builder-lib@26.15.3>js-yaml": "5.2.2"
-  "@istanbuljs/load-nyc-config@1.1.0>js-yaml": "5.2.2"
-  "@eslint/eslintrc@3.3.5>js-yaml": "5.2.2"
-  "builder-util@26.15.3>js-yaml": "5.2.2"
-  "dmg-builder@26.15.3>js-yaml": "5.2.2"
+  "app-builder-lib@26.15.3>js-yaml": "5.4.3"
+  "@istanbuljs/load-nyc-config@1.1.0>js-yaml": "5.4.3"
+  "@eslint/eslintrc@3.3.5>js-yaml": "5.4.3"
+  "builder-util@26.15.3>js-yaml": "5.4.3"
+  "dmg-builder@26.15.3>js-yaml": "5.4.3"
   "undici@<6.28.1": "6.28.1"
   "undici@>=7.0.0 <7.29.1": "7.29.1"
   "brace-expansion@<1.1.16": "^1.1.16"
   "brace-expansion@>=2.0.0 <2.1.2": "^2.1.2"
-  "minimatch@3.1.5>brace-expansion": "5.0.11"
-  "minimatch@5.1.9>brace-expansion": "5.0.11"
-  "minimatch@9.0.9>brace-expansion": "5.0.11"
-  "minimatch@10.2.5>brace-expansion": "5.0.11"
-  "fast-uri@>=3.0.0 <3.1.7": "3.1.7"
-  "sharp@<0.35.4": "0.35.4"
+  "minimatch@3.1.5>brace-expansion": "5.0.12"
+  "minimatch@5.1.9>brace-expansion": "5.0.12"
+  "minimatch@9.0.9>brace-expansion": "5.0.12"
+  "minimatch@10.2.5>brace-expansion": "5.0.12"
+  "fast-uri@>=3.0.0 <3.1.8": "3.1.8"
+  "sharp@<0.35.5": "0.35.5"
   "tar@<=7.5.20": "7.5.22"
   "nanoid@<3.3.18": "3.3.18"
   "browserslist@<4.28.7": "4.28.7"
   "@xmldom/xmldom@>=0.7.0 <0.8.15": "0.8.15"
   "baseline-browser-mapping@>=2.0.0 <2.11.0": "2.11.0"
+  "source-map-js@>=1.0.0 <1.2.2": "1.2.2"
+  "http-cache-semantics@<4.3.0": "4.3.0"
 
 # brace-expansion v5 drops the callable CommonJS and default ESM shapes expected
 # by older minimatch majors in electron-builder. Keep the named v5 API and
 # restore both legacy shapes; the packaging glob regression test covers the
 # CommonJS consumers and @electron/universal's published ESM entry.
 patchedDependencies:
-  brace-expansion@5.0.11: patches/brace-expansion@5.0.11.patch
+  brace-expansion@5.0.12: patches/brace-expansion@5.0.12.patch
+
+# Audit exceptions: each entry needs an advisory without any patched release
+# AND a dependency path that never processes untrusted input. Revisit on every
+# weekly Security Audit run and remove the entry as soon as a fix ships.
+# - GHSA-vfj7-8cjw-p6xm (braces <=3.0.3, high, no patched version):
+#   only reachable via ui-app > eslint-config-next > @next/eslint-plugin-next >
+#   fast-glob > micromatch > braces, i.e. dev-time linting of repo-authored
+#   glob patterns. Not shipped in the Electron app or the Next.js build output.
+auditConfig:
+  ignoreGhsas:
+    - GHSA-vfj7-8cjw-p6xm
