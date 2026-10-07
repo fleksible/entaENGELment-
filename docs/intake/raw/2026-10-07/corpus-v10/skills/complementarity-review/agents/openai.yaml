@@ -1,0 +1,14 @@
+interface:
+  display_name: Komplementäre Sichtung
+  short_description: Fundstellen in prüfbare Diskussionskarten übersetzen
+  default_prompt: Nutze $complementarity-review und bereite bis zu drei belegte Diskussionskarten
+    aus unseren Projektunterlagen vor.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true
