@@ -1,0 +1,124 @@
+{
+  "schema_version": "skill-eval-freeze.v0.1",
+  "claim_status": "[SPEC-WIP]",
+  "frozen_on": "2026-10-05",
+  "hash_alg": "sha256",
+  "reveal_root": ".claude/skills/eval",
+  "evaluation_kind": "sealed behavioral evaluation (not blind)",
+  "commitment_scheme": "sha256 over the exact file bytes (UTF-8, LF). Every public file carries its own 128-bit random nonce line, so short contents cannot be confirmed by guessing. Hidden files were requested to carry a nonce too; this is not verifiable before reveal.",
+  "reveal_rule": "All public entries are revealed together after all evaluation runs; a partial reveal fails the guard. FREEZE.json itself is never edited after the freeze.",
+  "external_anchors": [
+    "The human keeps an independent copy of the public plaintext with SHA256SUMS.",
+    "The hidden hashes were supplied by the human from files held outside the repo."
+  ],
+  "limitations": [
+    "The skill author knows the metrics and public cases P1-P4 from the design phase.",
+    "H1/H2 are the held-out generalisation test; they were authored outside the skill author's view.",
+    "Hidden files are never committed; only their hashes are recorded here."
+  ],
+  "approvals": [
+    {
+      "level": "SESSION_OK",
+      "scope": "Phase 1a",
+      "quote": "SESSION_OK: Phase 1a ist damit freigegeben."
+    },
+    {
+      "level": null,
+      "scope": "public keys P1-P4",
+      "quote": "Keys P1–P4: freigegeben.",
+      "note": "Level not stated by the human; recorded verbatim, not classified by the agent."
+    }
+  ],
+  "entries": [
+    {
+      "id": "protocol",
+      "path": ".claude/skills/eval/protocol.md",
+      "sha256": "9002a8272ac1b68452c96b163be6b9aa4ea004fde2b8f921b70fd3c5832bfca3",
+      "visibility": "public"
+    },
+    {
+      "id": "rubric",
+      "path": ".claude/skills/eval/rubric.md",
+      "sha256": "112a1b5da35ead88611978420823940d4bbb56c611a2acecbcb3da888cbfa603",
+      "visibility": "public"
+    },
+    {
+      "id": "mode_b_prompt",
+      "path": ".claude/skills/eval/mode_b_prompt.md",
+      "sha256": "b63011ffa810852c7ee038261d55d971c72c6d38000b1db8be5df289d62493c5",
+      "visibility": "public"
+    },
+    {
+      "id": "P1_case",
+      "path": ".claude/skills/eval/cases/P1_case.md",
+      "sha256": "90bc5657ffaa6189382cefe52e85d9a0112b65a6e72fd1928c411a594cfd3940",
+      "visibility": "public"
+    },
+    {
+      "id": "P2_case",
+      "path": ".claude/skills/eval/cases/P2_case.md",
+      "sha256": "c9e60528c8323567c0933abe782a94df75bcdc1e3dcd61ab84e5dbe10c4aa263",
+      "visibility": "public"
+    },
+    {
+      "id": "P3_case",
+      "path": ".claude/skills/eval/cases/P3_case.md",
+      "sha256": "2aa99339f98084224d0f9b2160d1f94ef79c8c82f781a7dcd6f3b549159e347f",
+      "visibility": "public"
+    },
+    {
+      "id": "P4_case",
+      "path": ".claude/skills/eval/cases/P4_case.md",
+      "sha256": "f64e83e7a6626153c59ef5696fecc6601f78a27e13eee06ba1df2f80b1db2818",
+      "visibility": "public"
+    },
+    {
+      "id": "P1_key",
+      "path": ".claude/skills/eval/keys/P1_key.md",
+      "sha256": "ed40bcd2372649e75e403d3290019e196dc8422cfeeb9b921041f0446f46c379",
+      "visibility": "public"
+    },
+    {
+      "id": "P2_key",
+      "path": ".claude/skills/eval/keys/P2_key.md",
+      "sha256": "25ed52fdaed17be96ded1b22780016569b2f38ee8c1c465e856def6431cfc97e",
+      "visibility": "public"
+    },
+    {
+      "id": "P3_key",
+      "path": ".claude/skills/eval/keys/P3_key.md",
+      "sha256": "bb768468a1174ca6c9a391a2efe6e82348fd4cc9060f38676513f3af4eb176b2",
+      "visibility": "public"
+    },
+    {
+      "id": "P4_key",
+      "path": ".claude/skills/eval/keys/P4_key.md",
+      "sha256": "50977a467d10423fb7184c14fe2f518d0241674455b769192bde645f0fd7254d",
+      "visibility": "public"
+    },
+    {
+      "id": "H1_case",
+      "path": ".claude/skills/eval/hidden/h1_case.md",
+      "sha256": "9f42530d58f94b4941bddf4529c3719e115c167e101bb7622df04bb5ce8ebb52",
+      "visibility": "hidden"
+    },
+    {
+      "id": "H1_key",
+      "path": ".claude/skills/eval/hidden/h1_key.md",
+      "sha256": "7c8e89fa92a8df798ab0d46510b13e0c12172a43f9cc6848601c264b18287009",
+      "visibility": "hidden"
+    },
+    {
+      "id": "H2_case",
+      "path": ".claude/skills/eval/hidden/h2_case.md",
+      "sha256": "94252ea1e866b791521bf38f879a9e5adce1c0ff940a120923ba7416e6791bee",
+      "visibility": "hidden"
+    },
+    {
+      "id": "H2_key",
+      "path": ".claude/skills/eval/hidden/h2_key.md",
+      "sha256": "40f884048141a32cb81c2551720fa2affbbbffacb3acda4362ca9c9cdfe87582",
+      "visibility": "hidden"
+    }
+  ]
+}
