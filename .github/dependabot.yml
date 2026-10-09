@@ -1,7 +1,17 @@
 version: 2
+registries:
+  # Keep hash lookups on an absolute PyPI URL. Dependabot's UV updater can
+  # otherwise pass an empty index from unrelated credentials to hashin
+  # (run 37258615411: unknown url type '/pypi/rpds-py/json').
+  public-pypi:
+    type: python-index
+    url: https://pypi.org/simple
+    replaces-base: true
 updates:
   - package-ecosystem: "uv"
     directory: "/"
+    registries:
+      - public-pypi
     exclude-paths:
       - "NICHTRAUM/archive/**"
     groups:
