@@ -1,6 +1,7 @@
 # Report: FractalSense-Canvas bei Nullgröße
 
 **Datum:** 2026-10-09
+**Nachtrag:** 2026-10-10
 **Fokus:** FractalSense-Absturz beheben
 **Authority:** DERIVED / REVIEW-PENDING
 **Basis:** main `a7773db68d97dbd8271b0921d011934d2e921170`; Befund aus PR #388.
@@ -35,6 +36,15 @@ anfordern und muss nach dem Wiedereinblenden die aktuelle Größe verwenden.
 - Ein aktueller Audit findet neue Next.js-Advisories auf dem Basisstand. Der
   Versionspatch wird separat angeboten; ein rotes Security-Gate darf nicht
   durch Ignorieren dieser neuen Befunde umgangen werden.
+
+## Nachtrag zur Security-Basis (10. Oktober)
+Die initiale GitHub-CI auf `88e8b30` bestand in zehn Workflow-Läufen; nur der
+Security-Audit scheiterte am bereits auf main vorhandenen Next.js-High-Fund.
+Der separate Dependency-PR hebt Next.js/eslint-config-next auf 16.3.8 an.
+Dieser Canvas-Branch übernimmt dessen Commit als zweiten Elternteil; der
+PR-Vergleich erfolgt gegen den Dependency-Branch und zeigt weiterhin nur den
+Canvas-Fix. Zuerst Dependency-PR integrieren, danach Canvas-PR auf main umstellen
+und die dann aktuellen Gates prüfen. Kein Merge in main wurde vorgenommen.
 
 ## Offene Punkte
 - [ ] Mobile im echten Browser: Controls öffnen, Viewport ändern, Canvas öffnen;

@@ -49,6 +49,8 @@ patchedDependencies:
 #   only reachable via ui-app > eslint-config-next > @next/eslint-plugin-next >
 #   fast-glob > micromatch > braces, i.e. dev-time linting of repo-authored
 #   glob patterns. Not shipped in the Electron app or the Next.js build output.
+#   Rechecked 2026-10-09: still no patched release; installed dependency path
+#   confirmed with pnpm why. Evidence/limits: OUT/dependency_review_2026-10-09.md.
 auditConfig:
   ignoreGhsas:
     - GHSA-vfj7-8cjw-p6xm
