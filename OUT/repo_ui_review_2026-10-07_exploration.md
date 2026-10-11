@@ -4,7 +4,9 @@
 **Fokus:** Funktions- und UI-Review
 
 ## Ziel
-Repo auf Funktionalität prüfen und UI- sowie sonstige Verbesserungen finden. Witness-Mode: nur lesen, keine Code-Änderung.
+Repo auf Funktionalität prüfen und UI- sowie sonstige Verbesserungen finden. Keine Änderung an getrackten Dateien.
+
+**Abweichung vom strikten Witness-Mode:** CLAUDE.md erlaubt dort nur read/grep/glob/list ohne Seiteneffekte. Für diesen Review liefen zusätzlich Builds, Tests, Coverage und Playwright. Sie erzeugen lokale Build-, Cache- und Report-Artefakte; nichts davon ist committet.
 
 ## Aktionen
 - [x] Kern-Gates auf `main` (`a7773db`):
@@ -39,9 +41,10 @@ Alle Gates und Tests sind grün [FACT]. Die Bugs unten liegen in Bereichen ohne 
    - Die Seite ist 690 px breit bei 375 px Viewport.
    - Ursache: Grid-Items ohne `min-w-0`; der `<pre>`-JSON-Block drückt die Spalte auf.
    - Fix: `min-w-0` an die Grid-Kinder bzw. `grid-cols-1`.
-4. **Metatron: React-Hydration-Fehler #418** (`lib/mock-data.ts`, `AttentionStream.tsx`, `FocusIndicator.tsx`) [FACT]
-   - Mock-Zeitstempel und „Seit 1h 0m“ werden beim statischen Build gerendert und weichen beim Laden ab.
-   - Fix: Zeitwerte erst nach dem Mount erzeugen.
+4. **Metatron: React-Hydration-Fehler #418** (`lib/mock-data.ts`, `components/metatron/AttentionStream.tsx`) [FACT]
+   - Die absoluten Mock-Uhrzeiten (`toLocaleTimeString`) werden beim statischen Build gerendert und weichen beim Laden ab.
+   - `FocusIndicator` ist nicht betroffen: Die relative Dauer „Seit 1h 0m“ ergibt in Build und Browser denselben Text.
+   - Fix: Die Zeitstempel im Attention-Stream erst nach dem Mount erzeugen.
 
 ### P2: Barrierefreiheit (axe, Desktop)
 5. **Zoom gesperrt** (`app/layout.tsx`: `maximumScale: 1, userScalable: false`). Verstößt gegen WCAG 1.4.4 und betrifft alle Seiten.
@@ -66,19 +69,23 @@ Alle Gates und Tests sind grün [FACT]. Die Bugs unten liegen in Bereichen ohne 
 ## Befund: Sonstige Verbesserungen
 11. **VOIDMAP-Spiegel:** `ui-app/lib/voidmap-parser.ts` wird von Hand mit `VOIDMAP.yml` synchron gehalten; die Abhängigkeit `yaml` ist installiert, wird aber nicht genutzt.
     - Option: `VOIDMAP.yml` beim statischen Build parsen. Die GOLD-Datei bleibt dabei unverändert, nur gelesen. Damit entfällt das Drift-Risiko.
-12. **UI-Smoke-Test in CI fehlt.** Ein Playwright-Smoke-Test hätte Punkte 1–4 gefangen. Er prüft:
-    - alle Routen laden ohne `pageerror`
+12. **UI-Smoke-Test in CI fehlt.** Ein Playwright-Smoke-Test fängt Punkte 1–4 nur, wenn er Folgendes prüft:
+    - alle Routen laden ohne `pageerror` und ohne `console.error`. In diesem Lauf kam #418 als `pageerror`; behebbare React-Fehler können aber auch nur auf `console.error` landen.
+    - FractalSense mit Interaktion: „Controls“ öffnen, dann Viewport-Resize. Reines Laden erreicht den Absturzpfad aus Punkt 1 nicht.
     - kein horizontales Überlaufen bei 375 px
     - axe ohne Findings der Stufe serious/critical
 13. **Python-Deprecation:** `ledger/replay_determinism.py:139` nutzt `datetime.utcnow()` (104 Warnungen in `tests/test_replay_hash.py`). Fix: `datetime.now(timezone.utc)`.
 14. **Coverage-Lücken** (0 %):
     - `tools/intake_add.py`, `tools/intake_shadow_copy.py`, `tools/verify_cards.py`, `tools/voidmap_ui_drift_check.py`
     - `tools/status_emit.py` liegt bei 28 %.
-15. **Electron:** Die Härtung ist in Ordnung (Sandbox, Kontextisolation, CSP, SRI). `Index.html` lädt three.js aber zur Laufzeit vom CDN und läuft daher nicht offline. Option: lokal vendoren.
+15. **Electron:** Die Härtung ist in Ordnung (Sandbox, Kontextisolation, CSP, SRI). `Index.html` (Zeilen 255–266) lädt aber vier Skripte zur Laufzeit vom CDN: three.js, OrbitControls, BufferGeometryUtils und Tone.js.
+    - Das Inline-Skript erzeugt sofort `Tone`-Objekte und bricht ohne Netz ab.
+    - Option: alle vier lokal vendoren, mit SRI/CSP angepasst.
 
 ## Nicht getan
-- Keine Code-Änderungen (Witness-Mode, Plan-First). Umsetzung erst nach OK.
-- Kein Review von `bio_spiral_viewer/`, `dashboard/` und `lyra/` im Browser bzw. CLI-Betrieb; dort laufen nur die Tests.
+- Keine Code-Änderungen (Plan-First). Umsetzung erst nach OK.
+- `bio_spiral_viewer/` gar nicht geprüft. Es hat auch keine automatisierten Tests: Kein Test unter `tests/` oder in der Fractalsense-Suite referenziert es.
+- `dashboard/` und `lyra/` enthalten nur Daten (JSON, CSV, MD), keinen ausführbaren Code; nicht geprüft.
 - Keine Prüfung inhaltlicher bzw. theoretischer Claims.
 
 ## Risiken
