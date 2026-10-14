@@ -1,0 +1,59 @@
+{
+  "schema_version": "corpus-export-manifest/0.2",
+  "artifact_role": "generated_manifest",
+  "authority": "DERIVED",
+  "reimport_as_independent_evidence": false,
+  "manifest_scope": "Repository-relative paths; all ten new payload/docs/verifier/test files. Excludes this manifest and mutable global INDEX.md.",
+  "files": [
+    {
+      "path": "docs/audit/2026-10-13_corpus_repo_reconciliation.md",
+      "bytes": 26055,
+      "sha256": "215b9806346821f569c6401fbe1302858e1e943c508f4a7aaff2449c984be58d"
+    },
+    {
+      "path": "docs/intake/raw/2026-10-13/corpus-v17-reconcile.md",
+      "bytes": 446,
+      "sha256": "05e4d8d2283f0d48ba46932363fe1fda185132523df46ae6443dbfb30ac05c92"
+    },
+    {
+      "path": "docs/intake/raw/2026-10-13/corpus-v17/EXPORT.md",
+      "bytes": 7433,
+      "sha256": "217a5c814a22cafc4c1c143bf6aabecef520fcd342e624cdf799c521ae9b4422"
+    },
+    {
+      "path": "docs/intake/raw/2026-10-13/corpus-v17/README.md",
+      "bytes": 4952,
+      "sha256": "bb6f6160000ba844bf58b8160a895c725f6f538d5294e85ee021bd8fda933e24"
+    },
+    {
+      "path": "docs/intake/raw/2026-10-13/corpus-v17/WORKFLOW.md",
+      "bytes": 4631,
+      "sha256": "5d4e6badbb3fc5208d82aad28f2ee0cd98f3a6f712245c6abd197ccb0eafa2df"
+    },
+    {
+      "path": "docs/intake/raw/2026-10-13/corpus-v17/corpus-delta.json",
+      "bytes": 1011361,
+      "sha256": "eb08f05496e98259cf19454a8a140b290e642af680fc482170bb51bfa3cb083e"
+    },
+    {
+      "path": "docs/intake/raw/2026-10-13/corpus-v17/corpus-matrix.csv",
+      "bytes": 40063,
+      "sha256": "1a0be66ce2eb552c87bde3b68b752026f72aa93178001cb11649b701f64cba42"
+    },
+    {
+      "path": "docs/intake/raw/2026-10-13/corpus-v17/test_verify_counts.py",
+      "bytes": 14418,
+      "sha256": "f5292a606dde86ba029a53b609f0f5fdb004f821bf4599ea16066cef4abc6343"
+    },
+    {
+      "path": "docs/intake/raw/2026-10-13/corpus-v17/verify_counts.py",
+      "bytes": 18100,
+      "sha256": "f8a20cf7e749f6c06c5e8fb47a51305c78a68cb926e40810cd37380db3b8440b"
+    },
+    {
+      "path": "docs/intake/records/INTAKE-2026-10-13-001.md",
+      "bytes": 1948,
+      "sha256": "2c76f8000bcecfbc56680d1e63c2ff2bc6fd3b8fa321fea96d01161c8664ecf9"
+    }
+  ]
+}
