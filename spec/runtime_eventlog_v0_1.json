@@ -24,7 +24,8 @@
       "reduced_note": "Reduced or public exports carry claim_hash (sha256 over the canonical claim_text) or claim_ref instead of claim_text."
     },
     "CLAIM_RETAGGED": {
-      "required_fields": ["event_id", "timestamp", "actor", "claim_id", "from_tag", "to_tag", "reason"],
+      "required_fields": ["event_id", "timestamp", "actor", "claim_id", "from_tag", "to_tag"],
+      "required_one_of": [["reason", "reason_codes"]],
       "visibility": "private_or_reduced"
     },
     "VOID_OPENED": {
