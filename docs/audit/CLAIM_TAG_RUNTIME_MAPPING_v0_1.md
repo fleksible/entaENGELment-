@@ -41,6 +41,12 @@
 
 Aliase: `[FAKT]→[FACT]`, `[HYP]→[HYPOTHESE]`, `[MET]→[METAPHER]`, `[MODELL]→[MODEL]`.
 
+> **Entscheid 2026-10-18 (Owner, issue #278):** Die Zielformen bleiben kanonisch, die
+> deutschen bzw. kurzen Schreibweisen bleiben Aliase. Eine zweisprachige Kanon-Variante
+> wird nicht eingeführt. `policies/claim_tags_v0_2.yaml` bleibt dafür bewusst
+> byte-identisch, denn ERK-Guard-Entscheidungen binden den `policy_digest` der Datei.
+> Jede Änderung würde bestehende Entscheidungen ungültig machen.
+
 ### B · Runtime-Linter
 
 `VALID_TAGS = {[FACT], [HYP], [MET], [TODO], [RISK]}`

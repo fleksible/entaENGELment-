@@ -2,17 +2,26 @@
   "schema_version": "runtime_eventlog.v0.1",
   "status": "draft",
   "claim_status": "[SPEC-WIP]",
-  "updated": "2026-07-04",
+  "updated": "2026-10-18",
   "purpose": "Define a draft runtime event vocabulary for claim, VOID, guard, evidence, and withdrawal state changes.",
   "principles": [
     "The eventlog records state changes; it does not make claims true.",
     "Events should be append-only and tamper-evident within documented assumptions.",
     "Public exports must be reduced and non-reconstructive unless explicitly reviewed."
   ],
+  "field_rules": {
+    "required_fields": "Every listed field must be present and non-empty.",
+    "required_one_of": "Each inner list names alternatives; at least one of them must be present and non-empty.",
+    "reduced_forbidden_fields": "Fields that must be absent when the event is exported in reduced or public form. The private, append-only log may still hold them.",
+    "enforcement": "[SPEC-WIP] Checked by tools/eventlog_spec_check.py and its tests only; no runtime enforcement is claimed."
+  },
   "event_types": {
     "CLAIM_CREATED": {
-      "required_fields": ["event_id", "timestamp", "actor", "claim_id", "claim_text", "claim_tag"],
-      "visibility": "private_or_reduced"
+      "required_fields": ["event_id", "timestamp", "actor", "claim_id", "claim_tag"],
+      "required_one_of": [["claim_text", "claim_hash", "claim_ref"]],
+      "visibility": "private_or_reduced",
+      "reduced_forbidden_fields": ["claim_text"],
+      "reduced_note": "Reduced or public exports carry claim_hash (sha256 over the canonical claim_text) or claim_ref instead of claim_text."
     },
     "CLAIM_RETAGGED": {
       "required_fields": ["event_id", "timestamp", "actor", "claim_id", "from_tag", "to_tag", "reason"],
@@ -23,7 +32,8 @@
       "visibility": "public_reduced_allowed"
     },
     "VOID_CLOSED": {
-      "required_fields": ["event_id", "timestamp", "actor", "void_id", "evidence_ref", "closure_reason"],
+      "required_fields": ["event_id", "timestamp", "actor", "void_id", "closure_reason"],
+      "required_one_of": [["evidence_ref", "review_ref"]],
       "visibility": "public_reduced_allowed"
     },
     "GUARD_DRILL_RUN": {
