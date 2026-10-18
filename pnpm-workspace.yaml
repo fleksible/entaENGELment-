@@ -11,6 +11,11 @@ packages:
 # updates already wait 3 days; this also covers local and manual installs.
 # Urgent security fix younger than a day: add it to minimumReleaseAgeExclude
 # with a dated reason instead of lowering this value.
+# Dependabot itself resolves with minimum-release-age=4320 (3 days) over the
+# whole lockfile: after a manual bump to an exactly pinned version younger
+# than 3 days, every npm version update fails with
+# ERR_PNPM_NO_MATURE_MATCHING_VERSION until that version matures (seen
+# 2026-10-18 after next 16.4.2). Expected and self-healing; no action needed.
 minimumReleaseAge: 1440
 
 # Security floors for transitive dependencies. Keep these at the workspace
