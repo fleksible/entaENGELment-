@@ -1,3 +1,8 @@
+---
+name: witness_mode
+description: Read-only Exploration ohne Side-Effects (Pattern B, Witness Mode). Nutzen, wenn nur beobachtet, gelesen und berichtet werden soll; Ausgabe nach OUT/<name>_exploration.md.
+---
+
 # Witness Mode Skill
 
 > Read-only Exploration ohne Side-Effects
