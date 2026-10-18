@@ -2,16 +2,16 @@
 
 > Auto-generated from `VOIDMAP.yml`. Do not edit by hand.
 > Regenerate via: `python3 tools/voids_backlog_gen.py`
-> Source `last_updated`: 2026-07-29
+> Source `last_updated`: 2026-10-18
 
 ## Summary
 
 | Status | Count |
 |--------|-------|
 | OPEN | 9 |
-| IN_PROGRESS | 3 |
+| IN_PROGRESS | 2 |
 | SUSPENDED | 1 |
-| CLOSED | 9 |
+| CLOSED | 10 |
 | **Total** | **22** |
 
 ## OPEN
@@ -33,7 +33,6 @@
 | ID | Title | Priority | Owner | Domain | Target | Symptom |
 |---|---|---|---|---|---|---|
 | VOID-010 | Taxonomie & Spektren (Empirie) | high | fleks | [PHYS] | 2026-07-15 | Spektrale Zuordnung ohne belastbare Literatur-/Datenbasis |
-| VOID-011 | Metriken der Resonanz (MI, PLV, FD) | high | fleks | [MATH] | 2026-07-15 | MI/FD implementation exists; evidence boundary needs simulation receipt and claim-tagged metric export |
 | VOID-027 | tesser3TAKT HUD Projection Layer | high | fleks | [COMP][META] | — | Matrix, 1xn slice, Multiwaygraph, SailObservation, GitHub artifacts, and Airtable status need a read-only HUD projection without turning the UI into an oracle. |
 
 ## SUSPENDED
@@ -46,6 +45,7 @@
 
 | ID | Title | Closed | Evidence |
 |---|---|---|---|
+| VOID-011 | Metriken der Resonanz (MI, PLV, FD) | 2026-10-18 | src/core/metrics.py, src/tools/toy_resonance_dataset.py, tests/unit/test_toy_resonance_dataset.py, docs/voids/VOID-011_resonance_metrics.md, data/metrics/void011_resonance_metrics.csv, data/metrics/void011_resonance_metrics.meta.json, tools/void011_metrics_export.py, tests/unit/test_void011_metrics_export.py, tests/unit/test_core5_metrics.py |
 | VOID-003 | Status Emit Receipt Format | 2026-03-06 | tools/status_emit.py |
 | VOID-012 | GateProof Checkliste (Governance) | 2026-03-06 | policies/gateproof_v1.yaml, tests/ethics/test_fail_safe_expired_consent.py |
 | VOID-013 | Sensor-Architektur (BOM & Protokoll) | 2026-03-06 | docs/sensors/bom.md, spec/sensors.spec.json |

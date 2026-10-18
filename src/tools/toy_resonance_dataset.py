@@ -5,7 +5,8 @@ Ziel:
 - Core-Metriken aus src/core/metrics.py aufrufen
 
 Hinweis:
-MI/FD sind aktuell Minimal-Stubs; dieses Script ist ein "Proof of Wiring".
+Alle Werte sind SIMULATION_PROXY (synthetische Signale, keine Messung).
+Deterministischer Export: tools/void011_metrics_export.py (VOID-011).
 """
 
 from __future__ import annotations
