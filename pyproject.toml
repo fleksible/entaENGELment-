@@ -54,7 +54,7 @@ test = [
 ]
 dev = [
     {include-group = "test"},
-    "black==26.5.1",
+    "black==26.10.1",
     "ruff>=0.1.0",
     "mypy>=1.0",
     "types-PyYAML>=6.0.12.20260906",
@@ -70,7 +70,7 @@ fractalsense = [
     "pygame>=2.5.0",
 ]
 audit = ["pip-audit", "bandit>=1.7.0"]
-sbom = ["cyclonedx-bom==7.3.1"]
+sbom = ["cyclonedx-bom==7.5.0"]
 build = ["setuptools>=61.0", "wheel"]
 
 [tool.uv]
