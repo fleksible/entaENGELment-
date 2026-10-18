@@ -46,6 +46,9 @@ def test_schema_claim_tags_exist_in_policy():
         ("peer_reviewed", "blog", "'source_type'='blog' nicht erlaubt"),
         ("2026-10-18", "18.10.2026", "'accessed' ist kein ISO-Datum"),
         ("[FACT]", "[MODEL]", "'claim_tag'='[MODEL]' nicht erlaubt"),
+        (",400,700,", ",nan,nan,", "'wavelength_min_nm' ist keine Zahl"),
+        (",400,700,", ",400,inf,", "'wavelength_max_nm' ist keine Zahl"),
+        ("Spezies", "Spezies,überzählig", "mehr Zellen als Spalten"),
     ],
 )
 def test_invalid_rows_are_rejected(old, new, expected):

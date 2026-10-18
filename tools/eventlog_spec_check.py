@@ -40,7 +40,9 @@ def _fields(event: Mapping[str, Any]) -> dict[str, Any]:
 
 def _present(fields: Mapping[str, Any], name: str) -> bool:
     value = fields.get(name)
-    return value is not None and value != "" and value != []
+    if isinstance(value, str):
+        return value.strip() != ""
+    return value is not None and value != []
 
 
 def check_event(
