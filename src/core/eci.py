@@ -8,7 +8,6 @@ Weights must sum to 1 (function normalizes otherwise).
 
 import json
 import os
-from typing import Optional
 
 import numpy as np
 
@@ -27,8 +26,8 @@ def clamp01(x: float) -> float:
 def compute_eci(
     likert_norm: float,
     behavior_proxy: float,
-    physio_proxy: Optional[float],
-    weights: Optional[dict[str, float]] = None,
+    physio_proxy: float | None,
+    weights: dict[str, float] | None = None,
 ) -> float:
     """
     Compute ECI in 0..1.

@@ -1,8 +1,15 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { AttentionItem } from '@/types';
 import { MOCK_ATTENTION_ITEMS, generateAttentionItem } from '@/lib/mock-data';
+
+// Mock-Zeitstempel entstehen beim statischen Build und beim Laden neu.
+// Erst nach der Hydration anzeigen, sonst wirft React #418 (Text-Mismatch).
+const subscribeNoop = () => () => {};
+function useIsClient() {
+  return useSyncExternalStore(subscribeNoop, () => true, () => false);
+}
 
 function getTypeStyles(type: AttentionItem['type']) {
   switch (type) {
@@ -40,6 +47,7 @@ function getTypeStyles(type: AttentionItem['type']) {
 export function AttentionStream() {
   const [items, setItems] = useState<AttentionItem[]>(MOCK_ATTENTION_ITEMS);
   const [isLive, setIsLive] = useState(true);
+  const isClient = useIsClient();
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Simulate live stream
@@ -112,7 +120,7 @@ export function AttentionStream() {
                   {item.content}
                 </p>
                 <span className="text-[10px] text-zinc-600 mt-1 block">
-                  {item.timestamp.toLocaleTimeString('de-DE')}
+                  {isClient ? item.timestamp.toLocaleTimeString('de-DE') : ' '}
                 </span>
               </div>
             </div>

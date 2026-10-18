@@ -35,6 +35,13 @@ updates:
   # blieb stehen und jeder npm-PR failte an pnpm install --frozen-lockfile.
   - package-ecosystem: "npm"
     directory: "/"
+    # TypeScript 7 (Go-Compiler) bricht den Lint: typescript-eslint, das
+    # eslint-config-next einbindet, erlaubt nur typescript <6.1.0 (Stand
+    # 2026-10-18, OUT/upstream_radar_2026-10-18.md). Entfernen, sobald
+    # typescript-eslint TS 7 unterstützt. Security-Updates gelten weiter.
+    ignore:
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
     schedule:
       interval: "weekly"
       day: "monday"

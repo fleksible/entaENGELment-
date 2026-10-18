@@ -36,7 +36,7 @@ export function Navigation() {
               href={item.href}
               className={`
                 flex flex-col items-center justify-center
-                min-w-[56px] min-h-[56px] p-2
+                flex-1 min-w-0 min-h-[56px] py-2
                 touch-manipulation
                 transition-colors duration-150
                 ${isActive
@@ -46,7 +46,7 @@ export function Navigation() {
               `}
             >
               <span className="text-xl mb-0.5">{item.icon}</span>
-              <span className="text-[9px] font-medium">{item.label}</span>
+              <span className="text-[9px] font-medium tracking-tight max-w-full truncate">{item.label}</span>
             </Link>
           );
         })}

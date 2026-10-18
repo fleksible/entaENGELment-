@@ -576,7 +576,7 @@ export function Tesser3TaktHudV2() {
         </div>
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-2">
+      <section className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <div className="rounded-2xl border border-zinc-800 bg-zinc-900/20 p-4 md:p-6">
           <h2 className="font-semibold text-zinc-100">HUD view + canonical transport</h2>
           <pre className="mt-4 max-h-96 overflow-auto rounded-xl border border-zinc-800 bg-zinc-950/80 p-3 text-[11px] leading-relaxed text-zinc-400">

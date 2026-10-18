@@ -136,7 +136,7 @@ def create_receipt(
     # Event metadata (non-deterministic)
     event = {
         "receipt_id": str(uuid.uuid4()),
-        "timestamp": datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat(),
+        "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "session_id": session_id or str(uuid.uuid4()),
         "user_id_hash": user_id_hash,
     }

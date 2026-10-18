@@ -11,10 +11,9 @@ Version: 1.0 (Minimal-Stubs für Testbarkeit; vollständige Implementierung folg
 """
 
 import math
-from typing import Union
 
 
-def eci(signal: list[Union[int, float]]) -> float:
+def eci(signal: list[int | float]) -> float:
     """[HYP] ECI-Proxy — geklemmter Mittelwert eines Signals in [0.0, 1.0].
 
     ACHTUNG (Claim-Ehrlichkeit, vgl. EPISTEMIC_HYGIENE.md): Dies ist KEIN
@@ -34,7 +33,7 @@ def eci(signal: list[Union[int, float]]) -> float:
     return float(min(max(sum(signal) / len(signal), 0.0), 1.0))
 
 
-def plv(phases: list[Union[int, float]]) -> float:
+def plv(phases: list[int | float]) -> float:
     """Phase Locking Value (PLV) – Standarddefinition.
 
     Erwartet Phasen (idealerweise Phasendifferenzen) in RADIANS.
@@ -68,7 +67,7 @@ def plv(phases: list[Union[int, float]]) -> float:
     return float(min(max(r, 0.0), 1.0))
 
 
-def mi(x: list[Union[int, float]], y: list[Union[int, float]]) -> float:
+def mi(x: list[int | float], y: list[int | float]) -> float:
     """Mutual Information - Misst geteilte Information zwischen zwei Signalen.
 
     Verwendet histogram-basierte Schätzung mit sqrt(n) Bins.
@@ -102,7 +101,7 @@ def mi(x: list[Union[int, float]], y: list[Union[int, float]]) -> float:
     x_counts: dict[int, int] = {}
     y_counts: dict[int, int] = {}
 
-    for xi, yi in zip(xs, ys):
+    for xi, yi in zip(xs, ys, strict=False):
         bx = _bin(float(xi), x_min, x_max)
         by = _bin(float(yi), y_min, y_max)
         joint[(bx, by)] = joint.get((bx, by), 0) + 1
@@ -120,7 +119,7 @@ def mi(x: list[Union[int, float]], y: list[Union[int, float]]) -> float:
     return float(max(0.0, result))
 
 
-def fd(series: list[Union[int, float]]) -> float:
+def fd(series: list[int | float]) -> float:
     """Fractal Dimension - Misst Selbstähnlichkeit/Organisation (Higuchi-Methode).
 
     Schätzt die fraktale Dimension einer Zeitreihe via Higuchi-Algorithmus.
@@ -173,7 +172,7 @@ def fd(series: list[Union[int, float]]) -> float:
     return float(min(max(slope, 1.0), 2.0))
 
 
-def pf(series: list[Union[int, float]]) -> float:
+def pf(series: list[int | float]) -> float:
     """Power Flux - Misst Energiefluss/Aktivität.
 
     Args:
