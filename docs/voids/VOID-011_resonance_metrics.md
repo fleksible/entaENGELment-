@@ -27,4 +27,5 @@ MI/FD are no longer mere minimal stubs: the current boundary has moved from "imp
 - Reproduzierbar: `python tools/void011_metrics_export.py --check`; Test: `tests/unit/test_void011_metrics_export.py`.
 - Plausibilitätsgrenze: PLV steigt je Seed mit der Kopplung (`checks.plv_monotone_in_coupling`).
 - Beim Abschluss behoben: `fd()` normierte die Higuchi-Kurvenlänge mit 1/k statt 1/k². Die Steigung war um −1 verschoben und klemmte fast immer auf 1.0. Referenztests in `tests/unit/test_core5_metrics.py`: weißes Rauschen ≈ 2.0, Random Walk ≈ 1.5.
+- Nachtrag (Gesamtcheck 2026-10-18): Der Histogramm-Schätzer `mi()` hat einen Positiv-Bias von ~0,5 nats bei unabhängigen Signalen (n=256, √n Bins je Achse). Der Export führt deshalb `MI_BASELINE` (Mittel über 8 feste Permutationen von b) und `MI_EXCESS = MI − MI_BASELINE`; `checks.mi_excess_monotone_in_coupling` prüft die Kopplungsordnung. `mi()` selbst bleibt unverändert. Das Meta bindet die erzeugenden Quellen per `source_sha256`.
 - Grenze: Die Werte beschreiben Toy-Signale. Sie sind kein Nachweis über reale Resonanz und begründen keinen `[FACT]`-Status.

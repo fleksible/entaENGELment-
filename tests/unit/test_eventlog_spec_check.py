@@ -25,6 +25,31 @@ def test_void_closed_accepts_evidence_or_review(proof):
     assert check.check_event(_event("VOID_CLOSED", **VOID_CLOSED, **proof), SPEC) == []
 
 
+@pytest.mark.parametrize(
+    ("event_type", "fields"),
+    [
+        ("VOID_CLOSED", {**VOID_CLOSED, "review_ref": "   "}),
+        ("CLAIM_CREATED", {**CLAIM, "claim_text": " \t"}),
+        ("CLAIM_CREATED", {**CLAIM, "claim_tag": " ", "claim_ref": "ref-1"}),
+    ],
+)
+def test_whitespace_only_values_count_as_missing(event_type, fields):
+    assert check.check_event(_event(event_type, **fields), SPEC)
+
+
+RETAG = {"claim_id": "clm-1", "from_tag": "[HYPOTHESE]", "to_tag": "[FACT]"}
+
+
+@pytest.mark.parametrize("codes", [[], [""], ["   "], [None], ["HUMAN_APPROVED", ""]])
+def test_retag_rejects_empty_or_blank_reason_codes(codes):
+    assert check.check_event(_event("CLAIM_RETAGGED", **RETAG, reason_codes=codes), SPEC)
+
+
+@pytest.mark.parametrize("reason", [{"reason": "Review ok"}, {"reason_codes": ["HUMAN_APPROVED"]}])
+def test_retag_accepts_reason_or_reason_codes(reason):
+    assert check.check_event(_event("CLAIM_RETAGGED", **RETAG, **reason), SPEC) == []
+
+
 def test_void_closed_without_proof_is_rejected():
     errors = check.check_event(_event("VOID_CLOSED", **VOID_CLOSED), SPEC)
     assert errors and "evidence_ref" in errors[0] and "review_ref" in errors[0]
@@ -62,15 +87,23 @@ def test_spec_rule_structure_is_consistent():
             assert field not in rules["required_fields"], name
 
 
-def test_erk_fixture_claims_conform_to_spec():
-    """ERK-Events tragen claim_text im privaten Log; das bleibt gültig."""
+def test_erk_fixture_events_conform_to_spec():
+    """Jedes ERK-Fixture-Event aus dem Spec-Vokabular erfüllt den Vertrag.
+
+    CLAIM_CREATED trägt claim_text im privaten Log, CLAIM_RETAGGED strukturierte
+    reason_codes statt eines Freitext-reason; beides deckt required_one_of ab.
+    """
     events = [
-        json.loads(line)
+        (path.name, json.loads(line))
         for path in sorted((ROOT / "tests" / "fixtures" / "erk").glob("*.jsonl"))
         for line in path.read_text(encoding="utf-8").splitlines()
         if line.strip()
     ]
-    claims = [e for e in events if e.get("type") == "CLAIM_CREATED"]
-    assert claims
-    for event in claims:
-        assert check.check_event(event, SPEC) == [], event["event_id"]
+    checked = {}
+    for name, event in events:
+        result = check.check_event(event, SPEC)
+        if result is None:
+            continue
+        checked[event["type"]] = checked.get(event["type"], 0) + 1
+        assert result == [], f"{name} {event['event_id']}: {result}"
+    assert {"CLAIM_CREATED", "CLAIM_RETAGGED"} <= set(checked)

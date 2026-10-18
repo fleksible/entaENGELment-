@@ -8,6 +8,11 @@ registries:
     url: https://pypi.org/simple
     replaces-base: true
 updates:
+  # Dependabot aktualisiert uv.lock, schreibt die requirements*-Exporte aber
+  # uneinheitlich; der Drift-Check (.github/actions/python-locked) bleibt rot.
+  # Solche PRs manuell ersetzen: mit uv 0.12.18 (required-version)
+  # `uv lock -P <paket>==<version>`, dann `python tools/python_lock.py export`
+  # und `python tools/python_lock.py check`; Dependabot-PR mit Verweis schließen.
   - package-ecosystem: "uv"
     directory: "/"
     registries:

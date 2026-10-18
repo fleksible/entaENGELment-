@@ -41,3 +41,24 @@ def test_meta_hash_and_plausibility_check():
     assert meta["csv_sha256"] == hashlib.sha256(csv_text.encode("utf-8")).hexdigest()
     assert meta["claim_tag"] == "SIMULATION_PROXY"
     assert meta["checks"]["plv_monotone_in_coupling"] is True
+    assert meta["checks"]["mi_excess_monotone_in_coupling"] is True
+
+
+def test_mi_excess_is_mi_minus_shuffle_baseline():
+    """MI_EXCESS zieht den Schätzer-Bias ab; bei Unabhängigkeit liegt die Baseline > 0."""
+    values = {
+        (r["run_id"], r["metric_name"]): float(r["metric_value"])
+        for r in csv.DictReader(io.StringIO(export.render()[0]))
+    }
+    for run_id in {run for run, _ in values}:
+        mi, base, excess = (values[(run_id, m)] for m in ("MI", "MI_BASELINE", "MI_EXCESS"))
+        assert base > 0.1, run_id
+        assert abs(mi - base - excess) < 1e-9, run_id
+
+
+def test_meta_binds_generating_sources():
+    meta = json.loads(export.render()[1])
+    assert set(meta["source_sha256"]) == set(export.SOURCES)
+    for path, digest in meta["source_sha256"].items():
+        content = (ROOT / path).read_bytes().replace(b"\r\n", b"\n")
+        assert digest == hashlib.sha256(content).hexdigest(), path

@@ -20,7 +20,7 @@ Unterscheide zwischen unveränderlichem Kern und änderbarem Annex.
 
 | Typ | Pfade | Regel |
 |-----|-------|-------|
-| **GOLD** | `index/`, `policies/`, `VOIDMAP.yml`, `data/receipts/` | Unveränderlich ohne explizite Anweisung |
+| **GOLD** | `index/`, `policies/`, `spec/`, `seeds/`, `VOIDMAP.yml`, `data/receipts/` | Unveränderlich ohne explizite Anweisung |
 | **ANNEX** | `src/`, `tools/`, `tests/`, `docs/` (außer `negations.md`) | Änderbar nach Plan |
 | **IMMUTABLE** | Receipts in `data/receipts/` | Niemals modifizieren |
 

@@ -23,6 +23,7 @@ import csv
 import datetime as dt
 import io
 import json
+import math
 import re
 from pathlib import Path
 from typing import Any
@@ -45,10 +46,12 @@ def policy_tags() -> set[str]:
 
 
 def _number(value: str) -> float | None:
+    """Endliche Zahl oder ``None`` (NaN/inf gelten nicht als Zahl)."""
     try:
-        return float(value)
+        number = float(value)
     except ValueError:
         return None
+    return number if math.isfinite(number) else None
 
 
 def lint_text(text: str, schema: dict[str, Any], known_tags: set[str]) -> list[str]:
@@ -62,6 +65,8 @@ def lint_text(text: str, schema: dict[str, Any], known_tags: set[str]) -> list[s
     errors: list[str] = []
     seen: set[str] = set()
     for line_no, row in enumerate(reader, start=2):
+        if None in row:  # DictReader legt überzählige Zellen unter None ab
+            errors.append(f"Zeile {line_no}: mehr Zellen als Spalten im Schema")
         for col in columns:
             name = col["name"]
             value = (row.get(name) or "").strip()

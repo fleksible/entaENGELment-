@@ -17,10 +17,21 @@
   ],
   "n": 256,
   "precision_decimals": 10,
-  "rows": 30,
+  "rows": 42,
   "checks": {
-    "plv_monotone_in_coupling": true
+    "plv_monotone_in_coupling": true,
+    "mi_excess_monotone_in_coupling": true
   },
-  "csv_sha256": "bdce7656673e965819b151139827a0c60b5a0221b4ce224f3e827080e00a221d",
+  "mi_baseline": {
+    "method": "Mittel von mi(a, b permutiert) über feste Permutationen",
+    "shuffles": 8,
+    "reason": "Histogramm-MI hat Positiv-Bias (~0,5 nats bei Unabhängigkeit, n=256)"
+  },
+  "csv_sha256": "6bc5f43605cd6b7040c79a38d241ff831b6b37d50cfb9199abfb7f1e6bc120c9",
+  "source_sha256": {
+    "src/core/metrics.py": "cbeb64d95c46445014c626f734dbd27280b60c34fa52f9bf511b797fa277c7cb",
+    "src/tools/toy_resonance_dataset.py": "002d3857301225e8075fe2999f1a28d27ba67e5d781fb9ba174386ef8df5dc28",
+    "tools/void011_metrics_export.py": "71a129cb871007c3d29c89ce18d8b2f2c1f36e50d4d56892e94dafeea6614984"
+  },
   "provenance_note": "Deterministisch aus festen Seeds erzeugt, ohne Zeitstempel. Reproduzieren: python tools/void011_metrics_export.py --check"
 }
