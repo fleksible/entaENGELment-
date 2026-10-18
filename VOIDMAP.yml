@@ -111,12 +111,15 @@ voids:
     status: IN_PROGRESS
     priority: high
     owner: "fleks"
-    target_date: "2026-07-15"
+    target_date: "2027-01-31"
     domain: "[PHYS]"
     symptom: "Spektrale Zuordnung ohne belastbare Literatur-/Datenbasis"
     closing_path: "Literatur-Scan + zitierte Tabelle (CSV) + Evidence-Bundle"
     evidence:
       - "docs/voids/VOID-010_taxonomy_and_spectra.md"
+      - "data/spectra/spectra_sources.schema.json"
+      - "tools/spectra_table_lint.py"
+      - "tests/unit/test_spectra_table_lint.py"
     created: "2026-01-04"
     closed: null
     notes: |
@@ -127,6 +130,11 @@ voids:
       [2026-06-11] Re-baselined after issue #240. VOID remains IN_PROGRESS:
       the conceptual taxonomy is allowed to stay open, but the next verifier
       boundary is now a sources-first CSV/schema bundle rather than prose.
+      [2026-10-18] Deadline verlängert von 2026-07-15 auf 2027-01-31 (Owner-OK, issue #311).
+      Begründung: Forschungs-VOID; Literatur-Scan mit >=5 begutachteten Quellen steht aus.
+      Verifier-Gerüst angelegt: data/spectra/ (CSV-Kopfzeile + Schema [SPEC-WIP]),
+      tools/spectra_table_lint.py (Quellenpflicht), tests/unit/test_spectra_table_lint.py.
+      Die Tabelle enthält bewusst noch keine Daten; nichts wurde geschätzt oder erfunden.
 
   - id: VOID-011
     title: "Metriken der Resonanz (MI, PLV, FD)"

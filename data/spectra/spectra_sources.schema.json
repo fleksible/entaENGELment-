@@ -1,0 +1,24 @@
+{
+  "schema": "enta.spectra_sources.v0_1",
+  "void_id": "VOID-010",
+  "status": "draft",
+  "claim_status": "[SPEC-WIP]",
+  "purpose": "Sources-first-Tabelle für die spektrale Taxonomie: welche Quellen/Organismen/Materialien emittieren in welchen Spektren unter welchen Bedingungen. Jede Zeile braucht eine überprüfbare Quelle (Quellenpflicht).",
+  "table": "data/spectra/spectra_sources.csv",
+  "columns": [
+    {"name": "record_id", "required": true, "pattern": "^SPEC-[0-9]{3,}$"},
+    {"name": "subject", "required": true, "description": "Organismus, Material oder Quelle, z. B. 'Physarum polycephalum'"},
+    {"name": "subject_type", "required": true, "allowed": ["organism", "tissue", "material", "process", "instrument"]},
+    {"name": "spectral_band", "required": true, "description": "Bandbezeichnung laut Quelle, z. B. 'UV-A', 'VIS', 'NIR'"},
+    {"name": "wavelength_min_nm", "required": true, "type": "number", "min": 0},
+    {"name": "wavelength_max_nm", "required": true, "type": "number", "min": 0, "not_less_than": "wavelength_min_nm"},
+    {"name": "conditions", "required": true, "description": "Mess- bzw. Emissionsbedingungen laut Quelle"},
+    {"name": "source_citation", "required": true, "description": "Autor(en), Jahr, Titel, Journal"},
+    {"name": "source_doi_or_url", "required": true, "pattern": "^(10\\.[0-9]{4,9}/\\S+|https://\\S+)$"},
+    {"name": "source_type", "required": true, "allowed": ["peer_reviewed", "dataset", "review"]},
+    {"name": "accessed", "required": true, "type": "date"},
+    {"name": "scope", "required": true, "description": "Gültigkeitsbereich der Aussage (Spezies, Material, Laborbedingung)"},
+    {"name": "claim_tag", "required": true, "allowed": ["[FACT]", "[INFERENZ]", "[HYPOTHESE]"], "policy": "policies/claim_tags_v0_2.yaml"},
+    {"name": "claim_boundary", "required": true, "description": "Was die Zeile ausdrücklich NICHT behauptet"}
+  ]
+}

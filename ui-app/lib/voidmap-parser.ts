@@ -76,10 +76,15 @@ export const VOIDMAP_DATA: VoidMap = {
       domain: '[PHYS]',
       symptom: 'Spektrale Zuordnung ohne belastbare Literatur-/Datenbasis',
       closing_path: 'Literatur-Scan + zitierte Tabelle (CSV) + Evidence-Bundle',
-      evidence: ['docs/voids/VOID-010_taxonomy_and_spectra.md'],
+      evidence: [
+        'docs/voids/VOID-010_taxonomy_and_spectra.md',
+        'data/spectra/spectra_sources.schema.json',
+        'tools/spectra_table_lint.py',
+        'tests/unit/test_spectra_table_lint.py',
+      ],
       created: '2026-01-04',
       closed: null,
-      notes: '[BIO][PHYS] Empirie-Bridge für MOD_18/Taxonomie. [2026-06-11] Re-baselined after issue #240: next verifier boundary is a sources-first CSV/schema bundle.',
+      notes: '[BIO][PHYS] Empirie-Bridge für MOD_18/Taxonomie. [2026-06-11] Re-baselined after issue #240: next verifier boundary is a sources-first CSV/schema bundle. [2026-10-18] Ziel 2027-01-31; Gerüst data/spectra/ mit Quellenpflicht-Lint, noch ohne Daten.',
     },
     {
       id: 'VOID-011',

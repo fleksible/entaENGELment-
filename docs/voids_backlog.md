@@ -32,7 +32,7 @@
 
 | ID | Title | Priority | Owner | Domain | Target | Symptom |
 |---|---|---|---|---|---|---|
-| VOID-010 | Taxonomie & Spektren (Empirie) | high | fleks | [PHYS] | 2026-07-15 | Spektrale Zuordnung ohne belastbare Literatur-/Datenbasis |
+| VOID-010 | Taxonomie & Spektren (Empirie) | high | fleks | [PHYS] | 2027-01-31 | Spektrale Zuordnung ohne belastbare Literatur-/Datenbasis |
 | VOID-027 | tesser3TAKT HUD Projection Layer | high | fleks | [COMP][META] | — | Matrix, 1xn slice, Multiwaygraph, SailObservation, GitHub artifacts, and Airtable status need a read-only HUD projection without turning the UI into an oracle. |
 
 ## SUSPENDED
