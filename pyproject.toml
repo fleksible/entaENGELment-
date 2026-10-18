@@ -114,7 +114,7 @@ markers = [
 
 [tool.black]
 line-length = 100
-target-version = ["py310", "py311", "py312", "py313", "py314"]
+target-version = ["py310"]
 include = '\.pyi?$'
 extend-exclude = '''
 /(

@@ -1,0 +1,26 @@
+{
+  "artifact_path": "data/metrics/void011_resonance_metrics.csv",
+  "void_id": "VOID-011",
+  "claim_tag": "SIMULATION_PROXY",
+  "claim_boundary": "Synthetische Toy-Signale (Kuramoto-artig gekoppelte Oszillatoren mit Rauschen). Kein Messwert und keine empirische Aussage über reale Systeme; die Werte informieren nur Modelle und Tests (SIMULATION_PROXY).",
+  "generator": "tools/void011_metrics_export.py",
+  "dataset": "src/tools/toy_resonance_dataset.py:generate_mycel_signals",
+  "metrics_impl": "src/core/metrics.py",
+  "seeds": [
+    7,
+    42
+  ],
+  "couplings": [
+    0.1,
+    0.35,
+    0.8
+  ],
+  "n": 256,
+  "precision_decimals": 10,
+  "rows": 30,
+  "checks": {
+    "plv_monotone_in_coupling": true
+  },
+  "csv_sha256": "bdce7656673e965819b151139827a0c60b5a0221b4ce224f3e827080e00a221d",
+  "provenance_note": "Deterministisch aus festen Seeds erzeugt, ohne Zeitstempel. Reproduzieren: python tools/void011_metrics_export.py --check"
+}

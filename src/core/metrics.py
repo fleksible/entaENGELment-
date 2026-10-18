@@ -146,7 +146,8 @@ def fd(series: list[int | float]) -> float:
             if len(idxs) < 2:
                 continue
             total = sum(abs(series[idxs[i]] - series[idxs[i - 1]]) for i in range(1, len(idxs)))
-            length = total * (n - 1) / (k * (len(idxs) - 1))
+            # Higuchi (1988): L_m(k) = total * (N-1) / (floor((N-m)/k) * k) / k
+            length = total * (n - 1) / ((len(idxs) - 1) * k * k)
             lengths.append(length)
         if not lengths:
             continue

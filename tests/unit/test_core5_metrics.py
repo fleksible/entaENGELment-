@@ -6,6 +6,7 @@ bekannt) auf numerische Korrektheit gegen Referenzfälle.
 """
 
 import math
+import random
 
 from src.core.metrics import eci, fd, mi, pf, plv
 
@@ -92,6 +93,25 @@ def test_fd_linear_series_is_near_one():
     """[FACT] Higuchi-FD einer Geraden ≈ 1.0 (maximal glatt)."""
     result = fd(list(range(1, 17)))
     assert 1.0 <= result <= 1.2
+
+
+def test_fd_white_noise_is_near_two():
+    """[FACT] Higuchi-FD von weißem Rauschen ≈ 2.0 (maximal rau)."""
+    rng = random.Random(1)
+    series = [rng.gauss(0.0, 1.0) for _ in range(2048)]
+    assert 1.9 <= fd(series) <= 2.0
+
+
+def test_fd_random_walk_is_near_one_and_a_half():
+    """[FACT] Higuchi-FD eines Random Walks ≈ 1.5 (Brownsche Bewegung).
+
+    Regressionsgrenze: vor dem 1/k-Normierungsfix lieferte fd() hier 1.0.
+    """
+    rng = random.Random(1)
+    walk = [0.0]
+    for _ in range(2047):
+        walk.append(walk[-1] + rng.gauss(0.0, 1.0))
+    assert 1.4 <= fd(walk) <= 1.6
 
 
 def test_fd_is_clamped_to_valid_interval():
