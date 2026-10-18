@@ -23,14 +23,17 @@ import csv
 import hashlib
 import io
 import json
+import random
 from pathlib import Path
 
 try:
+    from src.core.metrics import mi
     from src.tools.toy_resonance_dataset import compute_demo_metrics, generate_mycel_signals
 except ModuleNotFoundError:  # Standalone-Aufruf ohne editable Install
     import sys
 
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from src.core.metrics import mi
     from src.tools.toy_resonance_dataset import compute_demo_metrics, generate_mycel_signals
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -48,7 +51,15 @@ UNITS = {
     "MI": "nats",
     "FD": "dimensionless",
     "PF": "signal_units",
+    "MI_BASELINE": "nats",
+    "MI_EXCESS": "nats",
 }
+# Der Histogramm-Schätzer mi() hat einen Positiv-Bias (hier ~0,5 nats bei
+# unabhängigen Signalen; das √n-Binning lässt ihn mit n nicht verschwinden).
+# MI_BASELINE = Mittel von mi()
+# über zufällig gemischte b-Reihen; MI_EXCESS = MI - MI_BASELINE ist die
+# ehrlichere Kennzahl für geteilte Information.
+SHUFFLES = 8
 COLUMNS = (
     "run_id",
     "seed",
@@ -67,14 +78,25 @@ CLAIM_BOUNDARY = (
 )
 
 
+def mi_shuffle_baseline(a: list[float], b: list[float], seed: int) -> float:
+    """Mittlere MI gegen permutiertes b: Schätzer-Boden ohne echte Kopplung."""
+    total = 0.0
+    for k in range(SHUFFLES):
+        shuffled = list(b)
+        random.Random(seed * 1000 + k).shuffle(shuffled)
+        total += mi(a, shuffled)
+    return total / SHUFFLES
+
+
 def build_rows() -> list[dict[str, str]]:
     """Berechnet alle Seed×Kopplung-Läufe als CSV-Zeilen (deterministisch)."""
     rows: list[dict[str, str]] = []
     for seed in SEEDS:
         for coupling in COUPLINGS:
-            metrics = compute_demo_metrics(
-                generate_mycel_signals(n=N_SAMPLES, seed=seed, coupling=coupling)
-            )
+            ds = generate_mycel_signals(n=N_SAMPLES, seed=seed, coupling=coupling)
+            metrics = compute_demo_metrics(ds)
+            metrics["MI_BASELINE"] = mi_shuffle_baseline(ds.a, ds.b, seed)
+            metrics["MI_EXCESS"] = metrics["MI"] - metrics["MI_BASELINE"]
             for name in UNITS:
                 rows.append(
                     {
@@ -100,18 +122,37 @@ def render_csv(rows: list[dict[str, str]]) -> str:
     return buf.getvalue()
 
 
-def plv_monotone(rows: list[dict[str, str]]) -> bool:
-    """PLV steigt je Seed mit der Kopplung (Plausibilitätsgrenze des Proxys)."""
-    plv = {
+def monotone_in_coupling(rows: list[dict[str, str]], metric: str) -> bool:
+    """Metrik steigt je Seed mit der Kopplung (Plausibilitätsgrenze des Proxys)."""
+    value = {
         (r["seed"], r["coupling"]): float(r["metric_value"])
         for r in rows
-        if r["metric_name"] == "PLV"
+        if r["metric_name"] == metric
     }
     for seed in SEEDS:
-        plvs = [plv[(str(seed), str(coupling))] for coupling in COUPLINGS]
-        if any(b <= a for a, b in zip(plvs, plvs[1:], strict=False)):
+        series = [value[(str(seed), str(coupling))] for coupling in COUPLINGS]
+        if any(b <= a for a, b in zip(series, series[1:], strict=False)):
             return False
     return True
+
+
+SOURCES = (
+    "src/core/metrics.py",
+    "src/tools/toy_resonance_dataset.py",
+    "tools/void011_metrics_export.py",
+)
+
+
+def source_digests() -> dict[str, str]:
+    """sha256 je erzeugender Quelle (Zeilenenden normalisiert, plattformstabil).
+
+    Bindet den Export an die Implementierung: Jede Änderung an diesen Dateien
+    verlangt einen neu erzeugten Export (Drift-Check schlägt sonst an).
+    """
+    return {
+        path: hashlib.sha256((ROOT / path).read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+        for path in SOURCES
+    }
 
 
 def render_meta(csv_text: str, rows: list[dict[str, str]]) -> str:
@@ -128,8 +169,17 @@ def render_meta(csv_text: str, rows: list[dict[str, str]]) -> str:
         "n": N_SAMPLES,
         "precision_decimals": DECIMALS,
         "rows": len(rows),
-        "checks": {"plv_monotone_in_coupling": plv_monotone(rows)},
+        "checks": {
+            "plv_monotone_in_coupling": monotone_in_coupling(rows, "PLV"),
+            "mi_excess_monotone_in_coupling": monotone_in_coupling(rows, "MI_EXCESS"),
+        },
+        "mi_baseline": {
+            "method": "Mittel von mi(a, b permutiert) über feste Permutationen",
+            "shuffles": SHUFFLES,
+            "reason": "Histogramm-MI hat Positiv-Bias (~0,5 nats bei Unabhängigkeit, n=256)",
+        },
         "csv_sha256": hashlib.sha256(csv_text.encode("utf-8")).hexdigest(),
+        "source_sha256": source_digests(),
         "provenance_note": (
             "Deterministisch aus festen Seeds erzeugt, ohne Zeitstempel. "
             "Reproduzieren: python tools/void011_metrics_export.py --check"
