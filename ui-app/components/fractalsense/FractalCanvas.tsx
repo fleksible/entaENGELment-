@@ -34,7 +34,7 @@ export function FractalCanvas({
   const [center, setCenter] = useState(initialCenter);
   const [isDragging, setIsDragging] = useState(false);
   const [lastPos, setLastPos] = useState({ x: 0, y: 0 });
-  const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
   // Get color palette
   const palette = useCallback(() => getColormap(colormap, 256), [colormap]);
@@ -99,10 +99,13 @@ export function FractalCanvas({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    const { width, height } = dimensions;
+    // Hidden mobile panels (or subpixel layouts) have no drawable pixels.
+    if (width <= 0 || height <= 0) return;
+
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const { width, height } = dimensions;
     canvas.width = width;
     canvas.height = height;
 
@@ -136,21 +139,26 @@ export function FractalCanvas({
     ctx.putImageData(imageData, 0, 0);
   }, [dimensions, palette, calculateIteration, maxIterations]);
 
-  // Resize handler
+  // Observe the panel itself: Controls → Canvas need not resize the window.
   useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
     const updateSize = () => {
-      if (containerRef.current) {
-        const rect = containerRef.current.getBoundingClientRect();
-        setDimensions({
-          width: Math.floor(rect.width),
-          height: Math.floor(rect.height),
-        });
-      }
+      const rect = container.getBoundingClientRect();
+      const width = Math.floor(rect.width);
+      const height = Math.floor(rect.height);
+      setDimensions((previous) =>
+        previous.width === width && previous.height === height
+          ? previous
+          : { width, height }
+      );
     };
 
+    const observer = new ResizeObserver(updateSize);
+    observer.observe(container);
     updateSize();
-    window.addEventListener('resize', updateSize);
-    return () => window.removeEventListener('resize', updateSize);
+    return () => observer.disconnect();
   }, []);
 
   // Render on state change
@@ -174,7 +182,7 @@ export function FractalCanvas({
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging) return;
+    if (!isDragging || dimensions.width <= 0 || dimensions.height <= 0) return;
 
     const dx = e.clientX - lastPos.x;
     const dy = e.clientY - lastPos.y;
@@ -193,6 +201,7 @@ export function FractalCanvas({
 
   const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();
+    if (dimensions.width <= 0 || dimensions.height <= 0) return;
 
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -239,6 +248,7 @@ export function FractalCanvas({
 
   const handleTouchMove = (e: React.TouchEvent) => {
     e.preventDefault();
+    if (dimensions.width <= 0 || dimensions.height <= 0) return;
 
     if (e.touches.length === 1 && isDragging) {
       const touch = e.touches[0];
