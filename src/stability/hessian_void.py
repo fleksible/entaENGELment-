@@ -6,7 +6,7 @@ Implementiert Stabilitäts-Klassifizierung via Hessian-Eigenwertanalyse:
 - UNSTABLE: λ < 0 (Sattel/Maximum, blockieren)
 """
 
-from typing import Callable
+from collections.abc import Callable
 
 import numpy as np
 

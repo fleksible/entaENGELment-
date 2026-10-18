@@ -145,7 +145,7 @@ Jeder Report in `OUT/` folgt diesem Schema:
 
 ### Python-Toolchain (Kern)
 
-Python ≥ 3.9. Quelle der Wahrheit für Config: [`pyproject.toml`](pyproject.toml).
+Python ≥ 3.10. Quelle der Wahrheit für Config: [`pyproject.toml`](pyproject.toml).
 
 ```bash
 make install-dev     # pip install -r requirements-dev.txt + editable install
