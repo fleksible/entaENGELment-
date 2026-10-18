@@ -6,6 +6,13 @@ packages:
   - "ui-app"
   - "packages/*"
 
+# Supply-chain cooldown: install no version younger than 1 day (minutes).
+# Matches the pnpm 11 default; pnpm 10 defaults to 0. Dependabot version
+# updates already wait 3 days; this also covers local and manual installs.
+# Urgent security fix younger than a day: add it to minimumReleaseAgeExclude
+# with a dated reason instead of lowering this value.
+minimumReleaseAge: 1440
+
 # Security floors for transitive dependencies. Keep these at the workspace
 # root so the pnpm version pinned in package.json applies them consistently.
 overrides:
