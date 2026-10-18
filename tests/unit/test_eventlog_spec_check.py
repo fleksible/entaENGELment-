@@ -37,6 +37,19 @@ def test_whitespace_only_values_count_as_missing(event_type, fields):
     assert check.check_event(_event(event_type, **fields), SPEC)
 
 
+RETAG = {"claim_id": "clm-1", "from_tag": "[HYPOTHESE]", "to_tag": "[FACT]"}
+
+
+@pytest.mark.parametrize("codes", [[], [""], ["   "], [None], ["HUMAN_APPROVED", ""]])
+def test_retag_rejects_empty_or_blank_reason_codes(codes):
+    assert check.check_event(_event("CLAIM_RETAGGED", **RETAG, reason_codes=codes), SPEC)
+
+
+@pytest.mark.parametrize("reason", [{"reason": "Review ok"}, {"reason_codes": ["HUMAN_APPROVED"]}])
+def test_retag_accepts_reason_or_reason_codes(reason):
+    assert check.check_event(_event("CLAIM_RETAGGED", **RETAG, **reason), SPEC) == []
+
+
 def test_void_closed_without_proof_is_rejected():
     errors = check.check_event(_event("VOID_CLOSED", **VOID_CLOSED), SPEC)
     assert errors and "evidence_ref" in errors[0] and "review_ref" in errors[0]

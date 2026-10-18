@@ -38,11 +38,17 @@ def _fields(event: Mapping[str, Any]) -> dict[str, Any]:
     return fields
 
 
-def _present(fields: Mapping[str, Any], name: str) -> bool:
-    value = fields.get(name)
+def _filled(value: Any) -> bool:
+    """Nicht leer: Strings nicht nur Leerzeichen, Listen nicht leer und ohne leere Einträge."""
     if isinstance(value, str):
         return value.strip() != ""
-    return value is not None and value != []
+    if isinstance(value, list):
+        return bool(value) and all(_filled(item) for item in value)
+    return value is not None
+
+
+def _present(fields: Mapping[str, Any], name: str) -> bool:
+    return _filled(fields.get(name))
 
 
 def check_event(
