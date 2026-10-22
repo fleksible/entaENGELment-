@@ -15,7 +15,7 @@ Every row in this map requires both a Guard and a Reentry Question. The Guard bl
 
 ## 1. Mapping Rule
 
-[FACT-FORM / MOTIF] -> [DECORATIVE OR MODEL ROLE] -> [GUARD] -> [REENTRY QUESTION]
+[FACT-FORM / MOTIF] -> [NAVIGATIONAL, DECORATIVE OR MODEL ROLE] -> [GUARD] -> [REENTRY QUESTION]
 
 Canonical sentence:
 
@@ -23,7 +23,7 @@ Canonical sentence:
 
 ## 2. Source-to-Decoration Table
 
-| Fact-form / Motif | Status | Decorative / Model Role | Guard | Reentry Question |
+| Fact-form / Motif | Status | Navigational / Decorative / Model Role | Guard | Reentry Question |
 | --- | --- | --- | --- | --- |
 | Minkowski ct | [FACT] source form used as [MODEL] conversion role. | Conversion rule between separate registers. | Do not claim tesser3TAKT is relativity. | What is made commensurable? |
 | Fourier analysis | [FACT] source form used as [MODEL] spectral translation role. | Spectral translation of external signals into readable frequency components. | No star-metaphysics; no claim that inner space literally is a Fourier transform of stars. | Which frequencies become readable? |
