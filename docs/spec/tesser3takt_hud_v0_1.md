@@ -2,6 +2,8 @@
 
 Status: SPEC-WIP. Authority: ANNEX. Artifact: UI-LAB.
 
+**Version context (2026-10-22):** This file preserves the v0.1 design. The follow-on [HUD v0.2 specification](tesser3takt_hud_v0_2.md) defines the regime/guard separation and transport contract referenced by the current HUD implementation. Its implementation and open bindings are tracked separately there.
+
 ## Purpose
 
 The route `/tesser3takt` is a read-only projection of the current tesser3TAKT / Grimm-Apparat working grammar. It visualizes possible relations and unresolved fringes. It does not promote claims, diagnose users, or select a personal telos.

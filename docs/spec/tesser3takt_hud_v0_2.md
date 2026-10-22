@@ -5,6 +5,14 @@
 **Artifact:** UI-LAB
 **Route:** `/tesser3takt`
 
+**Runtime:** [`tesser3takt-hud.ts`](../../ui-app/lib/tesser3takt-hud.ts), [`tesser3takt-frame.ts`](../../ui-app/lib/tesser3takt-frame.ts)
+
+**Runtime-Enforcement:** partial — canonical frame and boundary-pair validation exist; the slice phase transport in §8 remains unbound.
+
+**Test-Paths:** [`tesser3takt-hud.test.mjs`](../../ui-app/test/tesser3takt-hud.test.mjs), [`tesser3takt-frame.test.mjs`](../../ui-app/test/tesser3takt-frame.test.mjs)
+
+**Validation-Evidence:** [2026-10-22 revision audit](../audit/2026-10-22_tesser3takt_revision_audit.md); test paths identify coverage locations, while the audit records executed checks and their limits.
+
 ## 0. Purpose
 
 The HUD is a read-only projection of the current tesser3TAKT / Grimm-Apparat working grammar. It makes relations, transformations, receipts, and unresolved fringes visible without turning the visualization into an ontology, diagnosis, personal telos, or oracle.
@@ -160,6 +168,18 @@ transformId
 ```
 
 Depth is not inferred from screen distance alone.
+
+### Binding status (2026-10-22)
+
+Three layers must be checked separately:
+
+| Layer | Existing anchor | Binding status |
+| --- | --- | --- |
+| Regime display | `TesserHudFrame.regime` in `tesser3takt-hud.ts`, §1 above | Implemented display state derived from control and torsion. |
+| Boundary-pair transport | `BoundaryTransition` and `validateBoundaryPairs` in `tesser3takt-frame.ts`, §5 above | Validates paired `EXIT`/`ENTRY` records, order, identity, and lattice movement; the type carries no `phaseBefore` or `phaseAfter`. |
+| Slice phase transport | Required receipt fields in this section; `Kη-03` in `tesser3takt-hud.ts` | `UNBOUND`, with missing operator `slice-transport-receipt`. |
+
+The existing boundary-pair validator does not validate the slice phase transition. The missing binding requires a declared slice receipt and phase-transport checks before `Kη-03` can be reconsidered. Regime display changes do not supply that evidence.
 
 ## 9. Seven Lyra channels
 

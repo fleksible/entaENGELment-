@@ -4,6 +4,8 @@ Status: canonical decision record for v0.1.2-pre
 Branch target: `codex/frame-operator-v0-1-1`  
 Scope: traversal grammar, receipt boundary, A0 scope guard, and open VOIDMAP bridge notes
 
+**Historical context (2026-10-22):** The decision status above is scoped to `v0.1.2-pre`. The branch target records its working context; it is not a live pointer to the current `main`. Branch availability does not determine whether the decision remains valid. Reuse must retain the receipt boundary and the rule that traversal is not claim creation.
+
 > Keine Frame-Taxonomie ohne Bewegungsrichtung.
 
 ## 0. Purpose

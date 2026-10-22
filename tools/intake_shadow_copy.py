@@ -34,8 +34,8 @@ DOC_SUFFIXES = {".md", ".txt", ".docx", ".pdf", ".json", ".yml", ".yaml"}
 DOC_TOOLS = {"Write", "Edit", "MultiEdit"}
 
 # Path prefixes (repo-relative, posix) that must never be captured.
-# Two groups: (a) mechanical noise/build/temp, (b) GOLD/canon that already has a
-# home -- intake is for the *un-homed*, so canonical sources are not shadowed.
+# Two groups: (a) mechanical noise/build/temp, (b) protected GOLD paths and other
+# already-homed documents. Exclusion from shadow capture assigns no authority.
 EXCLUDE_DIR_PREFIXES = (
     # (a) mechanical / build / cache
     "docs/intake/",
@@ -49,7 +49,7 @@ EXCLUDE_DIR_PREFIXES = (
     ".pytest_cache/",
     ".mypy_cache/",
     "htmlcov/",
-    # (b) GOLD / already-homed canon (never write AND never shadow-capture)
+    # (b) protected GOLD paths / other already-homed documents (no shadow capture)
     "index/",
     "spec/",
     "policies/",

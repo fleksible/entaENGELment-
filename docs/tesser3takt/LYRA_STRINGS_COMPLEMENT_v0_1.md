@@ -11,7 +11,13 @@ It complements the Assembly-Navi layer by translating transition navigation into
 
 This file does not claim that music, mythology, physics, or symbolism proves tesser3TAKT. It uses acoustic language as a constrained [MODEL] and [METAPHOR] layer within the ANNEX scope.
 
-This file does not modify the existing LYRA Kenogramm stub. The existing `docs/kenograms/LYRA.md` remains the audit-oriented Kenogramm reference.
+Three repository uses of the name remain separate:
+
+- This file defines the acoustic POV resonance model.
+- The [LYRA Kenogramm stub](../kenograms/LYRA.md) asks for an audit-oriented seven-band sonification mapping.
+- The [RF scan report](../../lyra/lyra_T1_1_scan_report_REAL.md) belongs to the `lyra/` RF scan area.
+
+A shared name does not establish an adapter between these scopes. This file does not modify the Kenogramm stub or the RF scan area.
 
 ## 1. Core Definition
 
@@ -44,6 +50,8 @@ Working model:
 5. String 5 = disharmonic transition / jazz edge
 6. String 6 = overtone field
 7. String 7 = apex / reentry / Kraehennest relation
+
+[MODEL] The positional grouping is `3|1|3`: strings 1–3, the fourth string as tuning axis, and strings 5–7. All seven roles above remain distinct; the grouping does not make the two groups semantically interchangeable. It describes this working model without requiring a historical heptachord derivation or establishing a sound adapter.
 
 Guard: The seven strings are a mapping layer only. They are not an ontology and not a validated measurement model.
 

@@ -138,9 +138,11 @@ geschrieben.
 **Ausgeschlossen:** `docs/intake/**`, `.git/**`, `node_modules/**`, `.venv|venv/**`,
 `dist/**`, `build/**`, `__pycache__/**`, `.pytest_cache/**`, Lockfiles
 (`package-lock.json`, `pnpm-lock.yaml`, `yarn.lock`, `poetry.lock`, `uv.lock`),
-Temp-/Scratch-Dateien — **und** GOLD/Kanon (`VOIDMAP.yml`, `index/`, `spec/`,
-`policies/`, `seeds/`, `docs/spec|specs|canon|glossary|roadmap/`), denn Kanon hat
-bereits ein Zuhause; der Briefkasten ist für das Heimatlose.
+Temp-/Scratch-Dateien — **und** geschützte GOLD-Pfade (`VOIDMAP.yml`, `index/`,
+`spec/`, `policies/`, `seeds/`) sowie weitere bereits zugeordnete Dokumentpfade
+(`docs/spec|specs|canon|glossary|roadmap/`). Der Briefkasten ist für das Heimatlose.
+Der Hook-Ausschluss vergibt keinen Autoritätsstatus: `spec/` ist nach `AGENTS.md`
+GOLD, `docs/spec/` gehört zum ANNEX.
 
 **Es ist nur eine Kopie:** Quelldateien werden **nie** verschoben oder gelöscht (G3).
 Bei gleichem Inhalt (Content-Hash) wird **nicht** erneut kopiert (Dedupe).
