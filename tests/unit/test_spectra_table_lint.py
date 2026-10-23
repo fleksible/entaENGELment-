@@ -63,3 +63,13 @@ def test_duplicate_record_id_is_rejected():
 def test_wrong_header_is_rejected():
     errors = lint.lint_text("record_id,subject\n", SCHEMA, TAGS)
     assert errors and "Kopfzeile" in errors[0]
+
+
+@pytest.mark.parametrize(("rows", "expected"), [((), "0 Zeilen"), ((VALID,), "1 Zeilen")])
+def test_cli_reports_row_count(tmp_path, monkeypatch, capsys, rows, expected):
+    """Eine leere Tabelle besteht, darf aber nicht wie ein erfüllter VOID-010-Abschluss klingen."""
+    table = tmp_path / "spectra_sources.csv"
+    table.write_text("\n".join((HEADER, *rows)) + "\n", encoding="utf-8")
+    monkeypatch.setattr("sys.argv", ["spectra_table_lint.py", "--table", str(table)])
+    assert lint.main() == 0
+    assert expected in capsys.readouterr().out
