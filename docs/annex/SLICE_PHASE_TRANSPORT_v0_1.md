@@ -93,3 +93,8 @@ Slice-Receipt muss weiterhin als unzureichend für diese Phasenprüfung erkennba
 Gegenfälle einschließlich der numerischen Toleranz an der Nullgrenze.
 Der ausgeführte Prüfstand steht im [Audit](../audit/2026-10-23_slice_phase_review.md).
 Die neuen Gemini-/Qwen-Anforderungen bleiben gesonderte Adapterprüfungen.
+
+[ANNEX] Der folgende [Quellen- und Zuordnungsabgleich](PHASENQUELLE_UND_ZUORDNUNG_v0_1.md)
+grenzt vorhandene synthetische Phasen von einer ausgewählten HUD-Quelle ab.
+Die ausgeführten Gegenläufe lassen die tatsächliche Anbindung weiterhin HOLD;
+dieser Vertrag wird dadurch nicht nachträglich zu einem Producer erklärt.
