@@ -13,6 +13,7 @@ interface PhaseReference {
 
 export interface SlicePhaseSnapshot extends PhaseReference {
   frameId: string;
+  sliceId: string;
   phase: number;
   handedness: SliceHandedness;
 }
@@ -116,8 +117,8 @@ export function validateSlicePhaseTransport(
     true,
     errors,
   );
-  validateReference(sourceInput, 'source', ['frameId'], ['phase'], true, errors);
-  validateReference(targetInput, 'target', ['frameId'], ['phase'], true, errors);
+  validateReference(sourceInput, 'source', ['frameId', 'sliceId'], ['phase'], true, errors);
+  validateReference(targetInput, 'target', ['frameId', 'sliceId'], ['phase'], true, errors);
   validateReference(transformInput, 'transform', ['transformId'], [], false, errors);
   if (isRecord(transformInput)) {
     const delta = transformInput.deltaTurns;
@@ -137,6 +138,9 @@ export function validateSlicePhaseTransport(
   }
   if (receipt.targetFrameId !== target.frameId) {
     errors.push('receipt.targetFrameId: does not match target snapshot');
+  }
+  if (source.sliceId !== receipt.sliceId || target.sliceId !== receipt.sliceId) {
+    errors.push('receipt.sliceId: must match both source and target snapshots');
   }
   if (source.frameId === target.frameId) {
     errors.push('receipt: source and target frame ids must differ');

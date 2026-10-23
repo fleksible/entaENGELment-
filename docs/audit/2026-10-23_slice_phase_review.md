@@ -52,10 +52,10 @@ Dieser Patch schließt weder einen VOID noch den gesamten Transportvertrag.
 
 | Prüfung | Ergebnis |
 | --- | --- |
-| Neue Slice-Phasenfälle | 32 Node-Tests; unter anderem Vorher-/Nachher-Abgleich, Frame-/Basis-/Transformkonflikte, Umlauf und numerische Toleranz, fehlende Daten, Provenienz und Negativfall des gültigen Boundary-Paars. |
+| Neue Slice-Phasenfälle | 35 Node-Tests; unter anderem Vorher-/Nachher-Abgleich, Frame-/Slice-/Basis-/Transformkonflikte, Umlauf und numerische Toleranz, fehlende Daten, Provenienz und Negativfall des gültigen Boundary-Paars. |
 | `make verify` | 709 Tests und 165 Subtests; Port-Lint, Core-Pointer und Claim-Lint PASS. Dieselben vier optionalen generierten Pfade fehlen wie an der Basis. |
 | `make verify-governance` | 15 Workflows und 22 VOID-Einträge konsistent. |
-| `make verify-js` | Typprüfung, Lint, Produktionsbuild und Tests mit eingefrorener Lockdatei PASS; 55 Node-Tests sowie sechs Canvas-Tests. |
+| `make verify-js` | Typprüfung, Lint, Produktionsbuild und Tests mit eingefrorener Lockdatei PASS; 58 Node-Tests sowie sechs Canvas-Tests. |
 | Dokument- und Diffprüfung | Relative Links und Anker, Quellen-/Publikationsumfang und `git diff --check` geprüft; nur die sechs genannten Dateien betroffen. |
 
 [FAKT] Die lokale JS-Prüfung verwendet die projektgebundene pnpm-Version 10.33.0
@@ -97,3 +97,17 @@ werden auch dann gesondert auf den öffentlichen Umfang geprüft.
 [ANNEX] Grimm 2.0 bleibt unabhängig; eine Szene wird nicht vorgegeben. Die
 Pearson-/HC/AC-, Gemini- und Qwen-Experimente aus dem vorherigen Paket sind durch
 diesen Phasenpatch nicht ausgeführt. Insbesondere ist kein Qwen-Profil eingerichtet.
+
+## 6. Review-Gegenfall: falsche Slice-Kennung
+
+[FAKT] Das automatische Review von PR #413 fand an `e84231a464` eine fehlende
+Bindung: Gleiche Frames, Phasen und Transformation konnten ein Receipt mit
+abweichender Slice-Kennung bestehen lassen. Der Gegenfall wurde vor der Korrektur
+mit `valid: true` reproduziert. Das war ein Fehler des neuen Validators.
+
+[FAKT] Die korrigierte Fassung fordert sliceId in beiden Snapshots und gleicht
+beide mit dem Receipt ab. Derselbe Gegenfall liefert danach `valid: false`.
+Drei zusätzliche Regressionen prüfen umetikettiertes Receipt sowie eine jeweils
+abweichende Quell- und Zielslice-Kennung. Die ursprüngliche unzureichende Fassung
+bleibt in der PR-Historie nachvollziehbar; ihr PASS wird nicht als erfolgreicher
+Identitätsnachweis übernommen.

@@ -33,6 +33,7 @@ zugeschrieben. Die ursprüngliche Spezifikation wird nicht umgeschrieben.
 | Transformation | Durch transformId benannter additiver Versatz deltaTurns im Bereich [-1,1], modulo 1. Keine ausführbaren fremden Transformfunktionen. |
 | Numerik | Kreisabstand höchstens 1e-10 Umläufe. Ungültige, unendliche und nicht normalisierte Phasen werden zurückgewiesen. |
 | Frames | sourceFrameId und targetFrameId binden zwei verschiedene, nichtleere Frame-Identitäten. |
+| Slice | Beide Snapshots führen dieselbe logische sliceId wie das Receipt. Ein anderes Slice am gleichen Frame-Paar darf die Prüfung nicht bestehen. |
 | Evidenz | Quell- und Zielphase kommen zusätzlich zum Receipt als eigene Snapshots; ein Receipt darf seine eigenen Vorher-/Nachher-Werte nicht allein bestätigen. |
 | Provenienz | Receipt, beide Snapshots und Transformdefinition tragen den vorhandenen ProvenanceRef-Vertrag. Geprüft wird seine Struktur, kein kryptografischer Inhalt und keine Unabhängigkeit der Quellen. |
 
@@ -51,7 +52,8 @@ Snapshots und die zugelassene Transformdefinition liefern; sie werden nicht
 aus dem Receipt erzeugt oder automatisch als vertrauenswürdig erklärt.
 
 1. Struktur, nichtleere Kennungen, Einheiten, Wertebereiche und Provenienz prüfen.
-2. Quell-/Ziel-IDs mit den beiden Snapshots abgleichen; Selbstübergang zurückweisen.
+2. Quell-/Ziel-IDs und Slice-Kennung mit beiden Snapshots abgleichen;
+   Selbstübergang zurückweisen.
 3. Basis und Orientierung über die Eingaben hinweg abgleichen.
 4. transformId mit der übergebenen Transformdefinition abgleichen.
 5. phaseBefore gegen den Quellsnapshot, phaseAfter gegen den Zielsnapshot prüfen.

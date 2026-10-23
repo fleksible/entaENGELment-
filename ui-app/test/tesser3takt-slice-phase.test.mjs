@@ -33,10 +33,10 @@ function fixture(sourcePhase = 0.125, deltaTurns = 0.25) {
       transformId: 'fixture:offset',
     },
     source: {
-      ...reference, frameId: 'fixture:frame-a', phase: sourcePhase, handedness: 'LEFT',
+      ...reference, frameId: 'fixture:frame-a', sliceId: 'fixture:slice-1', phase: sourcePhase, handedness: 'LEFT',
     },
     target: {
-      ...reference, frameId: 'fixture:frame-b', phase: targetPhase, handedness: 'LEFT',
+      ...reference, frameId: 'fixture:frame-b', sliceId: 'fixture:slice-1', phase: targetPhase, handedness: 'LEFT',
     },
     transform: { ...reference, transformId: 'fixture:offset', deltaTurns },
   };
@@ -81,6 +81,9 @@ test('declared numerical tolerance applies across zero but rejects larger drift'
 const inconsistencies = [
   ['source frame mismatch', f => { f.receipt.sourceFrameId = 'other'; }, /sourceFrameId/],
   ['target frame mismatch', f => { f.receipt.targetFrameId = 'other'; }, /targetFrameId/],
+  ['retagged receipt slice', f => { f.receipt.sliceId = 'other'; }, /sliceId: must match both/],
+  ['source slice mismatch', f => { f.source.sliceId = 'other'; }, /sliceId: must match both/],
+  ['target slice mismatch', f => { f.target.sliceId = 'other'; }, /sliceId: must match both/],
   ['self transition', f => { f.target.frameId = f.source.frameId; f.receipt.targetFrameId = f.source.frameId; }, /must differ/],
   ['source basis mismatch', f => { f.source.basisId = 'other'; }, /same declared basis/],
   ['target basis mismatch', f => { f.target.basisId = 'other'; }, /same declared basis/],
