@@ -37,10 +37,30 @@ def test_whitespace_only_values_count_as_missing(event_type, fields):
     assert check.check_event(_event(event_type, **fields), SPEC)
 
 
+@pytest.mark.parametrize(
+    ("event_type", "fields"),
+    [
+        ("VOID_CLOSED", {**VOID_CLOSED, "evidence_ref": {}}),
+        ("VOID_CLOSED", {**VOID_CLOSED, "review_ref": "​"}),
+        ("CLAIM_CREATED", {**CLAIM, "claim_hash": {}}),
+        ("CLAIM_CREATED", {**CLAIM, "claim_ref": "﻿ "}),
+    ],
+)
+def test_empty_objects_and_invisible_strings_count_as_missing(event_type, fields):
+    assert check.check_event(_event(event_type, **fields), SPEC)
+
+
+def test_non_empty_object_counts_as_present():
+    proof = {"evidence_ref": {"path": "data/x.csv"}}
+    assert check.check_event(_event("VOID_CLOSED", **VOID_CLOSED, **proof), SPEC) == []
+
+
 RETAG = {"claim_id": "clm-1", "from_tag": "[HYPOTHESE]", "to_tag": "[FACT]"}
 
 
-@pytest.mark.parametrize("codes", [[], [""], ["   "], [None], ["HUMAN_APPROVED", ""]])
+@pytest.mark.parametrize(
+    "codes", [[], [""], ["   "], [None], ["HUMAN_APPROVED", ""], {}, [{}], ["​"]]
+)
 def test_retag_rejects_empty_or_blank_reason_codes(codes):
     assert check.check_event(_event("CLAIM_RETAGGED", **RETAG, reason_codes=codes), SPEC)
 
