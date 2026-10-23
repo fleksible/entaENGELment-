@@ -82,6 +82,13 @@ deckt die neuen Annex-Texte nicht ab; deren Reichweite wurde redaktionell geprü
 
 ## 5. Optisches Beispiel und weiterer Anschluss
 
+[FAKT] **Nachtrag nach PR #413:** Die weiterführende Quelllektüre hat den
+vollständigen ursprünglichen Codeblock samt Parametern wiedergefunden. Der
+erneute Lauf und der begrenzte öffentliche Export stehen im
+[optischen Folgeaudit](2026-10-23_optical_reproduction_review.md).
+Der folgende HOLD beschreibt den damaligen Suchstand am reduzierten Fallplan;
+die Codequelle ist inzwischen gebunden. Realmaterialvalidierung bleibt offen.
+
 [UNRESOLVED] Für den vierten Schritt liegt ein reduzierter Material-/Umwelt-Fallplan
 vor, der einen früheren optischen Modelllauf berichtet, aber weder sein Skript
 noch Parameter und Laufbeleg enthält. Die gezielte Suche hat keine ausreichend
