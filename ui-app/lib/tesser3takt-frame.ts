@@ -95,7 +95,7 @@ function validateNonEmptyString(
   }
 }
 
-function validateProvenanceRef(
+export function validateProvenanceRef(
   value: unknown,
   path: string,
   errors: string[],
