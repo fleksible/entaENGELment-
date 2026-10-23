@@ -1,0 +1,54 @@
+{
+  "assumptions": [
+    "normal incidence",
+    "one homogeneous film and ideal plane interfaces",
+    "real positive refractive indices",
+    "no absorption or dispersion",
+    "wavelength and thickness in nanometres",
+    "synthetic indices, no measured material"
+  ],
+  "cases": {
+    "A": {
+      "parameters": {
+        "d_nm": 200.0,
+        "n0": 1.0,
+        "n1": 1.5,
+        "n2": 1.333
+      },
+      "reflectance": {
+        "450": 0.05461304404981052,
+        "550": 0.024113728201165436,
+        "650": 0.023075058237679663
+      }
+    },
+    "B": {
+      "parameters": {
+        "d_nm": 200.0,
+        "n0": 1.333,
+        "n1": 1.5,
+        "n2": 1.333
+      },
+      "reflectance": {
+        "450": 0.0103884156291668,
+        "550": 0.0011097244165606886,
+        "650": 0.0008009723752357962
+      }
+    },
+    "C": {
+      "parameters": {
+        "d_nm": 187.5,
+        "n0": 1.0,
+        "n1": 1.6,
+        "n2": 1.333
+      },
+      "reflectance": {
+        "450": 0.08081567838869527,
+        "550": 0.027143386134428966,
+        "650": 0.025267662747696356
+      }
+    }
+  },
+  "claimLayer": "MODEL",
+  "schemaVersion": "thin-film-model-v0.1",
+  "sourceCodeSHA256": "54f000bb2e42b9f52dffaeff07d3acf71dc55721d4c4a3f03ef8e01417d1ac3d"
+}
