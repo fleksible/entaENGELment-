@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import unicodedata
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
@@ -39,11 +40,15 @@ def _fields(event: Mapping[str, Any]) -> dict[str, Any]:
 
 
 def _filled(value: Any) -> bool:
-    """Nicht leer: Strings nicht nur Leerzeichen, Listen nicht leer und ohne leere Einträge."""
+    """Nicht leer: Strings nicht nur Leer- oder unsichtbare Formatzeichen (z. B. U+200B),
+    Objekte nicht leer, Listen nicht leer und ohne leere Einträge."""
     if isinstance(value, str):
-        return value.strip() != ""
+        visible = "".join(ch for ch in value if unicodedata.category(ch) != "Cf")
+        return visible.strip() != ""
     if isinstance(value, list):
         return bool(value) and all(_filled(item) for item in value)
+    if isinstance(value, Mapping):
+        return bool(value)
     return value is not None
 
 
