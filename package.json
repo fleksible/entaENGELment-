@@ -25,11 +25,11 @@
   },
   "keywords": [],
   "devDependencies": {
-    "electron": "44.7.0",
+    "@testing-library/jest-dom": "^7.0.1",
+    "electron": "44.9.1",
     "electron-builder": "^26.8.1",
     "jest": "^30.5.2",
     "jest-environment-jsdom": "^30.5.2",
-    "@testing-library/jest-dom": "^7.0.1",
     "turbo": "2.11.7"
   },
   "build": {
