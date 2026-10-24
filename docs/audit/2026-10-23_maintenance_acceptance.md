@@ -96,3 +96,19 @@ Dokumentdiff benötigt; die 58 gezielten Node-Fälle wurden separat ausgeführt.
 wurde redaktionell geprüft. Aktuelle PR-CI ist erst am veröffentlichten Head
 maßgeblich. Eine Source-of-Truth-Promotion oder öffentliche Release-Freigabe
 wird aus diesem Bericht nicht abgeleitet.
+
+
+## Anschlussreview vom 2026-10-24
+
+[FAKT] Der vollständige Drei-Dateien-Diff wurde erneut gelesen. `make verify`
+besteht auf dem unveränderten ausführbaren Basisstand mit 731 Tests und
+165 Subtests; `make verify-governance` und `git diff --check` bestehen.
+Die relativen Links lösen auf. Lock und alle vier Requirements-Exporte sind
+gegenüber `a99d55d` unverändert. Dies ist eine neue lokale Nachprüfung unter
+Linux/Python 3.12.14; die früheren 58 Node-Fälle wurden dabei nicht erneut ausgeführt.
+
+[ANNEX] Der aktuelle Owner-Auftrag umfasst die Bearbeitung und Übernahme dieses
+Dokumentdiffs. Die Abnahme gilt für die hier beschriebenen Wartungsangaben.
+Der externe Meldeempfang aus #332 bleibt NOT_RUN; die Updaterkorrektur aus #416
+bleibt gesonderte Arbeit. Eine menschliche Codelektüre, ein historisches GOLD-OK
+oder eine kanonische Promotion wird aus dem delegierten Review nicht abgeleitet.
