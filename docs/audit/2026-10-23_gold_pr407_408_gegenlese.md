@@ -240,24 +240,33 @@ P13 im Einzelnen:
 
 [FACT] **ERK-Fixtures**
 
-- Die 5 Fixture-Dateien enthalten 31 Events. Davon liegen 7 im Spec-Vokabular:
+- Die 5 Fixture-Dateien enthalten 28 Events. Davon liegen 7 im Spec-Vokabular:
   5 × `CLAIM_CREATED` und 2 × `CLAIM_RETAGGED`.
 - Privat sind alle 7 konform. Mit `--export` scheitert je Datei das `CLAIM_CREATED` an
   `claim_text`. Das ist erwartbar, denn die Fixtures sind private Logs.
-- 24 Events (`MATERIAL_REGISTERED`, `GUARD_DECISION_RECORDED` u. a.) liegen außerhalb des
+- 21 Events (`MATERIAL_REGISTERED`, `GUARD_DECISION_RECORDED` u. a.) liegen außerhalb des
   Spec-Vokabulars und werden übersprungen.
 - Der Satz „Die ERK-Fixtures erfüllen den Vertrag“ in `RUNTIME_EVENTLOG_SPINE_v0_1.md`
   stimmt heute. Er umfasst nur diese 7 Events.
 
-[FACT] **Spec und Runtime laufen auseinander**
+[FACT] **Unterschiedliche Formate; Zuordnungsvertrag offen**
 
-- `CLAIM_CREATED` mit `claim_hash` statt `claim_text` ist nach der Spec zulässig.
-  `ClaimCandidate` im ERK lehnt es ab („unknown fields: ['claim_hash']“).
-- Für den reduzierten Export verlangt die Spec weiter `actor` und `claim_id`.
-  `reduce_public_export` entfernt dagegen rohe IDs und Actor-Details und gibt eine
-  export-lokale `claim_ref` aus.
-- Spec-Reduktion und ERK-Privacy-Modell decken sich also nicht. Das ist eine Inhaltsfrage an
-  eine GOLD-Datei und wird hier nicht geändert.
+- Der allgemeine Draft-Eventvertrag `runtime_eventlog_v0_1` erlaubt für
+  `CLAIM_CREATED` Text, Hash oder Referenz. Seine reduzierte Eventform verlangt
+  weiterhin `actor` und `claim_id`; das ist ein Event-Envelope-Vertrag.
+- Das private ERK-Modell `ClaimCandidate` verlangt `claim_text`. Ein stattdessen
+  direkt eingesetztes `claim_hash` wird als unbekanntes Feld abgewiesen. Diese
+  Gegenprobe zeigt die Grenze dieses privaten Modells, keine Pflicht, sämtliche
+  nach einem anderen Vertrag gültigen Events unverändert in dieses Modell einzulesen.
+- `reduce_public_export` erzeugt einen reduzierten Zustands-Snapshot mit eigenem
+  Schema `erk_public_export.v0.2`, keinen Stream reduzierter `CLAIM_CREATED`-Events.
+  Roh-IDs und Actor-Details entfallen; Beziehungen verwenden exportlokale Referenzen.
+- [INFERENZ] Zwischen Draft-Events, privatem Claim-Modell und öffentlichem Snapshot
+  fehlt eine erklärte Zuordnung für einen tatsächlich gewünschten Transfer. Die
+  Unterschiede allein belegen keinen defekten ERK-Export und entscheiden nicht,
+  welcher Vertrag geändert werden soll. Private IDs oder Actor-Details werden
+  deshalb weder wieder eingeführt noch veröffentlicht. Ein späterer Adapter oder
+  Vertragsdiff braucht seinen eigenen Zweck, Erhalt/Verlust und Gegenfälle.
 
 [FACT] **Weitere Lücken im Checker, ohne Korrektur**
 
@@ -416,6 +425,24 @@ Prozess nicht auslösbar. Die Übergabe dafür steht in § 6.
 - `decision_effect`: none
 - `promotion_effect`: none
 
+**2026-10-24 — Codex-Nachprüfung der Berichtsaussagen**
+
+- `source`: direct; heutiger Auftrag zur Bearbeitung der vorgelegten ANNEX-Korrekturen
+- `scope`: fünf ERK-Fixtures und §4.3, privates `ClaimCandidate`, öffentliche
+  `reduce_public_export`-Implementierung und eigener Export-Schemaname am Stand `a99d55d`
+- `result`: 28 Events (5 + 7 + 5 + 3 + 8), sieben im Spec-Vokabular und 21 außerhalb.
+  Die vorherigen Zahlen 31/24 waren Zählfehler und wurden in §4.3 korrigiert.
+  Die bisherige Schlussfolgerung „Spec und Runtime laufen auseinander“ wurde auf
+  die tatsächlich verschiedenen Formate und den offenen Zuordnungsvertrag begrenzt.
+- `limits`: gezielter Anschlussreview mit Kenntnis dieses Berichts; kein blinder,
+  vollständiger oder Diogenes-Review und keine neue Nachprüfung aller P1–P13-Fachbefunde.
+- `validation`: `make verify` (731 Tests und 165 Subtests), `make verify-governance`
+  und `git diff --check` am unveränderten ausführbaren Basisstand bestanden.
+- `independence`: gemeinsame Repo-/Berichtsquellen; keine unabhängige Evidenzpromotion
+- `authority_effect`: none
+- `decision_effect`: keine Änderung historischer GOLD- oder Owner-Entscheidungen
+- `promotion_effect`: none
+
 **Diogenes:** ausstehend. Übergabe in § 6.
 
 ## 5. Übersicht: drei Ebenen
@@ -424,7 +451,7 @@ Prozess nicht auslösbar. Die Übergabe dafür steht in § 6.
 |---|---|---|---|
 | VOID-011 `CLOSED` | trägt innerhalb `SIMULATION_PROXY`; FD-Fix korrekt; Lesegrenzen bei MI_EXCESS (schwach), ECI, FD und PF | Codex ja, nach dem Merge behoben; kein menschliches oder Diogenes-Artefakt | Owner-OK nur agentenseitig dokumentiert; zu bestätigen |
 | VOID-010 Termin 2027-01-31 | konsistent; Tabelle leer; Lint prüft den Abschluss nicht | wie oben | Owner-OK nur agentenseitig dokumentiert; zu bestätigen |
-| Spec `VOID_CLOSED` / `CLAIM_CREATED` | Vertrag prüfbar; Leerwert-Lücke (`{}`, Formatzeichen) → #417; Spec/ERK-Divergenz bei Hash und reduzierten Feldern | Codex ja | offen: Reduktions-Feldsatz, Hash-Format, Ref-Gültigkeit |
+| Spec `VOID_CLOSED` / `CLAIM_CREATED` | Vertrag prüfbar; Leerwert-Lücke (`{}`, Formatzeichen) → #417; Formatgrenzen bei Hash und reduzierten Feldern; Zuordnung offen | Codex ja | offen: Reduktions-Feldsatz, Hash-Format, Ref-Gültigkeit |
 | Spec `CLAIM_RETAGGED` | prüfbar; Codes ohne Vokabular | Codex ja, vor dem Merge behoben | offen: Vokabular im Spec-Check, ja oder nein |
 | Runtime-Durchsetzung | nicht vorhanden, nicht behauptet | — | — |
 
@@ -439,8 +466,9 @@ Vorschlag für Scope und Prüffragen. Das Ergebnis wäre als eigener, datierter 
    - `mi()` unverändert einen Bias von ~0,5 nats hat,
    - FD mit `k_max = 4` nahe der Klemmgrenzen arbeitet und
    - drei von sieben Kennzahlen keine Kopplungsinformation tragen?
-3. **Spec-Reduktion:** Ist ein reduziertes `CLAIM_CREATED` mit `actor` und `claim_id` mit dem
-   ERK-Privacy-Modell vereinbar?
+3. **Formatzuordnung:** Welcher konkrete Transfer zwischen Draft-Event, privatem
+   Claim-Modell und öffentlichem Snapshot wird benötigt? Welche Information soll
+   erhalten bleiben und welche darf die öffentliche Privacy-Grenze nicht passieren?
 4. **Zirkularität:** Wiegt es, dass Owner-OKs nur agentenseitig dokumentiert sind? Reicht
    eine nachträgliche Owner-Bestätigung als Beleg?
 
@@ -468,7 +496,9 @@ Vorschlag für Scope und Prüffragen. Das Ergebnis wäre als eigener, datierter 
   Flecken sind wahrscheinlicher als bei einer unabhängigen Prüfung.
 - [RISK] Solange die Owner-OKs nur agentenseitig belegt sind, ruht die GOLD-Legitimation von
   #407 auf Texten der ausführenden Instanz.
-- [RISK] Die Spec erlaubt `claim_hash`, der ERK lehnt es ab. Ein Producer nach Spec würde am ERK scheitern.
+- [RISK] Ohne erklärten Zuordnungsvertrag kann eine direkte Übergabe eines hash-only
+  Draft-Events an das private ERK-Claim-Modell scheitern. Eine solche Pipeline ist
+  hier nicht als bestehender Runtime-Pfad nachgewiesen; ein Snapshot ist kein Eventstream.
 
 ## Offene Punkte
 
@@ -481,7 +511,8 @@ Vorschlag für Scope und Prüffragen. Das Ergebnis wäre als eigener, datierter 
       - Claim-Tags „Status quo“
 - [ ] ☐ Owner: Draft-PR #417 prüfen. Commit 2 ist optional.
 - [ ] ☐ Owner, GOLD-Spec: Inhaltsfragen klären
-  - Welcher Feldsatz gilt für reduzierte `CLAIM_CREATED`-Events (`actor`, `claim_id`)?
+  - Zuerst Transferzweck und Formatzuordnung klären; keine Roh-IDs oder Actor-Details
+    allein zur Angleichung des öffentlichen ERK-Snapshots wieder einführen.
   - Wird `claim_hash` auf sha256 festgelegt?
   - Muss eine Ref auflösbar sein?
   - Prüft der Spec-Check `reason_codes` gegen das ERK-Vokabular?
