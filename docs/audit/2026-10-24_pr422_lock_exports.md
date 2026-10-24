@@ -32,3 +32,13 @@ bleibt maßgeblich. Ein reparierter Bot-Diff ist kein Nachweis einer dauerhaft
 reparierten Bot-Automation. Drift-Gates, Workflow-Rechte und Projekt-Claim-Status
 werden nicht geändert. Vor Merge müssen die aktuellen erforderlichen und
 betroffenen CI-Prüfungen erfolgreich sein.
+
+
+## Gemeinsamer Abschlussstand
+
+[FAKT] Nach Übernahme von #417/#419/#420, JS-Fix #424 und Pillow-Fix #421
+wurde `main@28b9b4760f8e46a24c342a2bf46b171e79e6ef0e` in den Prüfstand
+aufgenommen. Die automatische Lock-Zusammenführung besteht den gepinnten
+Lock-/Export-Check; Kernprüfung mit 741 Tests und 165 Subtests sowie Governance
+bestehen. Die aktuelle PR-CI prüft diesen gemeinsamen Stand erneut einschließlich
+frischer Installation, Matrix, SBOM und unverändertem Security-Gate.
