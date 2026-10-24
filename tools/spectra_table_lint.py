@@ -107,12 +107,16 @@ def main() -> int:
     parser.add_argument("--table", type=Path, default=ROOT / schema["table"])
     args = parser.parse_args()
 
-    errors = lint_text(args.table.read_text(encoding="utf-8"), schema, policy_tags())
+    text = args.table.read_text(encoding="utf-8")
+    errors = lint_text(text, schema, policy_tags())
     for error in errors:
         print(f"[FAIL] {error}")
     if errors:
         return 1
-    print(f"[OK] {args.table}: Quellenpflicht erfüllt")
+    rows = sum(1 for _ in csv.DictReader(io.StringIO(text)))
+    # Bei 0 Zeilen ist die Quellenpflicht nur leer erfüllt; der Abschluss von VOID-010
+    # (≥ 5 begutachtete Quellen) wird hier nicht geprüft.
+    print(f"[OK] {args.table}: {rows} Zeilen, Quellenpflicht je Zeile erfüllt")
     return 0
 
 
