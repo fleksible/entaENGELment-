@@ -20,6 +20,7 @@ import hashlib
 import json
 import sys
 import zipfile
+import zlib
 from pathlib import Path
 from typing import Any
 
@@ -55,7 +56,9 @@ def zip_members(path: Path) -> list[dict[str, Any]]:
                 continue
             entry: dict[str, Any] = {"member": info.filename, "size": info.file_size}
             total += info.file_size
-            if info.file_size > MAX_MEMBER_BYTES or total > MAX_ARCHIVE_TOTAL_BYTES:
+            if info.flag_bits & 0x1:
+                entry["status"] = "skipped: verschlüsselt"
+            elif info.file_size > MAX_MEMBER_BYTES or total > MAX_ARCHIVE_TOTAL_BYTES:
                 entry["status"] = "skipped: zu groß"
             else:
                 digest = hashlib.sha256()
@@ -113,7 +116,15 @@ def run(inbox: Path, out: Path) -> dict[str, Any]:
         if path.suffix.lower() == ".zip":
             try:
                 archives.append({"path": rel, "members": zip_members(path)})
-            except (OSError, zipfile.BadZipFile, ValueError) as exc:
+            # Ein defektes Archiv wird als Fehler erfasst; das übrige Inventar entsteht trotzdem.
+            except (
+                OSError,
+                ValueError,
+                RuntimeError,
+                NotImplementedError,
+                zlib.error,
+                zipfile.BadZipFile,
+            ) as exc:
                 archives.append({"path": rel, "error": f"{type(exc).__name__}: {exc}"[:300]})
 
     file_items = [(f["sha256"], f["path"], f["size"]) for f in files]

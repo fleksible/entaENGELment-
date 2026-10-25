@@ -41,7 +41,7 @@ INVENTORY_OUT = "derived/inventory"
 IMPORTS_OUT = "derived/inventory/imports"
 GITATTRIBUTES = """\
 # corpus_datalad: Code, README und Inventar in git (diffbar); alle übrigen Inhalte im annex.
-README.md annex.largefiles=nothing
+/README.md annex.largefiles=nothing
 code/** annex.largefiles=nothing
 derived/inventory/** annex.largefiles=nothing
 derived/text/_extraction_log.json annex.largefiles=nothing

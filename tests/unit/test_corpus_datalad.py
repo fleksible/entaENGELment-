@@ -24,7 +24,7 @@ DOCX_XML = (
 )
 
 
-def _write_docx(path: Path, xml: str = DOCX_XML) -> None:
+def _write_docx(path: Path, xml: str | bytes = DOCX_XML) -> None:
     with zipfile.ZipFile(path, "w") as archive:
         archive.writestr("[Content_Types].xml", "<Types/>")
         archive.writestr("word/document.xml", xml)
@@ -139,6 +139,36 @@ def test_broken_docx_yields_error_not_exception(tmp_path: Path) -> None:
     assert ex.run(box, tmp_path / "text")["entries"][0]["status"] == "error"
 
 
+def test_output_path_collision_is_a_file_error(tmp_path: Path) -> None:
+    box = tmp_path / "inbox"
+    (box / "note.md.txt").mkdir(parents=True)
+    (box / "note.md").write_text("a", encoding="utf-8")
+    (box / "note.md.txt" / "other.md").write_text("b", encoding="utf-8")
+    entries = ex.run(box, tmp_path / "text")["entries"]
+    assert [(e["path"], e["status"]) for e in entries] == [
+        ("note.md", "ok"),
+        ("note.md.txt/other.md", "error"),
+    ]
+    assert entries[1]["detail"].startswith("Ausgabe note.md.txt/other.md.txt")
+
+
+def test_pdf_timeout_is_a_file_error(tmp_path: Path, monkeypatch) -> None:
+    box = tmp_path / "inbox"
+    box.mkdir()
+    (box / "lang.pdf").write_bytes(b"%PDF-1.4\n")
+    (box / "danach.md").write_text("weiter", encoding="utf-8")
+
+    def timeout(path: Path) -> str:
+        raise subprocess.TimeoutExpired(["pdftotext"], ex.PDF_TIMEOUT_S)
+
+    monkeypatch.setattr(ex.shutil, "which", lambda _name: "/usr/bin/pdftotext")
+    monkeypatch.setattr(ex, "pdftotext_version", lambda: "test")
+    monkeypatch.setattr(ex, "extract_pdf", timeout)
+    log = ex.run(box, tmp_path / "text")
+    assert log["counts"] == {"error": 1, "ok": 1}
+    assert "TimeoutExpired" in log["entries"][1]["detail"]
+
+
 # --- inventory -------------------------------------------------------------------------
 
 
@@ -170,6 +200,22 @@ def test_inventory_member_size_guard_and_missing(inbox: Path, tmp_path: Path, mo
     statuses = {m["member"]: m.get("status") for m in data["archives"][0]["members"]}
     assert statuses["a/save_state.md"] == "skipped: zu groß"
     assert data["missing_content"] == ["export/weg.md"]
+
+
+def test_inventory_skips_encrypted_zip_members(inbox: Path, tmp_path: Path) -> None:
+    path = inbox / "export" / "geheim.zip"
+    with zipfile.ZipFile(path, "w") as archive:
+        archive.writestr("m.txt", "geheim")
+    raw = bytearray(path.read_bytes())
+    raw[raw.find(b"PK\x03\x04") + 6] |= 0x1  # Verschlüsselungsbit im lokalen Header
+    raw[raw.find(b"PK\x01\x02") + 8] |= 0x1  # und im zentralen Verzeichnis
+    path.write_bytes(bytes(raw))
+    data = inv.run(inbox, tmp_path / "inv")
+    archive_entry = next(a for a in data["archives"] if a["path"] == "export/geheim.zip")
+    assert archive_entry["members"] == [
+        {"member": "m.txt", "size": 6, "status": "skipped: verschlüsselt"}
+    ]
+    assert data["summary"]["files"] == 7
 
 
 def test_inventory_is_deterministic(inbox: Path, tmp_path: Path) -> None:
@@ -276,11 +322,40 @@ def test_end_to_end_with_datalad(inbox: Path, tmp_path: Path) -> None:
     assert not (ds / "code/extract_text.py").is_symlink()  # Code in git
 
 
+@pytest.mark.skipif(shutil.which("git") is None, reason="git not available")
+def test_only_dataset_root_readme_is_kept_in_git(tmp_path: Path) -> None:
+    subprocess.run(["git", "init", "-q", str(tmp_path)], check=True)
+    (tmp_path / ".gitattributes").write_text(cd.GITATTRIBUTES, encoding="utf-8")
+    out = subprocess.run(
+        ["git", "check-attr", "annex.largefiles", "--", "README.md", "inbox/x/README.md"],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout.splitlines()
+    assert out == [
+        "README.md: annex.largefiles: nothing",
+        "inbox/x/README.md: annex.largefiles: unspecified",  # Original bleibt im annex
+    ]
+
+
+@pytest.mark.parametrize("encoding", ["utf-8", "utf-16"])
 @pytest.mark.parametrize("decl", ["<!DOCTYPE d [<!ENTITY a 'x'>]>", "<!ENTITY a 'x'>"])
-def test_docx_with_dtd_or_entities_is_rejected(tmp_path: Path, decl: str) -> None:
+def test_docx_with_dtd_or_entities_is_rejected(tmp_path: Path, decl: str, encoding: str) -> None:
     box = tmp_path / "inbox"
     box.mkdir()
-    _write_docx(box / "bomb.docx", DOCX_XML.replace("<w:document", decl + "<w:document", 1))
+    xml = DOCX_XML.replace("UTF-8", encoding.upper()).replace("Form", "&a;")
+    _write_docx(
+        box / "bomb.docx", xml.replace("<w:document", decl + "<w:document", 1).encode(encoding)
+    )
     entry = ex.run(box, tmp_path / "text")["entries"][0]
     assert entry["status"] == "error"
-    assert "DTD/Entity" in entry["detail"]
+    assert not (tmp_path / "text/bomb.docx.txt").exists()
+
+
+def test_utf16_docx_without_dtd_is_extracted(tmp_path: Path) -> None:
+    box = tmp_path / "inbox"
+    box.mkdir()
+    _write_docx(box / "u16.docx", DOCX_XML.replace("UTF-8", "UTF-16").encode("utf-16"))
+    assert ex.run(box, tmp_path / "text")["entries"][0]["status"] == "ok"
+    assert "Skaleninvarianz\tForm" in (tmp_path / "text/u16.docx.txt").read_text()
