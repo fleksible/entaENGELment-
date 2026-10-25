@@ -14,7 +14,8 @@ Korpus → Analyse → Save State → Re-Entry.
 - [x] Recherche-Prompt v2 und 15 kuratierte Anbindungen als Intake abgelegt (`INTAKE-2026-10-25-001`)
 - [x] Save-State-Werkzeug `tools/reentry_crate.py`: RO-Crate 1.2, SHA-256-Siegel mit HMAC oder UNSIGNED, `verify` (PASS/HOLD), `brief`; Felder kompatibel zum bestehenden Save-State-/Receipt-Vokabular; `reentry_vector`-Karte im Format von `tools/verify_cards.py`
 - [x] Privatsphäre-Schranke: Standardziel `out/reentry/` (gitignored), committbare Ziele nur mit `--publish`
-- [x] 25 Unit-Tests (`tests/unit/test_reentry_crate.py`), Make-Ziele `reentry-save` / `reentry-verify`
+- [x] Unit-Tests (`tests/unit/test_reentry_crate.py`, zunächst 25), Make-Ziele `reentry-save` / `reentry-verify`
+- [x] Review-Korrekturen (PR #427): Siegelabdeckung nur ohne Wurzel-`SEAL.json`, Abgleich vorgegebener Quellhashes, geschlossene Unterobjekt-Felder, Authenticity bei `brief` auf stderr, strukturiertes HOLD bei falschen Signatur-/JSON-Formen; 56 Tests; Addendum `INTAKE-2026-10-25-003`
 - [x] Skill `.claude/skills/tesser3takt-reentry/` (save/load, nur auf Aufruf) mit Vorlage und Basic-Memory-Konvention
 - [x] Sicherheitsprüfung (statisch, `repo-pruefer`) für Basic Memory, Zotero MCP, arXiv MCP
 - [x] Connector-Smoke-Tests: Wolfram, PubMed, bioRxiv, Google Drive, Figma
@@ -58,3 +59,4 @@ Korpus → Analyse → Save State → Re-Entry.
 - `docs/intake/raw/2026-10-25/research-connectoren-setup-und-pruefprotokoll-v0-1.md`
 - `docs/intake/raw/2026-10-25/reentry/2026-10-25_research-connectoren-reentry/`
 - `docs/intake/records/INTAKE-2026-10-25-001.md`, `docs/intake/records/INTAKE-2026-10-25-002.md`
+- `docs/intake/raw/2026-10-25/addendum-review-korrekturen-re-entry-v0-1.md` (`INTAKE-2026-10-25-003`)

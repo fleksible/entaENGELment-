@@ -13,4 +13,5 @@
 | [INTAKE-2026-10-13-001](records/INTAKE-2026-10-13-001.md) | 2026-10-13 | [Korpus v17 mit v18-Folgestand](raw/2026-10-13/corpus-v17/README.md) | Privater Korpusindex v17 als eingefrorener Eingang; bestätigter Folgestand v18; abgeleiteter öffentlicher Delta-Export | raw | Intake / gezielter Quellenvergleich | ja — EXPORT-04–06, Originalprüfung und menschlicher Readback offen |
 | INTAKE-2026-10-25-001 | 2026-10-25 | Kuratierte Anbindungen entaENGELment tesser3TAKT Grimm v0.1 | Claude Code Sitzung 2026-10-25 (Recherche) | raw | (offen) | ja |
 | INTAKE-2026-10-25-002 | 2026-10-25 | Research-Connectoren Setup und Pruefprotokoll v0.1 | Claude Code Sitzung 2026-10-25 (Ausfuehrung) | raw | (offen) | ja |
+| INTAKE-2026-10-25-003 | 2026-10-25 | Addendum Review-Korrekturen Re-Entry v0.1 | Claude Code Sitzung 2026-10-25 (Review PR 427) | raw | (offen) | ja |
 
