@@ -886,7 +886,9 @@ def verify_crate(crate: Path, *, secret: str = "", require_signed: bool = False)
     if state is not None and state.get("schema") != SCHEMA_VERSION:
         result.errors.append(f"{STATE_FILE}: schema ist nicht {SCHEMA_VERSION}")
     if (crate / CARD_FILE).is_file():
-        result.errors.extend(validate_card(crate / CARD_FILE))
+        # Erst selbst laden: verify_cards fängt Dekodierfehler nicht ab.
+        if _load_object(crate, CARD_FILE, result.errors) is not None:
+            result.errors.extend(validate_card(crate / CARD_FILE))
     else:
         result.errors.append(f"{CARD_FILE}: fehlt")
 

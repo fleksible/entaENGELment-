@@ -454,6 +454,15 @@ def test_haspart_with_non_string_id_holds_without_exception(workspace: Path) -> 
     assert any("hasPart-Eintrag ohne String-@id" in e for e in result.errors)
 
 
+@pytest.mark.parametrize("payload", [b"\xff", b"[]"])
+def test_unreadable_card_holds_without_exception(workspace: Path, payload: bytes) -> None:
+    crate = _save(workspace, secret=SECRET)
+    (crate / rc.CARD_FILE).write_bytes(payload)
+    result = rc.verify_crate(crate, secret=SECRET, require_signed=True)
+    assert result.verdict == "HOLD"
+    assert any(e.startswith(rc.CARD_FILE) for e in result.errors)
+
+
 @pytest.mark.skipif(shutil.which("git") is None, reason="git not available")
 def test_source_on_reserved_card_path_is_rejected(workspace: Path) -> None:
     subprocess.run(["git", "init", "-q"], cwd=workspace, check=True)
