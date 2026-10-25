@@ -286,6 +286,59 @@ def test_import_copies_records_and_skips_symlinks(tmp_path: Path, monkeypatch) -
         cd.cmd_import(ds, tmp_path, "zu weit")
 
 
+@pytest.mark.skipif(shutil.which("git") is None, reason="git not available")
+def test_import_keeps_git_control_files_inert(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setattr(cd, "_run", lambda cmd, cwd=None: "")
+    ds = _fake_dataset(tmp_path)
+    subprocess.run(["git", "init", "-q", str(ds)], check=True)
+    (ds / ".gitattributes").write_text(cd.GITATTRIBUTES, encoding="utf-8")
+    src = tmp_path / "export"
+    (src / ".git").mkdir(parents=True)
+    (src / ".git" / "HEAD").write_text("ref: refs/heads/main\n", encoding="utf-8")
+    (src / ".gitattributes").write_text("* annex.largefiles=nothing\n", encoding="utf-8")
+    (src / "a.md").write_text("Original\n", encoding="utf-8")
+    record = cd.cmd_import(ds, src, "Beispiel")
+    assert [(f["path"], f.get("stored_as")) for f in record["files"]] == [
+        (".git/HEAD", ".git~import/HEAD"),
+        (".gitattributes", ".gitattributes~import"),
+        ("a.md", None),
+    ]
+    box = ds / "inbox" / "beispiel"
+    assert not (box / ".gitattributes").exists() and not (box / ".git").exists()
+    assert (box / ".gitattributes~import").read_text() == "* annex.largefiles=nothing\n"
+    attr = subprocess.run(
+        ["git", "check-attr", "annex.largefiles", "--", "inbox/beispiel/a.md"],
+        cwd=ds,
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout.strip()
+    assert attr == "inbox/beispiel/a.md: annex.largefiles: unspecified"
+
+
+def test_import_rejects_colliding_storage_paths(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setattr(cd, "_run", lambda cmd, cwd=None: "")
+    ds = _fake_dataset(tmp_path)
+    src = tmp_path / "export"
+    src.mkdir()
+    (src / ".gitignore").write_text("*\n", encoding="utf-8")
+    (src / ".gitignore~import").write_text("x\n", encoding="utf-8")
+    with pytest.raises(cd.CorpusError, match="Ablagepfad doppelt"):
+        cd.cmd_import(ds, src, "Kollision")
+    assert not (ds / "inbox" / "kollision").exists()
+
+
+def test_import_into_clone_without_imports_dir(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setattr(cd, "_run", lambda cmd, cwd=None: "")
+    ds = tmp_path / "klon"
+    (ds / ".datalad").mkdir(parents=True)  # Klon: leerer imports/-Ordner fehlt
+    src = tmp_path / "export"
+    src.mkdir()
+    (src / "a.md").write_text("a", encoding="utf-8")
+    cd.cmd_import(ds, src, "Im Klon")
+    assert (ds / cd.IMPORTS_OUT / "im-klon.json").is_file()
+
+
 def test_sources_for_reentry_bind_hashes(tmp_path: Path) -> None:
     ds = _fake_dataset(tmp_path)
     files = [

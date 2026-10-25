@@ -39,6 +39,8 @@ INBOX = "inbox"
 TEXT_OUT = "derived/text"
 INVENTORY_OUT = "derived/inventory"
 IMPORTS_OUT = "derived/inventory/imports"
+GIT_CONTROL_NAMES = frozenset({".git", ".gitattributes", ".gitignore", ".gitmodules"})
+INERT_SUFFIX = "~import"
 GITATTRIBUTES = """\
 # corpus_datalad: Code, README und Inventar in git (diffbar); alle übrigen Inhalte im annex.
 /README.md annex.largefiles=nothing
@@ -156,6 +158,12 @@ def cmd_init(dataset: Path) -> Path:
     return target
 
 
+def _inert_path(rel: str) -> str:
+    """Git-Steuerdateien aus dem Export würden im Dataset wirken (z. B. annex.largefiles
+    überschreiben); sie werden mit Suffix als gewöhnliche Daten abgelegt."""
+    return "/".join(p + INERT_SUFFIX if p in GIT_CONTROL_NAMES else p for p in rel.split("/"))
+
+
 def cmd_import(dataset: Path, source: Path, label: str) -> dict[str, Any]:
     ds = _dataset(dataset)
     src = source.expanduser().resolve()
@@ -171,17 +179,29 @@ def cmd_import(dataset: Path, source: Path, label: str) -> dict[str, Any]:
 
     files: list[dict[str, Any]] = []
     skipped: list[dict[str, str]] = []
+    stored: set[str] = set()
     for path in sorted(src.rglob("*")):
         rel = path.relative_to(src).as_posix()
         if path.is_symlink():
             skipped.append({"path": rel, "reason": "Symlink nicht übernommen"})
         elif path.is_file():
-            files.append({"path": rel, "size": path.stat().st_size, "sha256": _sha256(path)})
+            entry: dict[str, Any] = {
+                "path": rel,
+                "size": path.stat().st_size,
+                "sha256": _sha256(path),
+            }
+            inert = _inert_path(rel)
+            if inert != rel:
+                entry["stored_as"] = inert
+            if inert in stored:
+                raise CorpusError(f"Ablagepfad doppelt: {inert} (Import abgebrochen)")
+            stored.add(inert)
+            files.append(entry)
     if not files:
         raise CorpusError(f"Keine Dateien in {src}")
 
     for entry in files:
-        destination = target / entry["path"]
+        destination = target / entry.get("stored_as", entry["path"])
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(src / entry["path"], destination)
         if _sha256(destination) != entry["sha256"]:
@@ -200,6 +220,8 @@ def cmd_import(dataset: Path, source: Path, label: str) -> dict[str, Any]:
         "files": files,
         "skipped": skipped,
     }
+    # In einem Klon fehlt der (leere, von git nicht getragene) Ordner aus init.
+    record_path.parent.mkdir(parents=True, exist_ok=True)
     record_path.write_text(
         json.dumps(record, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )

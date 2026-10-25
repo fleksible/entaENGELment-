@@ -54,7 +54,10 @@ python3 tools/corpus_datalad.py import --dataset ~/korpus \
 - `init` verweigert Ziele in einem Git-Arbeitsbaum (insbesondere im öffentlichen Repo) und nicht-leere Ordner.
 - `import` kopiert nach `inbox/<label>/`, prüft jede Kopie per SHA-256, schreibt
   `derived/inventory/imports/<label>.json` und speichert mit `datalad save`. Symlinks werden
-  nicht übernommen (im Record vermerkt). Ein Label wird nie überschrieben.
+  nicht übernommen (im Record vermerkt). Git-Steuerdateien aus dem Export (`.git`,
+  `.gitattributes`, `.gitignore`, `.gitmodules`) werden mit Suffix `~import` als gewöhnliche
+  Daten abgelegt (`stored_as` im Record), damit sie im Dataset nicht wirken. Ein Label wird nie
+  überschrieben.
 - Der Staging-Ordner bleibt unverändert; löschen erst, wenn `git annex fsck` im Dataset sauber ist.
 
 ## 4. Textextraktion und Inventar (`datalad run`)
