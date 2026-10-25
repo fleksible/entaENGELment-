@@ -409,3 +409,22 @@ def test_file_entity_outside_crate_holds(workspace: Path) -> None:
     result = rc.verify_crate(crate)
     assert result.verdict == "HOLD"
     assert any("relativer Pfad im Crate" in e for e in result.errors)
+
+
+def test_symlinked_sources_keep_their_names(workspace: Path) -> None:
+    """git-annex legt Dateien als Symlinks auf ihren Inhaltsschlüssel ab (DataLad-Korpus)."""
+    objects = workspace / "annex-objects"
+    objects.mkdir()
+    key = objects / "SHA256E-s5--abc.md"
+    key.write_text("same\n", encoding="utf-8")
+    (workspace / "corpus" / "a.md").symlink_to(key)
+    (workspace / "corpus" / "b.md").symlink_to(key)
+    sources = [
+        {"id": "a", "path": "corpus/a.md", "sha256": rc.sha256_file(key)},
+        {"id": "b", "path": "corpus/b.md"},
+    ]
+    crate = _save(workspace, sources=sources, claims=[])
+    assert (crate / "payload/external/a.md").read_text(encoding="utf-8") == "same\n"
+    assert not (crate / "payload/external/a.md").is_symlink()
+    assert (crate / "payload/external/b.md").is_file()
+    assert rc.verify_crate(crate).verdict == "PASS"

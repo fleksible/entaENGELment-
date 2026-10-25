@@ -414,13 +414,15 @@ def claim_audit(claims: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def _payload_target(src: Path, repo_root: Path | None, prefix: str) -> str:
-    resolved = src.resolve()
+    # Verzeichnisse auflösen, Dateinamen behalten: git-annex-Dateien sind Symlinks auf ihren
+    # Inhaltsschlüssel; aufgelöst würden inhaltsgleiche Quellen am selben Pfad kollidieren.
+    located = Path(os.path.realpath(src.parent)) / src.name
     if repo_root is not None:
         try:
-            return f"{prefix}/{resolved.relative_to(repo_root).as_posix()}"
+            return f"{prefix}/{located.relative_to(repo_root).as_posix()}"
         except ValueError:
             pass
-    return f"{prefix}/external/{resolved.name}"
+    return f"{prefix}/external/{located.name}"
 
 
 def _iter_files(path: Path) -> list[Path]:
@@ -718,7 +720,7 @@ def save_state(
     for src in state["sources"]:
         if not src["path"]:
             continue
-        path = (base / src["path"]).resolve()
+        path = Path(os.path.abspath(base / src["path"]))
         if not path.is_file():
             raise ManifestError(f"Quelle {src['id']}: Datei nicht gefunden ({src['path']})")
         actual = sha256_file(path)
@@ -732,7 +734,7 @@ def save_state(
         copies.append((path, src["payload"]))
     notes_payload: list[str] = []
     for note in state["notes"]:
-        note_path = (base / note).resolve()
+        note_path = Path(os.path.abspath(base / note))
         if not note_path.exists():
             raise ManifestError(f"Notiz nicht gefunden: {note}")
         for file in _iter_files(note_path):
