@@ -1,0 +1,10 @@
+{
+  "card_type": "reentry_vector",
+  "timestamp": "2026-10-25T02:25:25+00:00",
+  "fields": {
+    "status": "GO_prepared_hold_install",
+    "current_hold": "Lokale Installation der MCP-Server und Wahl des Basic-Memory-Projektordners",
+    "next_action": "Intake-Eintr\u00e4ge INTAKE-2026-10-25-001/002 sichten; keine Kanonisierung ohne Review",
+    "source_doc": "REENTRY.md"
+  }
+}
