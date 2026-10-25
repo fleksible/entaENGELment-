@@ -39,6 +39,11 @@ Ruff und Black bestehen; Mypy prüft 53 Quelldateien; die Governance-Prüfung
 meldet 15 Workflows und 22 synchronisierte VOID-Einträge. Keine neue
 JS-/UI-Implementierung gehört zum Patch.
 
+[FAKT] Der zusätzliche strenge Claim-Lint aus dem blocking PR-Gate wurde
+ebenfalls ausgeführt. Sein erster Lauf markierte die wörtliche Git-Option
+--verify als ungetaggten Claim; die konkrete Optionszeile ist jetzt als
+Git-Syntax gekennzeichnet. Die Prüflogik und der Workflow bleiben unverändert.
+
 ## Gezielte Gegenfälle
 
 - [FAKT] Ein synthetisches Symbol wird im Tokenmodus zurückgewiesen, wenn

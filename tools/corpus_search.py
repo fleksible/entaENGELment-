@@ -111,7 +111,15 @@ def git(repo: pathlib.Path, *args: str) -> bytes:
 
 def resolve(repo: pathlib.Path, ref: str) -> str:
     return (
-        git(repo, "rev-parse", "--verify", "--end-of-options", ref + "^{commit}").decode().strip()
+        git(
+            repo,
+            "rev-parse",
+            "--verify",  # [FACT] Git revision lookup option, not a validation claim.
+            "--end-of-options",
+            ref + "^{commit}",
+        )
+        .decode()
+        .strip()
     )
 
 
