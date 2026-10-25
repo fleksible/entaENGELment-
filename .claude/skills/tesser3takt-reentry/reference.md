@@ -20,9 +20,20 @@ Abbildung im Graph: Aussagen sind `Claim`-Entitäten (`keywords` = Tag,
 `CreateAction` mit `instrument` = `tools/reentry_crate.py@<commit>`; entfernte Quellen
 (Drive, DOI, URL) sind `CreativeWork`-Kontextentitäten, keine Dateien im Paket.
 
-Verify meldet `HOLD` bei: geänderter, fehlender oder nachträglich hinzugefügter Datei,
-abweichendem `state_fingerprint`, ungültiger HMAC-Signatur, fehlenden RO-Crate-Pflichtteilen,
-ungültiger `reentry_vector`-Karte — und mit `--require-signed` auch bei UNSIGNED.
+Verify meldet `HOLD` in diesen getesteten Fällen (`tests/unit/test_reentry_crate.py`):
+geänderte, fehlende oder nachträglich hinzugefügte Datei (auch gleichnamig `SEAL.json` in
+Unterordnern — ausgenommen ist nur das Siegel im Paketwurzelverzeichnis), abweichender
+`state_fingerprint`, ungültige, fehlende oder formal falsche HMAC-Signatur, fehlende
+RO-Crate-Pflichtteile, `File`-Einträge außerhalb des Crates, JSON-Dateien mit falscher
+Objektform, ungültige `reentry_vector`-Karte — und mit `--require-signed` auch bei
+UNSIGNED oder ohne prüfenden Schlüssel. Das ist kein Beweis gegen jede denkbare
+Manipulation: Ein vollständig neu geschriebenes UNSIGNED-Paket kann sich selbst wieder
+konsistent versiegeln.
+
+**Quellhashes:** Für lokale Quellen (`path`) wird ein angegebener `sha256` vor dem
+Anlegen des Ziels gegen die Datei geprüft (Abweichung → Abbruch) und nach dem Kopieren
+erneut abgeglichen; Ergebnis in `input_hashes`. Für entfernte Quellen (`uri`) bleibt ein
+angegebener `sha256` eine ungeprüfte Angabe in `declared_hashes` (im Brief markiert).
 
 ## 2. Vokabular
 
@@ -40,7 +51,10 @@ RETRACTED. Default für `authority`: REVIEW-PENDING.
 **Promotion (`promotion_status`)**: NO_CANON_PROMOTION (Default) oder REVIEW_REQUESTED.
 Kanonisierung passiert nie im Save State selbst.
 
-Unbekannte Werte brechen `save` ab (fail-closed).
+`save` bricht ab (fail-closed) bei: unbekannten Feldern auf oberster Ebene und in
+`sources[]`, `claims[]`, `next_actions[]`, `lineage`, `lineage.nodes[]`, `lineage.edges[]`;
+falschen Containertypen (z. B. `sources` als Mapping, `paths` als String); Werten
+außerhalb des Tag-, Status- oder Promotion-Vokabulars; Kanten auf unbekannte Knoten.
 
 ## 3. Basic-Memory-Konvention (lebendes Gedächtnis zwischen Save States)
 

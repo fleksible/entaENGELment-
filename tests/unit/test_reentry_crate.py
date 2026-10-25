@@ -215,7 +215,10 @@ def test_cli_brief_prints_only_after_pass(workspace: Path, capsys, monkeypatch) 
     monkeypatch.delenv("CI_SECRET", raising=False)
     crate = _save(workspace)
     assert rc.main(["brief", "--crate", str(crate)]) == 0
-    assert "# Re-Entry: Test Save State" in capsys.readouterr().out
+    captured = capsys.readouterr()
+    assert captured.out.startswith("# Re-Entry: Test Save State")
+    assert "REENTRY VERIFY: PASS (authenticity: UNSIGNED)" in captured.err
+    assert "Herkunft nicht" in captured.err
     (crate / "payload/external/quelle.md").write_text("x", encoding="utf-8")
     assert rc.main(["brief", "--crate", str(crate)]) == 1
     out = capsys.readouterr().out
@@ -241,5 +244,168 @@ def test_skill_template_uses_only_known_fields() -> None:
     )
     data = rc.load_manifest(template)
     assert set(data) <= rc.MANIFEST_KEYS
+    for section, keys in (
+        ("sources", rc.SOURCE_KEYS),
+        ("claims", rc.CLAIM_KEYS),
+        ("next_actions", rc.ACTION_KEYS),
+    ):
+        for item in data[section]:
+            assert set(item) <= keys
+    assert set(data["lineage"]) <= rc.LINEAGE_KEYS
     with pytest.raises(rc.ManifestError):
         rc.normalize_manifest(data)  # ungefüllte Vorlage ist absichtlich ungültig
+
+
+# --- Review-Gegenproben (PR #427): Siegelabdeckung, Quellhash, Unterobjekte, Ausgabe, Form ---
+
+SECRET = "synthetic-review-key"
+
+
+def test_nested_seal_named_file_is_not_exempt(workspace: Path) -> None:
+    crate = _save(workspace, secret=SECRET)
+    assert rc.verify_crate(crate, secret=SECRET, require_signed=True).verdict == "PASS"
+    (crate / "payload" / "SEAL.json").write_text("added later\n", encoding="utf-8")
+    result = rc.verify_crate(crate, secret=SECRET, require_signed=True)
+    assert result.verdict == "HOLD"
+    assert any("payload/SEAL.json: nicht im Siegel" in e for e in result.errors)
+
+
+def test_source_named_seal_is_hashed(workspace: Path) -> None:
+    (workspace / "corpus" / "SEAL.json").write_text("{}\n", encoding="utf-8")
+    sources = [{"id": "seal-src", "path": "corpus/SEAL.json"}]
+    crate = _save(workspace, sources=sources, claims=[{"text": "x", "tag": "FACT"}])
+    seal = json.loads((crate / rc.SEAL_FILE).read_text(encoding="utf-8"))
+    assert "payload/external/SEAL.json" in seal["files"]
+    assert rc.verify_crate(crate).verdict == "PASS"
+
+
+def test_wrong_declared_source_hash_aborts_before_target(workspace: Path) -> None:
+    sources = [{"id": "src-local", "path": "corpus/quelle.md", "sha256": "0" * 64}]
+    with pytest.raises(rc.ManifestError, match="weicht von der Vorgabe ab"):
+        _save(workspace, sources=sources, claims=[])
+    assert not (workspace / "out").exists()
+
+
+def test_declared_hashes_are_kept_or_computed(workspace: Path) -> None:
+    actual = rc.sha256_file(workspace / "corpus/quelle.md")
+    declared_uri = "a" * 64
+    sources = [
+        {"id": "src-local", "path": "corpus/quelle.md", "sha256": actual},
+        {"id": "src-doi", "uri": "https://doi.org/10.1000/example", "sha256": declared_uri},
+    ]
+    crate = _save(workspace, sources=sources, claims=[])
+    state = json.loads((crate / rc.STATE_FILE).read_text(encoding="utf-8"))
+    assert state["input_hashes"] == {"src-local": actual}
+    assert state["declared_hashes"] == {"src-doi": declared_uri}
+    assert "(deklariert, ungeprüft)" in (crate / rc.BRIEF_FILE).read_text(encoding="utf-8")
+
+
+@pytest.mark.parametrize(
+    ("overrides", "message"),
+    [
+        ({"sources": [{"id": "s", "path": "a", "soruces": ["x"]}]}, r"sources\[0\]: unbekannte"),
+        ({"claims": [{"text": "x", "tag": "FACT", "soruces": ["src-local"]}]}, r"claims\[0\]"),
+        ({"next_actions": [{"title": "t", "paths_typo": ["x"]}]}, r"next_actions\[0\]"),
+        ({"lineage": {"nodes": [{"id": "a", "colour": "x"}], "edges": []}}, r"nodes\[0\]"),
+        (
+            {
+                "lineage": {
+                    "nodes": [{"id": "a"}],
+                    "edges": [{"source": "a", "target": "a", "x": 1}],
+                }
+            },
+            r"edges\[0\]",
+        ),
+        ({"lineage": {"nodes": [], "edges": [], "extra": []}}, "lineage: unbekannte"),
+        ({"lineage": []}, "lineage: Mapping erwartet"),
+        ({"sources": {"id": "s"}}, "sources: Liste erwartet"),
+        ({"claims": "x"}, "claims: Liste erwartet"),
+        ({"next_actions": [{"title": "t", "paths": "tools/x.py"}]}, "paths: Liste"),
+        ({"claims": [{"text": "x", "tag": "FACT", "sources": "src-local"}]}, "sources: Liste"),
+        ({"sources": [{"id": 1, "path": "a"}]}, r"sources\[0\]\.id: String"),
+    ],
+)
+def test_nested_typos_and_wrong_types_are_rejected(
+    workspace: Path, overrides: dict[str, object], message: str
+) -> None:
+    with pytest.raises(rc.ManifestError, match=message):
+        _save(workspace, **overrides)
+    assert not (workspace / "out").exists()
+
+
+@pytest.mark.parametrize(
+    ("secret", "env_secret", "authenticity"),
+    [("", "", "UNSIGNED"), (SECRET, "", "SIGNED_UNCHECKED"), (SECRET, SECRET, "SIGNED_VALID")],
+)
+def test_brief_keeps_authenticity_visible(
+    workspace: Path, capsys, monkeypatch, secret: str, env_secret: str, authenticity: str
+) -> None:
+    monkeypatch.setenv("ENTA_HMAC_SECRET", env_secret)
+    monkeypatch.delenv("CI_SECRET", raising=False)
+    crate = _save(workspace, secret=secret)
+    assert rc.main(["brief", "--crate", str(crate)]) == 0
+    captured = capsys.readouterr()
+    assert f"(authenticity: {authenticity})" in captured.err
+    assert "REENTRY VERIFY" not in captured.out
+
+
+def test_brief_with_wrong_key_or_required_signature_holds(
+    workspace: Path, capsys, monkeypatch
+) -> None:
+    monkeypatch.delenv("CI_SECRET", raising=False)
+    signed = _save(workspace, secret=SECRET)
+    monkeypatch.setenv("ENTA_HMAC_SECRET", "other")
+    assert rc.main(["brief", "--crate", str(signed)]) == 1
+    assert "SIGNED_INVALID" in capsys.readouterr().out
+    unsigned = _save(workspace, secret="", id="unsigned")
+    monkeypatch.setenv("ENTA_HMAC_SECRET", "")
+    assert rc.main(["brief", "--crate", str(unsigned), "--require-signed"]) == 1
+    assert "# Re-Entry" not in capsys.readouterr().out
+
+
+@pytest.mark.parametrize("signature", [None, "", "0xabc", 42, "unsigned"])
+def test_missing_or_malformed_signature_holds(workspace: Path, signature: object) -> None:
+    crate = _save(workspace)
+    seal = json.loads((crate / rc.SEAL_FILE).read_text(encoding="utf-8"))
+    if signature is None:
+        del seal["hmac_signature"]
+    else:
+        seal["hmac_signature"] = signature
+    (crate / rc.SEAL_FILE).write_text(json.dumps(seal), encoding="utf-8")
+    result = rc.verify_crate(crate)
+    assert (result.verdict, result.authenticity) == ("HOLD", "INVALID")
+
+
+@pytest.mark.parametrize(
+    ("name", "content", "message"),
+    [
+        (rc.METADATA_FILE, "[]", "JSON-Objekt erwartet"),
+        (rc.METADATA_FILE, '{"@graph": {}}', "@graph als Liste"),
+        (rc.METADATA_FILE, '{"@graph": [{"@id": ["x"]}]}', "ohne String-@id"),
+        (rc.STATE_FILE, "[]", "JSON-Objekt erwartet"),
+        (rc.SEAL_FILE, "[]", "JSON-Objekt erwartet"),
+        (rc.SEAL_FILE, '{"files": []}', "files als Objekt"),
+    ],
+)
+def test_malformed_json_shapes_hold_without_exception(
+    workspace: Path, name: str, content: str, message: str
+) -> None:
+    crate = _save(workspace)
+    (crate / name).write_text(content, encoding="utf-8")
+    result = rc.verify_crate(crate)
+    assert result.verdict == "HOLD"
+    assert any(message in e for e in result.errors), result.errors
+
+
+def test_file_entity_outside_crate_holds(workspace: Path) -> None:
+    crate = _save(workspace)
+    metadata = json.loads((crate / rc.METADATA_FILE).read_text(encoding="utf-8"))
+    escape = {"@id": "../../corpus/quelle.md", "@type": "File"}
+    metadata["@graph"].append(escape)
+    next(e for e in metadata["@graph"] if e["@id"] == "./")["hasPart"].append(
+        {"@id": escape["@id"]}
+    )
+    (crate / rc.METADATA_FILE).write_text(json.dumps(metadata), encoding="utf-8")
+    result = rc.verify_crate(crate)
+    assert result.verdict == "HOLD"
+    assert any("relativer Pfad im Crate" in e for e in result.errors)

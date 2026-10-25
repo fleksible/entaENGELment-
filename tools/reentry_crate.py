@@ -118,6 +118,15 @@ MANIFEST_KEYS = frozenset(
         "lineage",
     }
 )
+# Geschlossene Schlüsselmengen der Unterobjekte: Tippfehler brechen ab statt still zu verschwinden.
+SOURCE_KEYS = frozenset({"id", "path", "uri", "role", "title", "sha256"})
+CLAIM_KEYS = frozenset({"text", "tag", "status", "sources"})
+ACTION_KEYS = frozenset({"id", "title", "paths"})
+LINEAGE_KEYS = frozenset({"nodes", "edges"})
+NODE_KEYS = frozenset({"id", "label", "status"})
+EDGE_KEYS = frozenset({"source", "target", "relation"})
+SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+SIGNATURE_RE = re.compile(r"^0x[0-9a-f]{64}$")
 
 
 class ManifestError(ValueError):
@@ -188,24 +197,51 @@ def committable_by_git(path: Path) -> bool:
     return result.returncode == 1
 
 
-def _str_list(data: dict[str, Any], key: str, errors: list[str]) -> list[str]:
+def _label(where: str, key: str) -> str:
+    return f"{where}.{key}" if where else key
+
+
+def _str_list(data: dict[str, Any], key: str, errors: list[str], where: str = "") -> list[str]:
     value = data.get(key, [])
     if value is None:
         return []
     if not isinstance(value, list) or not all(isinstance(v, str) and v.strip() for v in value):
-        errors.append(f"{key}: Liste nicht-leerer Strings erwartet")
+        errors.append(f"{_label(where, key)}: Liste nicht-leerer Strings erwartet")
         return []
     return [v.strip() for v in value]
 
 
-def _opt_str(data: dict[str, Any], key: str, errors: list[str]) -> str:
+def _opt_str(data: dict[str, Any], key: str, errors: list[str], where: str = "") -> str:
     value = data.get(key, "")
     if value is None:
         return ""
     if not isinstance(value, str):
-        errors.append(f"{key}: String erwartet")
+        errors.append(f"{_label(where, key)}: String erwartet")
         return ""
     return value.strip()
+
+
+def _list(data: dict[str, Any], key: str, errors: list[str], where: str = "") -> list[Any]:
+    value = data.get(key)
+    if value is None:
+        return []
+    if not isinstance(value, list):
+        errors.append(f"{_label(where, key)}: Liste erwartet")
+        return []
+    return value
+
+
+def _mapping(
+    raw: Any, allowed: frozenset[str], where: str, errors: list[str]
+) -> dict[str, Any] | None:
+    """Mapping mit geschlossener Schlüsselmenge; sonst Fehler (fail-closed)."""
+    if not isinstance(raw, dict):
+        errors.append(f"{where}: Mapping erwartet")
+        return None
+    unknown = sorted(str(k) for k in set(raw) - allowed)
+    if unknown:
+        errors.append(f"{where}: unbekannte Felder: {', '.join(unknown)}")
+    return raw
 
 
 # --- Manifest ------------------------------------------------------------------------
@@ -260,103 +296,99 @@ def normalize_manifest(data: dict[str, Any]) -> dict[str, Any]:
 
     sources: list[dict[str, Any]] = []
     seen: set[str] = set()
-    for index, raw in enumerate(data.get("sources") or []):
+    for index, item in enumerate(_list(data, "sources", errors)):
         where = f"sources[{index}]"
-        if not isinstance(raw, dict):
-            errors.append(f"{where}: Mapping erwartet")
+        raw = _mapping(item, SOURCE_KEYS, where, errors)
+        if raw is None:
             continue
-        src_id = str(raw.get("id", "")).strip()
+        src_id = _opt_str(raw, "id", errors, where)
         if not ID_RE.match(src_id):
             errors.append(f"{where}.id: fehlt oder ungültig")
         elif src_id in seen:
             errors.append(f"{where}.id: doppelt ({src_id})")
         seen.add(src_id)
-        has_path, has_uri = bool(raw.get("path")), bool(raw.get("uri"))
-        if has_path == has_uri:
+        path = _opt_str(raw, "path", errors, where)
+        uri = _opt_str(raw, "uri", errors, where)
+        if bool(path) == bool(uri):
             errors.append(f"{where}: genau eines von path/uri angeben")
-        role = str(raw.get("role", "input"))
+        role = _opt_str(raw, "role", errors, where) or "input"
         if role not in SOURCE_ROLES:
             errors.append(f"{where}.role: {role!r} nicht in {sorted(SOURCE_ROLES)}")
-        sha = str(raw.get("sha256", "")).lower()
-        if sha and not re.fullmatch(r"[0-9a-f]{64}", sha):
+        sha = _opt_str(raw, "sha256", errors, where).lower()
+        if sha and not SHA256_RE.match(sha):
             errors.append(f"{where}.sha256: 64 Hex-Zeichen erwartet")
+        title = _opt_str(raw, "title", errors, where)
         sources.append(
-            {
-                "id": src_id,
-                "path": str(raw.get("path", "")),
-                "uri": str(raw.get("uri", "")),
-                "role": role,
-                "title": str(raw.get("title", "")),
-                "sha256": sha,
-            }
+            {"id": src_id, "path": path, "uri": uri, "role": role, "title": title, "sha256": sha}
         )
     out["sources"] = sources
 
     claims: list[dict[str, Any]] = []
-    for index, raw in enumerate(data.get("claims") or []):
+    for index, item in enumerate(_list(data, "claims", errors)):
         where = f"claims[{index}]"
-        if not isinstance(raw, dict) or not str(raw.get("text", "")).strip():
-            errors.append(f"{where}: Mapping mit text erwartet")
+        raw = _mapping(item, CLAIM_KEYS, where, errors)
+        if raw is None:
             continue
-        tag = str(raw.get("tag", "")).strip().strip("[]").upper()
+        text = _opt_str(raw, "text", errors, where)
+        if not text:
+            errors.append(f"{where}.text: Pflichtfeld fehlt")
+        tag = _opt_str(raw, "tag", errors, where).strip("[]").upper()
         if tag not in CLAIM_TAGS:
             errors.append(f"{where}.tag: {tag!r} nicht im Vokabular")
-        status = str(raw.get("status", "") or "").strip().upper()
+        status = _opt_str(raw, "status", errors, where).upper()
         if status and status not in STATUSES:
             errors.append(f"{where}.status: {status!r} nicht in {sorted(STATUSES)}")
-        refs = raw.get("sources") or []
-        if not isinstance(refs, list):
-            errors.append(f"{where}.sources: Liste erwartet")
-            refs = []
+        refs = _str_list(raw, "sources", errors, where)
         for ref in refs:
             if ref not in seen:
                 errors.append(f"{where}.sources: unbekannte Quelle {ref!r}")
-        claims.append(
-            {
-                "text": str(raw["text"]).strip(),
-                "tag": tag,
-                "status": status,
-                "sources": [str(r) for r in refs],
-            }
-        )
+        claims.append({"text": text, "tag": tag, "status": status, "sources": refs})
     out["claims"] = claims
 
     actions: list[dict[str, Any]] = []
-    for index, raw in enumerate(data.get("next_actions") or []):
-        if isinstance(raw, str):
-            raw = {"id": f"N{index + 1}", "title": raw}
-        if not isinstance(raw, dict) or not str(raw.get("title", "")).strip():
-            errors.append(f"next_actions[{index}]: title fehlt")
+    for index, item in enumerate(_list(data, "next_actions", errors)):
+        where = f"next_actions[{index}]"
+        raw = _mapping(
+            {"title": item} if isinstance(item, str) else item, ACTION_KEYS, where, errors
+        )
+        if raw is None:
             continue
-        paths = raw.get("paths") or []
+        title = _opt_str(raw, "title", errors, where)
+        if not title:
+            errors.append(f"{where}.title: Pflichtfeld fehlt")
         actions.append(
             {
-                "id": str(raw.get("id") or f"N{index + 1}"),
-                "title": str(raw["title"]).strip(),
-                "paths": [str(p) for p in paths] if isinstance(paths, list) else [],
+                "id": _opt_str(raw, "id", errors, where) or f"N{index + 1}",
+                "title": title,
+                "paths": _str_list(raw, "paths", errors, where),
             }
         )
     out["next_actions"] = actions
 
-    lineage = data.get("lineage") or {}
-    if lineage:
-        nodes = lineage.get("nodes") if isinstance(lineage, dict) else None
-        edges = lineage.get("edges") if isinstance(lineage, dict) else None
-        if not isinstance(nodes, list) or not isinstance(edges, list):
-            errors.append("lineage: nodes und edges als Listen erwartet")
-            lineage = {}
-        else:
-            node_ids = {str(n.get("id")) for n in nodes if isinstance(n, dict)}
-            for edge in edges:
-                if (
-                    not isinstance(edge, dict)
-                    or not {
-                        str(edge.get("source")),
-                        str(edge.get("target")),
-                    }
-                    <= node_ids
-                ):
-                    errors.append(f"lineage: Kante verweist auf unbekannten Knoten: {edge}")
+    lineage: dict[str, Any] = {}
+    raw_lineage = data.get("lineage")
+    if raw_lineage is not None:
+        raw = _mapping(raw_lineage, LINEAGE_KEYS, "lineage", errors)
+        nodes: list[dict[str, str]] = []
+        edges: list[dict[str, str]] = []
+        for index, item in enumerate(_list(raw or {}, "nodes", errors, "lineage")):
+            where = f"lineage.nodes[{index}]"
+            node = _mapping(item, NODE_KEYS, where, errors)
+            if node is not None:
+                nodes.append({key: _opt_str(node, key, errors, where) for key in sorted(NODE_KEYS)})
+                if not nodes[-1]["id"]:
+                    errors.append(f"{where}.id: Pflichtfeld fehlt")
+        node_ids = {n["id"] for n in nodes}
+        for index, item in enumerate(_list(raw or {}, "edges", errors, "lineage")):
+            where = f"lineage.edges[{index}]"
+            edge = _mapping(item, EDGE_KEYS, where, errors)
+            if edge is None:
+                continue
+            edges.append({key: _opt_str(edge, key, errors, where) for key in sorted(EDGE_KEYS)})
+            if not {edges[-1]["source"], edges[-1]["target"]} <= node_ids:
+                errors.append(f"{where}: Kante verweist auf unbekannten Knoten")
+        if nodes or edges:
+            lineage = {"nodes": nodes, "edges": edges}
     out["lineage"] = lineage
 
     if errors:
@@ -477,19 +509,19 @@ def render_brief(state: dict[str, Any], crate_rel: str) -> str:
         ]
         for src in state["sources"]:
             where = src.get("payload") or src["uri"]
-            sha = src["sha256"][:16] + "…" if src["sha256"] else "–"
-            lines.append(f"| {src['id']} | {src['role']} | `{_md_cell(where)}` | `{sha}` |")
+            sha = f"`{src['sha256'][:16]}…`" if src["sha256"] else "–"
+            if src["sha256"] and not src.get("payload"):
+                sha += " (deklariert, ungeprüft)"
+            lines.append(f"| {src['id']} | {src['role']} | `{_md_cell(where)}` | {sha} |")
         lines.append("")
 
     lineage = state.get("lineage") or {}
     if lineage:
         lines += ["## Lineage", ""]
         for node in lineage["nodes"]:
-            lines.append(
-                f"- `{node.get('id')}` {node.get('label', '')} ({node.get('status', '–')})"
-            )
+            lines.append(f"- `{node['id']}` {node['label']} ({node['status'] or '–'})")
         for edge in lineage["edges"]:
-            lines.append(f"- `{edge['source']}` —{edge.get('relation', '')}→ `{edge['target']}`")
+            lines.append(f"- `{edge['source']}` —{edge['relation']}→ `{edge['target']}`")
         lines.append("")
     return "\n".join(lines).rstrip() + "\n"
 
@@ -625,12 +657,17 @@ def resolve_secret() -> str:
     return os.environ.get("ENTA_HMAC_SECRET") or os.environ.get("CI_SECRET") or ""
 
 
+def _crate_files(crate: Path) -> list[str]:
+    """Alle Dateien des Crates außer dem einen Siegel im Paketwurzelverzeichnis."""
+    return sorted(
+        rel
+        for rel in (p.relative_to(crate).as_posix() for p in crate.rglob("*") if p.is_file())
+        if rel != SEAL_FILE
+    )
+
+
 def seal_crate(crate: Path, crate_id: str, commit: str, secret: str, now: str) -> dict[str, Any]:
-    files = {
-        p.relative_to(crate).as_posix(): sha256_file(p)
-        for p in sorted(crate.rglob("*"))
-        if p.is_file() and p.name != SEAL_FILE
-    }
+    files = {rel: sha256_file(crate / rel) for rel in _crate_files(crate)}
     seal: dict[str, Any] = {
         "seal_version": "1.0",
         "crate_id": crate_id,
@@ -677,13 +714,21 @@ def save_state(
     repo_root = Path(repo_top).resolve() if repo_top else None
 
     copies: list[tuple[Path, str]] = []
+    expected: dict[str, str] = {}
     for src in state["sources"]:
         if not src["path"]:
             continue
         path = (base / src["path"]).resolve()
         if not path.is_file():
             raise ManifestError(f"Quelle {src['id']}: Datei nicht gefunden ({src['path']})")
+        actual = sha256_file(path)
+        if src["sha256"] and src["sha256"] != actual:
+            raise ManifestError(
+                f"Quelle {src['id']}: sha256 weicht von der Vorgabe ab "
+                f"(Vorgabe {src['sha256'][:16]}…, Datei {actual[:16]}…)"
+            )
         src["payload"] = _payload_target(path, repo_root, "payload")
+        expected[src["payload"]] = actual
         copies.append((path, src["payload"]))
     notes_payload: list[str] = []
     for note in state["notes"]:
@@ -707,7 +752,13 @@ def save_state(
         shutil.copyfile(source, destination)
     for src in state["sources"]:
         if src.get("payload"):
-            src["sha256"] = sha256_file(crate / src["payload"])
+            copied = sha256_file(crate / src["payload"])
+            if copied != expected[src["payload"]]:
+                raise ManifestError(
+                    f"Quelle {src['id']}: Datei hat sich beim Kopieren geändert; "
+                    f"unversiegelter Teilstand bleibt in {crate} (verify meldet HOLD)"
+                )
+            src["sha256"] = copied
 
     state.update(
         {
@@ -717,7 +768,11 @@ def save_state(
             "tool_version": TOOL_VERSION,
             "notes_payload": notes_payload,
             "claim_audit": claim_audit(state["claims"]),
-            "input_hashes": {s["id"]: s["sha256"] for s in state["sources"] if s["sha256"]},
+            # input_hashes: aus kopierten Bytes berechnet; declared_hashes: nur angegeben (URI).
+            "input_hashes": {s["id"]: s["sha256"] for s in state["sources"] if s.get("payload")},
+            "declared_hashes": {
+                s["id"]: s["sha256"] for s in state["sources"] if s["uri"] and s["sha256"]
+            },
         }
     )
     card = {
@@ -750,15 +805,35 @@ def save_state(
 # --- Verify --------------------------------------------------------------------------
 
 
-def _check_metadata(crate: Path, errors: list[str]) -> None:
+def _load_object(crate: Path, name: str, errors: list[str]) -> dict[str, Any] | None:
+    """JSON-Datei des Crates als Objekt laden; andere Formen ergeben HOLD statt Ausnahme."""
     try:
-        metadata = json.loads((crate / METADATA_FILE).read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
-        errors.append(f"{METADATA_FILE}: nicht lesbar ({exc})")
+        data = json.loads((crate / name).read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        errors.append(f"{name}: nicht lesbar ({exc})")
+        return None
+    if not isinstance(data, dict):
+        errors.append(f"{name}: JSON-Objekt erwartet, erhalten {type(data).__name__}")
+        return None
+    return data
+
+
+def _check_metadata(crate: Path, errors: list[str]) -> None:
+    metadata = _load_object(crate, METADATA_FILE, errors)
+    if metadata is None:
         return
     if metadata.get("@context") != RO_CRATE_CONTEXT:
         errors.append(f"{METADATA_FILE}: @context ist nicht {RO_CRATE_CONTEXT}")
-    graph = {e.get("@id"): e for e in metadata.get("@graph", []) if isinstance(e, dict)}
+    raw_graph = metadata.get("@graph")
+    if not isinstance(raw_graph, list):
+        errors.append(f"{METADATA_FILE}: @graph als Liste erwartet")
+        return
+    graph: dict[str, dict[str, Any]] = {}
+    for entity in raw_graph:
+        if isinstance(entity, dict) and isinstance(entity.get("@id"), str):
+            graph[entity["@id"]] = entity
+        else:
+            errors.append(f"{METADATA_FILE}: @graph-Eintrag ohne String-@id")
     descriptor = graph.get(METADATA_FILE, {})
     if descriptor.get("@type") != "CreativeWork" or descriptor.get("about") != {"@id": "./"}:
         errors.append("Metadata Descriptor fehlt oder zeigt nicht auf ./")
@@ -770,13 +845,22 @@ def _check_metadata(crate: Path, errors: list[str]) -> None:
     for key in ("name", "description", "datePublished", "license"):
         if not root.get(key):
             errors.append(f"Root Data Entity: {key} fehlt")
-    parts = {p.get("@id") for p in root.get("hasPart", []) if isinstance(p, dict)}
+    has_part = root.get("hasPart", [])
+    parts = (
+        {p.get("@id") for p in has_part if isinstance(p, dict)}
+        if isinstance(has_part, list)
+        else set()
+    )
+    crate_root = crate.resolve()
     for entity_id, entity in graph.items():
         if entity.get("@type") != "File":
             continue
         if entity_id not in parts:
             errors.append(f"{entity_id}: File nicht über hasPart erreichbar")
-        path = crate / str(entity_id)
+        path = (crate / entity_id).resolve()
+        if not path.is_relative_to(crate_root):
+            errors.append(f"{entity_id}: File-@id muss ein relativer Pfad im Crate sein")
+            continue
         if not path.is_file():
             errors.append(f"{entity_id}: im Crate nicht vorhanden")
             continue
@@ -793,28 +877,24 @@ def verify_crate(crate: Path, *, secret: str = "", require_signed: bool = False)
         return result
     _check_metadata(crate, result.errors)
 
-    try:
-        state = json.loads((crate / STATE_FILE).read_text(encoding="utf-8"))
-        if state.get("schema") != SCHEMA_VERSION:
-            result.errors.append(f"{STATE_FILE}: schema ist nicht {SCHEMA_VERSION}")
-    except (OSError, json.JSONDecodeError) as exc:
-        result.errors.append(f"{STATE_FILE}: nicht lesbar ({exc})")
+    state = _load_object(crate, STATE_FILE, result.errors)
+    if state is not None and state.get("schema") != SCHEMA_VERSION:
+        result.errors.append(f"{STATE_FILE}: schema ist nicht {SCHEMA_VERSION}")
     if (crate / CARD_FILE).is_file():
         result.errors.extend(validate_card(crate / CARD_FILE))
     else:
         result.errors.append(f"{CARD_FILE}: fehlt")
 
-    try:
-        seal = json.loads((crate / SEAL_FILE).read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
-        result.errors.append(f"{SEAL_FILE}: nicht lesbar ({exc})")
+    seal = _load_object(crate, SEAL_FILE, result.errors)
+    if seal is None:
         return result
-    sealed_files = seal.get("files") or {}
-    present = {
-        p.relative_to(crate).as_posix()
-        for p in crate.rglob("*")
-        if p.is_file() and p.name != SEAL_FILE
-    }
+    sealed_files = seal.get("files")
+    if not isinstance(sealed_files, dict) or not all(
+        isinstance(k, str) and isinstance(v, str) for k, v in sealed_files.items()
+    ):
+        result.errors.append(f"{SEAL_FILE}: files als Objekt Pfad → SHA-256 erwartet")
+        return result
+    present = set(_crate_files(crate))
     for rel in sorted(present - set(sealed_files)):
         result.errors.append(f"{rel}: nicht im Siegel (nachträglich hinzugefügt)")
     for rel in sorted(set(sealed_files) - present):
@@ -823,12 +903,17 @@ def verify_crate(crate: Path, *, secret: str = "", require_signed: bool = False)
         if sha256_file(crate / rel) != sealed_files[rel]:
             result.errors.append(f"{rel}: SHA-256 weicht vom Siegel ab")
 
-    signature = seal.get("hmac_signature", "")
+    signature = seal.get("hmac_signature")
     unsigned = {k: v for k, v in seal.items() if k not in ("hmac_signature", "warning")}
     fingerprint = {k: v for k, v in unsigned.items() if k != "state_fingerprint"}
     if unsigned.get("state_fingerprint") != "0x" + compute_state_fingerprint(fingerprint):
         result.errors.append(f"{SEAL_FILE}: state_fingerprint passt nicht zum Inhalt")
-    if signature == "UNSIGNED":
+    if not isinstance(signature, str) or not (
+        signature == "UNSIGNED" or SIGNATURE_RE.match(signature)
+    ):
+        result.authenticity = "INVALID"
+        result.errors.append(f"{SEAL_FILE}: hmac_signature fehlt oder hat keine gültige Form")
+    elif signature == "UNSIGNED":
         result.authenticity = "UNSIGNED"
         result.warnings.append("Siegel UNSIGNED: Integrität geprüft, Herkunft nicht.")
         if require_signed:
@@ -851,15 +936,16 @@ def verify_crate(crate: Path, *, secret: str = "", require_signed: bool = False)
 # --- CLI -----------------------------------------------------------------------------
 
 
-def _print_result(result: VerifyResult, as_json: bool) -> None:
+def _print_result(result: VerifyResult, as_json: bool, stream: Any = None) -> None:
+    out = stream or sys.stdout
     if as_json:
-        print(json.dumps(result.as_dict(), indent=2, ensure_ascii=False))
+        print(json.dumps(result.as_dict(), indent=2, ensure_ascii=False), file=out)
         return
-    print(f"REENTRY VERIFY: {result.verdict} (authenticity: {result.authenticity})")
+    print(f"REENTRY VERIFY: {result.verdict} (authenticity: {result.authenticity})", file=out)
     for error in result.errors:
-        print(f"  [HOLD] {error}")
+        print(f"  [HOLD] {error}", file=out)
     for warning in result.warnings:
-        print(f"  [WARN] {warning}")
+        print(f"  [WARN] {warning}", file=out)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -909,6 +995,8 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "verify" or result.verdict != "PASS":
         _print_result(result, args.json)
         return 0 if result.verdict == "PASS" else 1
+    # Prüfergebnis samt Authenticity auf stderr, damit stdout nur den Brief trägt.
+    _print_result(result, args.json, stream=sys.stderr)
     print((args.crate / BRIEF_FILE).read_text(encoding="utf-8"), end="")
     return 0
 

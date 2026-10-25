@@ -61,8 +61,11 @@ Save und Re-Entry Grenzübergänge sind (G0, Re-Entry-Schwelle).
    python3 tools/reentry_crate.py brief --crate <crate-dir>
    ```
    Bei `HOLD`: STOP. Abweichungen melden, nichts aus dem Crate übernehmen, fragen.
+   Bei PASS steht der Brief auf stdout, Prüfergebnis und Warnungen auf stderr.
 2. **Bei PASS** die ausgegebene `REENTRY.md` als Ausgangslage nehmen und antworten mit:
-   **Stand · Offen · Nächster Schritt** (plus Authenticity-Hinweis bei UNSIGNED).
+   **Stand · Offen · Nächster Schritt** — und den Authenticity-Status aus stderr
+   wörtlich nennen: `UNSIGNED` (nur Integrität), `SIGNED_UNCHECKED` (signiert, ohne
+   Schlüssel nicht geprüft) oder `SIGNED_VALID`. Nie stillschweigend weglassen.
 3. **Kontext nachladen** nur bei Bedarf: `savestate.json`, `payload/notes/`,
    `payload/…`-Quellen. Status-Tags beibehalten; nichts still hochstufen.
 4. **Rückführung** (Repo-Änderung, Memory-Schreiben, Kanonisierung) nur mit explizitem OK —
