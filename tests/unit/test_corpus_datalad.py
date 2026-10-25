@@ -274,3 +274,13 @@ def test_end_to_end_with_datalad(inbox: Path, tmp_path: Path) -> None:
     assert "[DATALAD RUNCMD] extract" in log and "[DATALAD RUNCMD] inventory" in log
     assert (ds / "inbox/synthetischer-export/save_state.md").is_symlink()  # Inhalt im annex
     assert not (ds / "code/extract_text.py").is_symlink()  # Code in git
+
+
+@pytest.mark.parametrize("decl", ["<!DOCTYPE d [<!ENTITY a 'x'>]>", "<!ENTITY a 'x'>"])
+def test_docx_with_dtd_or_entities_is_rejected(tmp_path: Path, decl: str) -> None:
+    box = tmp_path / "inbox"
+    box.mkdir()
+    _write_docx(box / "bomb.docx", DOCX_XML.replace("<w:document", decl + "<w:document", 1))
+    entry = ex.run(box, tmp_path / "text")["entries"][0]
+    assert entry["status"] == "error"
+    assert "DTD/Entity" in entry["detail"]

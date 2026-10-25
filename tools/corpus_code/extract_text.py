@@ -23,7 +23,10 @@ import sys
 import zipfile
 from pathlib import Path
 from typing import Any
-from xml.etree import ElementTree
+
+# Nur Standardbibliothek (läuft im Dataset ohne Projektabhängigkeiten). Gegen XML-Angriffe:
+# DTD/Entity-Deklarationen werden vor dem Parsen abgelehnt (OOXML enthält keine), Größe begrenzt.
+from xml.etree import ElementTree  # nosec B405
 
 SCRIPT_VERSION = "0.1.0"
 LOG_NAME = "_extraction_log.json"
@@ -71,7 +74,11 @@ def extract_docx(path: Path) -> str:
         info = archive.getinfo("word/document.xml")
         if info.file_size > MAX_DOCX_XML_BYTES:
             raise ValueError(f"word/document.xml zu groß ({info.file_size} Byte)")
-        root = ElementTree.fromstring(archive.read(info))
+        data = archive.read(info)
+    if b"<!DOCTYPE" in data or b"<!ENTITY" in data:
+        raise ValueError("word/document.xml enthält DTD/Entity-Deklarationen (abgelehnt)")
+    # DTD/Entity-Deklarationen sind oben abgelehnt; Größe ist begrenzt.
+    root = ElementTree.fromstring(data)  # nosec B314
     paragraphs: list[str] = []
     for paragraph in root.iter(f"{W_NS}p"):
         parts: list[str] = []
