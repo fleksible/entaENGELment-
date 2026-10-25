@@ -24,8 +24,10 @@ Verify meldet `HOLD` in diesen getesteten Fällen (`tests/unit/test_reentry_crat
 geänderte, fehlende oder nachträglich hinzugefügte Datei (auch gleichnamig `SEAL.json` in
 Unterordnern — ausgenommen ist nur das Siegel im Paketwurzelverzeichnis), abweichender
 `state_fingerprint`, ungültige, fehlende oder formal falsche HMAC-Signatur, fehlende
-RO-Crate-Pflichtteile, `File`-Einträge außerhalb des Crates, JSON-Dateien mit falscher
-Objektform, ungültige `reentry_vector`-Karte — und mit `--require-signed` auch bei
+RO-Crate-Pflichtteile, `File`- oder `hasPart`-Einträge ohne gültige String-`@id` bzw.
+außerhalb des Crates, Symlinks ohne Dateiinhalt (etwa auf Verzeichnisse, deren Inhalt sonst
+am Siegel vorbeiliefe), JSON-Dateien mit falscher Objektform, ungültige
+`reentry_vector`-Karte — und mit `--require-signed` auch bei
 UNSIGNED oder ohne prüfenden Schlüssel. Das ist kein Beweis gegen jede denkbare
 Manipulation: Ein vollständig neu geschriebenes UNSIGNED-Paket kann sich selbst wieder
 konsistent versiegeln.

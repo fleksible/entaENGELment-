@@ -428,3 +428,45 @@ def test_symlinked_sources_keep_their_names(workspace: Path) -> None:
     assert not (crate / "payload/external/a.md").is_symlink()
     assert (crate / "payload/external/b.md").is_file()
     assert rc.verify_crate(crate).verdict == "PASS"
+
+
+# --- Codex-Review (PR #427): Verzeichnis-Symlinks, hasPart-Form, reservierter Kartenpfad ---
+
+
+def test_directory_symlink_in_crate_holds(workspace: Path, tmp_path: Path) -> None:
+    crate = _save(workspace, secret=SECRET)
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    (outside / "untrusted.md").write_text("nie versiegelt\n", encoding="utf-8")
+    (crate / "payload" / "extra-notes").symlink_to(outside, target_is_directory=True)
+    result = rc.verify_crate(crate, secret=SECRET, require_signed=True)
+    assert result.verdict == "HOLD"
+    assert any("payload/extra-notes: Symlink ohne Dateiinhalt" in e for e in result.errors)
+
+
+def test_haspart_with_non_string_id_holds_without_exception(workspace: Path) -> None:
+    crate = _save(workspace)
+    metadata = json.loads((crate / rc.METADATA_FILE).read_text(encoding="utf-8"))
+    next(e for e in metadata["@graph"] if e["@id"] == "./")["hasPart"].append({"@id": []})
+    (crate / rc.METADATA_FILE).write_text(json.dumps(metadata), encoding="utf-8")
+    result = rc.verify_crate(crate)
+    assert result.verdict == "HOLD"
+    assert any("hasPart-Eintrag ohne String-@id" in e for e in result.errors)
+
+
+@pytest.mark.skipif(shutil.which("git") is None, reason="git not available")
+def test_source_on_reserved_card_path_is_rejected(workspace: Path) -> None:
+    subprocess.run(["git", "init", "-q"], cwd=workspace, check=True)
+    (workspace / "cards").mkdir()
+    (workspace / "cards" / "reentry_vector.json").write_text("{}\n", encoding="utf-8")
+    sources = [{"id": "card", "path": "cards/reentry_vector.json"}]
+    with pytest.raises(rc.ManifestError, match="reservierten Pfad"):
+        rc.save_state(
+            _manifest(sources=sources, claims=[]),
+            workspace / "out",
+            base=workspace,
+            secret="",
+            publish=True,
+            now=NOW,
+        )
+    assert not (workspace / "out").exists()

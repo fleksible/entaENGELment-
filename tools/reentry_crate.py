@@ -746,6 +746,8 @@ def save_state(
     targets = [t for _, t in copies]
     if len(targets) != len(set(targets)):
         raise ManifestError("Zwei Quellen landen am selben Payload-Pfad; Dateinamen prüfen")
+    if CARD_FILE in targets:
+        raise ManifestError(f"Eine Quelle landet auf dem reservierten Pfad {CARD_FILE}")
 
     crate.mkdir(parents=True)
     for source, target in copies:
@@ -848,11 +850,12 @@ def _check_metadata(crate: Path, errors: list[str]) -> None:
         if not root.get(key):
             errors.append(f"Root Data Entity: {key} fehlt")
     has_part = root.get("hasPart", [])
-    parts = (
-        {p.get("@id") for p in has_part if isinstance(p, dict)}
-        if isinstance(has_part, list)
-        else set()
-    )
+    parts: set[str] = set()
+    for ref in has_part if isinstance(has_part, list) else []:
+        if isinstance(ref, dict) and isinstance(ref.get("@id"), str):
+            parts.add(ref["@id"])
+        else:
+            errors.append("Root Data Entity: hasPart-Eintrag ohne String-@id")
     crate_root = crate.resolve()
     for entity_id, entity in graph.items():
         if entity.get("@type") != "File":
@@ -896,6 +899,10 @@ def verify_crate(crate: Path, *, secret: str = "", require_signed: bool = False)
     ):
         result.errors.append(f"{SEAL_FILE}: files als Objekt Pfad → SHA-256 erwartet")
         return result
+    # Symlinks auf Verzeichnisse (oder ins Leere) durchläuft rglob nicht: Ihr Inhalt läge
+    # außerhalb des Siegels. Datei-Symlinks (z. B. git-annex) werden über ihren Inhalt gehasht.
+    for link in sorted(p for p in crate.rglob("*") if p.is_symlink() and not p.is_file()):
+        result.errors.append(f"{link.relative_to(crate).as_posix()}: Symlink ohne Dateiinhalt")
     present = set(_crate_files(crate))
     for rel in sorted(present - set(sealed_files)):
         result.errors.append(f"{rel}: nicht im Siegel (nachträglich hinzugefügt)")
