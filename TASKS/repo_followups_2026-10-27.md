@@ -34,11 +34,14 @@ noch deren Statusregister und autorisiert keine Kanonpromotion. Ein Haken unter
 ## Technische Abnahme / nächste Arbeit
 
 - [x] Korrekturen in die bestehenden PR-Branches bringen; neue Head-CI abgerufen.
-- [ ] Aktuelle Head-CI vollständig grün abnehmen; lokale Prüfungen ersetzen sie nicht.
-- [ ] Kleine Korrektur-Diffs und diese Karte reviewen; Merge-Entscheidungen
-  betreffen den jeweiligen konkreten Umfang.
-- [ ] #429/#434 als getrennte Wartungs-Merge-Kandidaten abnehmen.
-- [ ] #431/#433 anhand ihrer tatsächlichen Builder-/Parser-Verwendungen prüfen.
+- [x] Aktuelle Code-PR-Heads vollständig grün abnehmen; lokale Prüfungen ersetzen sie nicht.
+- [x] Korrektur-Diffs und Karte technisch reviewen; Owner-Freigabe für die
+  geprüften grünen Merges liegt vor. Dies ist keine Claim-Promotion.
+- [x] #429/#434 getrennt abnehmen und mergen.
+- [x] #433 nach Bot-Aktualisierung erneut prüfen und mergen.
+- [x] #425/#426/#427/#428/#430 übernehmen; kombinierter Stand besteht 859 Tests
+  und 169 Subtests sowie die relevanten JS-/Governance-Gates.
+- [ ] #431 anhand der Builder-/Collector-Verwendung mit konkretem Paketnachweis abnehmen.
 - [ ] #432 als gepackte Desktop-App unter aktiver Sandbox starten; UI-Build
   und Glob-Test nicht als Paketstart ausgeben.
 - [ ] #435 über #416: kompatible Updates im uv-Lock auflösen, Exporte gemeinsam
@@ -56,6 +59,10 @@ noch deren Statusregister und autorisiert keine Kanonpromotion. Ein Haken unter
   als Grundlage einer neuen Forschungsprüfung; keine Zahlensignatur kanonisieren.
 
 ## Grenzen
+
+Die ausgeführten Code-/Wartungs-Merges und ihre tatsächlichen Commit-IDs stehen
+in [der Merge-Abnahme](../docs/audit/2026-10-27_merge_session.md). Die Übernahme
+dieses Dokumentationsabschlusses ist im Journal von PR #436 nachvollziehbar.
 
 Keine Umsortierung bestehender Module, keine Löschung, keine Änderungen an GOLD,
 Receipts oder vorhandenen versiegelten Save States. Private Korpusdaten, Remotes

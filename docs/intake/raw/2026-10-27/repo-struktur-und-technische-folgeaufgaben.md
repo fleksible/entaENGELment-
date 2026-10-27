@@ -124,3 +124,17 @@ Der private Korpusindex und frühere Reviews dienten nur als Wegweiser. Der hier
 Testergebnisse; keine privaten Quellen, Einzelhash-Inventare oder persönlichen
 Gesprächsinhalte.
 
+## Nachtrag: technische Übernahme am 27. Oktober
+
+Die oben gepinnten Eingänge bleiben als Ausgangskarte erhalten. Nach erneuter
+Head-/CI-Abnahme wurden #425, #426, #427, #428, #429, #430, #433 und #434
+übernommen. #430 erhielt zuvor eine erneut geprüfte Lockfile-Auflösung gegen die
+bereits gemergten React-Query-/YAML-Versionen. Gemeinsame lokale Abnahme:
+859 Tests und 169 Subtests, Governance, strenger Claim-Lint, JS/TS und Root-Jest
+bestanden. Die aktuelle Arbeitsliste und der datierte Mergebericht nennen die
+tatsächlichen Commit-IDs und getrennten Abschlusskriterien.
+
+#423 bleibt wegen der Bedeutungs-/Zuordnungsentscheidung offen, #431/#432 wegen
+ausstehender Paketnachweise und #435 wegen der nicht erfüllten Lock-/Dependency-
+Gates. Diese Grenzen werden nicht durch den technischen Merge verändert.
+

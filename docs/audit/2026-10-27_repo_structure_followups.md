@@ -73,3 +73,12 @@ semantische Lektüre aller Dateien und kein universeller Security-Audit.
 Der Suchadapter #428 → #426, Desktop-Smoke-Test #432, gezielte Reviews #431/#433,
 der konsistente Python-Update-Pfad #435/#416 sowie die menschlichen oder
 Account-bezogenen Reste #418/#423, #332 und #305 behalten eigene Abschlusskriterien.
+
+## Anschließende technische Merge-Freigabe
+
+Nach diesem datierten Prüfstand wurde die Übernahme der geprüften grünen PRs
+beauftragt. Die acht ausgeführten Code-/Wartungs-Merges, die erneute
+Lockfile-Abnahme und die weiterhin offenen Grenzen stehen gesondert in
+[2026-10-27_merge_session.md](2026-10-27_merge_session.md). Der kombinierte
+Codebestand besteht 859 Tests und 169 Subtests; die frühere Integrationshistorie
+oben wird dadurch nicht rückwirkend als derselbe Lauf ausgegeben.
