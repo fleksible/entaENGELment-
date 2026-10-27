@@ -413,7 +413,7 @@ def claim_audit(claims: list[dict[str, Any]]) -> dict[str, Any]:
 # --- Save ----------------------------------------------------------------------------
 
 
-def _payload_target(src: Path, repo_root: Path | None, prefix: str) -> str:
+def _payload_target(src: Path, repo_root: Path | None, prefix: str, source_id: str) -> str:
     # Verzeichnisse auflösen, Dateinamen behalten: git-annex-Dateien sind Symlinks auf ihren
     # Inhaltsschlüssel; aufgelöst würden inhaltsgleiche Quellen am selben Pfad kollidieren.
     located = Path(os.path.realpath(src.parent)) / src.name
@@ -422,7 +422,9 @@ def _payload_target(src: Path, repo_root: Path | None, prefix: str) -> str:
             return f"{prefix}/{located.relative_to(repo_root).as_posix()}"
         except ValueError:
             pass
-    return f"{prefix}/external/{located.name}"
+    # Die normalisierte Quellen-ID ist ein sicherer, eindeutiger Pfadbestandteil.
+    # Gleiche Dateinamen aus verschiedenen externen Ordnern bleiben getrennt.
+    return f"{prefix}/external/{source_id}/{located.name}"
 
 
 def _iter_files(path: Path) -> list[Path]:
@@ -729,7 +731,7 @@ def save_state(
                 f"Quelle {src['id']}: sha256 weicht von der Vorgabe ab "
                 f"(Vorgabe {src['sha256'][:16]}…, Datei {actual[:16]}…)"
             )
-        src["payload"] = _payload_target(path, repo_root, "payload")
+        src["payload"] = _payload_target(path, repo_root, "payload", src["id"])
         expected[src["payload"]] = actual
         copies.append((path, src["payload"]))
     notes_payload: list[str] = []

@@ -76,7 +76,7 @@ def test_save_creates_crate_that_passes_verify(workspace: Path) -> None:
     assert result.authenticity == "UNSIGNED"
     for name in (rc.METADATA_FILE, rc.BRIEF_FILE, rc.STATE_FILE, rc.SEAL_FILE, rc.CARD_FILE):
         assert (crate / name).is_file()
-    assert (crate / "payload/external/quelle.md").is_file()
+    assert (crate / "payload/external/src-local/quelle.md").is_file()
     assert (crate / "payload/notes/notes/stand.md").is_file()
 
 
@@ -96,7 +96,7 @@ def test_metadata_follows_ro_crate_12_minimum(workspace: Path) -> None:
     claim = graph["#claim-1"]
     assert claim["@type"] == "Claim"
     assert claim["creativeWorkStatus"] == "DERIVED"
-    assert claim["isBasedOn"] == [{"@id": "payload/external/quelle.md"}]
+    assert claim["isBasedOn"] == [{"@id": "payload/external/src-local/quelle.md"}]
     assert graph["#save-action"]["@type"] == "CreateAction"
 
 
@@ -128,7 +128,12 @@ def test_brief_lists_open_points_and_negative_findings(workspace: Path) -> None:
 @pytest.mark.parametrize(
     ("mutate", "message"),
     [
-        (lambda c: (c / "payload/external/quelle.md").write_text("x", encoding="utf-8"), "SHA-256"),
+        (
+            lambda c: (c / "payload/external/src-local/quelle.md").write_text(
+                "x", encoding="utf-8"
+            ),
+            "SHA-256",
+        ),
         (lambda c: (c / "extra.txt").write_text("x", encoding="utf-8"), "nicht im Siegel"),
         (lambda c: (c / rc.BRIEF_FILE).unlink(), "fehlt"),
     ],
@@ -219,7 +224,7 @@ def test_cli_brief_prints_only_after_pass(workspace: Path, capsys, monkeypatch) 
     assert captured.out.startswith("# Re-Entry: Test Save State")
     assert "REENTRY VERIFY: PASS (authenticity: UNSIGNED)" in captured.err
     assert "Herkunft nicht" in captured.err
-    (crate / "payload/external/quelle.md").write_text("x", encoding="utf-8")
+    (crate / "payload/external/src-local/quelle.md").write_text("x", encoding="utf-8")
     assert rc.main(["brief", "--crate", str(crate)]) == 1
     out = capsys.readouterr().out
     assert "REENTRY VERIFY: HOLD" in out
@@ -275,7 +280,7 @@ def test_source_named_seal_is_hashed(workspace: Path) -> None:
     sources = [{"id": "seal-src", "path": "corpus/SEAL.json"}]
     crate = _save(workspace, sources=sources, claims=[{"text": "x", "tag": "FACT"}])
     seal = json.loads((crate / rc.SEAL_FILE).read_text(encoding="utf-8"))
-    assert "payload/external/SEAL.json" in seal["files"]
+    assert "payload/external/seal-src/SEAL.json" in seal["files"]
     assert rc.verify_crate(crate).verdict == "PASS"
 
 
@@ -424,10 +429,47 @@ def test_symlinked_sources_keep_their_names(workspace: Path) -> None:
         {"id": "b", "path": "corpus/b.md"},
     ]
     crate = _save(workspace, sources=sources, claims=[])
-    assert (crate / "payload/external/a.md").read_text(encoding="utf-8") == "same\n"
-    assert not (crate / "payload/external/a.md").is_symlink()
-    assert (crate / "payload/external/b.md").is_file()
+    assert (crate / "payload/external/a/a.md").read_text(encoding="utf-8") == "same\n"
+    assert not (crate / "payload/external/a/a.md").is_symlink()
+    assert (crate / "payload/external/b/b.md").is_file()
     assert rc.verify_crate(crate).verdict == "PASS"
+
+
+@pytest.mark.parametrize("same_content", [True, False])
+@pytest.mark.parametrize("annex_symlinks", [True, False])
+def test_external_sources_with_same_basename_roundtrip(
+    workspace: Path, same_content: bool, annex_symlinks: bool
+) -> None:
+    sources = []
+    expected = {}
+    for source_id, content in (
+        ("first", "same\n"),
+        ("second", "same\n" if same_content else "different\n"),
+    ):
+        path = workspace / "corpus" / source_id / "save_state.md"
+        path.parent.mkdir()
+        if annex_symlinks:
+            object_path = workspace / f"object-{source_id}"
+            object_path.write_text(content, encoding="utf-8")
+            path.symlink_to(object_path)
+        else:
+            path.write_text(content, encoding="utf-8")
+        sources.append({"id": source_id, "path": str(path), "sha256": rc.sha256_file(path)})
+        expected[source_id] = content
+    crate = _save(
+        workspace,
+        secret=SECRET,
+        sources=sources,
+        claims=[{"text": "Synthetic only", "tag": "MODEL", "sources": list(expected)}],
+    )
+    state = json.loads((crate / rc.STATE_FILE).read_text(encoding="utf-8"))
+    payloads = [source["payload"] for source in state["sources"]]
+    assert len(set(payloads)) == 2
+    for source in state["sources"]:
+        payload = crate / source["payload"]
+        assert payload.name == "save_state.md" and not payload.is_symlink()
+        assert payload.read_text(encoding="utf-8") == expected[source["id"]]
+    assert rc.verify_crate(crate, secret=SECRET, require_signed=True).verdict == "PASS"
 
 
 # --- Codex-Review (PR #427): Verzeichnis-Symlinks, hasPart-Form, reservierter Kartenpfad ---
