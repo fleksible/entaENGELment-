@@ -1,0 +1,284 @@
+{
+  "@context": "https://w3id.org/ro/crate/1.2/context",
+  "@graph": [
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "./",
+      "@type": "Dataset",
+      "name": "Research-Connectoren und Re-Entry-Werkzeug (Erststand)",
+      "description": "Kuratierung von 15 Anbindungen (Skills, MCP-Server, Provenienz, Grimm-Ebene) und deren\nUmsetzung, soweit in einer Cloud-Sitzung möglich: Save-State-Werkzeug als RO-Crate 1.2 mit\nSHA-256-Siegel, Re-Entry-Skill, Basic-Memory-Konvention, Sicherheitsprüfung dreier\nCommunity-MCP-Server, Connector-Smoke-Tests, Wolfram-Zweitrechnung und DTA-TEI-Prüfung.\nInstallationen auf dem eigenen Rechner und Lizenzklärung DTA stehen aus.\nÖffentliche Fassung für den Intake (Pattern F); enthält keine privaten Korpusinhalte.",
+      "datePublished": "2026-10-25T02:25:25+00:00",
+      "license": {
+        "@id": "#private-by-default"
+      },
+      "keywords": [
+        "tesser3TAKT",
+        "save-state",
+        "re-entry",
+        "Anbindungen + Save-State-Kreislauf vorbereiten"
+      ],
+      "creativeWorkStatus": "DERIVED",
+      "hasPart": [
+        {
+          "@id": "REENTRY.md"
+        },
+        {
+          "@id": "savestate.json"
+        },
+        {
+          "@id": "payload/cards/reentry_vector.json"
+        },
+        {
+          "@id": "payload/docs/intake/raw/2026-10-25/kuratierte-anbindungen-entaengelment-tesser3takt-grimm-v0-1.md"
+        },
+        {
+          "@id": "payload/docs/intake/raw/2026-10-25/research-connectoren-setup-und-pruefprotokoll-v0-1.md"
+        },
+        {
+          "@id": "payload/.claude/skills/tesser3takt-reentry/reference.md"
+        }
+      ],
+      "mentions": [
+        {
+          "@id": "#claim-1"
+        },
+        {
+          "@id": "#claim-2"
+        },
+        {
+          "@id": "#claim-3"
+        },
+        {
+          "@id": "#claim-4"
+        },
+        {
+          "@id": "#claim-5"
+        },
+        {
+          "@id": "#claim-6"
+        }
+      ],
+      "isBasedOn": [
+        {
+          "@id": "https://github.com/fleksible/entaENGELment-/blob/ccr-392027bd-pu1nxa/tools/reentry_crate.py"
+        },
+        {
+          "@id": "https://github.com/fleksible/entaENGELment-/blob/ccr-392027bd-pu1nxa/tests/unit/test_reentry_crate.py"
+        },
+        {
+          "@id": "https://www.researchobject.org/ro-crate/specification/1.2/introduction.html"
+        }
+      ]
+    },
+    {
+      "@id": "REENTRY.md",
+      "@type": "File",
+      "name": "Re-Entry-Kurzfassung",
+      "contentSize": "5245",
+      "sha256": "9a70c1f307a64889992f3f06fd6e9406e9a7944029b6dd27504fa718ddedf14b",
+      "encodingFormat": "text/markdown"
+    },
+    {
+      "@id": "savestate.json",
+      "@type": "File",
+      "name": "Normalisierter Save State",
+      "contentSize": "8520",
+      "sha256": "548b33fe9c834c2d7cd00c20c202f7fdd27fb6e58f32cdf69dbec07349a9eb7b",
+      "encodingFormat": "application/json"
+    },
+    {
+      "@id": "payload/cards/reentry_vector.json",
+      "@type": "File",
+      "name": "reentry_vector-Karte",
+      "contentSize": "381",
+      "sha256": "f370caee889c29e8d8b416b9ee07cabe25bba7eef75230facca1a463113f7393",
+      "encodingFormat": "application/json"
+    },
+    {
+      "@id": "payload/docs/intake/raw/2026-10-25/kuratierte-anbindungen-entaengelment-tesser3takt-grimm-v0-1.md",
+      "@type": "File",
+      "name": "curation",
+      "contentSize": "7648",
+      "sha256": "60c7f93b0a33e36ab27415bea009b0981323e5ff1869e91ee6df761b0b67a3cf",
+      "encodingFormat": "text/markdown"
+    },
+    {
+      "@id": "payload/docs/intake/raw/2026-10-25/research-connectoren-setup-und-pruefprotokoll-v0-1.md",
+      "@type": "File",
+      "name": "protocol",
+      "contentSize": "7147",
+      "sha256": "45bd49699ebeb76c4e7ff2242d4253f76b2b0a9c71f4ff08fd8ab2b5cb4d2cb7",
+      "encodingFormat": "text/markdown"
+    },
+    {
+      "@id": "payload/.claude/skills/tesser3takt-reentry/reference.md",
+      "@type": "File",
+      "name": "skill_reference",
+      "contentSize": "3673",
+      "sha256": "88dea40b72fc51cdd899049a2a1e12a6279a2409ec6d17c6970b54c777221dfe",
+      "encodingFormat": "text/markdown"
+    },
+    {
+      "@id": "https://github.com/fleksible/entaENGELment-/blob/ccr-392027bd-pu1nxa/tools/reentry_crate.py",
+      "@type": "CreativeWork",
+      "name": "tools/reentry_crate.py (Stand dieses Save States, per sha256 gebunden)",
+      "identifier": "tool",
+      "sha256": "df4d5669bc08514920fd5db40369c296dbf2ff291a07785654d6c6c7dc396380"
+    },
+    {
+      "@id": "https://github.com/fleksible/entaENGELment-/blob/ccr-392027bd-pu1nxa/tests/unit/test_reentry_crate.py",
+      "@type": "CreativeWork",
+      "name": "tests/unit/test_reentry_crate.py (Stand dieses Save States, per sha256 gebunden)",
+      "identifier": "tests",
+      "sha256": "5672b84e9839a5b40f1457bc039cb0f1fe51cc95320c5ca713b0ab88a2499c14"
+    },
+    {
+      "@id": "https://www.researchobject.org/ro-crate/specification/1.2/introduction.html",
+      "@type": "CreativeWork",
+      "name": "RO-Crate 1.2 Specification",
+      "identifier": "rocrate_spec"
+    },
+    {
+      "@id": "#claim-1",
+      "@type": "Claim",
+      "text": "Das Save-State-Werkzeug erzeugt RO-Crate-1.2-Pakete, die verify mit PASS bestehen; Manipulation führt zu HOLD.",
+      "keywords": "FACT",
+      "creativeWorkStatus": "VERIFIED",
+      "isBasedOn": [
+        {
+          "@id": "https://github.com/fleksible/entaENGELment-/blob/ccr-392027bd-pu1nxa/tools/reentry_crate.py"
+        },
+        {
+          "@id": "https://github.com/fleksible/entaENGELment-/blob/ccr-392027bd-pu1nxa/tests/unit/test_reentry_crate.py"
+        }
+      ]
+    },
+    {
+      "@id": "#claim-2",
+      "@type": "Claim",
+      "text": "Wolfram-Zweitrechnung (Charakteristik-Matrix) stimmt mit thin_film_reflectance (Airy) auf ~1e-16 überein.",
+      "keywords": "FACT",
+      "creativeWorkStatus": "VERIFIED",
+      "isBasedOn": [
+        {
+          "@id": "payload/docs/intake/raw/2026-10-25/research-connectoren-setup-und-pruefprotokoll-v0-1.md"
+        }
+      ]
+    },
+    {
+      "@id": "#claim-3",
+      "@type": "Claim",
+      "text": "Basic Memory und Zotero MCP sind mit Einstellungen nutzbar; arXiv MCP ist mit gepinnter Version unbedenklich.",
+      "keywords": "INFERENZ",
+      "creativeWorkStatus": "REVIEW-PENDING",
+      "isBasedOn": [
+        {
+          "@id": "payload/docs/intake/raw/2026-10-25/research-connectoren-setup-und-pruefprotokoll-v0-1.md"
+        }
+      ]
+    },
+    {
+      "@id": "#claim-4",
+      "@type": "Claim",
+      "text": "Die DTA-Lizenzangaben für KHM 1812 widersprechen sich (CC BY-NC 3.0 vs. CC BY-SA 4.0).",
+      "keywords": "KORPUSBEFUND",
+      "creativeWorkStatus": "UNRESOLVED",
+      "isBasedOn": [
+        {
+          "@id": "payload/docs/intake/raw/2026-10-25/research-connectoren-setup-und-pruefprotokoll-v0-1.md"
+        }
+      ]
+    },
+    {
+      "@id": "#claim-5",
+      "@type": "Claim",
+      "text": "Basic-Memory-Kategorien tragen die Claim-Art, Tags den Status; so bleiben Metapher und Messbehauptung getrennt.",
+      "keywords": "MODELL",
+      "creativeWorkStatus": "DERIVED",
+      "isBasedOn": [
+        {
+          "@id": "payload/.claude/skills/tesser3takt-reentry/reference.md"
+        }
+      ]
+    },
+    {
+      "@id": "#claim-6",
+      "@type": "Claim",
+      "text": "Ein versiegeltes Paket ist ein zwischenzeitliches Ganzes, das ohne Glättung wieder betreten werden kann.",
+      "keywords": "METAPHER",
+      "creativeWorkStatus": "DERIVED"
+    },
+    {
+      "@id": "#save-action",
+      "@type": "CreateAction",
+      "name": "tesser3TAKT Save State",
+      "instrument": {
+        "@id": "#reentry-crate-tool"
+      },
+      "object": [
+        {
+          "@id": "payload/docs/intake/raw/2026-10-25/kuratierte-anbindungen-entaengelment-tesser3takt-grimm-v0-1.md"
+        },
+        {
+          "@id": "payload/docs/intake/raw/2026-10-25/research-connectoren-setup-und-pruefprotokoll-v0-1.md"
+        },
+        {
+          "@id": "https://github.com/fleksible/entaENGELment-/blob/ccr-392027bd-pu1nxa/tools/reentry_crate.py"
+        },
+        {
+          "@id": "https://github.com/fleksible/entaENGELment-/blob/ccr-392027bd-pu1nxa/tests/unit/test_reentry_crate.py"
+        },
+        {
+          "@id": "payload/.claude/skills/tesser3takt-reentry/reference.md"
+        },
+        {
+          "@id": "https://www.researchobject.org/ro-crate/specification/1.2/introduction.html"
+        }
+      ],
+      "result": [
+        {
+          "@id": "REENTRY.md"
+        },
+        {
+          "@id": "savestate.json"
+        },
+        {
+          "@id": "payload/cards/reentry_vector.json"
+        }
+      ],
+      "endTime": "2026-10-25T02:25:25+00:00",
+      "actionStatus": {
+        "@id": "http://schema.org/CompletedActionStatus"
+      },
+      "agent": {
+        "@id": "#agent"
+      }
+    },
+    {
+      "@id": "#reentry-crate-tool",
+      "@type": "SoftwareApplication",
+      "name": "tools/reentry_crate.py",
+      "version": "0.1.0+83caf03d6e80"
+    },
+    {
+      "@id": "#private-by-default",
+      "@type": "CreativeWork",
+      "name": "Privat per Default",
+      "description": "Nicht zur Weitergabe; siehe PRIVACY_BOUNDARY.md im Repository."
+    },
+    {
+      "@id": "#agent",
+      "@type": "Person",
+      "name": "Claude Code (Sitzung 2026-10-25)"
+    }
+  ]
+}

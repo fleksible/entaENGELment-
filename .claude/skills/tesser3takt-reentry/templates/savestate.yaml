@@ -1,0 +1,52 @@
+# tesser3TAKT Save State — Manifest-Vorlage (tools/reentry_crate.py)
+# Kopieren nach out/reentry/manifests/<id>.yaml (gitignored), füllen, dann:
+#   python3 tools/reentry_crate.py save --manifest out/reentry/manifests/<id>.yaml
+# Relative Pfade gelten ab dem Arbeitsverzeichnis (--base, Default: cwd).
+
+id: 2026-10-25_beispiel            # optional; sonst <datum>_<titel-slug>
+title: "Kurzer, eindeutiger Titel"
+focus: "2-5 Wörter Task-Ziel"      # FOKUS (G4)
+summary: |
+  3-5 Sätze: Worum ging es, was ist der Stand, warum ist er wichtig.
+
+authority: REVIEW-PENDING          # DERIVED | REVIEW-PENDING | HOLD | UNRESOLVED | VERIFIED | RETRACTED
+promotion_status: NO_CANON_PROMOTION
+current_status: ""                 # freier Leitstatus, z. B. GO_conservative_hold_50
+agent: ""                          # optional: wer den Stand verantwortet
+license: private                   # private | URL einer Lizenz (nur bei --publish sinnvoll)
+
+frozen_state:                      # was als stabil gilt
+  - ""
+floating_problem: ""               # was gerade in der Schwebe ist
+
+claims:                            # jede Aussage mit Art (tag) und Status
+  - text: ""
+    tag: MODELL                    # siehe reference.md, Abschnitt 2
+    status: DERIVED
+    sources: [src-1]
+
+open_points: []                    # UNRESOLVED — sichtbar lassen
+negative_findings: []              # geprüft und verworfen, mit Grund
+known_losses: []                   # was in diesem Stand fehlt (z. B. Transkript nicht geladen)
+
+next_actions:
+  - id: A1
+    title: ""
+    paths: []
+next_allowed_action: ""            # die eine nächste erlaubte Aktion
+
+sources:
+  - id: src-1
+    path: docs/intake/README.md    # lokale Datei: wird kopiert und gehasht
+    role: input                    # input | context | output
+  - id: src-2
+    uri: https://drive.google.com/file/d/<id>/view   # entfernte Quelle: nur Verweis
+    title: ""
+    sha256: ""                     # optional, falls bekannt (64 Hex-Zeichen)
+    role: context
+
+notes: []                          # Basic-Memory-Notizen (Dateien oder Ordner)
+
+lineage:                           # optional, wie lineage_graph.json
+  nodes: []
+  edges: []

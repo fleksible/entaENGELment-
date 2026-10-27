@@ -1,0 +1,20 @@
+{
+  "seal_version": "1.0",
+  "crate_id": "2026-10-25_research-connectoren-reentry",
+  "sealed_at": "2026-10-25T02:25:25+00:00",
+  "commit": "83caf03d6e8039637f147f1313238ca5cab611f6",
+  "hash_alg": "sha256",
+  "canonicalization": "json_c14n_v1",
+  "files": {
+    "REENTRY.md": "9a70c1f307a64889992f3f06fd6e9406e9a7944029b6dd27504fa718ddedf14b",
+    "payload/.claude/skills/tesser3takt-reentry/reference.md": "88dea40b72fc51cdd899049a2a1e12a6279a2409ec6d17c6970b54c777221dfe",
+    "payload/cards/reentry_vector.json": "f370caee889c29e8d8b416b9ee07cabe25bba7eef75230facca1a463113f7393",
+    "payload/docs/intake/raw/2026-10-25/kuratierte-anbindungen-entaengelment-tesser3takt-grimm-v0-1.md": "60c7f93b0a33e36ab27415bea009b0981323e5ff1869e91ee6df761b0b67a3cf",
+    "payload/docs/intake/raw/2026-10-25/research-connectoren-setup-und-pruefprotokoll-v0-1.md": "45bd49699ebeb76c4e7ff2242d4253f76b2b0a9c71f4ff08fd8ab2b5cb4d2cb7",
+    "ro-crate-metadata.json": "6b868ad2c975f721e02ce4ee4bfe34fdc3275b8d03f2e31720b6467df330e92a",
+    "savestate.json": "548b33fe9c834c2d7cd00c20c202f7fdd27fb6e58f32cdf69dbec07349a9eb7b"
+  },
+  "state_fingerprint": "0x1ff7a87f66d1fb165c992691b21465fdc7106f6291f945168c08bfe43435a431",
+  "hmac_signature": "UNSIGNED",
+  "warning": "No ENTA_HMAC_SECRET set. Seal covers integrity only, not origin."
+}

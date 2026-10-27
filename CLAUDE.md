@@ -290,6 +290,7 @@ Working Tree → make verify (port-lint · pytest · verify-pointers --strict ·
 | `voids_backlog_gen.py [--check]` | `docs/voids_backlog.md` aus `VOIDMAP.yml` (re)generieren |
 | `voidmap_ui_drift_check.py` | UI-Mirror ↔ `VOIDMAP.yml` Drift |
 | `intake_add.py` / `intake_shadow_copy.py` | Calm Intake Layer |
+| `reentry_crate.py save\|verify\|brief` | tesser3TAKT Save State als RO-Crate 1.2 (privat in `out/reentry/`; Skill `/tesser3takt-reentry`) |
 | `void011_metrics_export.py [--check]` | SIMULATION_PROXY-Metrik-Export (VOID-011) erzeugen/auf Drift prüfen |
 | `spectra_table_lint.py` | Quellenpflicht für `data/spectra/` (VOID-010) |
 | `eventlog_spec_check.py <jsonl> [--export]` | Events gegen `spec/runtime_eventlog_v0_1.json` prüfen ([SPEC-WIP]) |
