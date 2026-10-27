@@ -358,6 +358,31 @@ def test_sources_for_reentry_bind_hashes(tmp_path: Path) -> None:
     assert len(cd.sources_for_reentry(ds)) == 3
 
 
+def test_import_inventory_and_anchor_have_explicit_hidden_file_boundary(
+    tmp_path: Path, monkeypatch
+) -> None:
+    monkeypatch.setattr(cd, "_run", lambda cmd, cwd=None: "")
+    ds = _fake_dataset(tmp_path)
+    src = tmp_path / "export"
+    src.mkdir()
+    (src / "visible.md").write_text("visible\n", encoding="utf-8")
+    (src / ".hidden.md").write_text("hidden\n", encoding="utf-8")
+    record = cd.cmd_import(ds, src, "Boundary")
+    inventory = inv.run(ds / cd.INBOX, ds / cd.INVENTORY_OUT)
+    anchor_path = ds / cd.INVENTORY_OUT / "public_anchor.json"
+    anchor_bytes = anchor_path.read_bytes()
+    anchor = json.loads(anchor_bytes)
+    assert record["file_count"] == 2 and inventory["summary"]["files"] == 1
+    assert len(cd.sources_for_reentry(ds)) == 1
+    assert next(f for f in record["files"] if f["path"] == ".hidden.md")["sha256"] == (
+        hashlib.sha256(b"hidden\n").hexdigest()
+    )
+    assert "punktbeginnenden" in anchor["rootHashRule"]
+    (ds / cd.INBOX / "boundary" / ".hidden.md").write_text("changed\n", encoding="utf-8")
+    inv.run(ds / cd.INBOX, ds / cd.INVENTORY_OUT)
+    assert anchor_path.read_bytes() == anchor_bytes
+
+
 @pytest.mark.skipif(
     shutil.which("datalad") is None or shutil.which("git-annex") is None,
     reason="datalad/git-annex not installed",
@@ -373,6 +398,31 @@ def test_end_to_end_with_datalad(inbox: Path, tmp_path: Path) -> None:
     assert "[DATALAD RUNCMD] extract" in log and "[DATALAD RUNCMD] inventory" in log
     assert (ds / "inbox/synthetischer-export/save_state.md").is_symlink()  # Inhalt im annex
     assert not (ds / "code/extract_text.py").is_symlink()  # Code in git
+
+
+@pytest.mark.skipif(
+    shutil.which("datalad") is None or shutil.which("git-annex") is None,
+    reason="datalad/git-annex not installed",
+)
+def test_missing_annex_input_reaches_scripts_without_automatic_get(tmp_path: Path) -> None:
+    src = tmp_path / "export"
+    src.mkdir()
+    (src / "present.md").write_text("present\n", encoding="utf-8")
+    (src / "missing.md").write_text("different\n", encoding="utf-8")
+    ds = cd.cmd_init(tmp_path / "dataset")
+    cd.cmd_import(ds, src, "Export")
+    assert cd.cmd_extract(ds)["counts"] == {"ok": 2}
+    missing = ds / "inbox/export/missing.md"
+    subprocess.run(["git", "annex", "drop", "--force", str(missing)], cwd=ds, check=True)
+    assert not missing.exists()
+    log = cd.cmd_extract(ds)
+    assert log["counts"] == {"missing": 1, "ok": 1}
+    assert log["stale_outputs"] == ["export/missing.md.txt"]
+    inventory = cd.cmd_inventory(ds)
+    assert inventory["missing_content"] == ["export/missing.md"]
+    assert inventory["summary"]["files"] == 1
+    assert len(cd.sources_for_reentry(ds)) == 1
+    assert not missing.exists()  # kein implizites Wiederbeschaffen des Inhalts
 
 
 @pytest.mark.skipif(shutil.which("git") is None, reason="git not available")

@@ -19,6 +19,15 @@
 | `public_anchor.json` enthält keine Dateinamen, nur Anzahl und Wurzelhash. | Die Einzelhashes in `inventory.json` sind privat (Bestätigungsangriff möglich). |
 | Import aus einem Ordner-Export; Drive-Datei-IDs werden nicht übernommen. | Keine Zuordnung zur Drive-Datei-ID (der Drive-Connector liefert keine Prüfsummen). |
 
+**Auswahlgrenze:** Der Import-Record bindet auch Dotdateien per SHA-256. Extraktion,
+Inventar und daraus erzeugte `sources` lassen dagegen jeden Pfad mit einem
+punktbeginnenden Bestandteil aus. Fehlender Annex-Inhalt steht im Inventar als
+`missing_content` und geht nicht in den Anker ein. `entryCount` und
+`snapshotRootHash` beziehen sich deshalb auf die berücksichtigten, lokal vorhandenen
+Nicht-Dotdateien, nicht auf sämtliche importierten Dateien. Der Wurzelhash bindet
+deren Inhaltshashes einschließlich Wiederholungen; Dateinamen und Ordnerstruktur
+sind nicht gebunden. Ein unveränderter Anker belegt keine unveränderten Dotdateien.
+
 ## 1. Einmalig installieren (eigener Rechner)
 
 Quelle: [DataLad-Handbuch, Installation](https://handbook.datalad.org/en/latest/intro/installation.html).
@@ -78,6 +87,12 @@ python3 tools/corpus_datalad.py inventory --dataset ~/korpus
 Beide Läufe nutzen die beim `init` kopierten Skripte unter `code/`; der Run-Record in der
 Commit-Nachricht nennt Befehl, Eingaben und Ausgaben.
 
+Für Eingaben setzt das Werkzeug `datalad run --assume-ready inputs`: Es verarbeitet
+den lokal vorhandenen Bestand und protokolliert fehlenden Annex-Inhalt als `missing`,
+statt vor dem Skriptlauf automatisch `get` zu versuchen. Ein erfolgreicher Lauf kann
+deshalb unvollständige Eingaben haben; Log und `missing_content` mitlesen. Inhalte
+bewusst mit `datalad get <pfad>` verfügbar machen und danach erneut prüfen.
+
 ## 5. Prüfen und wiederholen
 
 ```bash
@@ -99,6 +114,11 @@ python3 tools/corpus_datalad.py sources --dataset ~/korpus --glob "*Save_State*"
 Gibt `sources`-Einträge mit absolutem Pfad und `sha256` aus. In ein Save-State-Manifest
 übernommen, prüft `tools/reentry_crate.py save` den Hash gegen die Datei und bricht bei
 Abweichung ab. Voraussetzung: `tools/reentry_crate.py` aus PR #427.
+
+Mehrere Quellen mit gleichem Dateinamen aus verschiedenen Ordnern benötigen die
+Quellen-ID im externen Payload-Pfad des Reentry-Werkzeugs. Eindeutige `sources`-IDs
+allein verhindern keine Kollision eines älteren Reentry-Stands. Vor dem ersten
+gemeinsamen Betrieb diesen Fall mit gleichen und unterschiedlichen Inhalten prüfen.
 
 ## 7. Später, bewusst und getrennt
 

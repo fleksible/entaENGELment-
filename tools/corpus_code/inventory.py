@@ -97,7 +97,11 @@ def public_anchor(file_hashes: list[str]) -> dict[str, Any]:
         "entryCount": len(file_hashes),
         "distinctContentCount": len(set(file_hashes)),
         "snapshotRootHash": root,
-        "rootHashRule": "sha256 über die sortierten, zeilengetrennten SHA-256 aller Dateien",
+        "rootHashRule": (
+            "sha256 über die sortierten, zeilengetrennten SHA-256 der lokal vorhandenen "
+            "Dateien unter inbox; Pfade mit punktbeginnenden Bestandteilen sind ausgelassen; "
+            "Dateinamen und Ordnerstruktur sind nicht gebunden"
+        ),
     }
 
 

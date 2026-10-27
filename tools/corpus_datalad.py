@@ -242,7 +242,9 @@ def cmd_import(dataset: Path, source: Path, label: str) -> dict[str, Any]:
 def _datalad_run(
     ds: Path, message: str, inputs: list[str], outputs: list[str], command: str
 ) -> None:
-    cmd = ["datalad", "run", "-m", message]
+    # Fehlende lokale Inhalte werden von den Skripten als missing protokolliert.
+    # DataLad soll sie vorher weder nachladen noch den Lauf daran abbrechen.
+    cmd = ["datalad", "run", "--assume-ready", "inputs", "-m", message]
     for item in inputs:
         cmd += ["--input", item]
     for item in outputs:
