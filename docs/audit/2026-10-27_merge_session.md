@@ -87,4 +87,3 @@ Remotes und öffentliche Anker wurden nicht durch den Merge angelegt.
 Der Korpus-Suchadapter, Account-/Empfangstest #332 und Forschungsgrundlagen #305
 bleiben weitere eigene Arbeitspakete der Aufgabenliste. Die technischen Merges
 erzeugen keinen empirischen Befund, keine Phasenwahl und keinen Kanonstatus.
-

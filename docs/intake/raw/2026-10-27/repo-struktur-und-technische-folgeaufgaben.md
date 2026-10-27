@@ -137,4 +137,3 @@ tatsächlichen Commit-IDs und getrennten Abschlusskriterien.
 #423 bleibt wegen der Bedeutungs-/Zuordnungsentscheidung offen, #431/#432 wegen
 ausstehender Paketnachweise und #435 wegen der nicht erfüllten Lock-/Dependency-
 Gates. Diese Grenzen werden nicht durch den technischen Merge verändert.
-
