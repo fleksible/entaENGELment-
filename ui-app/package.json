@@ -16,7 +16,7 @@
     "react-dom": "^19.3.1",
     "@tanstack/react-query": "^5.104.5",
     "@enta/types": "workspace:*",
-    "yaml": "^2.9.0"
+    "yaml": "^2.9.1"
   },
   "devDependencies": {
     "@enta/tsconfig": "workspace:*",
