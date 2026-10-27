@@ -42,5 +42,5 @@ Basis für die erneute Integration:
 `main@b72cfd94b6e47da559104c986bce9358e0604c41`.
 Eingefrorene Installation, vollständige Turbo-Pipeline (vier Tasks ausgeführt,
 ein unveränderter Shared-Typecheck aus dem Cache), Root-Jest (66 Tests),
-`make verify` (859 Tests und 165 Subtests), Governance und strenger Claim-Lint
+`make verify` (859 Tests und 169 Subtests), Governance und strenger Claim-Lint
 bestanden. Der aktualisierte PR-Head erhält vor Merge eine eigene CI-Abnahme.
