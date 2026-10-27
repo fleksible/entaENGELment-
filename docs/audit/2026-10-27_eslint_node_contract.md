@@ -28,3 +28,19 @@ Parser, Plugin-Versionen und Regelkonfiguration werden nicht verändert.
 
 Keine Regel wurde zur Herstellung eines grünen Lints ausgeschaltet. Es wurde kein
 Electron-Paketstart ausgeführt und kein Desktop-/Plattformnachweis daraus abgeleitet.
+
+## Merge-Nachtrag: kombinierter Lock
+
+Nach den freigegebenen Wartungs-Merges kollidierte der frühere ESLint-Lock mit
+den React-Query-Peerschlüsseln. Der Konflikt wurde mit pnpm 10.33.0 aufgelöst und
+mit dem bereits geprüften ESLint-Graphen strukturiert verglichen: hinzu kommen
+ausschließlich React Query / query-core 5.104.5 und YAML 2.9.1 aus den inzwischen
+gemergten #434/#433. Gemeinsame Paketmetadaten, Overrides und Patch-Zuordnungen
+bleiben gleich. Kein anderes Versionsupdate wurde dabei übernommen.
+
+Basis für die erneute Integration:
+`main@b72cfd94b6e47da559104c986bce9358e0604c41`.
+Eingefrorene Installation, vollständige Turbo-Pipeline (vier Tasks ausgeführt,
+ein unveränderter Shared-Typecheck aus dem Cache), Root-Jest (66 Tests),
+`make verify` (859 Tests und 165 Subtests), Governance und strenger Claim-Lint
+bestanden. Der aktualisierte PR-Head erhält vor Merge eine eigene CI-Abnahme.

@@ -9,7 +9,7 @@ PHI ?= 0.72
 REFRACTORY ?= 120
 JS_VERIFY_CMD ?= pnpm turbo run typecheck lint build test
 
-.PHONY: help install install-dev install-hooks test test-unit test-integration test-ethics coverage lint format type-check clean gate-test port-lint frame-lint voids-backlog voids-backlog-check voidmap-ui-drift-check pipeline-essentials workflow-posture-check verify verify-core verify-governance verify-js verify-all verify-pointers claim-lint verify-json status status-verify snapshot all deepjump benchmark-replay intake demo erk-drill erk-intake
+.PHONY: help install install-dev install-hooks test test-unit test-integration test-ethics coverage lint format type-check clean gate-test port-lint frame-lint voids-backlog voids-backlog-check voidmap-ui-drift-check pipeline-essentials workflow-posture-check verify verify-core verify-governance verify-js verify-all verify-pointers claim-lint verify-json status status-verify snapshot all deepjump benchmark-replay intake reentry-save reentry-verify demo erk-drill erk-intake
 
 help:
 	@echo "entaENGELment Framework - Development Commands"
@@ -75,6 +75,11 @@ help:
 	@echo "Intake (Calm Intake Layer):"
 	@echo "  make intake FILE=<path> TITLE=\"<title>\" SOURCE=\"<source>\""
 	@echo "                       Capture a document into docs/intake/raw/ (no canonisation)"
+	@echo ""
+	@echo "Re-Entry (tesser3TAKT Save State, RO-Crate 1.2):"
+	@echo "  make reentry-save MANIFEST=<savestate.yaml> [REENTRY_OUT=out/reentry]"
+	@echo "                       Seal a private save state (default: gitignored out/reentry/)"
+	@echo "  make reentry-verify CRATE=<dir>  Check hashes + seal (PASS/HOLD)"
 
 # === Setup ===
 install:
@@ -220,6 +225,24 @@ intake:
 		exit 2; \
 	fi
 	@$(PY) tools/intake_add.py --file "$(FILE)" --title "$(TITLE)" --source "$(SOURCE)"
+
+# tesser3TAKT Save State / Re-Entry (tools/reentry_crate.py). Privat per Default:
+# Ziel out/reentry/ ist gitignored; committbare Ziele verlangen --publish.
+REENTRY_OUT ?= out/reentry
+
+reentry-save:
+	@if [ -z "$(MANIFEST)" ]; then \
+		echo "Usage: make reentry-save MANIFEST=<savestate.yaml> [REENTRY_OUT=out/reentry]"; \
+		exit 2; \
+	fi
+	@$(PY) tools/reentry_crate.py save --manifest "$(MANIFEST)" --out "$(REENTRY_OUT)"
+
+reentry-verify:
+	@if [ -z "$(CRATE)" ]; then \
+		echo "Usage: make reentry-verify CRATE=<dir>"; \
+		exit 2; \
+	fi
+	@$(PY) tools/reentry_crate.py verify --crate "$(CRATE)"
 
 # ERK Guard-Drill: Fixtures als lebende Grenz-Übung replayen (rein lesend).
 # Siehe docs/annex/ERK_CONNECTIONS_v0_1.md.
