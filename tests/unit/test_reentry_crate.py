@@ -486,6 +486,20 @@ def test_directory_symlink_in_crate_holds(workspace: Path, tmp_path: Path) -> No
     assert any("payload/extra-notes: Symlink ohne Dateiinhalt" in e for e in result.errors)
 
 
+@pytest.mark.parametrize("dangling", [False, True])
+def test_notes_with_symlink_without_file_content_are_rejected(
+    workspace: Path, tmp_path: Path, dangling: bool
+) -> None:
+    external = tmp_path / "external"
+    if not dangling:
+        external.mkdir()
+        (external / "important.md").write_text("nie still auslassen\n", encoding="utf-8")
+    (workspace / "notes" / "linked").symlink_to(external, target_is_directory=True)
+    with pytest.raises(rc.ManifestError, match="linked: Symlink ohne Dateiinhalt"):
+        _save(workspace)
+    assert not (workspace / "out").exists()
+
+
 def test_haspart_with_non_string_id_holds_without_exception(workspace: Path) -> None:
     crate = _save(workspace)
     metadata = json.loads((crate / rc.METADATA_FILE).read_text(encoding="utf-8"))

@@ -430,11 +430,17 @@ def _payload_target(src: Path, repo_root: Path | None, prefix: str, source_id: s
 def _iter_files(path: Path) -> list[Path]:
     if path.is_file():
         return [path]
-    return sorted(
-        p
-        for p in path.rglob("*")
-        if p.is_file() and not any(part.startswith(".") for part in p.relative_to(path).parts)
-    )
+    files: list[Path] = []
+    for p in sorted(path.rglob("*")):
+        rel = p.relative_to(path)
+        if any(part.startswith(".") for part in rel.parts):
+            continue
+        # rglob folgt Verzeichnis-Symlinks nicht; ihr Inhalt fehlte sonst still im Paket.
+        if p.is_symlink() and not p.is_file():
+            raise ManifestError(f"Notiz {rel.as_posix()}: Symlink ohne Dateiinhalt")
+        if p.is_file():
+            files.append(p)
+    return files
 
 
 def _md_cell(text: str) -> str:
