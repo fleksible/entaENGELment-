@@ -294,6 +294,7 @@ Working Tree → make verify (port-lint · pytest · verify-pointers --strict ·
 | `void011_metrics_export.py [--check]` | SIMULATION_PROXY-Metrik-Export (VOID-011) erzeugen/auf Drift prüfen |
 | `spectra_table_lint.py` | Quellenpflicht für `data/spectra/` (VOID-010) |
 | `eventlog_spec_check.py <jsonl> [--export]` | Events gegen `spec/runtime_eventlog_v0_1.json` prüfen ([SPEC-WIP]) |
+| `corpus_datalad.py init\|import\|extract\|inventory\|sources` | Privates Korpus als DataLad-Dataset außerhalb jedes Repos (Runbook `docs/runbooks/DATALAD_KORPUS_v0_1.md`) |
 
 ### CI (`.github/workflows/`)
 
