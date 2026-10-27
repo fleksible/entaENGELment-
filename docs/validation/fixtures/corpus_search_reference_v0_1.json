@@ -1,0 +1,179 @@
+{
+  "schemaVersion": "corpus-search-reference.v0.1",
+  "status": "ANNEX / DERIVED",
+  "promotionEffect": "none",
+  "baseCommit": "83caf03d6e8039637f147f1313238ca5cab611f6",
+  "repository": "fleksible/entaENGELment-",
+  "overlayHeads": {
+    "pr-423": "af2d092dcff2136d675c10d80c6991d1a3bff714"
+  },
+  "scopeNote": "Pinned public repository text; no local private corpus. Overlay numbers count whole changed files, not added words.",
+  "sourceCodeSHA256": "3b62c571f0e3c2ad094b7a1159801ba84f13f191ec2af1010b3267d29e0b92f2",
+  "statistics": {
+    "scopes": {
+      "main": {
+        "indexed_documents": 698,
+        "tokens": 506322,
+        "unique_content_tokens": 505142
+      },
+      "pr-423": {
+        "indexed_documents": 3,
+        "tokens": 1755,
+        "unique_content_tokens": 1755
+      }
+    },
+    "segments": [
+      {
+        "scope": "main",
+        "role": "code",
+        "tokens": 121789,
+        "unique_tokens": 11742
+      },
+      {
+        "scope": "main",
+        "role": "configuration",
+        "tokens": 75942,
+        "unique_tokens": 11227
+      },
+      {
+        "scope": "main",
+        "role": "document",
+        "tokens": 113169,
+        "unique_tokens": 18943
+      },
+      {
+        "scope": "main",
+        "role": "generated_review",
+        "tokens": 79935,
+        "unique_tokens": 13633
+      },
+      {
+        "scope": "main",
+        "role": "imported_snapshot",
+        "tokens": 115487,
+        "unique_tokens": 8748
+      },
+      {
+        "scope": "pr-423",
+        "role": "document",
+        "tokens": 1563,
+        "unique_tokens": 789
+      },
+      {
+        "scope": "pr-423",
+        "role": "generated_review",
+        "tokens": 192,
+        "unique_tokens": 153
+      }
+    ],
+    "excluded": {
+      "dependency_lock_or_generated_requirements": 6,
+      "unsupported_extension": 23
+    }
+  },
+  "queries": [
+    {
+      "query": "Grüneisen",
+      "mode": "literal",
+      "document_counts": {
+        "main": 3
+      },
+      "examples": [
+        {
+          "path": "ui-app/lib/voidmap-parser.ts",
+          "line": 319
+        },
+        {
+          "path": "VOIDMAP.yml",
+          "line": 171
+        },
+        {
+          "path": "docs/voids_backlog.md",
+          "line": 27
+        }
+      ]
+    },
+    {
+      "query": "Grüneisen",
+      "mode": "expanded",
+      "document_counts": {
+        "main": 5
+      },
+      "examples": [
+        {
+          "path": "ui-app/lib/voidmap-parser.ts",
+          "line": 319
+        },
+        {
+          "path": "VOIDMAP.yml",
+          "line": 171
+        },
+        {
+          "path": "docs/tesser3takt/SOURCE_DECORATION_MAP_v0_1.md",
+          "line": 45
+        }
+      ]
+    },
+    {
+      "query": "3|1|3",
+      "mode": "literal",
+      "document_counts": {
+        "main": 1
+      },
+      "examples": [
+        {
+          "path": "docs/tesser3takt/LYRA_STRINGS_COMPLEMENT_v0_1.md",
+          "line": 54
+        }
+      ]
+    },
+    {
+      "query": "Mast",
+      "mode": "tokens",
+      "document_counts": {
+        "main": 10
+      },
+      "examples": [
+        {
+          "path": "docs/annex/ARCHITEKTUR_DER_LESBARKEIT_v0_1.md",
+          "line": 92
+        },
+        {
+          "path": "docs/spec/tesser3takt_hud_v0_1.md",
+          "line": 23
+        },
+        {
+          "path": "docs/spec/tesser3takt_hud_v0_2.md",
+          "line": 152
+        }
+      ]
+    },
+    {
+      "query": "Phasenquelle",
+      "mode": "literal",
+      "document_counts": {
+        "main": 4
+      },
+      "examples": [
+        {
+          "path": "docs/annex/PHASENQUELLE_UND_ZUORDNUNG_v0_1.md",
+          "line": 1
+        },
+        {
+          "path": "docs/annex/SLICE_PHASE_TRANSPORT_v0_1.md",
+          "line": 97
+        },
+        {
+          "path": "docs/audit/2026-10-23_maintenance_acceptance.md",
+          "line": 66
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "lexical units, not linguistic words or model tokens",
+    "path segmentation, not semantic authority",
+    "identical-content deduplication is not independent evidence",
+    "historical fixed reference, not a target count for future HEADs"
+  ]
+}
