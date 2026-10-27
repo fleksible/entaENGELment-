@@ -14,4 +14,4 @@
 | INTAKE-2026-10-25-001 | 2026-10-25 | Kuratierte Anbindungen entaENGELment tesser3TAKT Grimm v0.1 | Claude Code Sitzung 2026-10-25 (Recherche) | raw | (offen) | ja |
 | INTAKE-2026-10-25-002 | 2026-10-25 | Research-Connectoren Setup und Pruefprotokoll v0.1 | Claude Code Sitzung 2026-10-25 (Ausfuehrung) | raw | (offen) | ja |
 | INTAKE-2026-10-25-003 | 2026-10-25 | Addendum Review-Korrekturen Re-Entry v0.1 | Claude Code Sitzung 2026-10-25 (Review PR 427) | raw | (offen) | ja |
-
+| INTAKE-2026-10-27-001 | 2026-10-27 | Repo-Struktur und technische Folgeaufgaben | Codex: public main@83caf03 and pinned open PR heads, 2026-10-27 | raw | (offen) | ja |
