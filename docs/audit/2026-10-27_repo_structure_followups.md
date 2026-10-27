@@ -52,6 +52,20 @@ werden nicht aus einem grünen Workflow pauschal als ausgeführt ausgegeben.
 
 ## Abgrenzung und offene Abnahme
 
+### Während der Abnahme hinzugekommener Folgestand
+
+Claude ergänzte #427 um
+`373ac6e230014f32fb3baee0f542c96268212960`, direkt auf dem oben bereitgestellten
+`e28c1a5`. Die Quellen-ID-Zuordnung bleibt erhalten. Neu werden Notiz-Symlinks
+ohne Dateiinhalt schon vor der Zielanlage abgewiesen; zwei Regressionen ergänzen
+den Stand. Der vollständige kleine Diff wurde gelesen und die Reentry-Suite
+erneut ausgeführt: 69 bestanden. Die GitHub-CI dieses Folgestands ist grün.
+
+Die lokale gemeinsame Integration wurde um diesen Commit fortgesetzt:
+839 Tests und 165 Subtests sowie Governance bestanden. Der frühere 837er-Lauf
+oben bleibt als eigener, zuvor geprüfter Stand erhalten. Der Quellenpfad-Fix
+wurde durch den parallelen Folgestand nicht ersetzt.
+
 GOLD, vorhandene Receipts, versiegelte Erststände, private Korpusoriginale und
 Remote-/Ankerfreigaben wurden nicht geändert. Die Lesekarte ist keine vollständige
 semantische Lektüre aller Dateien und kein universeller Security-Audit.

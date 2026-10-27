@@ -28,6 +28,8 @@ noch deren Statusregister und autorisiert keine Kanonpromotion. Ein Haken unter
   komplette lokale JS/TS-Pipeline besteht.
 - [x] Gemeinsamer synthetischer DataLad-/Reentry-Lauf: Klon, Import, Extraktion,
   Inventar, signierter Save, Verifikation, rerun, fsck und fehlende Eingabe.
+- [x] Claudes späteren #427-Folgestand `373ac6e` mitgelesen und nachgetestet:
+  69 Reentry-Tests; gemeinsame Integration 839 Tests und 165 Subtests bestanden.
 
 ## Technische Abnahme / nächste Arbeit
 
