@@ -262,7 +262,7 @@ erk-intake:
 demo:
 	@echo "=== EntaENGELment Demo: Receipt Cycle ==="
 	@mkdir -p $(OUT)/demo
-	@echo "Step 1: Emitting HMAC-signed status receipt..."
+	@echo "Step 1: Emitting status receipt (HMAC-signed only if ENTA_HMAC_SECRET or CI_SECRET is set)..."
 	@$(PY) tools/status_emit.py \
 		--outdir $(OUT)/demo \
 		--status PASS \
@@ -271,7 +271,11 @@ demo:
 	@echo "Step 2: Verifying receipt signature..."
 	@$(PY) tools/status_verify.py $(OUT)/demo/status/deepjump_status.json
 	@echo ""
-	@echo "=== Demo PASS: Receipt emitted and verified ==="
+	@if [ -n "$$ENTA_HMAC_SECRET$$CI_SECRET" ]; then \
+		echo "=== Demo PASS: Receipt emitted, signed and signature verified ==="; \
+	else \
+		echo "=== Demo PASS (UNSIGNED): Receipt emitted; no secret, signature not verified ==="; \
+	fi
 
 # Phase 2: STATUS (HMAC Receipt)
 status:

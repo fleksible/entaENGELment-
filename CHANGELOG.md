@@ -21,6 +21,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Metatron pre-protocol amnesty documentation (P1-B)
 
 ### Changed
+- `make demo` reports "UNSIGNED … signature not verified" when no `ENTA_HMAC_SECRET`/`CI_SECRET`
+  is set instead of claiming a verified receipt (B8, checkup 2026-10-28).
+- Documentation: module claims in `src/README.md` separate implementation from empirical meaning
+  (B6); the exact `uv 0.12.18` requirement of `make install-dev` is documented (B7);
+  "non-repudiable" wording for HMAC receipts corrected in `.claude/rules/annex.md`.
+- Concept notes (no implementation): `docs/annex/ACTION_SCOPE_TRANSITIONS_v0_1.md`,
+  `AGENT_INJECTION_PATTERNS_MAPPING_v0_1.md`, `SIGNED_BYTES_DECISION_NOTE_v0_1.md`,
+  `CONSENT_RECORD_MAPPING_v0_1.md`, `TRANSPARENCY_AND_REVOCATION_NOTE_v0_1.md`.
 - Security checks now blocking (no more continue-on-error) (INF-1)
 - Coverage threshold raised from 20% to 50% (P0-B)
 - VOID-012/013 reset to IN_PROGRESS (honest DRAFT status) (P1-A)

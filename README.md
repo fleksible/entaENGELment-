@@ -66,7 +66,8 @@ Dieser eine Befehl führt aus: `port-lint`, `pytest`, `verify-pointers --strict`
 ```bash
 git clone https://github.com/fleksible/entaENGELment-.git
 cd entaENGELment-
-make install-dev    # Install mit Dev-Dependencies
+python -m pip install "uv==0.12.18"   # exakt diese Version verlangt der Lock-Workflow
+make install-dev    # Install mit Dev-Dependencies (uv sync aus uv.lock)
 make verify         # Alles prüfen
 ```
 
@@ -78,7 +79,7 @@ make verify         # Alles prüfen
 
 **Troubleshooting (3 typische Stolpersteine):**
 1. **Python < 3.10** → `make verify` schlägt fehl; mindestens Python 3.10 erforderlich
-2. **Fehlende Dependencies** → `pip install -r requirements-dev.txt` vor `make install-dev`
+2. **`make install-dev` meldet `uv 0.12.18 is required`** → `python -m pip install "uv==0.12.18"` (wie in CI). Ohne uv geht auch `pip install -r requirements-dev.txt` (hash-gepinnt, ohne Projekt-Install)
 3. **verify-pointers findet tote Links** → siehe [`docs/masterindex.md`](docs/masterindex.md) für Index-Struktur
 
 **Optional: UI starten**
