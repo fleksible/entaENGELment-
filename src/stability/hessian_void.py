@@ -45,6 +45,8 @@ class EstimatedHessian(np.ndarray):
 
     Jede abgeleitete Matrix (Arithmetik, Slicing, ``copy``) bleibt als geschätzt
     markiert, verliert aber alle Fehlerangaben und wird daher UNRESOLVED.
+    Eine Schranke gilt nur für den ursprünglichen Matrix- und Fehlerinhalt.
+    In-place-Änderungen, auch über NumPy-Aliase, machen sie unbrauchbar.
     ``np.asarray``/``np.array``/``.view(np.ndarray)`` liefern eine gewöhnliche
     Matrix ohne Markierung: ein verbleibender Matrix-only-Zugang.
     """
@@ -53,6 +55,7 @@ class EstimatedHessian(np.ndarray):
     richardson_estimate: np.ndarray | None
     steps: np.ndarray | None
     assumptions: tuple[str, ...]
+    _bound_snapshot: tuple[Any, ...] | None
 
     def __new__(
         cls,
@@ -64,10 +67,16 @@ class EstimatedHessian(np.ndarray):
         assumptions: tuple[str, ...] = (),
     ) -> "EstimatedHessian":
         obj: EstimatedHessian = np.asarray(matrix, dtype=float).view(cls)
-        obj.error_bound = error_bound
+        bound = None if error_bound is None else np.array(error_bound, dtype=float, copy=True)
+        if bound is not None and (
+            bound.shape != obj.shape or not np.all(np.isfinite(bound)) or np.any(bound < 0)
+        ):
+            raise ValueError("error_bound must match the matrix and be finite and non-negative")
+        obj.error_bound = bound
         obj.richardson_estimate = richardson_estimate
         obj.steps = steps
         obj.assumptions = assumptions
+        obj._bound_snapshot = obj._snapshot() if bound is not None else None
         return obj
 
     def __array_finalize__(self, obj: Any) -> None:
@@ -76,6 +85,19 @@ class EstimatedHessian(np.ndarray):
         self.richardson_estimate = None
         self.steps = None
         self.assumptions = ()
+        self._bound_snapshot = None
+
+    def _snapshot(self) -> tuple[Any, ...]:
+        """Bind the bound to values, shape and dtype; not a same-process sandbox."""
+        bound = np.asarray(self.error_bound)
+        return (
+            self.shape,
+            self.dtype.str,
+            self.tobytes(),
+            bound.shape,
+            bound.dtype.str,
+            bound.tobytes(),
+        )
 
     def eigenvalue_uncertainty(self) -> float | None:
         """Schranke für die Abweichung aller Eigenwerte (Weyl), sonst ``None``.
@@ -84,7 +106,12 @@ class EstimatedHessian(np.ndarray):
         Spektralnorm des Schätzfehlers, der zweite den Rundungsfehler von
         ``eigvalsh``. Gilt nur unter den deklarierten Annahmen.
         """
-        if self.error_bound is None:
+        if (
+            self.error_bound is None
+            or self._bound_snapshot is None
+            or not isinstance(self.error_bound, np.ndarray)
+            or self._bound_snapshot != self._snapshot()
+        ):
             return None
         matrix = np.asarray(self)
         n = matrix.shape[0]

@@ -112,6 +112,15 @@ Abgeleitete Arrays einer `EstimatedHessian` (Arithmetik, Slicing, `copy`, `.T`)
 bleiben markiert, verlieren aber die Schranke und sind damit UNRESOLVED
 (fail-closed). Ein serialisierter und wieder geladener Wert verhält sich ebenso.
 
+Die ursprüngliche Schranke ist außerdem an einen Snapshot von Matrix und
+Fehlerangabe gebunden (Werte, Form und Datentyp). Änderungen an derselben Instanz,
+etwa per `H[:] = ...`, `H *= ...`, `np.copyto` oder einem schreibbaren
+`np.asarray(H)`-Alias, machen sie für die nächste Guard-Auswertung unbrauchbar:
+UNRESOLVED, auch mit Consent. Dasselbe gilt für veränderte Fehlerangaben.
+Dieser Konsistenzcheck ist keine Authentisierung gegen Code im selben Prozess.
+Der direkte Matrix-only-Zugang über `np.asarray(H)` bleibt wie oben beschrieben
+offen; seine Änderungen dürfen aber nicht die alte Schranke auf `H` weiterverwenden.
+
 ## 7. Verhaltensänderungen
 
 - `compute_hessian_numerical`: zentrale statt Vorwärtsdifferenzen, automatische

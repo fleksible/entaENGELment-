@@ -116,6 +116,36 @@ class TestMissingAndDerivedUncertainty:
         assert classify_stability(D)[0] == "UNRESOLVED"
         assert stability_gate(D, consent_available=True)[0] is False
 
+    @pytest.mark.parametrize("mutation", ["item", "inplace", "alias", "copyto"])
+    def test_mutation_cannot_reuse_a_stale_error_bound(self, mutation):
+        H = compute_hessian_numerical(
+            lambda q: -float(np.sum(q**2)),
+            np.zeros(2),
+            fourth_derivative_bound=0.0,
+            evaluation_error=0.0,
+        )
+        assert classify_stability(H)[0] == "UNSTABLE"
+        if mutation == "item":
+            H[:] = 2 * np.eye(2)
+        elif mutation == "inplace":
+            H *= -1
+        elif mutation == "alias":
+            np.asarray(H)[:] = 2 * np.eye(2)
+        else:
+            np.copyto(H, 2 * np.eye(2))
+
+        assert H.eigenvalue_uncertainty() is None
+        assert classify_stability(H)[0] == "UNRESOLVED"
+        assert stability_gate(H, consent_available=True)[0] is False
+        assert classify_hessian_spectral_void(H) == SpectralVoidClass.UNDEFINED
+
+    def test_mutated_error_metadata_cannot_strengthen_a_release(self):
+        H = EstimatedHessian(np.eye(2), error_bound=np.full((2, 2), 10.0))
+        assert classify_stability(H)[0] == "UNRESOLVED"
+        H.error_bound[:] = 0.0
+        assert H.eigenvalue_uncertainty() is None
+        assert stability_gate(H, consent_available=True)[0] is False
+
     def test_only_one_declaration_is_rejected(self):
         with pytest.raises(ValueError, match="together"):
             compute_hessian_numerical(
