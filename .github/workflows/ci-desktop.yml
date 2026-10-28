@@ -12,6 +12,7 @@ on:
       - "electron-url-policy.js"
       - "Index.html"
       - "tools/desktop_smoke.cjs"
+      - "__tests__/unit/electron-*.test.js"
       - ".github/workflows/ci-desktop.yml"
   push:
     branches: [main]
@@ -25,6 +26,7 @@ on:
       - "electron-url-policy.js"
       - "Index.html"
       - "tools/desktop_smoke.cjs"
+      - "__tests__/unit/electron-*.test.js"
       - ".github/workflows/ci-desktop.yml"
 
 permissions:
@@ -54,7 +56,7 @@ jobs:
       - name: Install frozen dependencies
         run: pnpm install --frozen-lockfile
       - name: Packaging glob regressions
-        run: pnpm test:js --runInBand __tests__/unit/electron-packaging-glob-compat.test.js
+        run: pnpm test:js --runInBand __tests__/unit/electron-packaging-glob-compat.test.js __tests__/unit/electron-appimage-sandbox.test.js
       - name: Build Linux AppImage
         run: pnpm dist --linux AppImage --publish never --config.directories.output=out/desktop-smoke/dist
       - name: Extract the distributed payload

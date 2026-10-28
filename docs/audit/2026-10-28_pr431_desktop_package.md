@@ -35,7 +35,31 @@ CI-Artefakte erhalten.
 Der SUID-Helper erhält ausschließlich im flüchtigen Runner die erforderlichen
 Eigentums-/Moduswerte. Die Anwendung läuft weiterhin als normaler Benutzer,
 ohne `--no-sandbox`. Der vorübergehende Debugger ist auf Loopback beschränkt.
-Produkt-Einstieg, Preload und deren Sicherheitsgrenzen bleiben unverändert.
+`main.js` und `preload.js` bleiben unverändert.
+
+## Tatsächlicher Fehler im gepackten Launcher
+
+Der erste neue CI-Lauf scheiterte in Job **122742354810** an einem tatsächlich
+gesetzten `--no-sandbox`. Die Extraktion des lokal gebauten AppImages zeigt
+zwei getrennte Ursachen in Builder 26.18.0: der Desktop-Eintrag lautet standardmäßig
+`Exec=AppRun --no-sandbox %U`; zudem hängt das erzeugte AppRun-Skript nach einem
+fehlgeschlagenen `unshare -Ur true` selbständig diesen Schalter an. Ein korrekter
+SUID-Helper wird durch diese reine Namespace-Heuristik nicht berücksichtigt.
+
+`build.appImage.executableArgs: []` entfernt das Desktop-Defaultargument.
+Der versionsgebundene pnpm-Patch für `app-builder-lib@26.18.0` entfernt außerdem
+den automatischen Sandbox-Downgrade aus dem tatsächlichen Launcher-Generator.
+Chromium wählt weiter seinen Namespace-/SUID-Sandboxweg. Fehlen beide, muss der
+Start scheitern; der Launcher startet nicht stillschweigend ohne Sandbox.
+
+Zwei Prozess-Gegenproben mit fehlgeschlagenem bzw. fehlendem Namespace-Probe
+(Exit 1 und 127) beobachten vor dem Patch das zusätzliche `--no-sandbox` und
+bestehen danach mit unverändert weitergegebenen, auch leerzeichenhaltigen
+Argumenten. Root-Jest besteht danach **fünf Suites mit 68 Tests**. Der
+strukturierte Lock-Vergleich bestätigt gleiche Paketnamen, -versionen,
+Paketmetadaten, Settings und Overrides; ergänzt werden der Patch-Hash und
+normalisierte vorhandene Peer-Schlüssel. Der bestehende Brace-Patch bleibt erhalten.
+Die Paketprobe prüft zusätzlich den tatsächlich verteilten Desktop-Eintrag.
 
 ## Abnahme und Grenze
 

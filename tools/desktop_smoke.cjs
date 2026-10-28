@@ -17,6 +17,11 @@ async function main() {
   assert(!process.env.ELECTRON_RUN_AS_NODE);
   const executable = path.resolve(process.argv[2]);
   assert(fs.existsSync(executable));
+  const desktopFiles = fs.readdirSync(path.dirname(executable)).filter(name => name.endsWith('.desktop'));
+  assert.equal(desktopFiles.length, 1, 'Expected one distributed desktop entry');
+  const desktopEntry = fs.readFileSync(path.join(path.dirname(executable), desktopFiles[0]), 'utf8');
+  const desktopExec = desktopEntry.match(/^Exec=(.*)$/m)?.[1];
+  assert(desktopExec && !/--(?:no-sandbox|disable-setuid-sandbox|disable-seccomp-filter-sandbox|disable-gpu-sandbox)\b/.test(desktopExec), 'Desktop entry must not disable the sandbox');
   const output = path.resolve(process.argv[3] || 'out/desktop-smoke');
   fs.mkdirSync(output, { recursive: true });
   const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'enta-desktop-smoke-'));
@@ -133,6 +138,7 @@ async function main() {
     assert.equal(after.windows, 1, 'Unsafe popup must remain blocked');
     assert.equal(after.url, observed.page.url, 'Unsafe navigation must remain blocked');
     observed.blockedPopup = observed.blockedNavigation = true;
+    observed.desktopExec = desktopExec;
     await evaluate(`setTimeout(() => (${electron}).app.quit(), 100); true`);
     socket.close();
     const shutdown = await Promise.race([exit, delay(10000, null, { ref: false }).then(() => { throw new Error('Application did not quit'); })]);

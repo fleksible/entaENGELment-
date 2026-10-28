@@ -52,6 +52,9 @@ overrides:
 # restore both legacy shapes; the packaging glob regression test covers the
 # CommonJS consumers and @electron/universal's published ESM entry.
 patchedDependencies:
+  # The AppImage launcher must fail closed when no OS sandbox is available.
+  # It may not append --no-sandbox after a failed user-namespace heuristic.
+  app-builder-lib@26.18.0: patches/app-builder-lib@26.18.0.patch
   brace-expansion@5.0.12: patches/brace-expansion@5.0.12.patch
 
 # Audit exceptions: each entry needs an advisory without any patched release

@@ -42,6 +42,9 @@
     },
     "linux": {
       "target": "AppImage"
+    },
+    "appImage": {
+      "executableArgs": []
     }
   }
 }
