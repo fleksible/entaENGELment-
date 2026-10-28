@@ -50,6 +50,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - B3: `eci.permutation_test` now raises `NotImplementedError` (test design not specified);
     `bootstrap_ci` gains a `seed`, validates input and no longer returns `(0, 0)` for empty data.
     Resampling and percentile interpolation are scaled to keep finite extreme inputs finite.
+  - B9 (partial fix): `compute_hessian_numerical` returns an `EstimatedHessian` (central
+    differences, default step `ε^(1/4)·max(1, |x|)`). A classification based on an estimate
+    needs a declared error bound (`fourth_derivative_bound`, `evaluation_error`). Otherwise
+    the new status `UNRESOLVED` blocks, even with consent. MOD_18 maps `UNRESOLVED` to
+    `UNDEFINED`/`BLOCK_UNDEFINED_STATE`. Matrix-only access and false declarations remain
+    open (`docs/annex/STABILITY_NUMERICS_v0_1.md`).
+  - B9 follow-up: the declared error bound is now computed exactly and rounded upward, so
+    intermediate underflow such as `(h_i+h_j)⁴` can no longer erase it and cause a false
+    STABLE. Non-normal denominators or a non-representable bound give `UNRESOLVED`, no
+    longer a too-small bound or an exception. The eigenvalue uncertainty uses scaled norms.
+    The exploratory Richardson value is `None` when the doubled stencil cannot be evaluated;
+    previously that error discarded the primary estimate.
 - All VOIDs assigned owners and target dates (P1-D)
 - VOID-002 closed: full verify/lint in CI pipeline (P2-B)
 - HMAC secret now persistent (P0-C, manual)

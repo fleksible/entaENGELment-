@@ -77,11 +77,26 @@ Dann gilt elementweise (Taylor mit Lagrange-Rest, Standard-Fehleranalyse):
 | Auswertung | `4e/h²` | `e/(h_i·h_j)` |
 | Gleitkomma der Formel | `8ε·Σ|f̃|/h²` | `8ε·Σ|f̃|/(4·h_i·h_j)` |
 
-Eigenwerte: Nach Weyl gilt `|λ_i(H + E) − λ_i(H)| ≤ ‖E‖₂ ≤ ‖E‖_F`; dazu kommt
-`10·n·ε·‖H‖_F` für `eigvalsh`. Daraus folgt δ.
+Dazu kommt je Eintrag eine absolute Untergrenze `8ε·tiny + smallest_subnormal` für
+subnormale Zwischenwerte und Quotienten.
 
-Ohne Deklaration, bei nur einer Deklaration (Fehler) oder bei nicht exakt
-darstellbaren Stencil-Punkten gibt es keine Schranke.
+Die Einträge werden exakt rational (`Fraction`) aus Schrittweiten, M4 und e berechnet
+und dann nach oben auf float gerundet. Zwischenwerte wie `(h_i+h_j)⁴` können so
+nicht unterlaufen und die Schranke dadurch nicht verkleinern.
+
+Eigenwerte: Nach Weyl gilt `|λ_i(H + E) − λ_i(H)| ≤ ‖E‖₂ ≤ ‖E‖_F`; dazu kommt
+`10·n·ε·‖H‖_F` für `eigvalsh`. Daraus folgt δ. Beide Normen werden skaliert
+berechnet, damit Quadrate kleiner Einträge nicht unterlaufen. δ wird um
+`(1 + 4n²ε)` vergrößert und nach oben gerundet.
+
+Es gibt keine Schranke in diesen Fällen:
+- ohne Deklaration oder bei nur einer Deklaration (diese löst einen Fehler aus);
+- bei nicht exakt darstellbaren Stencil-Punkten;
+- wenn ein Nenner der Differenzformel keine normale endliche Gleitkommazahl ist
+  (dann gilt das Rundungsmodell nicht);
+- wenn ein Schrankeneintrag nicht als endliches float darstellbar ist (Überlauf).
+
+In jedem dieser Fälle ist der Status UNRESOLVED.
 
 **Die Annahmen werden nicht geprüft.** Eine falsche Deklaration kann eine falsche
 Freigabe erzeugen (Test `test_documented_limit_false_declarations_are_not_detected`).
@@ -90,7 +105,9 @@ Die Annahmen stehen in `EstimatedHessian.assumptions`.
 ## 5. Richardson ist explorativ
 
 `richardson_estimate = |H(h) − H(2h)| / 3` wird mitgeliefert, aber nie für eine
-Freigabe genutzt. Gegenbeispiel: `f(t) = −t² + 10t⁴ − 8t⁶` bei t = 0. Zentrale
+Freigabe genutzt. Lässt sich der doppelte Stencil `x ± 2h` nicht auswerten, etwa
+weil er außerhalb des Definitionsbereichs liegt, ist der Wert `None`. Die
+Hauptschätzung und ihre Schranke bleiben in diesem Fall erhalten. Gegenbeispiel: `f(t) = −t² + 10t⁴ − 8t⁶` bei t = 0. Zentrale
 Differenzen mit h = 1 und h = 0.5 ergeben beide +2, tatsächlich ist f''(0) = −2.
 Übereinstimmung mehrerer Schätzwerte zertifiziert kein Vorzeichen. Mit gültiger
 Deklaration (M4 = 480 auf [−0.5, 0.5]) ist die Schranke dort 10, der Status also
