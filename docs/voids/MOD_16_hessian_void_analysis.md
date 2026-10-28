@@ -59,9 +59,12 @@ Stabil ⇔ H positive definit ⇔ alle λ(H) > 0
 
 ## API
 
-### `compute_hessian_numerical(func, point, eps=1e-5)`
+### `compute_hessian_numerical(func, point, eps=None, *, fourth_derivative_bound=None, evaluation_error=None)`
 
-Berechnet numerische Hessian-Approximation via finite Differenzen.
+Schätzt die Hessian via zentrale Differenzen und gibt eine `EstimatedHessian`
+(ndarray-Subklasse) mit Unsicherheitsangaben zurück. Freigaberelevant ist nur eine
+Fehlerschranke aus **deklarierten** Annahmen; ohne sie ist das Ergebnis UNRESOLVED.
+Details und Grenzen: [`docs/annex/STABILITY_NUMERICS_v0_1.md`](../annex/STABILITY_NUMERICS_v0_1.md).
 
 ```python
 from src.stability.hessian_void import compute_hessian_numerical
@@ -70,13 +73,19 @@ import numpy as np
 def energy(x):
     return x[0]**2 + x[1]**2
 
-H = compute_hessian_numerical(energy, np.array([0.0, 0.0]))
-# H ≈ [[2, 0], [0, 2]]
+# Quadratisch: alle vierten Ableitungen sind 0; Auswertungsfehler nahe 0 winzig.
+H = compute_hessian_numerical(
+    energy, np.array([0.0, 0.0]), fourth_derivative_bound=0.0, evaluation_error=1e-15
+)
+# np.asarray(H) ≈ [[2, 0], [0, 2]], H.error_bound elementweise Schranke
 ```
 
 ### `classify_stability(hessian, threshold=1e-6)`
 
-Klassifiziert Stabilitätstyp und gibt Eigenwerte zurück.
+Klassifiziert Stabilitätstyp und gibt Eigenwerte zurück. `threshold` ist die
+fachliche Flach-Toleranz in Krümmungseinheiten. Negative Krümmung hat Vorrang vor
+flachen Richtungen. Für eine `EstimatedHessian` ohne tragfähige Fehlerannahmen
+lautet der Status `UNRESOLVED`.
 
 ```python
 from src.stability.hessian_void import classify_stability
@@ -92,7 +101,7 @@ Vereinfachte Void-Typ-Erkennung (lowercase).
 ```python
 from src.stability.hessian_void import detect_void_type
 
-void_type = detect_void_type(H)  # 'stable', 'flat', oder 'unstable'
+void_type = detect_void_type(H)  # 'stable', 'flat', 'unstable' oder 'unresolved'
 ```
 
 ---
@@ -120,9 +129,10 @@ allow, reason = stability_gate(flat_H, consent_available=True)
 ### Fail-Safe-Logik
 
 ```
-STABLE  → Proceed (kein Consent nötig)
-FLAT    → Block ohne Consent, Proceed mit Consent
-UNSTABLE → Block immer (auch mit Consent)
+STABLE     → Proceed (kein Consent nötig; bezeugt nur die geometrische Klassifikation)
+FLAT       → Block ohne Consent, Proceed mit Consent
+UNSTABLE   → Block immer (auch mit Consent; auch neben flachen Richtungen)
+UNRESOLVED → Block immer (geschätzte Hessian ohne tragfähige Fehlerannahmen)
 ```
 
 ---

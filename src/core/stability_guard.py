@@ -4,6 +4,8 @@ Implementiert Fail-Safe-Logik basierend auf Hessian-Stabilität:
 - STABLE → Proceed
 - FLAT (VOID) → Consent erforderlich
 - UNSTABLE → Block (auch mit Consent; negative Krümmung hat Vorrang vor flachen Richtungen)
+- UNRESOLVED (numerisch geschätzte Hessian ohne tragfähige Fehlerannahmen) → Block
+  (auch mit Consent)
 - ungültige Matrix → Block (auch mit Consent)
 
 STABLE bezeugt nur eine geometrische Klassifikation der übergebenen Matrix
@@ -41,6 +43,12 @@ def stability_gate(hessian: np.ndarray, consent_available: bool = False) -> tupl
         else:
             return False, "FLAT: VOID detected, consent required before proceeding"
 
+    elif status == "UNRESOLVED":
+        return False, (
+            "UNRESOLVED: estimated Hessian without sufficient declared error assumptions; "
+            "consent cannot resolve numerical uncertainty"
+        )
+
     else:  # UNSTABLE
         return False, f"UNSTABLE: Negative eigenvalues detected (min={eigvals.min():.2e})"
 
@@ -68,7 +76,8 @@ def requires_consent(hessian: np.ndarray) -> bool:
         hessian: Symmetrische Hessian-Matrix
 
     Returns:
-        True wenn FLAT (VOID) Status
+        True wenn FLAT (VOID) Status. False für UNRESOLVED: dort hebt Consent die
+        Blockade nicht auf.
 
     Raises:
         ValueError: Bei ungültiger Matrix (die Frage ist dann nicht beantwortbar).

@@ -4,6 +4,9 @@ Testet die drei fundamentalen Stabilitäts-Zustände:
 - STABLE: Minimum (alle Eigenwerte positiv)
 - FLAT: VOID (mindestens ein Eigenwert ≈ 0)
 - UNSTABLE: Sattel (mindestens ein Eigenwert negativ)
+
+Numerisch geschätzte Hessians sind seit B9 nur mit deklarierten Fehlerannahmen
+klassifizierbar; ohne sie lautet das Ergebnis UNRESOLVED.
 """
 
 import numpy as np
@@ -14,6 +17,11 @@ from src.stability.hessian_void import (
     detect_void_type,
 )
 
+# Quadratische Testfunktionen: alle vierten Ableitungen sind exakt 0. Nahe (0,0)
+# liegen die Funktionswerte am Stencil unter 1e-6; ihr Auswertungsfehler liegt
+# damit weit unter der deklarierten Schranke 1e-15.
+QUADRATIC = {"fourth_derivative_bound": 0.0, "evaluation_error": 1e-15}
+
 
 def test_stable_minimum():
     """Test: Quadratisches Minimum → STABLE."""
@@ -21,7 +29,7 @@ def test_stable_minimum():
     def quadratic(x):
         return x[0] ** 2 + x[1] ** 2  # Minimum bei (0,0)
 
-    H = compute_hessian_numerical(quadratic, np.array([0.0, 0.0]))
+    H = compute_hessian_numerical(quadratic, np.array([0.0, 0.0]), **QUADRATIC)
     status, eigvals = classify_stability(H)
 
     assert status == "STABLE"
@@ -39,7 +47,7 @@ def test_flat_direction_void():
     def flat_func(x):
         return x[0] ** 2  # Flach in y-Richtung
 
-    H = compute_hessian_numerical(flat_func, np.array([0.0, 0.0]))
+    H = compute_hessian_numerical(flat_func, np.array([0.0, 0.0]), **QUADRATIC)
     status, eigvals = classify_stability(H)
 
     assert status == "FLAT"
@@ -57,7 +65,7 @@ def test_saddle_unstable():
     def saddle(x):
         return x[0] ** 2 - x[1] ** 2  # Sattel bei (0,0)
 
-    H = compute_hessian_numerical(saddle, np.array([0.0, 0.0]))
+    H = compute_hessian_numerical(saddle, np.array([0.0, 0.0]), **QUADRATIC)
     status, eigvals = classify_stability(H)
 
     assert status == "UNSTABLE"
@@ -86,3 +94,17 @@ def test_eigenvalue_ordering():
     _, eigvals = classify_stability(H)
 
     assert eigvals[0] <= eigvals[1], "Eigenwerte sollten sortiert sein"
+
+
+def test_estimate_without_declared_assumptions_is_unresolved():
+    """Test: Ohne deklarierte Fehlerannahmen trägt die Schätzung keine Entscheidung."""
+
+    def quadratic(x):
+        return x[0] ** 2 + x[1] ** 2
+
+    H = compute_hessian_numerical(quadratic, np.array([0.0, 0.0]))
+    status, eigvals = classify_stability(H)
+
+    assert status == "UNRESOLVED"
+    assert np.allclose(eigvals, [2.0, 2.0])
+    assert detect_void_type(H) == "unresolved"
