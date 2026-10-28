@@ -33,14 +33,19 @@ Gemessene Abweichungen zwischen `json_c14n_v1` (Python) und einer JCS-artigen
 Serialisierung in JavaScript (`JSON.stringify` + Schlüsselsortierung nach
 UTF-16-Codeunits; keine zertifizierte JCS-Implementierung), Node 22.22, Python 3.13:
 
-| Vektor | Eingabe | Python `json_c14n_v1` | JS (JCS-artig) | SHA-256 Python / JS (Präfix) |
+| Vektor | Eingabe | Python json_c14n_v1 | JS (JCS-artig) | SHA-256 Python / JS (Präfix) |
 |---|---|---|---|---|
-| escaping | `{"a": "ä"}` | `{"a":"ä"}` | `{"a":"ä"}` | `ba42eceab1bf32f0` / `46e7684c4b194411` |
-| float_integral | `{"f": 1.0}` | `{"f":1.0}` | `{"f":1}` | `3fd3fc1b51eda523` / `fcc1504e92491760` |
-| large_float | `{"x": 1e16}` | `{"x":1e+16}` | `{"x":10000000000000000}` | `21d6bea42b17fd31` / `d9ea702067d662ee` |
-| negative_zero | `{"z": -0.0}` | `{"z":-0.0}` | `{"z":0}` | `29546c5002ef1837` / `e313adcae40818c4` |
-| line_separator | `{"s": " "}` | `{"s":" "}` (escaped) | `{"s":"…"}` (U+2028 roh) | `3ae2ec9d6d322c77` / `d2dcdddd0f4b645d` |
-| key_order_non_bmp | `{"｡": 1, "\U0001F600": 2}` | `{"｡":1,"😀":2}` | `{"😀":2,"｡":1}` | `94ba397c86081c24` / `c265de3d33291482` |
+| escaping | `{"a":"ä"}` | `{"a":"\u00e4"}` | `{"a":"ä"}` | `ba42eceab1bf32f0` / `46e7684c4b194411` |
+| float_integral | `{"f":1.0}` | `{"f":1.0}` | `{"f":1}` | `3fd3fc1b51eda523` / `fcc1504e92491760` |
+| large_float | `{"x":1e+16}` | `{"x":1e+16}` | `{"x":10000000000000000}` | `21d6bea42b17fd31` / `d9ea702067d662ee` |
+| negative_zero | `{"z":-0.0}` | `{"z":-0.0}` | `{"z":0}` | `29546c5002ef1837` / `e313adcae40818c4` |
+| line_separator | `{"s":"<U+2028>"}` | `{"s":"\u2028"}` | `{"s":"<U+2028>"}` | `3ae2ec9d6d322c77` / `d2dcdddd0f4b645d` |
+| key_order_non_bmp | `{"｡":1,"😀":2}` | `{"\uff61":1,"\ud83d\ude00":2}` | `{"😀":2,"｡":1}` | `94ba397c86081c24` / `c265de3d33291482` |
+
+Backslashes in den Zellen sind wörtlich. `<U+2028>` steht für ein einzelnes
+rohes Unicode-Zeichen; der Platzhalter gehört nicht zu den gehashten Bytes.
+Gegenprobe am 28.10.2026: Python 3.12.14, Node v24.22.1; alle sechs
+Hash-Paare stimmen mit der ersten Messung überein.
 
 Ursachen laut RFC 8785:
 - Zahlen werden nach ECMAScript serialisiert (§ 3.2.2.3), Python-`repr` weicht ab;
@@ -49,8 +54,10 @@ Ursachen laut RFC 8785:
 - Schlüssel werden nach UTF-16-Codeunits sortiert (§ 3.2.3), Python sortiert nach
   Codepoints; außerhalb der BMP ergibt das eine andere Reihenfolge.
 
-Folge: Ein UI- oder Drittprüfer in JavaScript kann Python-Receipts nicht durch
-Neu-Serialisierung prüfen, sobald solche Werte vorkommen.
+Folge: Eine abweichende JavaScript-/JCS-Neu-Serialisierung erzeugt bei diesen
+Werten andere Hashes. Ein Prüfer muss die festgelegten Originalbytes verwenden
+oder exakt die vorhandene Kanonisierung reproduzieren. JavaScript als Sprache
+ist kein Hindernis; entscheidend ist dieselbe Byte-Darstellung.
 
 ## 3. Entscheidungspunkte
 
@@ -63,14 +70,16 @@ Neu-Serialisierung prüfen, sobald solche Werte vorkommen.
 
 ## 4. Wessen Handlung bezeugt eine Signatur?
 
-Eine Signatur bezeugt nur, wer den Schlüssel verwendet hat, nicht, dass der Inhalt
-wahr ist (vgl. ERK § 9.1: Integrität ≠ Authentizität ≠ Autorisierung ≠ Wahrheit).
+Eine gültige Signatur bindet Bytes an einen Verifikationsschlüssel. Die Zuordnung
+zu einer Person oder einem Workflow und die Bedeutung als Freigabe benötigen
+zusätzliche Identitäts- und Prozessannahmen. Sie belegt weder das Lesen noch die
+Wahrheit des Inhalts (vgl. ERK § 9.1: Integrität ≠ Authentizität ≠ Autorisierung ≠ Wahrheit).
 
 | Signierende Instanz | bezeugt | bezeugt **nicht** |
 |---|---|---|
 | CI-Attestation (z. B. GitHub OIDC/Sigstore) | „dieser Workflow lief auf diesem Commit und erzeugte diese Bytes“ | menschliche Prüfung oder Freigabe |
 | Werkzeug lokal (z. B. `status_emit` mit Secret) | „ein Inhaber des Secrets hat diese Bytes erzeugt“ | welche Person; Richtigkeit des Inhalts |
-| Mensch (persönlicher Schlüssel) | „diese Person hat diese Bytes freigegeben“ | dass die Freigabe inhaltlich richtig ist |
+| Persönlich zugeordneter Schlüssel | „diese Bytes sind unter diesem Schlüssel signiert“; als menschliche Freigabe nur nach explizitem Freigabeprozess und belegter Schlüsselzuordnung interpretierbar | tatsächliche Bedienperson, Lesen, Zustimmung oder inhaltliche Richtigkeit allein aus der Signatur |
 
 CI-Attestation und menschliche Freigabe sind getrennt zu halten: Eine grüne,
 signierte CI erzeugt keine menschliche Freigabe (PROPOSE ≠ AUTHORIZE).
