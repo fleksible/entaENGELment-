@@ -1,0 +1,168 @@
+{
+  "schema_version": "1.0",
+  "authority": "ANNEX / DERIVED / REVIEW-PENDING",
+  "promotion_effect": "none",
+  "groups": [
+    {
+      "key": "grueneisen",
+      "spellings": [
+        "Grüneisen",
+        "Grueneisen"
+      ],
+      "related": [
+        "VOID-028",
+        "Curie",
+        "ADR",
+        "Majorana"
+      ],
+      "guard": "Belegte Herkunftsbeziehung getrennt von Identität der physikalischen Größe und des Repo-Proxys prüfen.",
+      "sources": [
+        {
+          "path": "docs/tesser3takt/SOURCE_DECORATION_MAP_v0_1.md",
+          "commit": "83caf03d6e8039637f147f1313238ca5cab611f6"
+        },
+        {
+          "path": "docs/voids_backlog.md",
+          "commit": "83caf03d6e8039637f147f1313238ca5cab611f6"
+        }
+      ]
+    },
+    {
+      "key": "cube",
+      "spellings": [
+        "Würfel",
+        "Wuerfel"
+      ],
+      "related": [
+        "Graph",
+        "Tesserakt",
+        "Reentry"
+      ],
+      "guard": "Räumliches Navigationsbild und formaler Vertrag bleiben verschiedene Register.",
+      "sources": [
+        {
+          "path": "docs/triad_topology.md",
+          "commit": "83caf03d6e8039637f147f1313238ca5cab611f6"
+        },
+        {
+          "path": "docs/tesser3takt/TESSER3TAKT_ASSEMBLY_NAVI_v0_1.md",
+          "commit": "83caf03d6e8039637f147f1313238ca5cab611f6"
+        }
+      ]
+    },
+    {
+      "key": "lyra",
+      "spellings": [
+        "Lyra"
+      ],
+      "related": [
+        "3|1|3",
+        "Mast",
+        "POV"
+      ],
+      "guard": "Sieben Rollen, räumliche Gruppierung und akustischer Adapter nicht gleichsetzen.",
+      "sources": [
+        {
+          "path": "docs/tesser3takt/LYRA_STRINGS_COMPLEMENT_v0_1.md",
+          "commit": "83caf03d6e8039637f147f1313238ca5cab611f6"
+        },
+        {
+          "path": "docs/spec/tesser3takt_hud_v0_2.md",
+          "commit": "83caf03d6e8039637f147f1313238ca5cab611f6"
+        }
+      ]
+    },
+    {
+      "key": "graining",
+      "spellings": [
+        "Graining"
+      ],
+      "related": [
+        "Blindseite",
+        "Sphärenstatus",
+        "Roesselsprung",
+        "mereotopological"
+      ],
+      "guard": "Suchnachbarschaft erklärt weder Kontakt noch implementierte Übergabe; offene Größen bleiben offen.",
+      "sources": [
+        {
+          "path": "docs/annex/SLICE_PHASE_TRANSPORT_v0_1.md",
+          "commit": "83caf03d6e8039637f147f1313238ca5cab611f6"
+        },
+        {
+          "path": "docs/tesser3takt/FUENFTER_KLANG_DEPTH_v0_1.md",
+          "commit": "83caf03d6e8039637f147f1313238ca5cab611f6"
+        },
+        {
+          "path": "docs/narratives/grimm2/GRIMM_IR_MEREOTOPOLOGY_INTAKE_v0_1.md",
+          "commit": "83caf03d6e8039637f147f1313238ca5cab611f6"
+        }
+      ]
+    },
+    {
+      "key": "phase",
+      "spellings": [
+        "Phasenquelle"
+      ],
+      "related": [
+        "sliceId",
+        "pairId",
+        "EXIT",
+        "ENTRY",
+        "Windungszahl",
+        "SIMULATION_PROXY"
+      ],
+      "guard": "Validator, Producer, ausgewählte Größe und Boundary-Zuordnung getrennt prüfen.",
+      "sources": [
+        {
+          "path": "docs/annex/PHASENQUELLE_UND_ZUORDNUNG_v0_1.md",
+          "commit": "83caf03d6e8039637f147f1313238ca5cab611f6"
+        },
+        {
+          "path": "docs/annex/SLICE_PHASE_TRANSPORT_v0_1.md",
+          "commit": "83caf03d6e8039637f147f1313238ca5cab611f6"
+        }
+      ]
+    },
+    {
+      "key": "optics",
+      "spellings": [
+        "reflectance"
+      ],
+      "related": [
+        "thin_film_reflectance",
+        "Interferenz",
+        "Absorption",
+        "Dispersion"
+      ],
+      "guard": "Reproduzierter Rechenkern, Modellannahmen, historischer Lauf und Materialmessung sind verschiedene Claims.",
+      "sources": [
+        {
+          "path": "docs/annex/OPTISCHER_MODELLFALL_v0_1.md",
+          "commit": "83caf03d6e8039637f147f1313238ca5cab611f6"
+        }
+      ]
+    },
+    {
+      "key": "sandbox",
+      "spellings": [
+        "Sandbox"
+      ],
+      "related": [
+        "ACTION_GATE",
+        "safe-mode"
+      ],
+      "guard": "Technische Prozessisolation und sonstige Bedeutungen von Sandbox nicht aus einem Worttreffer gleichsetzen.",
+      "sources": [
+        {
+          "path": "docs/annex/ACTION_GATE_v0_1.md",
+          "commit": "83caf03d6e8039637f147f1313238ca5cab611f6"
+        },
+        {
+          "path": "docs/annex/ADAPTIVITAET_PRUEFANFORDERUNGEN_v0_1.md",
+          "commit": "83caf03d6e8039637f147f1313238ca5cab611f6"
+        }
+      ]
+    }
+  ]
+}

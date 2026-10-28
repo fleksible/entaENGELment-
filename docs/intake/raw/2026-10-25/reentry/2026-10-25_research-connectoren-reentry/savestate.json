@@ -1,0 +1,245 @@
+{
+  "title": "Research-Connectoren und Re-Entry-Werkzeug (Erststand)",
+  "summary": "Kuratierung von 15 Anbindungen (Skills, MCP-Server, Provenienz, Grimm-Ebene) und deren\nUmsetzung, soweit in einer Cloud-Sitzung möglich: Save-State-Werkzeug als RO-Crate 1.2 mit\nSHA-256-Siegel, Re-Entry-Skill, Basic-Memory-Konvention, Sicherheitsprüfung dreier\nCommunity-MCP-Server, Connector-Smoke-Tests, Wolfram-Zweitrechnung und DTA-TEI-Prüfung.\nInstallationen auf dem eigenen Rechner und Lizenzklärung DTA stehen aus.\nÖffentliche Fassung für den Intake (Pattern F); enthält keine privaten Korpusinhalte.",
+  "focus": "Anbindungen + Save-State-Kreislauf vorbereiten",
+  "id": "2026-10-25_research-connectoren-reentry",
+  "authority": "DERIVED",
+  "promotion_status": "NO_CANON_PROMOTION",
+  "current_status": "GO_prepared_hold_install",
+  "floating_problem": "Lokale Installation der MCP-Server und Wahl des Basic-Memory-Projektordners",
+  "next_allowed_action": "Intake-Einträge INTAKE-2026-10-25-001/002 sichten; keine Kanonisierung ohne Review",
+  "agent": "Claude Code (Sitzung 2026-10-25)",
+  "license": "private",
+  "frozen_state": [
+    "RO-Crate 1.2 ist das Re-Entry-Paketformat (tools/reentry_crate.py)",
+    "Save States sind privat per Default (out/reentry/, gitignored)",
+    "Re-Entry übernimmt nur Crates mit verify = PASS"
+  ],
+  "open_points": [
+    "MCP-Server lokal einrichten (Befehle im Prüfprotokoll, §5)",
+    "DTA-Lizenz für KHM 1812 klären",
+    "Figma: Code Connect / Canvas-Schreiben mit Starter-Plan und View-Seat praktisch prüfen",
+    "Wolfram-Connector: Kosten und Limits",
+    "status_emit-Receipt an den Crate-Hash binden (bisher eigenes SEAL.json)"
+  ],
+  "negative_findings": [
+    "DWB / Digitaler Grimm: keine Inhalts-API gefunden (nur OAI-PMH-Metadaten)",
+    "Blender MCP zurückgestellt: beliebige Python-Ausführung, Socket ohne Auth",
+    "Cloud-Gedächtnisse (Mem0, Vertiso, Meko) widersprechen lokal + hashbar"
+  ],
+  "known_losses": [
+    "Kein Chat-Transkript im Paket",
+    "Drive-Korpus nur gesichtet, keine Inhalte übernommen (PRIVACY_BOUNDARY)",
+    "Siegel UNSIGNED: kein ENTA_HMAC_SECRET in dieser Sitzung",
+    "Code-Quellen nur als URL + sha256 referenziert, nicht kopiert (öffentliche Fassung)"
+  ],
+  "notes": [],
+  "sources": [
+    {
+      "id": "curation",
+      "path": "docs/intake/raw/2026-10-25/kuratierte-anbindungen-entaengelment-tesser3takt-grimm-v0-1.md",
+      "uri": "",
+      "role": "output",
+      "title": "",
+      "sha256": "60c7f93b0a33e36ab27415bea009b0981323e5ff1869e91ee6df761b0b67a3cf",
+      "payload": "payload/docs/intake/raw/2026-10-25/kuratierte-anbindungen-entaengelment-tesser3takt-grimm-v0-1.md"
+    },
+    {
+      "id": "protocol",
+      "path": "docs/intake/raw/2026-10-25/research-connectoren-setup-und-pruefprotokoll-v0-1.md",
+      "uri": "",
+      "role": "output",
+      "title": "",
+      "sha256": "45bd49699ebeb76c4e7ff2242d4253f76b2b0a9c71f4ff08fd8ab2b5cb4d2cb7",
+      "payload": "payload/docs/intake/raw/2026-10-25/research-connectoren-setup-und-pruefprotokoll-v0-1.md"
+    },
+    {
+      "id": "tool",
+      "path": "",
+      "uri": "https://github.com/fleksible/entaENGELment-/blob/ccr-392027bd-pu1nxa/tools/reentry_crate.py",
+      "role": "output",
+      "title": "tools/reentry_crate.py (Stand dieses Save States, per sha256 gebunden)",
+      "sha256": "df4d5669bc08514920fd5db40369c296dbf2ff291a07785654d6c6c7dc396380"
+    },
+    {
+      "id": "tests",
+      "path": "",
+      "uri": "https://github.com/fleksible/entaENGELment-/blob/ccr-392027bd-pu1nxa/tests/unit/test_reentry_crate.py",
+      "role": "output",
+      "title": "tests/unit/test_reentry_crate.py (Stand dieses Save States, per sha256 gebunden)",
+      "sha256": "5672b84e9839a5b40f1457bc039cb0f1fe51cc95320c5ca713b0ab88a2499c14"
+    },
+    {
+      "id": "skill_reference",
+      "path": ".claude/skills/tesser3takt-reentry/reference.md",
+      "uri": "",
+      "role": "output",
+      "title": "",
+      "sha256": "88dea40b72fc51cdd899049a2a1e12a6279a2409ec6d17c6970b54c777221dfe",
+      "payload": "payload/.claude/skills/tesser3takt-reentry/reference.md"
+    },
+    {
+      "id": "rocrate_spec",
+      "path": "",
+      "uri": "https://www.researchobject.org/ro-crate/specification/1.2/introduction.html",
+      "role": "context",
+      "title": "RO-Crate 1.2 Specification",
+      "sha256": ""
+    }
+  ],
+  "claims": [
+    {
+      "text": "Das Save-State-Werkzeug erzeugt RO-Crate-1.2-Pakete, die verify mit PASS bestehen; Manipulation führt zu HOLD.",
+      "tag": "FACT",
+      "status": "VERIFIED",
+      "sources": [
+        "tool",
+        "tests"
+      ]
+    },
+    {
+      "text": "Wolfram-Zweitrechnung (Charakteristik-Matrix) stimmt mit thin_film_reflectance (Airy) auf ~1e-16 überein.",
+      "tag": "FACT",
+      "status": "VERIFIED",
+      "sources": [
+        "protocol"
+      ]
+    },
+    {
+      "text": "Basic Memory und Zotero MCP sind mit Einstellungen nutzbar; arXiv MCP ist mit gepinnter Version unbedenklich.",
+      "tag": "INFERENZ",
+      "status": "REVIEW-PENDING",
+      "sources": [
+        "protocol"
+      ]
+    },
+    {
+      "text": "Die DTA-Lizenzangaben für KHM 1812 widersprechen sich (CC BY-NC 3.0 vs. CC BY-SA 4.0).",
+      "tag": "KORPUSBEFUND",
+      "status": "UNRESOLVED",
+      "sources": [
+        "protocol"
+      ]
+    },
+    {
+      "text": "Basic-Memory-Kategorien tragen die Claim-Art, Tags den Status; so bleiben Metapher und Messbehauptung getrennt.",
+      "tag": "MODELL",
+      "status": "DERIVED",
+      "sources": [
+        "skill_reference"
+      ]
+    },
+    {
+      "text": "Ein versiegeltes Paket ist ein zwischenzeitliches Ganzes, das ohne Glättung wieder betreten werden kann.",
+      "tag": "METAPHER",
+      "status": "DERIVED",
+      "sources": []
+    }
+  ],
+  "next_actions": [
+    {
+      "id": "A1",
+      "title": "MCP-Server lokal einrichten (Basic Memory, arXiv, Zotero)",
+      "paths": [
+        "docs/intake/raw/2026-10-25/research-connectoren-setup-und-pruefprotokoll-v0-1.md"
+      ]
+    },
+    {
+      "id": "A2",
+      "title": "Ersten privaten Save State aus dem Drive-Korpus mit /tesser3takt-reentry save anlegen",
+      "paths": [
+        ".claude/skills/tesser3takt-reentry/SKILL.md"
+      ]
+    },
+    {
+      "id": "A3",
+      "title": "Intake-Einträge sichten und über Kanonisierung entscheiden",
+      "paths": [
+        "docs/intake/INDEX.md"
+      ]
+    }
+  ],
+  "lineage": {
+    "nodes": [
+      {
+        "id": "prompt_v1",
+        "label": "Recherche-Prompt v1 (User)",
+        "status": "input"
+      },
+      {
+        "id": "prompt_v2",
+        "label": "Recherche-Prompt v2",
+        "status": "derived"
+      },
+      {
+        "id": "curation",
+        "label": "15 kuratierte Anbindungen",
+        "status": "review_pending"
+      },
+      {
+        "id": "execution",
+        "label": "Werkzeug, Skill, Prüfungen",
+        "status": "derived"
+      },
+      {
+        "id": "savestate",
+        "label": "Dieser Save State",
+        "status": "derived"
+      }
+    ],
+    "edges": [
+      {
+        "source": "prompt_v1",
+        "target": "prompt_v2",
+        "relation": "refined_into"
+      },
+      {
+        "source": "prompt_v2",
+        "target": "curation",
+        "relation": "produced"
+      },
+      {
+        "source": "curation",
+        "target": "execution",
+        "relation": "implemented_by"
+      },
+      {
+        "source": "execution",
+        "target": "savestate",
+        "relation": "sealed_as"
+      }
+    ]
+  },
+  "schema": "tesser3takt-savestate.v0.1",
+  "created_at": "2026-10-25T02:25:25+00:00",
+  "git": {
+    "commit": "83caf03d6e8039637f147f1313238ca5cab611f6",
+    "branch": "ccr-392027bd-pu1nxa",
+    "dirty": true
+  },
+  "tool_version": "0.1.0",
+  "notes_payload": [],
+  "claim_audit": {
+    "total": 6,
+    "by_tag": {
+      "FACT": 2,
+      "INFERENZ": 1,
+      "KORPUSBEFUND": 1,
+      "METAPHER": 1,
+      "MODELL": 1
+    },
+    "by_status": {
+      "DERIVED": 2,
+      "REVIEW-PENDING": 1,
+      "UNRESOLVED": 1,
+      "VERIFIED": 2
+    }
+  },
+  "input_hashes": {
+    "curation": "60c7f93b0a33e36ab27415bea009b0981323e5ff1869e91ee6df761b0b67a3cf",
+    "protocol": "45bd49699ebeb76c4e7ff2242d4253f76b2b0a9c71f4ff08fd8ab2b5cb4d2cb7",
+    "tool": "df4d5669bc08514920fd5db40369c296dbf2ff291a07785654d6c6c7dc396380",
+    "tests": "5672b84e9839a5b40f1457bc039cb0f1fe51cc95320c5ca713b0ab88a2499c14",
+    "skill_reference": "88dea40b72fc51cdd899049a2a1e12a6279a2409ec6d17c6970b54c777221dfe"
+  }
+}
