@@ -29,6 +29,9 @@ from typing import Any
 import numpy as np
 
 _EPS_MACH = float(np.finfo(float).eps)
+_TINY = float(np.finfo(float).tiny)
+_MAX = float(np.finfo(float).max)
+_SUBNORMAL = math.ulp(0.0)  # kleinste positive subnormale Zahl
 
 
 class EstimatedHessian(np.ndarray):
@@ -104,7 +107,9 @@ class EstimatedHessian(np.ndarray):
 
         ``δ = ||error_bound||_F + 10·n·ε·||H||_F``: Der erste Term begrenzt die
         Spektralnorm des Schätzfehlers, der zweite den Rundungsfehler von
-        ``eigvalsh``. Gilt nur unter den deklarierten Annahmen.
+        ``eigvalsh``. Die Normen werden skaliert berechnet (kein Unterlauf kleiner
+        Einträge), das Ergebnis nach oben gerundet. Gilt nur unter den
+        deklarierten Annahmen.
         """
         if (
             self.error_bound is None
@@ -115,7 +120,16 @@ class EstimatedHessian(np.ndarray):
             return None
         matrix = np.asarray(self)
         n = matrix.shape[0]
-        return float(np.linalg.norm(self.error_bound) + 10 * n * _EPS_MACH * np.linalg.norm(matrix))
+        delta = _scaled_frobenius(self.error_bound) + 10 * n * _EPS_MACH * _scaled_frobenius(matrix)
+        return math.nextafter(delta * (1.0 + 4.0 * n * n * _EPS_MACH), math.inf)
+
+
+def _scaled_frobenius(matrix: np.ndarray) -> float:
+    """Frobenius-Norm, skaliert, damit Quadrate kleiner Einträge nicht unterlaufen."""
+    scale = float(np.max(np.abs(matrix)))
+    if scale == 0.0 or not math.isfinite(scale):
+        return scale
+    return scale * float(np.linalg.norm(matrix / scale))
 
 
 def _require_nonneg_finite(name: str, value: object) -> float:
@@ -127,6 +141,56 @@ def _require_nonneg_finite(name: str, value: object) -> float:
     ):
         raise ValueError(f"{name} must be a finite number >= 0, got {value!r}")
     return float(value)
+
+
+def _denominator(steps: np.ndarray, i: int, j: int) -> float:
+    """Nenner der zentralen Differenz für Eintrag (i, j), so wie die Formel ihn rechnet."""
+    if i == j:
+        return float(steps[i] ** 2)
+    return float(4.0 * steps[i] * steps[j])
+
+
+def _upper_float(value: Fraction) -> float | None:
+    """Kleinstes float >= ``value``; ``None``, wenn es kein endliches gibt."""
+    try:
+        approx = float(value)
+    except OverflowError:
+        return None
+    if Fraction(approx) < value:
+        approx = math.nextafter(approx, math.inf)
+    return approx if math.isfinite(approx) else None
+
+
+def _declared_error_bound(
+    steps: np.ndarray, S: np.ndarray, m4: float, e: float
+) -> np.ndarray | None:
+    """Elementweise Fehlerschranke, exakt rational berechnet und nach oben gerundet.
+
+    Unter- oder Überlauf in Zwischenwerten darf die Schranke nicht verkleinern.
+    ``None``, wenn ein Nenner der Formel keine normale endliche Gleitkommazahl ist
+    (dann gilt das Rundungsmodell ``8ε·S`` nicht) oder ein Eintrag nicht als
+    endliches float darstellbar ist.
+    """
+    n = steps.size
+    h = [Fraction(s) for s in steps.tolist()]
+    m4_q, e_q, eps_q = Fraction(m4), Fraction(e), Fraction(_EPS_MACH)
+    # Absolute Untergrenze: 8ε·S für S unterhalb von tiny plus Rundung eines
+    # subnormalen Quotienten.
+    floor = 8 * eps_q * Fraction(_TINY) + Fraction(_SUBNORMAL)
+    bound = np.empty((n, n))
+    for i in range(n):
+        for j in range(n):
+            if not _TINY <= _denominator(steps, i, j) <= _MAX or not math.isfinite(S[i, j]):
+                return None
+            if i == j:
+                exact = m4_q * h[i] ** 2 / 12 + 4 * e_q / h[i] ** 2
+            else:
+                exact = m4_q * (h[i] + h[j]) ** 4 / (24 * h[i] * h[j]) + e_q / (h[i] * h[j])
+            upper = _upper_float(exact + 8 * eps_q * Fraction(float(S[i, j])) + floor)
+            if upper is None:
+                return None
+            bound[i, j] = upper
+    return bound
 
 
 def _central_differences(
@@ -148,7 +212,7 @@ def _central_differences(
         e = np.zeros(n)
         e[i] = steps[i]
         f_p, f_m = f(x + e), f(x - e)
-        denom: float = float(steps[i] ** 2)
+        denom = _denominator(steps, i, i)
         H[i, i] = (f_p - 2.0 * f0 + f_m) / denom
         S[i, i] = (abs(f_p) + 2.0 * abs(f0) + abs(f_m)) / denom
     for i in range(n):
@@ -159,7 +223,7 @@ def _central_differences(
             e_j[j] = steps[j]
             f_pp, f_pm = f(x + e_i + e_j), f(x + e_i - e_j)
             f_mp, f_mm = f(x - e_i + e_j), f(x - e_i - e_j)
-            denom = float(4.0 * steps[i] * steps[j])
+            denom = _denominator(steps, i, j)
             H[i, j] = H[j, i] = (f_pp - f_pm - f_mp + f_mm) / denom
             S[i, j] = S[j, i] = (abs(f_pp) + abs(f_pm) + abs(f_mp) + abs(f_mm)) / denom
     return H, S
@@ -221,9 +285,11 @@ def compute_hessian_numerical(
     - ``evaluation_error`` e: Schranke für ``|f̃(y) - f(y)|`` an den Stencil-Punkten.
     Abbruch: Diagonale ``M4·h²/12``, gemischt ``M4·(h_i+h_j)⁴/(24·h_i·h_j)``
     (Taylor mit Lagrange-Rest). Auswertung: ``4e/h²`` bzw. ``e/(h_i·h_j)``.
-    Gleitkomma-Arithmetik der Formel: konservativ ``8ε·Σ|f̃|/Nenner``.
-    Die Schranke setzt exakt darstellbare Stencil-Punkte ``x ± h`` voraus (per
-    rationaler Arithmetik geprüft); gelingt das nicht, gibt es keine Schranke.
+    Gleitkomma-Arithmetik der Formel: konservativ ``8ε·Σ|f̃|/Nenner`` plus eine
+    absolute Untergrenze für subnormale Werte. Die Schranke wird exakt rational
+    berechnet und nach oben auf float gerundet. Sie setzt exakt darstellbare
+    Stencil-Punkte ``x ± h`` (per rationaler Arithmetik geprüft), normale endliche
+    Nenner und endlich darstellbare Einträge voraus; sonst gibt es keine Schranke.
     Die Schranke ist nur so gut wie die deklarierten Annahmen; sie werden nicht
     geprüft. Fehlen sie, bleibt ``error_bound`` ``None`` und eine Freigabe
     auf Basis dieser Schätzung ist UNRESOLVED.
@@ -241,7 +307,8 @@ def compute_hessian_numerical(
 
     Returns:
         ``EstimatedHessian`` mit Matrix, ggf. Fehlerschranke, explorativem
-        Richardson-Wert, Schrittweiten und Annahmen.
+        Richardson-Wert (``None``, wenn der doppelte Stencil ``x ± 2h`` nicht
+        auswertbar ist), Schrittweiten und Annahmen.
 
     Raises:
         ValueError: Bei ungültigem Punkt, ungültiger Schrittweite oder Schranke,
@@ -266,31 +333,32 @@ def compute_hessian_numerical(
     steps = exact if exact is not None else _representable_steps(x, raw)
 
     H, S = _central_differences(func, x, steps)
-    H_2h, _ = _central_differences(func, x, _representable_steps(x, 2.0 * steps))
-    richardson = np.abs(H - H_2h) / 3.0
+    assumptions: tuple[str, ...] = (f"central differences, steps={steps.tolist()}",)
+    richardson: np.ndarray | None
+    try:
+        H_2h, _ = _central_differences(func, x, _representable_steps(x, 2.0 * steps))
+    except Exception as exc:  # explorativ: darf die Hauptschätzung nie verwerfen
+        richardson = None
+        assumptions += (
+            f"richardson_estimate unavailable: doubled stencil failed ({type(exc).__name__})",
+        )
+    else:
+        richardson = np.abs(H - H_2h) / 3.0
+        assumptions += ("richardson_estimate is exploratory, not a certified bound",)
 
     error_bound = None
-    assumptions: tuple[str, ...] = (
-        f"central differences, steps={steps.tolist()}",
-        "richardson_estimate is exploratory, not a certified bound",
-    )
     if exact is None and fourth_derivative_bound is not None:
         assumptions += ("no error bound: stencil points x ± h not exactly representable",)
     elif fourth_derivative_bound is not None and evaluation_error is not None:
         m4 = _require_nonneg_finite("fourth_derivative_bound", fourth_derivative_bound)
         e = _require_nonneg_finite("evaluation_error", evaluation_error)
-        hi = steps[:, None]
-        hj = steps[None, :]
-        truncation = m4 * (hi + hj) ** 4 / (24.0 * hi * hj)
-        evaluation = e / (hi * hj)
-        diag = np.diag_indices(x.size)
-        truncation[diag] = m4 * steps**2 / 12.0
-        evaluation[diag] = 4.0 * e / steps**2
-        error_bound = truncation + evaluation + 8.0 * _EPS_MACH * S
+        error_bound = _declared_error_bound(steps, S, m4, e)
         assumptions += (
             f"declared: |4th partial derivatives| <= {m4!r} on [x-h, x+h], f in C^4 there",
             f"declared: |f_computed - f| <= {e!r} at stencil points",
         )
+        if error_bound is None:
+            assumptions += ("no error bound: denominators or bound not representable in float",)
 
     return EstimatedHessian(
         H,

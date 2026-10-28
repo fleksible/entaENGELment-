@@ -3,9 +3,11 @@
 Abgedeckt: Fehlerschranke aus deklarierten Annahmen, Behandlung fehlender
 Unsicherheitsinformation, abgeleitete Matrizen, der verbleibende
 Matrix-only-Zugang, das Gegenbeispiel zur Richardson-"Zertifizierung",
-MOD_18-Unsicherheit, Rotationsinvarianz und Eingabevalidierung.
+MOD_18-Unsicherheit, Rotationsinvarianz, Gleitkomma-Robustheit der Schranke
+und Eingabevalidierung.
 """
 
+import math
 from fractions import Fraction
 
 import numpy as np
@@ -304,3 +306,90 @@ class TestValidation:
     def test_non_finite_function_value_raises(self):
         with pytest.raises(ValueError, match="non-finite"):
             compute_hessian_numerical(lambda q: float("nan"), np.zeros(2))
+
+
+class TestFloatingPointRobustness:
+    """Unter-/Überlauf darf die Schranke nicht verkleinern; Richardson ist optional."""
+
+    def test_doubled_stencil_outside_domain_keeps_primary_estimate(self):
+        # log auf [0.25, 1.75]: |f⁽⁴⁾| <= 6/0.25**4 = 1536; x - 2h = -0.5 liegt außerhalb.
+        H = compute_hessian_numerical(
+            lambda q: math.log(q[0]),
+            np.array([1.0]),
+            eps=0.75,
+            fourth_derivative_bound=1536.0,
+            evaluation_error=1e-15,
+        )
+        assert H.richardson_estimate is None
+        assert any("richardson_estimate unavailable" in item for item in H.assumptions)
+        assert H.error_bound is not None
+        assert abs(float(np.asarray(H)[0, 0]) - (-1.0)) <= H.error_bound[0, 0]
+
+    def test_underflow_cannot_erase_mixed_truncation_bound(self):
+        """(h_i + h_j)**4 underflowed in float; the true Hessian has a negative
+        eigenvalue, the estimate looks like 0.2·I. Valid declarations must not
+        lead to a release."""
+
+        def f(q):
+            x, y = float(q[0]), float(q[1])
+            return 0.1 * (x * x + y * y) + x * y * (-1 / 3 + (1e200 / 6) * (x * x + y * y))
+
+        H = compute_hessian_numerical(
+            f,
+            np.zeros(2),
+            eps=1e-100,
+            fourth_derivative_bound=1.01e200,
+            evaluation_error=1e-214,
+        )
+        true = np.array([[0.2, -1 / 3], [-1 / 3, 0.2]])
+        assert np.all(np.abs(np.asarray(H) - true) <= H.error_bound)
+        mu, delta = eigenvalue_bounds(H)
+        assert np.all(np.abs(mu - np.linalg.eigvalsh(true)) <= delta)
+        assert classify_stability(H)[0] == "UNRESOLVED"
+        assert stability_gate(H, consent_available=False)[0] is False
+        assert classify_hessian_spectral_void(H) == SpectralVoidClass.UNDEFINED
+
+    def test_bound_is_an_upward_rounded_exact_value(self):
+        x = np.array([0.3, -0.7])
+        m4, e = Fraction(1.0), Fraction(1e-15)
+        H = compute_hessian_numerical(
+            lambda q: float(np.sum(q**2)),
+            x,
+            fourth_derivative_bound=float(m4),
+            evaluation_error=float(e),
+        )
+        h = [Fraction(s) for s in H.steps.tolist()]
+        for i in range(2):
+            for j in range(2):
+                if i == j:
+                    exact = m4 * h[i] ** 2 / 12 + 4 * e / h[i] ** 2
+                else:
+                    exact = m4 * (h[i] + h[j]) ** 4 / (24 * h[i] * h[j]) + e / (h[i] * h[j])
+                assert Fraction(float(H.error_bound[i, j])) >= exact
+
+    def test_bound_overflow_is_unresolved_not_an_error(self):
+        H = compute_hessian_numerical(
+            lambda q: q[0] ** 2,
+            np.array([1e150]),
+            fourth_derivative_bound=1e20,
+            evaluation_error=1e285,
+        )
+        assert H.error_bound is None
+        assert any("not representable" in item for item in H.assumptions)
+        assert classify_stability(H)[0] == "UNRESOLVED"
+
+    def test_subnormal_denominator_gives_no_bound(self):
+        H = compute_hessian_numerical(
+            lambda q: q[0] ** 2,
+            np.zeros(1),
+            eps=1e-160,
+            fourth_derivative_bound=0.0,
+            evaluation_error=1e-323,
+        )
+        assert H.error_bound is None
+        assert classify_stability(H)[0] == "UNRESOLVED"
+
+    def test_tiny_bound_entries_do_not_underflow_in_the_norm(self):
+        H = EstimatedHessian(np.diag([1e-180, 1e-180]), error_bound=np.full((2, 2), 1e-170))
+        assert H.eigenvalue_uncertainty() >= 2e-170
+        assert classify_stability(H, threshold=0.0)[0] == "UNRESOLVED"
