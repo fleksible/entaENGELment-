@@ -9,21 +9,25 @@ remain GOLD/IMMUTABLE.
 
 ## Layout
 
-| Path | Purpose | Claim |
-|------|---------|-------|
-| `core/eci.py` | Elliptic Cumulative Integral coherence metric | [FAKT] |
-| `core/ledger.py` | Append-only JSONL event ledger with SHA-256 hash chain | [FAKT] |
-| `core/metrics.py` | Resonance metrics (MI, PLV, FD/Higuchi, …) — see VOID-011 | [FAKT] |
-| `core/stability_guard.py` | Stability gate (core variant) | [FAKT] |
-| `cglg/gate_logic.py` | φ ≥ threshold gate predicate | [FAKT] |
-| `cglg/mutual_perception.py` | Mutual-perception averaging helper | [FAKT] |
-| `stability/hessian_void.py` | Hessian spectral analysis for void detection | [FAKT] |
-| `stability/spectral_void.py` | Spectral void taxonomy classifier (MOD_18) | [FAKT] |
-| `stability/stability_guard.py` | Spectral taxonomy → gate mapper (MOD_14) | [FAKT] |
-| `tools/throat_vector.py` | Throat-vector topology computation | [FAKT] |
-| `tools/toy_resonance_dataset.py` | Synthetic resonance dataset (VOID-011 evidence) | [FAKT] |
-| `tools/cauchy_detector.py` | Cauchy residual outlier detection | [HYPOTHESE] reference status under review (audit R4) |
-| `meta_backprop.py` | Backpropagation helper | [HYPOTHESE] reference status under review (audit R4) |
+The columns keep apart what a module verifiably computes and what that result
+may claim. "Implemented" means code and tests exist; it says nothing about
+empirical validity (`EPISTEMIC_HYGIENE.md`: a hypothesis must not pass as fact).
+
+| Path | What the code verifiably does | State | Claim on meaning |
+|------|-------------------------------|-------|------------------|
+| `core/eci.py` | Ethical Consent Index: weighted mean of likert/behavior/physio proxies, clamped to [0, 1]; percentile bootstrap helper | implemented, tested | [HYPOTHESE] not validated as a consent measure. `permutation_test` is statistically empty (finding B3; disabled in PR #438) |
+| `core/ledger.py` | Append-only JSONL event ledger with SHA-256 hash chain | implemented, tested | [FAKT] tamper-evident within documented assumptions; no authenticity |
+| `core/metrics.py` | PLV, histogram MI, Higuchi FD, PF; `eci()` is only a clamped-mean proxy | implemented, tested | [MODELL] SIMULATION_PROXY (VOID-011); known MI bias |
+| `core/stability_guard.py` | Gate decision from the MOD_16 classification | implemented, tested | [MODELL] geometric classification only; never consent (see findings B2/B9) |
+| `cglg/gate_logic.py` | `phi >= threshold` | stub, marked [HYP] in the module | none |
+| `cglg/mutual_perception.py` | `(a + b) / 2` | one-liner, no docstring, untested | none |
+| `stability/hessian_void.py` | Finite-difference Hessian and eigenvalue classification | implemented, tested | [MODELL] |
+| `stability/spectral_void.py` | 7-class taxonomy from eigenvalues (MOD_18) | implemented, tested | [MODELL] |
+| `stability/stability_guard.py` | Taxonomy → ALLOW/BLOCK mapping (MOD_14) | implemented, tested | [MODELL] |
+| `tools/throat_vector.py` | `sqrt(x² + y²) / (z + 1e-6)` | one-liner, one test | none; no topological statement is backed |
+| `tools/toy_resonance_dataset.py` | Synthetic resonance dataset | implemented, tested | [MODELL] SIMULATION_PROXY, not empirical evidence |
+| `tools/cauchy_detector.py` | `max(seq) - min(seq)` (range) | one-liner, untested | none; it performs no Cauchy or outlier detection |
+| `meta_backprop.py` | Writes a review note into `policy["notes"]` | stub, marked [TODO] in the module | none; no optimisation |
 
 ## Boundary notes
 

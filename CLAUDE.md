@@ -148,7 +148,8 @@ Jeder Report in `OUT/` folgt diesem Schema:
 Python ≥ 3.10. Quelle der Wahrheit für Config: [`pyproject.toml`](pyproject.toml).
 
 ```bash
-make install-dev     # pip install -r requirements-dev.txt + editable install
+make install-dev     # uv sync der dev-Gruppe aus uv.lock; verlangt exakt uv 0.12.18
+                     # (python -m pip install "uv==0.12.18", wie in CI)
 make install-hooks   # git config core.hooksPath .githooks (pre-commit guard)
 
 make verify          # KANON: port-lint + pytest + verify-pointers --strict + claim-lint
@@ -257,9 +258,9 @@ Working Tree → make verify (port-lint · pytest · verify-pointers --strict ·
 | Pfad | Inhalt | Einstiegspunkt |
 |------|--------|----------------|
 | `src/core/` | Metriken & Gate-Logik | `metrics.py`, `eci.py`, `ledger.py`, `stability_guard.py` |
-| `src/cglg/` | Mutual-Perception / Gate-Logic | `gate_logic.py`, `mutual_perception.py` |
+| `src/cglg/` | Gate-Proxy-Stubs (keine echte Gate-Logik, siehe `tools/mzm/`) | `gate_logic.py` ([HYP]-Stub), `mutual_perception.py` (Einzeiler) |
 | `src/stability/` | Stabilitäts-Guards | `stability_guard.py`, `spectral_void.py`, `hessian_void.py` |
-| `src/tools/` | Detektoren & Toy-Datasets | `cauchy_detector.py`, `throat_vector.py` |
+| `src/tools/` | Toy-Datasets und Einzeiler-Helfer | `toy_resonance_dataset.py`; `cauchy_detector.py`/`throat_vector.py` sind Einzeiler ohne die im Namen genannte Methode |
 | `tools/` | DeepJump-CLIs (s. Liste unten) | `verify_pointers.py`, `status_emit.py` |
 | `tools/mzm/` | Gate-Toggle (`mzm-gate-toggle` Script) | `gate_toggle.py` |
 | `tests/` | `unit/`, `integration/`, `ethics/`, `stability/`, `benchmark/`, `cpt/` | `make test` |
@@ -343,4 +344,4 @@ Kern-Pipelines: `deepjump-ci.yml` (Verify+Snapshot), `metatron-guard.yml` (PR-Fo
 
 ---
 
-*Letzte Aktualisierung: 2026-10-18*
+*Letzte Aktualisierung: 2026-10-28*

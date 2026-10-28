@@ -107,9 +107,11 @@ Das Repository hat eine klare Hierarchie:
 ### Warum IMMUTABLE?
 
 Receipts sind der Audit-Trail des Projekts:
-- HMAC-signiert
+- HMAC-signiert, sofern ein Secret gesetzt ist (sonst als `UNSIGNED` markiert)
 - Chronologisch
-- Nicht-repudiierbar
+- Manipulationserkennend für Inhaber des Secrets, aber **nicht**
+  nicht-abstreitbar: HMAC ist symmetrisch, wer prüfen kann, kann mit demselben
+  Secret auch signieren (vgl. `SECURITY.md`, „non-repudiable“ vermeiden)
 
 Jede Modifikation würde:
 - Die Signatur invalidieren

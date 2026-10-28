@@ -24,7 +24,8 @@ python -m venv .venv
 source .venv/bin/activate  # Linux/Mac
 # oder: .venv\Scripts\activate  # Windows
 
-# Development Dependencies installieren
+# Development Dependencies installieren (der Lock-Workflow verlangt exakt uv 0.12.18)
+python -m pip install "uv==0.12.18"
 make install-dev
 ```
 
