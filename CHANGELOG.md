@@ -26,6 +26,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - VOID-012/013 reset to IN_PROGRESS (honest DRAFT status) (P1-A)
 
 ### Fixed
+- Fail-closed fixes from `docs/audit/2026-10-28_repo_checkup.md` (behaviour changes):
+  - B1: MZM gate blocks non-finite or non-real `phi`/`m_norm_l2` (`BLOCK_PHI_BELOW_MIN`,
+    `BLOCK_M_NORM_INVALID`) and accepts only bool `True` for its boolean constraints; the
+    decision no longer depends on logging the raw metrics, and non-finite values are not logged.
+  - B5: `Ledger.metric`/`Ledger.gate` validate payloads (incl. nested tags) as strict JSON before
+    any state change; rejected events leave `_prev_hash`, `_events` and the file untouched.
+  - B2: negative curvature takes precedence over flat directions in `classify_stability`;
+    degenerate saddles block with consent; invalid, non-symmetric or non-finite matrices block.
+    Both stability guards accept only bool `True` as consent.
+  - B4: `Ledger.verify_chain()` after reopening checks the appended section from the loaded
+    anchor; the persisted history remains the job of `verify_chain_from_file`.
+  - B3: `eci.permutation_test` now raises `NotImplementedError` (test design not specified);
+    `bootstrap_ci` gains a `seed`, validates input and no longer returns `(0, 0)` for empty data.
 - All VOIDs assigned owners and target dates (P1-D)
 - VOID-002 closed: full verify/lint in CI pipeline (P2-B)
 - HMAC secret now persistent (P0-C, manual)

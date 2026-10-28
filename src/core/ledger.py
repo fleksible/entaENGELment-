@@ -15,6 +15,8 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
+import numbers
 import os
 import time
 import uuid
@@ -70,6 +72,32 @@ def _is_valid_serialized_event(event: object) -> bool:
             isinstance(event["hash"], str),
         )
     )
+
+
+def _strict_payload_copy(payload: Mapping[str, Any]) -> dict[str, Any]:
+    """Return a strict-JSON deep copy of a payload or raise ``ValueError``.
+
+    Strict means RFC 8259 compatible: ``NaN``, ``Infinity`` and non-serializable
+    values are rejected anywhere in the payload, including nested tags.
+    """
+    try:
+        canonical = json.dumps(
+            dict(payload), sort_keys=True, separators=(",", ":"), allow_nan=False
+        )
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"payload is not canonically JSON-serializable: {exc}") from exc
+    payload_copy: dict[str, Any] = json.loads(canonical)
+    return payload_copy
+
+
+def _is_finite_real(value: object) -> bool:
+    """True only for finite real numbers (no bool, NaN, +inf, -inf)."""
+    if isinstance(value, bool) or not isinstance(value, numbers.Real):
+        return False
+    try:
+        return math.isfinite(value)
+    except OverflowError:
+        return False
 
 
 def _hash_event_content(event: Mapping[str, Any]) -> str:
@@ -154,6 +182,8 @@ class Ledger:
         self.manifest_sha256 = manifest_sha256 or os.environ.get("ENTA_STATIC_MANIFEST_SHA256")
         self._events: list[LedgerEvent] = []
         self._prev_hash: str | None = None
+        # Hash the in-memory section starts from (last hash of a reopened file).
+        self._anchor_hash: str | None = None
         self._file: TextIO | None = None
 
         # Initialize file if path provided
@@ -181,9 +211,15 @@ class Ledger:
                 self._prev_hash = event.get("hash")
             except json.JSONDecodeError:
                 pass
+        self._anchor_hash = self._prev_hash
 
     def _emit(self, event: LedgerEvent) -> None:
-        """Emit event to ledger with hash-chain."""
+        """Emit event to ledger with hash-chain.
+
+        The event is hashed and serialized as strict JSON before any ledger state
+        changes; a rejected event leaves ``_prev_hash``, ``_events`` and the file
+        untouched.
+        """
         # Set span from context if not explicitly set
         if event.span_id is None:
             event.span_id = _current_span.get()
@@ -191,15 +227,19 @@ class Ledger:
         # Set hash chain
         event.prev_hash = self._prev_hash
         event.hash = event.compute_hash()
-        self._prev_hash = event.hash
-
-        # Store in memory
-        self._events.append(event)
+        try:
+            line = json.dumps(event.to_dict(), separators=(",", ":"), allow_nan=False)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"event is not strict-JSON-serializable: {exc}") from exc
 
         # Write to file if path configured
         if self.path:
             with open(self.path, "a", encoding="utf-8") as f:
-                f.write(json.dumps(event.to_dict(), separators=(",", ":")) + "\n")
+                f.write(line + "\n")
+
+        # Commit in-memory state only after the event was accepted
+        self._prev_hash = event.hash
+        self._events.append(event)
 
     def event(
         self,
@@ -238,13 +278,7 @@ class Ledger:
         ):
             raise ValueError("timestamp must be int or float when provided")
 
-        try:
-            canonical = json.dumps(
-                dict(payload), sort_keys=True, separators=(",", ":"), allow_nan=False
-            )
-        except (TypeError, ValueError) as exc:
-            raise ValueError(f"payload is not canonically JSON-serializable: {exc}") from exc
-        payload_copy: dict[str, Any] = json.loads(canonical)
+        payload_copy = _strict_payload_copy(payload)
 
         kwargs: dict[str, Any] = {"type": event_type, "payload": payload_copy}
         if event_id is not None:
@@ -261,31 +295,51 @@ class Ledger:
     def metric(self, metric_id: str, value: float, **tags: Any) -> None:
         """Emit a metric event.
 
+        Fail-closed: ``value`` must be a finite real number and the whole payload
+        (including nested tags) strict JSON; otherwise ``ValueError`` is raised
+        before any ledger state changes.
+
         Args:
             metric_id: Metric identifier (e.g., "mzm.phi", "exception.GateBlockedError")
             value: Numeric metric value
             **tags: Additional tags for the metric
         """
-        payload = {"metric_id": metric_id, "value": value}
+        if not isinstance(metric_id, str) or not metric_id.strip():
+            raise ValueError("metric_id must be a non-empty string")
+        if not _is_finite_real(value):
+            raise ValueError(f"metric value must be a finite real number, got {value!r}")
+        payload: dict[str, Any] = {
+            "metric_id": metric_id,
+            "value": value if type(value) in (int, float) else float(value),
+        }
         if tags:
             payload["tags"] = tags
 
-        event = LedgerEvent(type="metric", payload=payload)
+        event = LedgerEvent(type="metric", payload=_strict_payload_copy(payload))
         self._emit(event)
 
     def gate(self, gate_id: str, passed: bool, reason: str | None = None) -> None:
         """Emit a gate decision event.
+
+        Fail-closed: invalid field types raise ``ValueError`` before any ledger
+        state changes.
 
         Args:
             gate_id: Gate identifier (e.g., "mzm_gate_v1", "stability_taxonomy_v1")
             passed: Whether the gate check passed
             reason: Reason code for the decision
         """
+        if not isinstance(gate_id, str) or not gate_id.strip():
+            raise ValueError("gate_id must be a non-empty string")
+        if not isinstance(passed, bool):
+            raise ValueError(f"passed must be a bool, got {passed!r}")
+        if reason is not None and not isinstance(reason, str):
+            raise ValueError(f"reason must be a string when provided, got {reason!r}")
         payload: dict[str, Any] = {"gate_id": gate_id, "passed": passed}
         if reason is not None:
             payload["reason"] = reason
 
-        event = LedgerEvent(type="gate", payload=payload)
+        event = LedgerEvent(type="gate", payload=_strict_payload_copy(payload))
         self._emit(event)
 
     @contextmanager
@@ -337,12 +391,18 @@ class Ledger:
         return events
 
     def verify_chain(self) -> bool:
-        """Verify the integrity of the hash chain.
+        """Verify the integrity of the in-memory hash chain.
+
+        The check covers only the events appended by this instance. For a ledger
+        reopened on an existing file it starts at the loaded last hash (anchor),
+        so the newly appended section links correctly to it. The anchor itself
+        is not evidence that the persisted history is valid: verifying the full
+        file is the job of :func:`verify_chain_from_file`.
 
         Returns:
             True if hash chain is valid, False otherwise
         """
-        prev_hash = None
+        prev_hash = self._anchor_hash
         for event in self._events:
             if event.prev_hash != prev_hash:
                 return False

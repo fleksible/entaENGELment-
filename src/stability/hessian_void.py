@@ -2,10 +2,12 @@
 
 Implementiert Stabilitäts-Klassifizierung via Hessian-Eigenwertanalyse:
 - STABLE: alle λ > 0 (Minimum, sicher)
-- FLAT: λ ≈ 0 (VOID, Consent erforderlich)
-- UNSTABLE: λ < 0 (Sattel/Maximum, blockieren)
+- FLAT: λ ≈ 0 und kein λ < 0 (VOID, Consent erforderlich)
+- UNSTABLE: mindestens ein λ < 0 (Sattel/Maximum, blockieren), auch wenn
+  zusätzlich flache Richtungen vorliegen
 """
 
+import numbers
 from collections.abc import Callable
 
 import numpy as np
@@ -45,24 +47,59 @@ def compute_hessian_numerical(
     return result
 
 
+def _validated_hessian(hessian: np.ndarray) -> np.ndarray:
+    """Prüft die Matrix kontrolliert; ungültige Eingaben lösen ``ValueError`` aus.
+
+    ``np.linalg.eigvalsh`` liest nur das untere Dreieck. Eine nicht symmetrische
+    Matrix würde daher still als eine andere Matrix klassifiziert; sie wird
+    stattdessen abgewiesen.
+    """
+    try:
+        matrix: np.ndarray = np.asarray(hessian, dtype=float)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"hessian is not numeric: {exc}") from exc
+    if matrix.ndim != 2 or matrix.shape[0] != matrix.shape[1] or matrix.shape[0] == 0:
+        raise ValueError(f"hessian must be a non-empty square matrix, got shape {matrix.shape}")
+    if not np.all(np.isfinite(matrix)):
+        raise ValueError("hessian contains NaN or infinite entries")
+    scale = float(np.max(np.abs(matrix)))
+    if float(np.max(np.abs(matrix - matrix.T))) > 1e-10 * scale:
+        raise ValueError("hessian is not symmetric")
+    return matrix
+
+
 def classify_stability(hessian: np.ndarray, threshold: float = 1e-6) -> tuple[str, np.ndarray]:
     """Klassifiziert Stabilitätstyp via Hessian-Eigenwerte.
 
+    Eigenwerte mit ``|λ| <= threshold`` gelten als numerisch null (flach).
+    Negative Krümmung (``λ < -threshold``) hat Vorrang vor flachen Richtungen:
+    ein degenerierter Sattel wie ``[-1, 0]`` ist UNSTABLE, nicht FLAT.
+
     Args:
         hessian: Symmetrische Hessian-Matrix
-        threshold: Numerische Toleranz für Null-Erkennung
+        threshold: Numerische Toleranz für Null-Erkennung (endlich, >= 0)
 
     Returns:
         Tuple (status, eigenvalues) wobei status in {'STABLE', 'FLAT', 'UNSTABLE'}
-    """
-    eigvals = np.linalg.eigvalsh(hessian)
 
-    if np.all(eigvals > threshold):
-        return "STABLE", eigvals
-    elif np.any(np.abs(eigvals) < threshold):
+    Raises:
+        ValueError: Bei nicht quadratischer, nicht endlicher oder nicht
+            symmetrischer Matrix oder ungültiger Toleranz.
+    """
+    if (
+        isinstance(threshold, bool)
+        or not isinstance(threshold, numbers.Real)
+        or not np.isfinite(threshold)
+        or threshold < 0
+    ):
+        raise ValueError(f"threshold must be a finite number >= 0, got {threshold!r}")
+    eigvals = np.linalg.eigvalsh(_validated_hessian(hessian))
+
+    if np.any(eigvals < -threshold):
+        return "UNSTABLE", eigvals  # negative Richtung, auch neben flachen
+    if np.any(np.abs(eigvals) <= threshold):
         return "FLAT", eigvals  # VOID: flache Richtung
-    else:
-        return "UNSTABLE", eigvals
+    return "STABLE", eigvals
 
 
 def detect_void_type(hessian: np.ndarray) -> str:
