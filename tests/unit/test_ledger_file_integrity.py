@@ -1,6 +1,9 @@
 import json
+import math
 
-from src.core.ledger import Ledger, verify_chain_from_file
+import pytest
+
+from src.core.ledger import Ledger, LedgerEvent, verify_chain_from_file
 
 
 def _write_single_event(tmp_path):
@@ -56,3 +59,33 @@ def test_non_object_json_record_is_rejected(tmp_path):
     path.write_text("[]\n", encoding="utf-8")
 
     assert verify_chain_from_file(path) is False
+
+
+@pytest.mark.parametrize(
+    "token,value",
+    [
+        ("NaN", math.nan),
+        ("Infinity", math.inf),
+        ("-Infinity", -math.inf),
+        ("1e999", math.inf),
+        ("-1e999", -math.inf),
+    ],
+)
+def test_non_finite_json_numbers_fail_even_with_matching_hash(tmp_path, token, value):
+    # Reproduce a legacy/non-standard record, not a hash mismatch. Also cover
+    # JSON exponents which are legal syntax but overflow the decoder's float.
+    event = LedgerEvent(type="metric", payload={"metric_id": "x", "value": value})
+    event.hash = event.compute_hash()
+    line = json.dumps(event.to_dict())
+    original = "NaN" if math.isnan(value) else ("Infinity" if value > 0 else "-Infinity")
+    line = line.replace(original, token)
+    path = tmp_path / "events.jsonl"
+    path.write_text(line + "\n", encoding="utf-8")
+
+    assert verify_chain_from_file(path) is False
+
+
+def test_non_finite_token_names_inside_strings_remain_valid(tmp_path):
+    path = tmp_path / "events.jsonl"
+    Ledger(path).metric("x", 1.0, description="NaN Infinity -Infinity 1e999")
+    assert verify_chain_from_file(path) is True

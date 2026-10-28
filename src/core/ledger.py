@@ -25,7 +25,7 @@ from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, TextIO
+from typing import Any, NoReturn, TextIO
 
 # Context variable for current span
 _current_span: ContextVar[str | None] = ContextVar("current_span", default=None)
@@ -98,6 +98,18 @@ def _is_finite_real(value: object) -> bool:
         return math.isfinite(value)
     except OverflowError:
         return False
+
+
+def _finite_json_float(token: str) -> float:
+    """Reject JSON numbers which overflow the decoder's finite float range."""
+    value = float(token)
+    if not math.isfinite(value):
+        raise ValueError(f"JSON number is outside the finite float range: {token}")
+    return value
+
+
+def _reject_json_constant(token: str) -> NoReturn:
+    raise ValueError(f"non-standard JSON constant: {token}")
 
 
 def _hash_event_content(event: Mapping[str, Any]) -> str:
@@ -473,7 +485,9 @@ def verify_chain_from_file(path: str | Path) -> bool:
                 if not line:
                     continue
 
-                event = json.loads(line)
+                event = json.loads(
+                    line, parse_constant=_reject_json_constant, parse_float=_finite_json_float
+                )
                 if not _is_valid_serialized_event(event):
                     return False
                 if event.get("prev_hash") != prev_hash:

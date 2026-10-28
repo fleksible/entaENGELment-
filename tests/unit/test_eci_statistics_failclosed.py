@@ -57,6 +57,17 @@ def test_bootstrap_ci_constant_data_gives_degenerate_interval():
     assert bootstrap_ci([0.5] * 10, n_bootstrap=100, seed=1) == (0.5, 0.5)
 
 
+@pytest.mark.parametrize("values", [[1e308, 1e308], [-1e308, -1e308], [-1e308, 1e308], [0.0, 0.0]])
+def test_bootstrap_ci_finite_extremes_stay_finite_and_within_data(values):
+    # Both the mean and percentile interpolation can overflow on finite data.
+    with np.errstate(over="raise", invalid="raise"):
+        lower, upper = bootstrap_ci(values, n_bootstrap=100, seed=1)
+    assert math.isfinite(lower) and math.isfinite(upper)
+    assert min(values) <= lower <= upper <= max(values)
+    if min(values) == max(values):
+        assert (lower, upper) == (values[0], values[0])
+
+
 @pytest.mark.parametrize(
     "values",
     [
