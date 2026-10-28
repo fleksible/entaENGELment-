@@ -26,7 +26,7 @@
   "keywords": [],
   "devDependencies": {
     "@testing-library/jest-dom": "^7.0.1",
-    "electron": "44.9.1",
+    "electron": "45.0.0",
     "electron-builder": "^26.18.0",
     "jest": "^30.5.2",
     "jest-environment-jsdom": "^30.5.2",
