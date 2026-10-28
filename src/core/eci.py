@@ -104,7 +104,7 @@ def bootstrap_ci(
         raise ValueError(f"seed must be an integer or None, got {seed!r}")
     try:
         arr = np.asarray(values, dtype=float)
-    except (TypeError, ValueError) as exc:
+    except (TypeError, ValueError, OverflowError) as exc:
         raise ValueError(f"values must be numeric: {exc}") from exc
     if arr.ndim != 1 or arr.size == 0:
         raise ValueError("values must be a non-empty 1-D sequence")
@@ -113,12 +113,16 @@ def bootstrap_ci(
 
     rng = np.random.default_rng(seed)
     n = arr.size
+    # Positive scaling commutes with means and percentiles. Keep both the
+    # resampled sum and percentile interpolation away from float overflow.
+    scale = float(np.max(np.abs(arr))) or 1.0
+    normalized = arr / scale
     means = np.empty(n_bootstrap)
     for i in range(n_bootstrap):
-        means[i] = rng.choice(arr, size=n, replace=True).mean()
+        means[i] = rng.choice(normalized, size=n, replace=True).mean()
     lower = np.percentile(means, (1 - ci) / 2 * 100)
     upper = np.percentile(means, (1 + ci) / 2 * 100)
-    return float(lower), float(upper)
+    return float(lower * scale), float(upper * scale)
 
 
 def permutation_test(observed: float, samples: list[float], n_perm: int = 1000) -> float:

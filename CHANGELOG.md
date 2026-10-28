@@ -32,6 +32,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     decision no longer depends on logging the raw metrics, and non-finite values are not logged.
   - B5: `Ledger.metric`/`Ledger.gate` validate payloads (incl. nested tags) as strict JSON before
     any state change; rejected events leave `_prev_hash`, `_events` and the file untouched.
+    The persisted-file verifier also rejects non-finite JSON constants and numbers that
+    overflow its float decoder, even if the stored hash matches.
   - B2: negative curvature takes precedence over flat directions in `classify_stability`;
     degenerate saddles block with consent; invalid, non-symmetric or non-finite matrices block.
     Both stability guards accept only bool `True` as consent.
@@ -39,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     anchor; the persisted history remains the job of `verify_chain_from_file`.
   - B3: `eci.permutation_test` now raises `NotImplementedError` (test design not specified);
     `bootstrap_ci` gains a `seed`, validates input and no longer returns `(0, 0)` for empty data.
+    Resampling and percentile interpolation are scaled to keep finite extreme inputs finite.
 - All VOIDs assigned owners and target dates (P1-D)
 - VOID-002 closed: full verify/lint in CI pipeline (P2-B)
 - HMAC secret now persistent (P0-C, manual)
