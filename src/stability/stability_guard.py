@@ -69,7 +69,8 @@ def map_taxonomy_to_gate(
 
         # CONSENT ZONES (The Void)
         if void_class == SpectralVoidClass.FLAT_VOID:
-            if has_consent:
+            # Nur ein explizites bool True zählt als Consent (kein truthy Ersatz).
+            if has_consent is True:
                 return "ALLOW", "AUTH_CONSENT_FLAT_VOID"
             return "BLOCK", "BLOCK_NEED_CONSENT_FLAT_VOID"
 

@@ -1,12 +1,17 @@
 """
 src/core/eci.py
-Simple Ethical Consent Index (ECI) implementation with bootstrap and permutation helpers.
+Simple Ethical Consent Index (ECI) implementation with a bootstrap helper.
 
 ECI = w1*likert_norm + w2*behavior_proxy + w3*physio_proxy_norm
 Weights must sum to 1 (function normalizes otherwise).
+
+``permutation_test`` is deliberately disabled (raises ``NotImplementedError``)
+until a statistical test design is specified; see its docstring.
 """
 
 import json
+import math
+import numbers
 import os
 
 import numpy as np
@@ -61,30 +66,99 @@ def compute_eci(
 # Simple bootstrap & permutation helpers for validation
 # -----------------------
 def bootstrap_ci(
-    values: list[float], n_bootstrap: int = 1000, ci: float = 0.95
+    values: list[float],
+    n_bootstrap: int = 1000,
+    ci: float = 0.95,
+    seed: int | None = None,
 ) -> tuple[float, float]:
-    arr = np.array(values)
-    n = len(arr)
-    if n == 0:
-        return (0.0, 0.0)
-    means = []
-    for _ in range(n_bootstrap):
-        sample = np.random.choice(arr, size=n, replace=True)
-        means.append(sample.mean())
+    """Percentile bootstrap confidence interval of the mean.
+
+    Fail-closed: empty, non-1-D or non-finite data, ``n_bootstrap < 1`` and a
+    confidence level outside the open interval (0, 1) raise ``ValueError``
+    instead of returning a seemingly valid interval. (Earlier versions returned
+    ``(0.0, 0.0)`` for empty data.) Constant finite data yield a degenerate
+    interval ``(c, c)``.
+
+    Args:
+        values: 1-D sequence of finite observations.
+        n_bootstrap: Number of bootstrap resamples (integer >= 1).
+        ci: Confidence level in (0, 1).
+        seed: Optional seed for a local ``numpy.random.Generator``; with the same
+            seed the result is reproducible. The global NumPy RNG is not used.
+
+    Returns:
+        (lower, upper) percentile bounds of the resampled means.
+    """
+    if isinstance(n_bootstrap, bool) or not isinstance(n_bootstrap, numbers.Integral):
+        raise ValueError(f"n_bootstrap must be an integer, got {n_bootstrap!r}")
+    if n_bootstrap < 1:
+        raise ValueError(f"n_bootstrap must be >= 1, got {n_bootstrap}")
+    if (
+        isinstance(ci, bool)
+        or not isinstance(ci, numbers.Real)
+        or not math.isfinite(ci)
+        or not 0.0 < ci < 1.0
+    ):
+        raise ValueError(f"ci must be a number in the open interval (0, 1), got {ci!r}")
+    if seed is not None and (isinstance(seed, bool) or not isinstance(seed, numbers.Integral)):
+        raise ValueError(f"seed must be an integer or None, got {seed!r}")
+    try:
+        arr = np.asarray(values, dtype=float)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise ValueError(f"values must be numeric: {exc}") from exc
+    if arr.ndim != 1 or arr.size == 0:
+        raise ValueError("values must be a non-empty 1-D sequence")
+    if not np.all(np.isfinite(arr)):
+        raise ValueError("values must be finite (no NaN or infinity)")
+
+    rng = np.random.default_rng(seed)
+    n = arr.size
+    # Positive scaling commutes with means and percentiles. Keep both the
+    # resampled sum and percentile interpolation away from float overflow.
+    scale = float(np.max(np.abs(arr))) or 1.0
+    normalized = arr / scale
+    means = np.empty(n_bootstrap)
+    for i in range(n_bootstrap):
+        means[i] = rng.choice(normalized, size=n, replace=True).mean()
     lower = np.percentile(means, (1 - ci) / 2 * 100)
     upper = np.percentile(means, (1 + ci) / 2 * 100)
-    return float(lower), float(upper)
+    return float(lower * scale), float(upper * scale)
 
 
 def permutation_test(observed: float, samples: list[float], n_perm: int = 1000) -> float:
-    arr = np.array(samples)
-    count = 0
-    for _ in range(n_perm):
-        perm = np.random.permutation(arr)
-        if perm.mean() >= observed:
-            count += 1
-    p = (count + 1) / (n_perm + 1)
-    return float(p)
+    """[TODO] Disabled: null hypothesis and test design are not specified.
+
+    The former implementation permuted a single sample and compared its mean
+    with ``observed``. Permuting a sample does not change its mean, so the result
+    was a step function (``1/(n_perm+1)`` if ``observed`` exceeded the sample
+    mean, otherwise ``1``) without statistical meaning (finding B3 in
+    ``docs/audit/2026-10-28_repo_checkup.md``).
+
+    Behaviour change: the function now always raises ``NotImplementedError``.
+    This is a provisional shutdown of a wrong computation, not a statistical
+    repair. The signature is kept only so the entry point stays discoverable;
+    it does not imply compatibility. ``calibration.permutation_pvalue`` is
+    optional in ``spec/eci.spec.json`` and is omitted when no p-value is
+    computed. No substitute p-value is produced.
+
+    A replacement needs these decisions first (none exists in the repo's primary
+    material; they must not be derived from the name ECI or the term consent):
+
+    - target quantity and test statistic;
+    - unit of observation (what is resampled);
+    - null hypothesis (e.g. two groups exchangeable vs. one sample symmetric
+      around a reference value);
+    - exchangeability assumption that justifies the resampling under H0.
+
+    Raises:
+        NotImplementedError: always.
+    """
+    raise NotImplementedError(
+        "permutation_test is disabled: null hypothesis and test design are not "
+        "specified (finding B3). The former single-sample permutation could not "
+        "change the mean and produced meaningless p-values; no substitute p-value "
+        "is computed."
+    )
 
 
 # -----------------------

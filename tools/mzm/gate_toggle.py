@@ -9,6 +9,14 @@ Gate opens only when all constraints are satisfied:
 - ||M||_2 = 1.0
 - Psi-Lock set
 
+Fail-closed input semantics:
+- ``phi`` and ``m_norm_l2`` must be finite real numbers (no bool, NaN, +inf,
+  -inf). A non-finite or non-real ``phi`` is not demonstrably ``>= phi_min``
+  and blocks with ``BLOCK_PHI_BELOW_MIN``; a non-finite or non-real
+  ``m_norm_l2`` blocks with ``BLOCK_M_NORM_INVALID``.
+- The boolean constraints count as fulfilled only for the bool ``True``;
+  truthy non-bool values (e.g. the string ``"false"``) do not open the gate.
+
 Ledger Integration:
 - Optional ledger parameter for audit logging
 - Metrics: mzm.phi, mzm.m_norm_l2
@@ -22,6 +30,8 @@ Strict-Mode:
 from __future__ import annotations
 
 import json
+import math
+import numbers
 import os
 import pathlib
 import sys
@@ -65,6 +75,16 @@ def load_policy(path: pathlib.Path = POLICY_PATH) -> dict[str, Any]:
         return data
 
 
+def _is_finite_real(value: object) -> bool:
+    """True only for finite real numbers (no bool, NaN, +inf, -inf)."""
+    if isinstance(value, bool) or not isinstance(value, numbers.Real):
+        return False
+    try:
+        return math.isfinite(value)
+    except OverflowError:
+        return False
+
+
 def _first_failure_reason(ctx: Context, policy: dict[str, Any]) -> str | None:
     """Determine the first constraint failure reason.
 
@@ -77,19 +97,20 @@ def _first_failure_reason(ctx: Context, policy: dict[str, Any]) -> str | None:
     """
     c = policy["constraints"]
 
-    if ctx.phi < c["phi_min"]:
+    # Comparisons with NaN are always False, so finiteness is checked first.
+    if not _is_finite_real(ctx.phi) or ctx.phi < c["phi_min"]:
         return "BLOCK_PHI_BELOW_MIN"
 
-    if c["rcc_ec_required"] and not ctx.rcc_ec:
+    if c["rcc_ec_required"] and ctx.rcc_ec is not True:
         return "BLOCK_RCC_EC_FAILED"
 
-    if c["non_overlap_required"] and not ctx.non_overlap:
+    if c["non_overlap_required"] and ctx.non_overlap is not True:
         return "BLOCK_NON_OVERLAP_FAILED"
 
-    if abs(ctx.m_norm_l2 - c["m_norm_l2"]) >= 1e-9:
+    if not _is_finite_real(ctx.m_norm_l2) or abs(ctx.m_norm_l2 - c["m_norm_l2"]) >= 1e-9:
         return "BLOCK_M_NORM_INVALID"
 
-    if c["psi_lock_required"] and not ctx.psi_lock:
+    if c["psi_lock_required"] and ctx.psi_lock is not True:
         return "BLOCK_PSI_LOCK_MISSING"
 
     return None
@@ -117,13 +138,17 @@ def gate_open(
     Raises:
         GateBlockedError: If strict=True and gate check fails
     """
-    # Log metrics if ledger provided
-    if ledger is not None:
-        ledger.metric("mzm.phi", ctx.phi)
-        ledger.metric("mzm.m_norm_l2", ctx.m_norm_l2)
-
-    # Determine pass/fail and reason
+    # Decide first: invalid raw metrics must not abort the decision through a
+    # rejected ledger write.
     reason = _first_failure_reason(ctx, policy)
+
+    # Log only finite raw metrics; a non-finite value is not replaced by an
+    # invented number, its absence is documented by the gate reason.
+    if ledger is not None:
+        for metric_id, value in (("mzm.phi", ctx.phi), ("mzm.m_norm_l2", ctx.m_norm_l2)):
+            if _is_finite_real(value):
+                ledger.metric(metric_id, float(value))
+
     passed = reason is None
 
     if passed:
