@@ -1,0 +1,88 @@
+name: Desktop AppImage
+
+on:
+  pull_request:
+    paths:
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "patches/**"
+      - "main.js"
+      - "preload.js"
+      - "electron-url-policy.js"
+      - "Index.html"
+      - "tools/desktop_smoke.cjs"
+      - ".github/workflows/ci-desktop.yml"
+  push:
+    branches: [main]
+    paths:
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "patches/**"
+      - "main.js"
+      - "preload.js"
+      - "electron-url-policy.js"
+      - "Index.html"
+      - "tools/desktop_smoke.cjs"
+      - ".github/workflows/ci-desktop.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  appimage:
+    name: Package and sandboxed start
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+      TURBO_TELEMETRY_DISABLED: "1"
+      DO_NOT_TRACK: "1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Enable Corepack
+        run: corepack enable
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Install frozen dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Packaging glob regressions
+        run: pnpm test:js --runInBand __tests__/unit/electron-packaging-glob-compat.test.js
+      - name: Build Linux AppImage
+        run: pnpm dist --linux AppImage --publish never --config.directories.output=out/desktop-smoke/dist
+      - name: Extract the distributed payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t images < <(find "$PWD/out/desktop-smoke/dist" -maxdepth 1 -name '*.AppImage' -type f)
+          test "${#images[@]}" -eq 1
+          sha256sum "${images[0]}" > out/desktop-smoke/package.sha256
+          mkdir -p out/desktop-smoke/extracted
+          cd out/desktop-smoke/extracted
+          "${images[0]}" --appimage-extract > ../extract.log
+          test -f squashfs-root/resources/app.asar
+          # Configure only the temporary runner's SUID helper; run the app as user.
+          sudo chown root:root squashfs-root/chrome-sandbox
+          sudo chmod 4755 squashfs-root/chrome-sandbox
+      - name: Start packaged application with sandbox enabled
+        run: xvfb-run -a node tools/desktop_smoke.cjs out/desktop-smoke/extracted/squashfs-root/AppRun
+      - name: Upload smoke evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: desktop-smoke
+          path: |
+            out/desktop-smoke/runtime.json
+            out/desktop-smoke/desktop.log
+            out/desktop-smoke/package.sha256
+            out/desktop-smoke/extract.log
+            out/desktop-smoke/dist/builder-debug.yml
+          if-no-files-found: warn
+          retention-days: 14
