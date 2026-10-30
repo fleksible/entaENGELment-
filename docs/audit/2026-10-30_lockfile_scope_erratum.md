@@ -123,3 +123,10 @@ Lokal: CPython 3.12.14; bestehende wissenschaftliche Pakete plus isoliert
 installierte Prüfabhängigkeiten. Die Lockfiles und die Projektabhängigkeiten
 wurden nicht verändert. Das ist ein lokaler Ausführungsnachweis und ersetzt
 keinen GitHub-CI-Lauf, keinen menschlichen Readback und keinen Merge-Entscheid.
+
+Die erste GitHub-CI-Runde scheiterte im strikten Claim-Lint am Git-Optionswort
+`rev-parse --verify`, nicht an einer fachlichen Aussage. `make verify` nutzt
+denselben Claim-Lint ohne `--strict` und hatte den Hinweis nicht blockiert.
+Die konkrete Operationszeile ist nun mit dem bereits vorgesehenen
+`claim-lint: ignore` samt Begründung markiert; Linter und Workflow bleiben
+unverändert. Der strikte CI-Aufruf wurde danach lokal erfolgreich ausgeführt.

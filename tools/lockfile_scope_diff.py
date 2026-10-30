@@ -151,7 +151,13 @@ def git_bytes(repo: Path, *args: str) -> bytes:
 
 def build_git_diff(repo: Path, base: str, head: str, path: str) -> dict[str, Any]:
     refs = [
-        git_bytes(repo, "rev-parse", "--verify", "--end-of-options", ref + "^{commit}")
+        git_bytes(
+            repo,
+            "rev-parse",
+            "--verify",  # claim-lint: ignore (Git option, not an epistemic claim)
+            "--end-of-options",
+            ref + "^{commit}",
+        )
         .decode()
         .strip()
         for ref in (base, head)
