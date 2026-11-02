@@ -58,8 +58,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     open (`docs/annex/STABILITY_NUMERICS_v0_1.md`).
   - B9 follow-up: the declared error bound is now computed exactly and rounded upward, so
     intermediate underflow such as `(h_i+h_j)⁴` can no longer erase it and cause a false
-    STABLE. Non-normal denominators or a non-representable bound give `UNRESOLVED`, no
-    longer a too-small bound or an exception. The eigenvalue uncertainty uses scaled norms.
+    STABLE. Nonzero non-normal denominators or a non-representable bound give `UNRESOLVED`
+    for a finite primary estimate. A denominator rounded to zero or overflow during step
+    selection raises a controlled `ValueError` instead of `ZeroDivisionError`/`OverflowError`;
+    no estimate is returned in those cases. The eigenvalue uncertainty uses scaled norms.
     The exploratory Richardson value is `None` when the doubled stencil cannot be evaluated;
     previously that error discarded the primary estimate.
 - All VOIDs assigned owners and target dates (P1-D)

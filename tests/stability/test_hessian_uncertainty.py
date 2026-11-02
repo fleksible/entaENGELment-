@@ -311,6 +311,45 @@ class TestValidation:
 class TestFloatingPointRobustness:
     """Unter-/Überlauf darf die Schranke nicht verkleinern; Richardson ist optional."""
 
+    @pytest.mark.parametrize("eps", [math.ulp(0.0), 1e-200, 1e-162])
+    @pytest.mark.parametrize("declared", [False, True])
+    def test_zero_denominator_is_a_controlled_input_error(self, eps, declared):
+        declarations = {"fourth_derivative_bound": 0.0, "evaluation_error": 0.0} if declared else {}
+        # Die Nullfunktion erfüllt beide Deklarationen exakt, auch bei Unterlauf.
+        with pytest.raises(ValueError, match="denominator.*zero"):
+            compute_hessian_numerical(lambda q: 0.0, np.zeros(1), eps=eps, **declarations)
+
+    @pytest.mark.parametrize(
+        "point,eps",
+        [
+            ([float(np.finfo(float).max)], None),
+            ([-float(np.finfo(float).max)], None),
+            ([0.0], float(np.finfo(float).max)),
+        ],
+    )
+    def test_overflow_in_step_selection_is_a_controlled_input_error(self, point, eps):
+        with pytest.raises(ValueError, match="representable numerical range"):
+            compute_hessian_numerical(lambda q: 0.0, np.array(point), eps=eps)
+
+    @pytest.mark.parametrize(
+        "eps,expected",
+        [
+            (2e-162, "UNRESOLVED"),  # h² ist die kleinste positive subnormale Zahl.
+            (math.nextafter(math.sqrt(float(np.finfo(float).tiny)), 0.0), "UNRESOLVED"),
+            (math.sqrt(float(np.finfo(float).tiny)), "FLAT"),  # h² ist gerade normal.
+        ],
+    )
+    def test_nonzero_denominator_boundary_keeps_its_classification(self, eps, expected):
+        H = compute_hessian_numerical(
+            lambda q: 0.0,
+            np.zeros(1),
+            eps=eps,
+            fourth_derivative_bound=0.0,
+            evaluation_error=0.0,
+        )
+        assert classify_stability(H)[0] == expected
+        assert stability_gate(H, consent_available=True)[0] is (expected == "FLAT")
+
     def test_doubled_stencil_outside_domain_keeps_primary_estimate(self):
         # log auf [0.25, 1.75]: |f⁽⁴⁾| <= 6/0.25**4 = 1536; x - 2h = -0.5 liegt außerhalb.
         H = compute_hessian_numerical(

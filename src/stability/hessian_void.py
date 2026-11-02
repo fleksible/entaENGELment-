@@ -144,10 +144,14 @@ def _require_nonneg_finite(name: str, value: object) -> float:
 
 
 def _denominator(steps: np.ndarray, i: int, j: int) -> float:
-    """Nenner der zentralen Differenz für Eintrag (i, j), so wie die Formel ihn rechnet."""
+    """Nenner wie in der Differenzformel; Nullnenner vor jeder Division abweisen."""
     if i == j:
-        return float(steps[i] ** 2)
-    return float(4.0 * steps[i] * steps[j])
+        denominator = float(steps[i] ** 2)
+    else:
+        denominator = float(4.0 * steps[i] * steps[j])
+    if denominator == 0.0:
+        raise ValueError("step size is too small: finite-difference denominator rounded to zero")
+    return denominator
 
 
 def _upper_float(value: Fraction) -> float | None:
@@ -167,9 +171,10 @@ def _declared_error_bound(
     """Elementweise Fehlerschranke, exakt rational berechnet und nach oben gerundet.
 
     Unter- oder Überlauf in Zwischenwerten darf die Schranke nicht verkleinern.
-    ``None``, wenn ein Nenner der Formel keine normale endliche Gleitkommazahl ist
-    (dann gilt das Rundungsmodell ``8ε·S`` nicht) oder ein Eintrag nicht als
-    endliches float darstellbar ist.
+    ``None``, wenn ein von null verschiedener Nenner keine normale endliche
+    Gleitkommazahl ist (dann gilt das Rundungsmodell ``8ε·S`` nicht) oder ein
+    Eintrag nicht als endliches float darstellbar ist. Nullnenner lösen bereits
+    in der Differenzformel ``ValueError`` aus.
     """
     n = steps.size
     h = [Fraction(s) for s in steps.tolist()]
@@ -290,6 +295,8 @@ def compute_hessian_numerical(
     berechnet und nach oben auf float gerundet. Sie setzt exakt darstellbare
     Stencil-Punkte ``x ± h`` (per rationaler Arithmetik geprüft), normale endliche
     Nenner und endlich darstellbare Einträge voraus; sonst gibt es keine Schranke.
+    Unterläuft ein Nenner zu null oder läuft bereits die Schrittwahl über, wird
+    die Eingabe mit ``ValueError`` abgewiesen und keine Schätzung zurückgegeben.
     Die Schranke ist nur so gut wie die deklarierten Annahmen; sie werden nicht
     geprüft. Fehlen sie, bleibt ``error_bound`` ``None`` und eine Freigabe
     auf Basis dieser Schätzung ist UNRESOLVED.
@@ -311,8 +318,9 @@ def compute_hessian_numerical(
         auswertbar ist), Schrittweiten und Annahmen.
 
     Raises:
-        ValueError: Bei ungültigem Punkt, ungültiger Schrittweite oder Schranke,
-            nur einer der beiden Annahmen oder nicht endlichen Funktionswerten.
+        ValueError: Bei ungültigem Punkt, ungültiger Schrittweite (einschließlich
+            Nullnenner oder Überlauf bei der Schrittwahl) oder Schranke, nur
+            einer der beiden Annahmen oder nicht endlichen Funktionswerten.
     """
     try:
         x = np.asarray(point, dtype=float)
@@ -329,8 +337,11 @@ def compute_hessian_numerical(
         raw = np.full(x.size, _require_nonneg_finite("eps", eps))
         if not np.all(raw > 0):
             raise ValueError("eps must be > 0")
-    exact = _exact_steps(x, raw)
-    steps = exact if exact is not None else _representable_steps(x, raw)
+    try:
+        exact = _exact_steps(x, raw)
+        steps = exact if exact is not None else _representable_steps(x, raw)
+    except OverflowError as exc:
+        raise ValueError("step size is outside the representable numerical range") from exc
 
     H, S = _central_differences(func, x, steps)
     assumptions: tuple[str, ...] = (f"central differences, steps={steps.tolist()}",)

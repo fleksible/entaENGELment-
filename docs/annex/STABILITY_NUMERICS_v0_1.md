@@ -89,14 +89,22 @@ Eigenwerte: Nach Weyl gilt `|λ_i(H + E) − λ_i(H)| ≤ ‖E‖₂ ≤ ‖E‖
 berechnet, damit Quadrate kleiner Einträge nicht unterlaufen. δ wird um
 `(1 + 4n²ε)` vergrößert und nach oben gerundet.
 
-Es gibt keine Schranke in diesen Fällen:
-- ohne Deklaration oder bei nur einer Deklaration (diese löst einen Fehler aus);
+Ungültige Eingaben liefern keine Schätzung, sondern lösen `ValueError` aus.
+Das gilt insbesondere bei nur einer der beiden Deklarationen, nicht endlichen
+Funktionswerten, Überlauf bereits bei der Schrittwahl oder einem zu null
+unterlaufenen Nenner. Ein Nullnenner wird vor der Division abgewiesen; eine
+Hessian wird dafür nicht erfunden.
+
+Für eine berechnete endliche Hauptschätzung gibt es keine Schranke in diesen Fällen:
+- ohne beide Deklarationen;
 - bei nicht exakt darstellbaren Stencil-Punkten;
-- wenn ein Nenner der Differenzformel keine normale endliche Gleitkommazahl ist
-  (dann gilt das Rundungsmodell nicht);
+- wenn ein von null verschiedener Nenner keine normale endliche Gleitkommazahl
+  ist (dann gilt das Rundungsmodell nicht);
 - wenn ein Schrankeneintrag nicht als endliches float darstellbar ist (Überlauf).
 
-In jedem dieser Fälle ist der Status UNRESOLVED.
+Diese Schätzungen sind UNRESOLVED. Insbesondere bleibt ein positiver subnormaler
+Nenner berechenbar, trägt aber keine Freigabe. Die Grenze zu einem normalen
+Nenner wird gesondert getestet.
 
 **Die Annahmen werden nicht geprüft.** Eine falsche Deklaration kann eine falsche
 Freigabe erzeugen (Test `test_documented_limit_false_declarations_are_not_detected`).
