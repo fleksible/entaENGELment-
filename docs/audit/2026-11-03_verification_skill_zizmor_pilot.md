@@ -42,8 +42,8 @@ unterdrückt, automatisch behoben oder zu einem neuen CI-Gate gemacht.
 - 18 materialisierte Quelldateien einschließlich AGENTS.md gegen ihre Git-Blob-IDs
   geprüft; keine Abweichungen. Pfade und IDs stehen im Snapshot.
 - Offline, `--strict-collection`, JSON-v1, reguläre Standardregeln.
-- Scanner-Exit-Code: **14**; JSON mit 41 Befunden, stderr leer. Kein Parseabbruch
-  des Repository-Laufs. Der Exit-Code wird als Befundausgabe erhalten.
+- Scanner-Exit-Code: **14**; JSON mit 41 Befunden, keine Fehlermeldungen auf stderr.
+  Kein Parseabbruch des Repository-Laufs. Der Exit-Code wird als Befundausgabe erhalten.
 - Keine Online-Audits, keine extern referenzierten Skripte, keine installierten
   Abhängigkeiten und keine laufenden GitHub-Jobs durch diesen Scan geprüft.
 

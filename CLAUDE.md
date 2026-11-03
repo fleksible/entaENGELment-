@@ -146,6 +146,11 @@ Jeder Report in `OUT/` folgt diesem Schema:
 > JS/TS-Schichten entsprechend dem tatsächlichen Änderungsscope. Bei Unsicherheit:
 > `make help` und der in AGENTS.md verankerte Verifikationsablauf.
 
+Der Projekt-Skill `/verify-project-evidence` ist über
+[`.claude/skills/verify-project-evidence/SKILL.md`](.claude/skills/verify-project-evidence/SKILL.md)
+auffindbar und verweist auf denselben zentralen Ablauf unter `.agents/skills/`.
+Er bietet keine zusätzliche Freigabe und ersetzt keine tatsächlich ausgeführten Prüfungen.
+
 ### Python-Toolchain (Kern)
 
 Python ≥ 3.10. Quelle der Wahrheit für Config: [`pyproject.toml`](pyproject.toml).

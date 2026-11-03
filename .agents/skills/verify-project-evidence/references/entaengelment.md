@@ -13,8 +13,11 @@ belegt weder automatische Ladung noch technische Durchsetzung.
 
 ## Lokaler zizmor-Pilot
 
-Pinne Toolversion und Repository-Stand. Erfasse Workflows und lokale
-Action-Definitionen. Führe einen lesenden Offline-Lauf mit strikter Erfassung aus:
+Pinne Toolversion und Repository-Stand. Erfasse Workflows, lokale
+Action-Definitionen und Dependabot-Konfigurationen (`.github/dependabot.yml`
+oder `.yaml`). Übergib bevorzugt den Checkout als Ganzes; dokumentiere bei einer
+bewusst engeren Dateiauswahl jede ausgelassene unterstützte Konfiguration.
+Führe einen lesenden Offline-Lauf mit strikter Erfassung aus:
 
 ```bash
 zizmor --offline --strict-collection --format=json-v1 /pfad/zum/checkout
@@ -23,6 +26,9 @@ zizmor --offline --strict-collection --format=json-v1 /pfad/zum/checkout
 Bewahre Ausgabe und ursprünglichen Exit-Code getrennt auf. Verwende keine
 Autofix-Option. Prüfe mit einem kleinen kontrollierten Gegenfall, ob die
 ausgewählte Regel und Fehlerweitergabe tatsächlich reagieren.
+Unterscheide Fortschrittsausgabe auf stderr von Fehlermeldungen. Vergleiche
+Befundzahlen nur bei gleichem Repository-Stand und gleichem Erfassungsumfang;
+weise nachträglich erweiterte Eingaben separat aus.
 
 Berichte Anzahl und Pfade erfasster Dateien, Parsefehler, ausgelassene
 Online-Prüfungen und Findings. Fehlende Findings belegen nur diesen Scope.

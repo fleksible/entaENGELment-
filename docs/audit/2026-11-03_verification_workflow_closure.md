@@ -130,3 +130,33 @@ Kleinste technische Entscheidung: die gezielten Guard-Korrekturen und Härtung
 nach erfolgreicher CI am neuen Head übernehmen. Die 16 verbleibenden
 Scannerhinweise sind begrenzt eingeordnet und bleiben für gesonderte Prüfung
 sichtbar. Eine bestandene Prüfung erteilt kein zusätzliches Merge-Mandat.
+
+## Übermittelte Claude-Gegenprüfung, 4. November 2026
+
+Der Nutzer übermittelte einen Claude-Review des ursprünglichen Pilotstands auf
+`main@05712d8`. Er berichtet einen eigenen Werkzeuglauf in einer zweiten Umgebung;
+dessen Originalprotokoll liegt dieser Prüfung nicht bei. Die folgende Zuordnung
+trennt diesen Bericht vom selbst gelesenen PR-Stand `77cf219` und den anschließend
+selbst ausgeführten Scans.
+
+| Hinweis | Abgleich und Korrektur |
+|---|---|
+| Icon fehlt | Bestätigt: Die portable Kopie enthielt zwei Asset-Verweise ohne Datei. Das bereits vorhandene Icon der persönlichen Fassung ist nun beigefügt. |
+| Dependabot fehlt in 17 Eingaben | Bestätigt und bereits als zusätzlicher Scope in der Rückschau benannt. Die Anleitung fordert jetzt auch Dependabot-Konfigurationen und die Offenlegung bewusst ausgelassener Eingaben. |
+| stderr muss nicht leer sein | Formulierung auf fehlende Fehlermeldungen begrenzt. Die beiden eigenen Vergleichsläufe hatten tatsächlich null stderr-Bytes; reine Fortschrittsausgabe in einer anderen Umgebung widerspricht dem nicht. |
+| Fokus- und HMAC-Widersprüche in CLAUDE.md | Am aktuellen PR-Head bereits korrigiert: Der PR-Fokus-Guard blockiert; PR-Signing-Skip und Abbruch ohne Schlüssel außerhalb eines PRs sind getrennt beschrieben. Der Commit-Hinweis bleibt advisory. |
+| Claude lädt `.agents/skills/` nicht als Projekt-Skill | Ein kleiner Einstieg unter `.claude/skills/verify-project-evidence/` verweist nun auf den zentralen Ablauf; CLAUDE.md nennt ihn. Es entsteht keine zweite inhaltliche Fassung. |
+
+Selbst wiederholt mit zizmor 1.32.0, offline und strikter Erfassung: automatische
+Erfassung von **18 GitHub-Konfigurationsdateien** ergibt am ursprünglichen
+`main@05712d8` **44 Hinweise**, am gehärteten Stand **19 Hinweise**, jeweils
+Exit 14. Je drei `dependabot-cooldown`-Hinweise erklären die Differenz zu den
+engeren 17-Datei-Läufen mit 41 beziehungsweise 16 Hinweisen. An der Entfernung
+der 25 Credential-Persistierungs-Hinweise ändert diese Scope-Erweiterung nichts.
+
+[Vergleichsnachweis und zusätzliche Fundstellen](evidence/2026-11-04_review_followup.json).
+Die [offizielle Claude-Code-Dokumentation](https://code.claude.com/docs/en/skills)
+beschreibt `.claude/skills/<name>/SKILL.md` als Projektpfad. Geprüft wurden die
+Frontmatter-Struktur, alle Verweise und die gemeinsame Quelle. Ein nativer
+Claude-Code-Aufruf wurde hier nicht ausgeführt; Auffindbarkeit gemäß Dokumentation
+ist keine Garantie tatsächlicher Anwendung in jeder Sitzung.
