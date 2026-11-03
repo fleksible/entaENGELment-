@@ -10,6 +10,12 @@ evidence_import: excluded_self
 
 FOKUS: belastbare Abschlussaussagen und begrenzter Workflow-Scan
 
+Dieser Bericht erhält den ursprünglichen Pilotstand am Commit
+`cfa5797dfad75758ed80a9ce751e5556ed0ce086`; seine Aussagen über den damaligen
+Änderungsscope sind historisch. Die anschließenden Guard-Korrekturen,
+Credential-Härtung und neuen Prüfbelege stehen in der
+[Rückschau](2026-11-03_verification_workflow_closure.md).
+
 ## Ergebnis
 
 Der eigenständig formulierte Skill `verify-project-evidence` ordnet Nachweise einer

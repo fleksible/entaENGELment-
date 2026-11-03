@@ -41,14 +41,14 @@ void-sync.yml:
 |---------------|---------|-------------|-------------|
 | `.github/workflows/ci.yml` | Legacy/advisory CI plus non-PR verify/build/security/gate-policy jobs | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
 | `.github/workflows/ci-evidence-bundle.yml` | Policy/spec source snapshot with commit provenance, SHA-256 checksums and a 14-day CI artifact; DERIVED, no validation assertion | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
-| `.github/workflows/ci-js-workspace.yml` | JS/TS workspace membrane: frozen pnpm install plus Turbo typecheck/lint/build for UI/package changes | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
+| `.github/workflows/ci-js-workspace.yml` | JS/TS workspace membrane: frozen pnpm install plus Turbo typecheck/lint/test/build for UI/package changes | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
 | `.github/workflows/ci-desktop.yml` | Build and extract the Linux AppImage, then check its actual payload, preload, renderer sandbox and navigation guards | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
 | `.github/workflows/ci-policy-lint.yml` | Policy JSON lint | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
-| `.github/workflows/ci-python-runtime.yml` | Complete core tests and dependency consistency on Python 3.9–3.12 for PRs and main, without quality-tool interpreter constraints | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
+| `.github/workflows/ci-python-runtime.yml` | Complete core tests and dependency consistency on Python 3.10–3.14 for PRs and main, without quality-tool interpreter constraints | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
 | `.github/workflows/ci-smoke.yml` | Python smoke tests | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
 | `.github/workflows/deepjump-audit.reusable.yml` | Reusable DeepJump audit core; HMAC secret is step-scoped and missing keys fail trusted runs | `contents: read` | literal `deepjump-audit-reusable-${{ github.ref }}`, cancel in progress |
 | `.github/workflows/deepjump-ci.yml` | DeepJump verify/lint plus separate reusable audit calls: PRs pass no secrets mapping; trusted events pass only `ENTA_HMAC_SECRET` | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
-| `.github/workflows/metatron-guard.yml` | FOKUS marker advisory guard for PRs/branch pushes | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
+| `.github/workflows/metatron-guard.yml` | Blocking PR-body FOKUS/per-switch question guard; advisory commit-message check on branch pushes | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
 | `.github/workflows/release.yml` | Release gate and GitHub Release creation | top-level `contents: read`; `create-release` job: `contents: write` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
 | `.github/workflows/sbom.yml` | Fail-closed Python environment SBOM generation and artifact upload | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
 | `.github/workflows/test.yml` | JavaScript, Python, and UI build tests | `contents: read` | `${{ github.workflow }}-${{ github.ref }}`, cancel in progress |
@@ -61,10 +61,18 @@ uv 0.12.18 manager and the sole
 `uv.lock`. The local composite action `.github/actions/python-locked` rejects
 lock/export drift before syncing an explicit dependency group. Only the lock
 manager bootstrap is installed with pip; project/build/CI/SBOM dependencies
-come from the lock. The existing release and VOID-writing automations retain
-their old installs pending explicit approval; #333 remains open for those
-exceptions. See `docs/ci/PYTHON_LOCK.md` for the proposed diffs, refresh and
-receipt rules.
+come from the lock. Release and VOID monitoring also use the locked installer;
+their migration and bounded acceptance evidence are recorded in
+`docs/ci/PYTHON_LOCK.md`. The separate Dependabot lock/export completion gap
+remains tracked in #416. A green PR does not execute tag releases or scheduled
+issue creation.
+
+[FACT] All 25 checkout steps explicitly disable credential persistence. Existing
+release and issue creation use their scoped action/API credentials; none of the
+reviewed workflow commands requires authenticated git writes after checkout.
+PR CI can validate checkout consumers, but does not exercise every scheduled or
+tag-triggered side effect. The offline scanner remains a local audit, not an
+additional required check.
 
 [FACT] New workflows must document any permission broader than `contents: read`
 in the machine-readable exception contract above. The exact workflow/job scope

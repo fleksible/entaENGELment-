@@ -1,0 +1,346 @@
+{
+  "repository": "fleksible/entaENGELment-",
+  "observed_date": "2026-11-03",
+  "origin": "self-executed local commands; remote CI separate",
+  "base_commit": "cfa5797dfad75758ed80a9ce751e5556ed0ce086",
+  "main_base": "05712d827b5558b595438f38a1e3c7fc739a297f",
+  "source_state": "working tree; bind by source digests below, not unchanged parent commit",
+  "environment": {
+    "python": "3.12.14",
+    "uv": "0.12.18",
+    "group": "dev",
+    "lock_sha256": "a9a505ca524e2651fb7187eb6b2d147ac8d80950df926b5943ac7faac1f4814e"
+  },
+  "red_before_fix": {
+    "command": [
+      ".venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/test_ci_guard_contracts.py",
+      "-q"
+    ],
+    "exit": 1,
+    "summary": "6 failed, 20 passed",
+    "source": "unchanged parent workflows/checker plus new tests"
+  },
+  "full_local_verify": {
+    "command": [
+      "make",
+      "verify",
+      "verify-governance"
+    ],
+    "exit": 0,
+    "summary": "1170 passed, 2 skipped, 169 subtests passed",
+    "scope": "core suite, pointers, port/claim lint, workflow posture, VOID consistency; before final documentation/comment edits"
+  },
+  "quality": [
+    {
+      "command": [
+        ".venv/bin/ruff",
+        "check",
+        "src/",
+        "tools/",
+        "tests/"
+      ],
+      "exit": 0,
+      "output": "All checks passed!\n"
+    },
+    {
+      "command": [
+        ".venv/bin/black",
+        "--check",
+        "src/",
+        "tools/",
+        "tests/"
+      ],
+      "exit": 0,
+      "output": "All done! ✨ 🍰 ✨\n126 files would be left unchanged.\n"
+    },
+    {
+      "command": [
+        ".venv/bin/mypy",
+        "src/",
+        "tools/"
+      ],
+      "exit": 0,
+      "output": "Success: no issues found in 58 source files\n"
+    },
+    {
+      "command": [
+        ".venv/bin/bandit",
+        "-c",
+        ".bandit.yaml",
+        "-r",
+        "src/",
+        "tools/"
+      ],
+      "exit": 0,
+      "output": "Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00\nRun started:2026-11-03 22:57:11.772751+00:00\n\nTest results:\n\tNo issues identified.\n\nCode scanned:\n\tTotal lines of code: 11093\n\tTotal lines skipped (#nosec): 0\n\tTotal potential issues skipped due to specifically being disabled (e.g., #nosec BXXX): 4\n\nRun metrics:\n\tTotal issues (by severity):\n\t\tUndefined: 0\n\t\tLow: 0\n\t\tMedium: 0\n\t\tHigh: 0\n\tTotal issues (by confidence):\n\t\tUndefined: 0\n\t\tLow: 0\n\t\tMedium: 0\n\t\tHigh: 0\nFiles skipped (0):\n[main]\tINFO\tprofile include tests: None\n[main]\tINFO\tprofile exclude tests: B404,B607,B311,B603,B105\n[main]\tINFO\tcli include tests: None\n[main]\tINFO\tcli exclude tests: None\n[main]\tINFO\tusing config: .bandit.yaml\n[main]\tINFO\trunning on Python 3.12.14\n"
+    }
+  ],
+  "final_targeted_checks": [
+    {
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_ci_guard_contracts.py",
+        "tests/test_workflow_posture_check.py",
+        "tests/test_pipeline_essentials.py",
+        "-q"
+      ],
+      "exit": 0,
+      "output": "============================= test session starts ==============================\nplatform linux -- Python 3.12.14, pytest-9.1.1, pluggy-1.7.0\nrootdir: <checkout>\nconfigfile: pyproject.toml\nplugins: cov-7.1.0, platformdirs-4.12.4, anyio-4.15.1, hypothesis-6.170.12\ncollected 64 items\n\ntests/test_ci_guard_contracts.py ..........................              [ 40%]\ntests/test_workflow_posture_check.py ................................... [ 95%]\n.                                                                        [ 96%]\ntests/test_pipeline_essentials.py ..                                     [100%]\n\n============================== 64 passed in 0.76s ==============================\n"
+    },
+    {
+      "command": [
+        "make",
+        "verify-governance"
+      ],
+      "exit": 0,
+      "output": "# Workflow Posture Check\n\nPASS .github/workflows/ci-desktop.yml\nPASS .github/workflows/ci-evidence-bundle.yml\nPASS .github/workflows/ci-js-workspace.yml\nPASS .github/workflows/ci-policy-lint.yml\nPASS .github/workflows/ci-python-quality.yml\nPASS .github/workflows/ci-python-runtime.yml\nPASS .github/workflows/ci-smoke.yml\nPASS .github/workflows/ci.yml\nPASS .github/workflows/deepjump-audit.reusable.yml\nPASS .github/workflows/deepjump-ci.yml\nPASS .github/workflows/metatron-guard.yml\nPASS .github/workflows/release.yml\nPASS .github/workflows/sbom.yml\nPASS .github/workflows/security-audit.yml\nPASS .github/workflows/test.yml\nPASS .github/workflows/void-sync.yml\n\nPASS: 16 workflow(s) meet the posture contract.\n[CHECK] Up to date: <checkout>/docs/voids_backlog.md\nOK: 22 VOIDs in sync between VOIDMAP.yml and UI mirror (fields checked: status, priority, title).\n✅ Governance membrane checked\n"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "make",
+        "help"
+      ],
+      "exit": 0,
+      "output": "entaENGELment Framework - Development Commands\n\nSetup:\n  make install         Install package\n  make install-dev     Install package with dev dependencies\n  make install-hooks   Install pre-commit guard hooks\n\nTesting:\n  make test            Run all tests\n  make test-unit       Run unit tests only\n  make test-integration Run integration tests only\n  make test-ethics     Run ethics/fail-safe tests only\n  make coverage        Run tests with coverage report\n\nCode Quality:\n  make lint            Run linting (ruff)\n  make format          Format code (black)\n  make type-check      Run type checking (mypy)\n  make frame-lint      Run Frame Operator lint v0.1.1 (scope TBD; set FRAME_LINT_PATHS)\n\nGate Policy:\n  make gate-test       Test gate toggle functionality\n\nDeepJump Protocol v1.2:\n  make verify          Phase 1: Core verify (ports, tests, pointers, claims)\n  make verify-core     Same core membrane as make verify, without status/snapshot\n  make verify-governance Check workflow posture and VOID backlog drift\n  make verify-js       Check JS/TS workspace with frozen pnpm lockfile + Turbo\n  make verify-all      Run core + governance + JS/TS verifier layers\n  make verify-pointers Check for dead pointers in index/modules\n  make claim-lint      Detect untagged claims in core artefacts\n  make status          Phase 2: Emit HMAC status (use status_emit.py for receipts)\n  make snapshot        Phase 3: Generate snapshot manifest\n  make all             Core verify + tests + snapshot (without status)\n  make deepjump        Alias for 'make all'\n\nLegacy DeepJump:\n  make verify-json     Verify JSON receipts\n  make status-verify   Emit and verify status\n\nDemo:\n  make demo            Run minimal receipt cycle (emit + verify)\n\nBenchmark:\n  make benchmark-replay Run deterministic benchmark replay\n\nEvidence Routing Kernel:\n  make erk-drill       Replay ERK fixtures as guard drills (read-only)\n  make erk-intake FILE=<path> [LEDGER=<jsonl>]  Intake -> MATERIAL_REGISTERED\n\nCleanup:\n  make clean           Remove build artifacts and cache\n\nDocs:\n  make voids-backlog       Regenerate docs/voids_backlog.md from VOIDMAP.yml\n  make voids-backlog-check Verify docs/voids_backlog.md is in sync (exit 1 on drift)\n  make voidmap-ui-drift-check Verify ui-app VOIDMAP mirror (status/priority/title) matches VOIDMAP.yml\n  make pipeline-essentials  Report pipeline essentials and next expansion options\n  make workflow-posture-check Verify workflows declare permissions + concurrency (exit 1 on drift)\n\nIntake (Calm Intake Layer):\n  make intake FILE=<path> TITLE=\"<title>\" SOURCE=\"<source>\"\n                       Capture a document into docs/intake/raw/ (no canonisation)\n\nRe-Entry (tesser3TAKT Save State, RO-Crate 1.2):\n  make reentry-save MANIFEST=<savestate.yaml> [REENTRY_OUT=out/reentry]\n                       Seal a private save state (default: gitignored out/reentry/)\n  make reentry-verify CRATE=<dir>  Check hashes + seal (PASS/HOLD)\n"
+    },
+    {
+      "command": [
+        "make",
+        "-n",
+        "all"
+      ],
+      "exit": 0,
+      "output": "echo \"🔍 Running Port-Matrix linter (K0..K4)...\"\npython3 tools/port_lint.py\npytest -v\necho \"=== VERIFY POINTERS ===\"\npython3 tools/verify_pointers.py --strict\necho \"=== CLAIM LINT ===\"\npython3 tools/claim_lint.py --scope index,spec,receipts,tools\necho \"✅ Core: ports, tests, pointers, and claims checked\"\necho \"\"\necho \"=== VERIFY COMPLETE ===\"\necho \"✅ Core verify membrane passed\"\necho \"\"\necho \"Next layered gates when relevant:\"\necho \"  make verify-governance  # workflow posture + VOID backlog drift\"\necho \"  make verify-js          # ui-app / packages / pnpm workspace\"\necho \"\"\necho \"=== SNAPSHOT ===\"\nmkdir -p out\npython3 tools/snapshot_guard.py out/snapshot_manifest.json \"seeds/*.yaml\" \"audit/*.yaml\" --strict\necho \"\"\necho \"✅ Core verify, tests and snapshot passed.\"\necho \"Status signing and scope-specific gates require their own evidence.\"\n"
+    }
+  ],
+  "document_links": [
+    {
+      "source": ".agents/skills/verify-project-evidence/SKILL.md",
+      "target": "references/entaengelment.md"
+    },
+    {
+      "source": "AGENTS.md",
+      "target": ".agents/skills/verify-project-evidence/SKILL.md"
+    },
+    {
+      "source": "docs/audit/2026-11-03_verification_skill_zizmor_pilot.md",
+      "target": "2026-11-03_verification_workflow_closure.md"
+    },
+    {
+      "source": "docs/audit/2026-11-03_verification_skill_zizmor_pilot.md",
+      "target": "evidence/2026-11-03_zizmor/summary.json"
+    },
+    {
+      "source": "docs/audit/2026-11-03_verification_skill_zizmor_pilot.md",
+      "target": "evidence/2026-11-03_zizmor/snapshot.json"
+    },
+    {
+      "source": "docs/audit/2026-11-03_verification_skill_zizmor_pilot.md",
+      "target": "evidence/2026-11-03_zizmor/findings.json"
+    },
+    {
+      "source": "docs/audit/2026-11-03_verification_skill_zizmor_pilot.md",
+      "target": "../../.github/actions/python-locked/action.yml#L18"
+    },
+    {
+      "source": "docs/audit/2026-11-03_verification_workflow_closure.md",
+      "target": "evidence/2026-11-03_verification_closure/summary.json"
+    },
+    {
+      "source": "docs/audit/2026-11-03_verification_workflow_closure.md",
+      "target": "evidence/2026-11-03_verification_closure/findings.json"
+    }
+  ],
+  "scanner": {
+    "version": "1.32.0",
+    "provision": "previously installed cached binary; direct invocation for final run",
+    "inputs": [
+      ".github/actions/python-locked/action.yml",
+      ".github/workflows/ci-desktop.yml",
+      ".github/workflows/ci-evidence-bundle.yml",
+      ".github/workflows/ci-js-workspace.yml",
+      ".github/workflows/ci-policy-lint.yml",
+      ".github/workflows/ci-python-quality.yml",
+      ".github/workflows/ci-python-runtime.yml",
+      ".github/workflows/ci-smoke.yml",
+      ".github/workflows/ci.yml",
+      ".github/workflows/deepjump-audit.reusable.yml",
+      ".github/workflows/deepjump-ci.yml",
+      ".github/workflows/metatron-guard.yml",
+      ".github/workflows/release.yml",
+      ".github/workflows/sbom.yml",
+      ".github/workflows/security-audit.yml",
+      ".github/workflows/test.yml",
+      ".github/workflows/void-sync.yml"
+    ],
+    "flags": [
+      "--offline",
+      "--strict-collection",
+      "--format=json-v1"
+    ],
+    "exit": 14,
+    "stderr": "",
+    "raw_stdout_sha256": "ebf345a34afd4465f3e9170eb1bf0321e38e8130b6a52270872013c63f037ef8",
+    "publication_transform": "Only Local.verbatim_path is made checkout-relative",
+    "findings": 16,
+    "by_rule": {
+      "github-env": 1,
+      "self-repository": 15
+    },
+    "baseline_findings": 41,
+    "baseline_by_rule": {
+      "github-env": 1,
+      "artipacked": 25,
+      "self-repository": 15
+    },
+    "additional_checkout_scan": {
+      "findings": 19,
+      "additional_rule": "dependabot-cooldown",
+      "additional_count": 3,
+      "scope_difference": "includes .github/dependabot.yml; excluded from 17-input comparison"
+    }
+  },
+  "source_digests": [
+    {
+      "path": ".github/actions/python-locked/action.yml",
+      "git_blob_sha": "a08419d3ef9efc4e8aa3f03c3a511a2a0dfc4208",
+      "sha256": "f85358d1d428a17b0dc8814f4ddbcaaafa4b00e3246aebbff6fe107cda8da236"
+    },
+    {
+      "path": ".github/workflows/ci-desktop.yml",
+      "git_blob_sha": "bfa407137adc3f546534cd0b94300c45386265f8",
+      "sha256": "418d3ad61a5f7f8f1eefb0c83bda0785b0882e9c2e165d7f47d41aa3f373d2b0"
+    },
+    {
+      "path": ".github/workflows/ci-evidence-bundle.yml",
+      "git_blob_sha": "6fb19258372d86521a4470c5e764242e873d82e1",
+      "sha256": "280bed5b5afff7aae6c284a79b269f3a62d4eb779bbd482cb7cc0c3ce7dfe993"
+    },
+    {
+      "path": ".github/workflows/ci-js-workspace.yml",
+      "git_blob_sha": "123253b42ca641e82948ee23bc1a78d1c6949451",
+      "sha256": "b496b6052cd0993437da7739bff467c6c6803bf3252ec534d85d6b9932b76096"
+    },
+    {
+      "path": ".github/workflows/ci-policy-lint.yml",
+      "git_blob_sha": "2d4af5f995e07c6c5e6f7107f8467e0ac1825a2b",
+      "sha256": "c3cd1d5e6fe083555a93f0264c084e05fe482b10a0fe391acc24008ede9f7339"
+    },
+    {
+      "path": ".github/workflows/ci-python-quality.yml",
+      "git_blob_sha": "1a1d827ae51402d532cd73968cfef2246b669c47",
+      "sha256": "badb419deefb401fe2ac1b888f2179fa9bc2e67db7f51243f80fe2bba21186f3"
+    },
+    {
+      "path": ".github/workflows/ci-python-runtime.yml",
+      "git_blob_sha": "ae6d68a1578e4ec13ebfbe972419568d8b91786e",
+      "sha256": "a4e2836f8a75e67ba7c79e5fdcf61b77b663b46e56857c405dffa3ce8a3623cc"
+    },
+    {
+      "path": ".github/workflows/ci-smoke.yml",
+      "git_blob_sha": "2a34681eeedc6031a1fdc8040f44c3e494502231",
+      "sha256": "1607deab33a01266157388a3968119c8dd404607e442b254a8f0468d1682ba6e"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "git_blob_sha": "dc18d35c113e35d4a84d22417dbe574545a77fff",
+      "sha256": "ba87df19b50c10d4eac145a07462e1245fe5b40ae4f1b3463b13dd4f18f0eb65"
+    },
+    {
+      "path": ".github/workflows/deepjump-audit.reusable.yml",
+      "git_blob_sha": "547d8e562e0e2891612c9db8a103d7330eaa3f05",
+      "sha256": "a1d915c874339a23d962befd2b43faab35b8df42e12b6b68524beda7abb1763d"
+    },
+    {
+      "path": ".github/workflows/deepjump-ci.yml",
+      "git_blob_sha": "f622ae44e8a1ec4c3b237dbba1a55219e4ddd4b8",
+      "sha256": "b356aebb5c4cb80c5bc8871a94c5687becdaf3f19e3eceebf12b43e0e4dcfbeb"
+    },
+    {
+      "path": ".github/workflows/metatron-guard.yml",
+      "git_blob_sha": "56f83b1675c28bd3c1a93910927b18bb50d8d614",
+      "sha256": "9627b8b324e155f036157c800d77092826b3f68959c9271f4250cb0eda06da1b"
+    },
+    {
+      "path": ".github/workflows/release.yml",
+      "git_blob_sha": "f39ec07f6335c1ad2fe7f6d5314d1f97ee189b44",
+      "sha256": "b67d8ba87ef0605afd030e656b9410fcf5d22ec76f2cb3eb964c3ca4225b95a6"
+    },
+    {
+      "path": ".github/workflows/sbom.yml",
+      "git_blob_sha": "298ce5da78008e74c5b52c01f0fd40a660d4eca5",
+      "sha256": "c82f0b392bb75b78cd62da4935d3cbf59d97bc5838af4e48c310a0db4bc3540d"
+    },
+    {
+      "path": ".github/workflows/security-audit.yml",
+      "git_blob_sha": "dfcfb72f490bc099c3f653c6ad39be5b82266549",
+      "sha256": "999d0aa421f932a361df4c76bcbfcf935cbb14169a5b319152498cc223bc44d0"
+    },
+    {
+      "path": ".github/workflows/test.yml",
+      "git_blob_sha": "5970a4f6b03ff264aca21e18b42ab3b69eec91cc",
+      "sha256": "e0838e58bd75096b5fb68763fd90840f85e784bb310141371bd6d295788dc802"
+    },
+    {
+      "path": ".github/workflows/void-sync.yml",
+      "git_blob_sha": "1eb74b1f782dcc7a840f35e1ad6bb03d386ad77c",
+      "sha256": "dff7434f2085eade78079f397d87db22f38fbeb681c60bfd87e42bf9db291f40"
+    },
+    {
+      "path": "AGENTS.md",
+      "git_blob_sha": "3f5e26789648d6c9e3983dc6e6653adb6ca787b8",
+      "sha256": "0da10f5c29b46e9b6d379c9eebd182d0016e9c523d6a0350479c824aa431cc7e"
+    },
+    {
+      "path": "CLAUDE.md",
+      "git_blob_sha": "953b1369e755c46e64900b8566a251e4897b10f6",
+      "sha256": "5999c067a82bdf2b3029d3e0c2953bfa84395a57c63b93eecf2352a830477105"
+    },
+    {
+      "path": "Makefile",
+      "git_blob_sha": "62c4ee09bba0c3fdb685993d19f4d5c5ca719b6e",
+      "sha256": "fa9f14bf9d92479b38c138145ad7fdd01e415f8ac4be7e9813a87d6777ce852e"
+    },
+    {
+      "path": "docs/ci/WORKFLOW_MAP.md",
+      "git_blob_sha": "1094b660c92904973145e16287b0483abdd2c970",
+      "sha256": "d6d5914b1f0dd57d44719043cef2d68cc8ac7089011eb7ebcef66e837114a9df"
+    },
+    {
+      "path": "docs/guards/metatron_rule.md",
+      "git_blob_sha": "2c2bdd8691901211bd3a972b6edba77fdf0c80e8",
+      "sha256": "476946cf07b826705febf2b5a35df287e6bf64520dd638819e4ee71639c1ed7e"
+    },
+    {
+      "path": "tests/test_ci_guard_contracts.py",
+      "git_blob_sha": "26cf33aa3694fdb99b0cbc194a5b951256dceac4",
+      "sha256": "53afc875b9fe49eaf6fcb710084c4d40f633642937ec5e8d148c560d979d6f1f"
+    },
+    {
+      "path": "tools/metatron_check.py",
+      "git_blob_sha": "9db5c3be761ed3335d4218e515e440ab4b5c900a",
+      "sha256": "6136ac63c77337e21e3f7950589ebfaa64498469fa5ef8ab0992e3a1509e51f6"
+    }
+  ],
+  "limits": [
+    "No full security audit",
+    "PR does not exercise tag release or scheduled issue writes",
+    "Agent instructions do not prove universal agent compliance",
+    "Preserved 16 scanner findings are not 16 demonstrated exploits",
+    "No new merge authority"
+  ]
+}

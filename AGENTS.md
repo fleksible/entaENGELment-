@@ -5,6 +5,11 @@
 > Claude Code lädt diese Datei über `@AGENTS.md` aus [CLAUDE.md](CLAUDE.md); dort stehen
 > zusätzlich Workflow-Patterns, Befehle und Architektur. Kanonisches Gate: `make verify`.
 
+Für technische Abschlussaussagen und Übernahmeempfehlungen den Ablauf
+[Projektnachweise prüfen](.agents/skills/verify-project-evidence/SKILL.md) anwenden.
+Vorhandene passende Belege weiterverwenden; technische Prüflast selbst tragen und
+Nachweisumfang, Schlussfolgerung und gedeckte Handlung getrennt ausweisen.
+
 ---
 
 ## Core Guards

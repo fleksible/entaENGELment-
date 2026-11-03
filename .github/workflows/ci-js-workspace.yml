@@ -1,6 +1,6 @@
 name: CI — JS/TS Workspace
 
-# Runs the Turborepo pipeline (typecheck, lint, build) for the JS/TS membrane.
+# Runs the Turborepo pipeline (typecheck, lint, build, test) for the JS/TS membrane.
 # Independent of the Python CI workflows. The `paths` filter covers the whole
 # workspace membrane so changes to the wiring (lockfile, workspace globs, turbo
 # config, shared tsconfig) can never bypass this job.
@@ -44,6 +44,8 @@ jobs:
       DO_NOT_TRACK: "1"
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
 
       # Use the pnpm version pinned in package.json#packageManager via Corepack.
       - name: Enable Corepack

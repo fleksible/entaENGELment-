@@ -314,7 +314,14 @@ Der `metatron-guard.yml` Workflow prüft bei jedem PR:
 
 2. **Bei FOKUS-SWITCH: Frage vorhanden?**
    - Wenn `FOKUS-SWITCH:` im Body
-   - Muss Zeile mit `?` enden
+   - Für jeden Wechsel muss eine Zeile mit `?` enden, innerhalb von fünf Folgezeilen
+   - Nummerierte Marker wie `FOKUS-SWITCH 1:` werden ebenfalls geprüft
+   - Eine Frage nach dem nächsten Marker gilt nur für diesen nächsten Wechsel
+
+Fehlende Marker, fehlende Rückfragen und Ausführungsfehler lassen den PR-Check
+fehlschlagen. Die Prüfung erfasst Textmarker; sie belegt keine tatsächlich erteilte
+Zustimmung und erkennt keinen unmarkierten inhaltlichen Fokuswechsel.
+Der gesonderte Commit-Hinweis bei Push bleibt ausdrücklich advisory.
 
 ### Bypass (wenn nötig)
 
