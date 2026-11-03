@@ -1,0 +1,14 @@
+interface:
+  display_name: Projektnachweise prüfen
+  short_description: Prüfergebnisse, Grenzen und Mandate sauber zuordnen
+  default_prompt: Nutze $verify-project-evidence, um diesen Abschlussstand anhand
+    seiner Quellen und offenen Grenzen zu prüfen.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true
