@@ -87,6 +87,33 @@ def test_pr_guard_rejects_execution_error(tmp_path: Path) -> None:
     assert result.returncode != 0
 
 
+@pytest.mark.parametrize("completed", [False, True])
+def test_pr_guard_checks_visible_focus_in_actual_template(
+    metatron_workspace: Path, completed: bool
+) -> None:
+    body = (ROOT / ".github/PULL_REQUEST_TEMPLATE.md").read_text()
+    if completed:
+        body = body.replace("<!-- Brief task focus (2-5 words) -->", "Parser maintenance")
+    result = _run(_metatron_script(), metatron_workspace, PR_BODY=body)
+    assert (result.returncode == 0) == completed, result.stdout + result.stderr
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        "<!-- FOKUS: hidden -->",
+        "FOKUS: Parser\nFOKUS-SWITCH: Parser -> UI\n<!-- Proceed? -->",
+        "FOKUS: Parser\nFOKUS-SWITCH: Parser -> UI\n<!-- Proceed?",
+        "FOKUS: <!-- hidden -->\n\nA later paragraph is not a focus value.",
+    ],
+)
+def test_pr_guard_does_not_use_hidden_markers_or_questions(
+    metatron_workspace: Path, body: str
+) -> None:
+    result = _run(_metatron_script(), metatron_workspace, PR_BODY=body)
+    assert result.returncode != 0, result.stdout
+
+
 @pytest.mark.parametrize("job", ["JS_RESULT", "PYTHON_RESULT", "UI_RESULT"])
 @pytest.mark.parametrize("outcome", ["failure", "skipped", "cancelled", ""])
 def test_test_aggregate_rejects_non_success(tmp_path: Path, job: str, outcome: str) -> None:

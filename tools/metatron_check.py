@@ -21,7 +21,10 @@ import sys
 
 # Pattern für FOKUS: Marker (case-insensitive)
 # Erwartet: "FOKUS: <mindestens ein Wort>"
-RX_FOKUS = re.compile(r"^\s*FOKUS\s*:\s*\S+", re.IGNORECASE | re.MULTILINE)
+RX_FOKUS = re.compile(r"^[ \t]*FOKUS[ \t]*:[ \t]*\S+", re.IGNORECASE | re.MULTILINE)
+
+# GitHub's commented template examples are not visible declarations.
+RX_HTML_COMMENT = re.compile(r"<!--.*?(?:-->|$)", re.DOTALL)
 
 # Pattern für FOKUS-SWITCH: Marker (captures rest of line and following content)
 # Varianten: FOKUS-SWITCH, FOKUS_SWITCH, FOKUS SWITCH; optional numbered switches.
@@ -32,6 +35,11 @@ RX_QUESTION = re.compile(r"\?\s*$", re.MULTILINE)
 
 # Max lines after FOKUS-SWITCH to search for question
 MAX_LINES_AFTER_SWITCH = 5
+
+
+def visible_text(text: str) -> str:
+    # Keep line boundaries so hiding a comment cannot move a later question closer.
+    return RX_HTML_COMMENT.sub(lambda match: re.sub(r"[^\n]", " ", match.group()), text)
 
 
 def has_question_after_switch(text: str) -> bool:
@@ -64,6 +72,7 @@ def check_text(text: str) -> tuple[bool, list[str]]:
         - success: True wenn alle Checks bestanden
         - errors: Liste von Fehlermeldungen
     """
+    text = visible_text(text)
     errors: list[str] = []
 
     # Check 1: FOKUS: muss vorhanden sein
@@ -128,7 +137,7 @@ Exit Codes:
     if args.verbose:
         print("Checks passed:")
         print("  - FOKUS: marker found")
-        if RX_SWITCH.search(text):
+        if RX_SWITCH.search(visible_text(text)):
             print("  - FOKUS-SWITCH: found with question")
 
     print("METATRON-GUARD: PASS")

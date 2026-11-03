@@ -4,7 +4,7 @@
   "origin": "self-executed local commands; remote CI separate",
   "base_commit": "cfa5797dfad75758ed80a9ce751e5556ed0ce086",
   "main_base": "05712d827b5558b595438f38a1e3c7fc739a297f",
-  "source_state": "working tree; bind by source digests below, not unchanged parent commit",
+  "source_state": "first verified implementation, subsequently published as e5a3e916aacc84903d1c7ce69830b7866f97b296; follow-up evidence below",
   "environment": {
     "python": "3.12.14",
     "uv": "0.12.18",
@@ -342,5 +342,226 @@
     "Agent instructions do not prove universal agent compliance",
     "Preserved 16 scanner findings are not 16 demonstrated exploits",
     "No new merge authority"
-  ]
+  ],
+  "first_implementation_commit": "e5a3e916aacc84903d1c7ce69830b7866f97b296",
+  "followup_validation": {
+    "parent_commit": "e5a3e916aacc84903d1c7ce69830b7866f97b296",
+    "review_finding": "https://github.com/fleksible/entaENGELment-/pull/452#discussion_r4461535893",
+    "template_red_before_fix": {
+      "exit": 1,
+      "summary": "3 failed, 29 passed"
+    },
+    "guard_contracts_after_fix": {
+      "summary": "32 passed",
+      "included_in_full_suite": true
+    },
+    "full_local_verify": {
+      "command": [
+        "make",
+        "verify",
+        "verify-governance"
+      ],
+      "exit": 0,
+      "summary": "1176 passed, 2 skipped, 169 subtests passed",
+      "python": "3.12.14",
+      "uv": "0.12.18"
+    },
+    "quality": [
+      {
+        "command": [
+          ".venv/bin/ruff",
+          "check",
+          "src/",
+          "tools/",
+          "tests/"
+        ],
+        "exit": 0,
+        "output": "All checks passed!\n"
+      },
+      {
+        "command": [
+          ".venv/bin/black",
+          "--check",
+          "src/",
+          "tools/",
+          "tests/"
+        ],
+        "exit": 0,
+        "output": "All done! ✨ 🍰 ✨\n126 files would be left unchanged.\n"
+      },
+      {
+        "command": [
+          ".venv/bin/mypy",
+          "src/",
+          "tools/"
+        ],
+        "exit": 0,
+        "output": "Success: no issues found in 58 source files\n"
+      },
+      {
+        "command": [
+          ".venv/bin/bandit",
+          "-c",
+          ".bandit.yaml",
+          "-r",
+          "src/",
+          "tools/"
+        ],
+        "exit": 0,
+        "output": "Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00\nRun started:2026-11-03 23:12:08.101759+00:00\n\nTest results:\n\tNo issues identified.\n\nCode scanned:\n\tTotal lines of code: 11097\n\tTotal lines skipped (#nosec): 0\n\tTotal potential issues skipped due to specifically being disabled (e.g., #nosec BXXX): 4\n\nRun metrics:\n\tTotal issues (by severity):\n\t\tUndefined: 0\n\t\tLow: 0\n\t\tMedium: 0\n\t\tHigh: 0\n\tTotal issues (by confidence):\n\t\tUndefined: 0\n\t\tLow: 0\n\t\tMedium: 0\n\t\tHigh: 0\nFiles skipped (0):\n[main]\tINFO\tprofile include tests: None\n[main]\tINFO\tprofile exclude tests: B603,B311,B404,B607,B105\n[main]\tINFO\tcli include tests: None\n[main]\tINFO\tcli exclude tests: None\n[main]\tINFO\tusing config: .bandit.yaml\n[main]\tINFO\trunning on Python 3.12.14\n"
+      }
+    ],
+    "desktop_failure": {
+      "run": "https://github.com/fleksible/entaENGELment-/actions/runs/41736357077",
+      "job_id": 126266448046,
+      "commit": "e5a3e916aacc84903d1c7ce69830b7866f97b296",
+      "exit": 1,
+      "stage": "actual runtime inspection; install, build and extraction passed",
+      "error": "default inspector context has undefined process.resourcesPath; renderer assertions not reached"
+    },
+    "local_inspector_counterprobes": {
+      "runner": "Node 24.22.1 with node:vm and node:assert/strict",
+      "exit": 0,
+      "cases": 3,
+      "scope": "actual exported selector; not real Electron/AppImage execution"
+    },
+    "scanner_evidence_reused": "all 17 scanned source file digests unchanged; Python/JS helper changes are outside scanner input scope",
+    "source_digests": [
+      {
+        "path": ".github/PULL_REQUEST_TEMPLATE.md",
+        "git_blob_sha": "1f225794e288ba3760f0f00fec08f5d3065e46cc",
+        "sha256": "53c4d49adc414fc5cdfe21c162dfde0b3eb58e733091122fbecde3279870f1af"
+      },
+      {
+        "path": ".github/actions/python-locked/action.yml",
+        "git_blob_sha": "a08419d3ef9efc4e8aa3f03c3a511a2a0dfc4208",
+        "sha256": "f85358d1d428a17b0dc8814f4ddbcaaafa4b00e3246aebbff6fe107cda8da236"
+      },
+      {
+        "path": ".github/workflows/ci-desktop.yml",
+        "git_blob_sha": "bfa407137adc3f546534cd0b94300c45386265f8",
+        "sha256": "418d3ad61a5f7f8f1eefb0c83bda0785b0882e9c2e165d7f47d41aa3f373d2b0"
+      },
+      {
+        "path": ".github/workflows/ci-evidence-bundle.yml",
+        "git_blob_sha": "6fb19258372d86521a4470c5e764242e873d82e1",
+        "sha256": "280bed5b5afff7aae6c284a79b269f3a62d4eb779bbd482cb7cc0c3ce7dfe993"
+      },
+      {
+        "path": ".github/workflows/ci-js-workspace.yml",
+        "git_blob_sha": "123253b42ca641e82948ee23bc1a78d1c6949451",
+        "sha256": "b496b6052cd0993437da7739bff467c6c6803bf3252ec534d85d6b9932b76096"
+      },
+      {
+        "path": ".github/workflows/ci-policy-lint.yml",
+        "git_blob_sha": "2d4af5f995e07c6c5e6f7107f8467e0ac1825a2b",
+        "sha256": "c3cd1d5e6fe083555a93f0264c084e05fe482b10a0fe391acc24008ede9f7339"
+      },
+      {
+        "path": ".github/workflows/ci-python-quality.yml",
+        "git_blob_sha": "1a1d827ae51402d532cd73968cfef2246b669c47",
+        "sha256": "badb419deefb401fe2ac1b888f2179fa9bc2e67db7f51243f80fe2bba21186f3"
+      },
+      {
+        "path": ".github/workflows/ci-python-runtime.yml",
+        "git_blob_sha": "ae6d68a1578e4ec13ebfbe972419568d8b91786e",
+        "sha256": "a4e2836f8a75e67ba7c79e5fdcf61b77b663b46e56857c405dffa3ce8a3623cc"
+      },
+      {
+        "path": ".github/workflows/ci-smoke.yml",
+        "git_blob_sha": "2a34681eeedc6031a1fdc8040f44c3e494502231",
+        "sha256": "1607deab33a01266157388a3968119c8dd404607e442b254a8f0468d1682ba6e"
+      },
+      {
+        "path": ".github/workflows/ci.yml",
+        "git_blob_sha": "dc18d35c113e35d4a84d22417dbe574545a77fff",
+        "sha256": "ba87df19b50c10d4eac145a07462e1245fe5b40ae4f1b3463b13dd4f18f0eb65"
+      },
+      {
+        "path": ".github/workflows/deepjump-audit.reusable.yml",
+        "git_blob_sha": "547d8e562e0e2891612c9db8a103d7330eaa3f05",
+        "sha256": "a1d915c874339a23d962befd2b43faab35b8df42e12b6b68524beda7abb1763d"
+      },
+      {
+        "path": ".github/workflows/deepjump-ci.yml",
+        "git_blob_sha": "f622ae44e8a1ec4c3b237dbba1a55219e4ddd4b8",
+        "sha256": "b356aebb5c4cb80c5bc8871a94c5687becdaf3f19e3eceebf12b43e0e4dcfbeb"
+      },
+      {
+        "path": ".github/workflows/metatron-guard.yml",
+        "git_blob_sha": "56f83b1675c28bd3c1a93910927b18bb50d8d614",
+        "sha256": "9627b8b324e155f036157c800d77092826b3f68959c9271f4250cb0eda06da1b"
+      },
+      {
+        "path": ".github/workflows/release.yml",
+        "git_blob_sha": "f39ec07f6335c1ad2fe7f6d5314d1f97ee189b44",
+        "sha256": "b67d8ba87ef0605afd030e656b9410fcf5d22ec76f2cb3eb964c3ca4225b95a6"
+      },
+      {
+        "path": ".github/workflows/sbom.yml",
+        "git_blob_sha": "298ce5da78008e74c5b52c01f0fd40a660d4eca5",
+        "sha256": "c82f0b392bb75b78cd62da4935d3cbf59d97bc5838af4e48c310a0db4bc3540d"
+      },
+      {
+        "path": ".github/workflows/security-audit.yml",
+        "git_blob_sha": "dfcfb72f490bc099c3f653c6ad39be5b82266549",
+        "sha256": "999d0aa421f932a361df4c76bcbfcf935cbb14169a5b319152498cc223bc44d0"
+      },
+      {
+        "path": ".github/workflows/test.yml",
+        "git_blob_sha": "5970a4f6b03ff264aca21e18b42ab3b69eec91cc",
+        "sha256": "e0838e58bd75096b5fb68763fd90840f85e784bb310141371bd6d295788dc802"
+      },
+      {
+        "path": ".github/workflows/void-sync.yml",
+        "git_blob_sha": "1eb74b1f782dcc7a840f35e1ad6bb03d386ad77c",
+        "sha256": "dff7434f2085eade78079f397d87db22f38fbeb681c60bfd87e42bf9db291f40"
+      },
+      {
+        "path": "AGENTS.md",
+        "git_blob_sha": "3f5e26789648d6c9e3983dc6e6653adb6ca787b8",
+        "sha256": "0da10f5c29b46e9b6d379c9eebd182d0016e9c523d6a0350479c824aa431cc7e"
+      },
+      {
+        "path": "CLAUDE.md",
+        "git_blob_sha": "953b1369e755c46e64900b8566a251e4897b10f6",
+        "sha256": "5999c067a82bdf2b3029d3e0c2953bfa84395a57c63b93eecf2352a830477105"
+      },
+      {
+        "path": "Makefile",
+        "git_blob_sha": "62c4ee09bba0c3fdb685993d19f4d5c5ca719b6e",
+        "sha256": "fa9f14bf9d92479b38c138145ad7fdd01e415f8ac4be7e9813a87d6777ce852e"
+      },
+      {
+        "path": "__tests__/unit/electron-desktop-inspector.test.js",
+        "git_blob_sha": "6437a8f30748c9e876bf04e25833d70e14e335cf",
+        "sha256": "ad77b97fc4440aa516997947043d2e3cda2e11c3717d0f0a4d39309f84f0672d"
+      },
+      {
+        "path": "docs/ci/WORKFLOW_MAP.md",
+        "git_blob_sha": "1094b660c92904973145e16287b0483abdd2c970",
+        "sha256": "d6d5914b1f0dd57d44719043cef2d68cc8ac7089011eb7ebcef66e837114a9df"
+      },
+      {
+        "path": "docs/guards/metatron_rule.md",
+        "git_blob_sha": "9eaf01d39a52ebd707f87fc90811819ba2cdb9cd",
+        "sha256": "fd1beebd6e83174cc1be5315328fd7f82d5af9eb7feb4803f0117367badfd408"
+      },
+      {
+        "path": "tests/test_ci_guard_contracts.py",
+        "git_blob_sha": "1af3b46e866023b8cf27d01dd2677858259325b2",
+        "sha256": "6739130a85a76ae02581a4b9ea02d0ff4b5e9f24ef35780aba0672d27e6bfe9a"
+      },
+      {
+        "path": "tools/desktop_smoke.cjs",
+        "git_blob_sha": "3b9b2f430407e3103ede8706ad3223217bc90941",
+        "sha256": "3aca744ed1ad860fe23dcaa4207b2fcb008d9e8dbeb29175fc559997b8ae7777"
+      },
+      {
+        "path": "tools/metatron_check.py",
+        "git_blob_sha": "51789959b2fe2b21398a72e991fe166d357f7596",
+        "sha256": "b67269095ee73ae298ebe391d57189ac14169765c8fc809cfe7b4ec2cd6d9a62"
+      }
+    ]
+  }
 }

@@ -10,6 +10,17 @@ const { setTimeout: delay } = require('node:timers/promises');
 const expectedElectron = require('../package.json').devDependencies.electron;
 const electron = "process.getBuiltinModule('module').createRequire(process.resourcesPath + '/app.asar/package.json')('electron')";
 
+async function selectElectronContext(contextIds, evaluate) {
+  for (const id of contextIds) {
+    try {
+      if (await evaluate("typeof process !== 'undefined' && process.type === 'browser' && typeof process.resourcesPath === 'string'", id)) return id;
+    } catch {
+      // A context can be destroyed while Runtime.enable enumerates it.
+    }
+  }
+  return undefined;
+}
+
 async function main() {
   assert(process.argv[2], 'Pass the extracted AppImage AppRun path');
   assert.equal(process.platform, 'linux');
@@ -50,9 +61,15 @@ async function main() {
     }
     socket = new WebSocket(inspectorUrl);
     const pending = new Map();
+    const contexts = new Set();
+    let electronContext;
     let nextId = 0;
     socket.addEventListener('message', event => {
-      const message = JSON.parse(event.data), request = pending.get(message.id);
+      const message = JSON.parse(event.data);
+      if (message.method === 'Runtime.executionContextCreated') contexts.add(message.params.context.id);
+      if (message.method === 'Runtime.executionContextDestroyed') contexts.delete(message.params.executionContextId);
+      if (message.method === 'Runtime.executionContextsCleared') contexts.clear();
+      const request = pending.get(message.id);
       if (!request) return;
       pending.delete(message.id);
       clearTimeout(request.timer);
@@ -70,20 +87,29 @@ async function main() {
       socket.addEventListener('open', resolve, { once: true });
       socket.addEventListener('error', reject, { once: true });
     });
-    async function evaluate(expression) {
-      const result = await new Promise((resolve, reject) => {
+    async function command(method, params = {}) {
+      return new Promise((resolve, reject) => {
         const id = ++nextId;
         const timer = setTimeout(() => {
           pending.delete(id);
           reject(new Error('Application debugger command timed out'));
         }, 15000);
         pending.set(id, { resolve, reject, timer });
-        socket.send(JSON.stringify({ id, method: 'Runtime.evaluate', params: {
-          expression, awaitPromise: true, returnByValue: true,
-        } }));
+        socket.send(JSON.stringify({ id, method, params }));
+      });
+    }
+    async function evaluate(expression, contextId = electronContext) {
+      const result = await command('Runtime.evaluate', {
+        expression, contextId, awaitPromise: true, returnByValue: true,
       });
       assert(!result.exceptionDetails, JSON.stringify(result.exceptionDetails));
       return result.result.value;
+    }
+    await command('Runtime.enable');
+    while (electronContext === undefined) {
+      assert(!exited && Date.now() < deadline, 'Electron main-process context not available');
+      electronContext = await selectElectronContext([...contexts], evaluate);
+      if (electronContext === undefined) await delay(100);
     }
     let observed;
     do {
@@ -152,4 +178,5 @@ async function main() {
     fs.writeFileSync(path.join(output, 'desktop.log'), log);
   }
 }
-main().catch(error => { console.error(error); process.exitCode = 1; });
+module.exports = { selectElectronContext };
+if (require.main === module) main().catch(error => { console.error(error); process.exitCode = 1; });

@@ -24,6 +24,10 @@ fehlende FOKUS-Marker und Rückfragen in erfolgreiche Warnungen; der Textprüfer
 prüfte nur den ersten unnummerierten Fokuswechsel. Jetzt bleiben Regelverstöße und
 Ausführungsfehler Fehler. Jeder dokumentierte, auch nummerierte Wechsel braucht
 seine eigene Frage vor dem nächsten Marker, spätestens in fünf Folgezeilen.
+Die erneute Codex-Review am Folge-Head fand einen berechtigten Randfall: Das
+auskommentierte Wechsel-Beispiel der echten PR-Vorlage wurde mitgeprüft. Die
+Gegenprobe reproduzierte dies. HTML-Kommentare werden nun ausgeblendet, ihre
+Zeilengrenzen bleiben erhalten; ein Fokuswert muss in derselben Zeile sichtbar sein.
 
 Der Skill ist über AGENTS.md in die Repository-Arbeitsanweisungen eingebunden.
 Das schafft eine Arbeitsregel für Agenten, die diese Anweisungen lesen; die
@@ -36,10 +40,12 @@ Die neuen Tests führen die echten Shell-Fragmente der Workflows mit Bash
 `-e -o pipefail` aus und verwenden den echten Textprüfer. Der erste Lauf gegen den
 unveränderten Stand ergab **6 fehlgeschlagene und 20 bestandene Tests**. Nach dem
 Fix bestehen alle **26**. Der Fehler wurde damit vor der Korrektur reproduziert.
+Sechs weitere Vorlagen-/Kommentar-Fälle ergaben vor dem Nachfix **3 failed,
+29 passed**; danach bestehen alle **32** Guard-Vertragstests.
 
 | Pfad | Geprüfte Fälle | Ergebnis |
 |---|---|---|
-| PR-Fokus-Guard | Sechs Regelverletzungen, drei gültige Texte, fehlender Prüfer | Ungültig und Ausführungsfehler scheitern; gültige Texte bestehen |
+| PR-Fokus-Guard | Sechs Regelverletzungen, drei gültige Texte, fehlender Prüfer, sechs Vorlagen-/Kommentar-Fälle | Ungültig und Ausführungsfehler scheitern; ausgefüllte Vorlage besteht |
 | All Tests Pass | Drei Unterjobs, jeweils failure/skipped/cancelled/leeres Ergebnis; alle success | Alle zwölf nicht erfolgreichen Kombinationen scheitern; Erfolg besteht |
 | HMAC-Verfügbarkeit | PR-Ausnahme ohne Schlüssel; vertrauenswürdiger Lauf ohne Schlüssel; synthetischer Schlüssel | Expliziter unsigned skip; Fehler; Schlüssel verfügbar |
 
@@ -50,7 +56,7 @@ führen keine Release- oder Issue-Erstellung aus.
 Lokal mit frisch eingerichteter, gesperrter dev-Umgebung, uv **0.12.18** und Python
 **3.12.14** ausgeführt:
 
-- `make verify verify-governance`: Exit 0; **1170 passed, 2 skipped,
+- `make verify verify-governance` nach dem Vorlagen-Nachfix: Exit 0; **1176 passed, 2 skipped,
   169 subtests passed**; 16 Workflow-Verträge und 22 VOID-Spiegel konsistent.
 - Ruff, Black, mypy und konfigurierter Bandit-Lauf: Exit 0. Die vorhandenen
   Bandit-Ausschlüsse bleiben erhalten; das ist kein grenzenloser SAST-Nachweis.
@@ -61,6 +67,24 @@ Die Quelldigests, Befehle und Ergebnisse stehen in der
 [Zusammenfassung](evidence/2026-11-03_verification_closure/summary.json).
 Remote-CI und Reviews müssen am später veröffentlichten Head gelesen werden;
 der ursprüngliche Codex-Kommentar am Pilot-Head bestätigt diese Folgeänderung nicht.
+
+## Echter Desktop-Lauf statt Sammeljob-Schlussfolgerung
+
+Am ersten Folge-Head `e5a3e916aacc84903d1c7ce69830b7866f97b296` bestanden die
+fünf Pflichtchecks und die Runtime-Matrix. Der zusätzlich angestoßene
+[AppImage-Lauf](https://github.com/fleksible/entaENGELment-/actions/runs/41736357077)
+scheiterte trotzdem: Im voreingestellten Node-Debugger-Kontext war
+`process.resourcesPath` undefiniert. Paketinstallation, Build und Extraktion
+hatten bestanden; die Assertions über den echten Renderer waren noch nicht erreicht.
+Das ist ein Fehler des Prüfskripts, kein beobachteter Sandbox-Ausbruch.
+
+Der Nachfix aktiviert die Runtime-Kontextmeldungen und wählt ausdrücklich einen
+initialisierten Electron-Hauptprozess-Kontext (`type: browser` mit Ressourcenpfad),
+bevor die bestehenden Assertions laufen. Drei JS-Gegenproben prüfen den falschen
+Node-/Renderer-Kontext, noch fehlende Initialisierung und einen inzwischen zerstörten
+Kontext. Die Sandbox-, Preload-, Prozess- und Navigationsprüfungen bleiben erhalten.
+Ein erfolgreicher echter AppImage-Lauf am veröffentlichten Folge-Head ist weiterhin
+der notwendige Funktionsnachweis; die kleinen Kontextproben ersetzen ihn nicht.
 
 ## Checkout-Härtung und erhaltener Scannerbefund
 

@@ -321,6 +321,8 @@ Der `metatron-guard.yml` Workflow prüft bei jedem PR:
 Fehlende Marker, fehlende Rückfragen und Ausführungsfehler lassen den PR-Check
 fehlschlagen. Die Prüfung erfasst Textmarker; sie belegt keine tatsächlich erteilte
 Zustimmung und erkennt keinen unmarkierten inhaltlichen Fokuswechsel.
+HTML-Kommentare einschließlich der optionalen Vorlagenbeispiele zählen nicht als
+Deklaration oder Rückfrage. Hinter `FOKUS:` muss in derselben Zeile sichtbarer Text stehen.
 Der gesonderte Commit-Hinweis bei Push bleibt ausdrücklich advisory.
 
 ### Bypass (wenn nötig)
