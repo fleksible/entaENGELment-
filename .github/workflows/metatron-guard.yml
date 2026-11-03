@@ -35,9 +35,17 @@ jobs:
         shell: bash
         env:
           PR_BODY: ${{ github.event.pull_request.body }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
         run: |
           # Preserve rule failures and execution errors as failing check results.
-          python tools/metatron_check.py --verbose <<< "$PR_BODY"
+          # Dependabot writes its own body; the configured prefix "FOKUS: deps"
+          # (.github/dependabot.yml) arrives in the title, so only its title is read.
+          if [ "${PR_AUTHOR:-}" = "dependabot[bot]" ]; then
+            python tools/metatron_check.py --verbose <<< "$PR_TITLE"
+          else
+            python tools/metatron_check.py --verbose <<< "$PR_BODY"
+          fi
 
       - name: Post failure instructions
         if: failure()

@@ -324,6 +324,9 @@ Zustimmung und erkennt keinen unmarkierten inhaltlichen Fokuswechsel.
 HTML-Kommentare einschließlich der optionalen Vorlagenbeispiele zählen nicht als
 Deklaration oder Rückfrage. Hinter `FOKUS:` muss in derselben Zeile sichtbarer Text stehen.
 Der gesonderte Commit-Hinweis bei Push bleibt ausdrücklich advisory.
+Ausnahme für PRs von `dependabot[bot]`: Dependabot schreibt den PR-Text selbst,
+deshalb prüft der Guard dort den Titel, der das konfigurierte Präfix `FOKUS: deps`
+aus `.github/dependabot.yml` trägt. Für alle anderen Autoren zählt nur der PR-Text.
 
 ### Bypass (wenn nötig)
 

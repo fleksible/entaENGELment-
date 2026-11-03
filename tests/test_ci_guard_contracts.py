@@ -114,6 +114,34 @@ def test_pr_guard_does_not_use_hidden_markers_or_questions(
     assert result.returncode != 0, result.stdout
 
 
+DEPENDABOT_BODY = (
+    "Bumps [electron](https://github.com/electron/electron) from 44.9.1 to 45.0.0.\n"
+    "- [Release notes](https://github.com/electron/electron/releases)\n"
+)
+
+
+@pytest.mark.parametrize(
+    ("author", "title", "accepted"),
+    [
+        ("dependabot[bot]", "FOKUS: deps: Bump electron from 44.9.1 to 45.0.0", True),
+        ("dependabot[bot]", "Bump electron from 44.9.1 to 45.0.0", False),
+        ("fleksible", "FOKUS: deps: Bump electron from 44.9.1 to 45.0.0", False),
+    ],
+    ids=["dependabot-title", "dependabot-no-prefix", "human-title-only"],
+)
+def test_pr_guard_reads_configured_prefix_only_for_dependabot(
+    metatron_workspace: Path, author: str, title: str, accepted: bool
+) -> None:
+    result = _run(
+        _metatron_script(),
+        metatron_workspace,
+        PR_BODY=DEPENDABOT_BODY,
+        PR_TITLE=title,
+        PR_AUTHOR=author,
+    )
+    assert (result.returncode == 0) == accepted, result.stdout + result.stderr
+
+
 @pytest.mark.parametrize("job", ["JS_RESULT", "PYTHON_RESULT", "UI_RESULT"])
 @pytest.mark.parametrize("outcome", ["failure", "skipped", "cancelled", ""])
 def test_test_aggregate_rejects_non_success(tmp_path: Path, job: str, outcome: str) -> None:
