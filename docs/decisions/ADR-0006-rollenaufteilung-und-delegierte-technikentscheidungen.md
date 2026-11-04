@@ -1,12 +1,13 @@
 # ADR-0006: Rollenaufteilung und delegierte Technikentscheidungen
 
-- **Status:** Proposed — angenommen mit dem Merge durch Kevin/Fleks
+- **Status:** Accepted mit dem Merge unter dem Mandat vom 2026-11-04 (siehe D10)
 - **Datum:** 2026-11-04
-- **Kontext-Fokus:** Wer entscheidet was; Abschluss offener Human Decisions aus der Repo-Analyse vom 2026-07-29
+- **Kontext-Fokus:** Abschluss offener Human Decisions aus der Repo-Analyse vom 2026-07-29
 - **Herkunft:** Rollenaussage von Kevin/Fleks im Chat mit der Claude-Prüfinstanz (2026-11-03/04);
-  Prüfung von PR #452; Live-Abfrage der Repository-Einstellungen am 2026-11-04
+  Arbeitsvereinbarung [Menschliche Absicht und technische Merge-Prüfung](../annex/MERGE_INTENT_DELEGATION_v0_1.md)
+  (PR #451); Prüfung von PR #452; Live-Abfrage der Repository-Einstellungen am 2026-11-04
 - **Entscheidung durch:** D1 Kevin/Fleks (eigene Rollenaussage); D2–D8 Claude-Prüfinstanz unter D1;
-  D9 bleibt bei Kevin/Fleks
+  D9 bleibt bei Kevin/Fleks; D10 Mandat von Kevin/Fleks
 
 ## Context
 
@@ -24,14 +25,18 @@ Rückfragen. Technische Fragen soll ihm keine Instanz zur Entscheidung vorlegen.
 
 ### D1 Rollenaufteilung
 
+Der Rahmen steht in der Arbeitsvereinbarung
+[Menschliche Absicht und technische Merge-Prüfung](../annex/MERGE_INTENT_DELEGATION_v0_1.md).
+Diese ADR wendet ihn an und wiederholt ihn nicht:
+
 1. Kevin/Fleks entscheidet Fragen der Essenz, des Consent, der geschützten Herkunft
    (inkl. VOID-META-013) sowie relationale, ethische und ästhetische Fragen.
 2. Technische Fragen entscheiden die Agenten selbst. Jede solche Entscheidung nennt eine
    Gegenprobe, an der sie scheitern kann. Kevin/Fleks kann jede davon zurücknehmen (G0:
    Consent ist widerrufbar).
-3. Agenten dürfen auf PR-Zweige committen. Der Merge nach `main` bleibt ein menschlicher
-   Akt. Technisch erzwungen ist nur der PR-Weg (0 erforderliche Freigaben, siehe Belege);
-   die Merge-Regel ist eine Abmachung.
+3. Agenten dürfen auf PR-Zweige committen. Nach `main` übernehmen sie nur mit einem
+   ausdrücklichen, begrenzten Mandat (§3 der Arbeitsvereinbarung). Technisch erzwungen
+   ist nur der PR-Weg (0 erforderliche Freigaben, siehe Belege).
 
 ### D2 Fokus-Guard blockiert (HD-MET-1)
 
@@ -83,6 +88,29 @@ wird als eigene Änderung geprüft, wenn `.github/dependabot.yml` ohnehin angefa
 
 Elf VOIDs sind aktiv, zehn davon `high`. Welche Fäden des Frameworks jetzt Vorrang haben,
 ist eine Frage der Essenz. Agenten ändern Prioritäten nicht.
+
+### D10 Merge-Mandat vom 2026-11-04
+
+Kevin/Fleks hat die Claude-Prüfinstanz am 2026-11-04 im Chat beauftragt, die offenen PRs
+zu mergen, sofern sie in der Essenz passen.
+
+- **Gegenstand:** die an diesem Tag offenen PRs.
+- **Grenze „Essenz":** Hausregeln G0–G6, keine Änderung an GOLD, NICHTRAUM oder Receipts
+  ohne eigene Freigabe, Claim-Disziplin ohne Statuspromotion, Consent, geschützte Herkunft,
+  VOID-META-013.
+- **Technische Voraussetzung:** alle fünf Pflichtchecks am aktuellen Head grün, PR mergebar.
+- **Nicht umfasst:** Entwürfe, PRs mit roten Prüfungen, offene inhaltliche Modellentscheidungen.
+
+Einstufung zum Zeitpunkt der Entscheidung:
+
+| PR | Einstufung | Grund |
+|---|---|---|
+| #451, #452, #453, #437, #443 | Übernahme | Grün, ANNEX-/Workflow-Pfade, kein GOLD; Inhalt deckt sich mit den Hausregeln |
+| #445–#449 | Übernahme, einzeln nacheinander | Dependabot-Patch-/Minor-Updates (npm), grün |
+| #444, #450 | Zurückgestellt | Rot: bekannte Drift der uv-Exporte; laut `.github/dependabot.yml` manuell zu ersetzen |
+| #423 | Nicht umfasst | Entwurf mit offener Modellentscheidung |
+
+Jeder Merge-Commit nennt dieses Mandat.
 
 ## Belege: Repository-Einstellungen (live_api, 2026-11-04, nur gelesen)
 
