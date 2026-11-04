@@ -30,7 +30,7 @@
     "electron-builder": "^26.18.0",
     "jest": "^30.5.2",
     "jest-environment-jsdom": "^30.5.2",
-    "turbo": "2.11.7"
+    "turbo": "2.11.10"
   },
   "build": {
     "appId": "EntaENGELment",
