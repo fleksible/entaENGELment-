@@ -14,6 +14,8 @@ Keine Grenz-Übergänge ohne explizites OK.
 - Vor jeder strukturellen Änderung: Checkpoint
 - Bei Unsicherheit über Scope: fragen
 - Consent ist widerrufbar
+- Checkpoints in der Sprache von Absicht, Wirkung und Grenzen formulieren; ein eigener
+  Code-Audit des Menschen ist keine Voraussetzung. Bereits passend erteilte Freigaben nutzen.
 
 ### G1: Annex-Prinzip
 Unterscheide zwischen unveränderlichem Kern und änderbarem Annex.
@@ -67,6 +69,18 @@ Tests laufen lassen, Report erstellen.
 - Vor jedem Merge: CI muss grün sein
 - Report nach `docs/audit/`
 - Keine silent failures
+
+#### Menschliche Freigabe und technische Prüflast
+
+- Der Mensch entscheidet über Ziel, akzeptable Folgen und Delegationsumfang.
+- Der Coding-Agent trägt die technische Prüf- und Begründungslast und gibt eine klare
+  Empfehlung. Technische Unsicherheit wird nicht als Code-Freigabe an den Menschen abgeschoben.
+- Ein belegtes, begrenztes Mandat kann die Übernahme nach `main` einschließen. Innerhalb
+  dieses Mandats ist kein erneutes technisches Abnicken erforderlich; CI gilt am aktuellen Head.
+- Neue Ziele, wesentliche Nebenwirkungen oder überschrittene Grenzen erfordern eine neue
+  Wirkungsentscheidung. Gefühlte Dringlichkeit und vermutete Intuition erzeugen keine Erlaubnis.
+- Die Arbeitsvereinbarung selbst erteilt kein konkretes oder pauschales Merge-Mandat.
+  Maßgeblich: [Menschliche Absicht und technische Merge-Prüfung](docs/annex/MERGE_INTENT_DELEGATION_v0_1.md).
 
 ---
 
