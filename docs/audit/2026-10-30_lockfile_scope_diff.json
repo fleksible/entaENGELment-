@@ -1,0 +1,1411 @@
+{
+  "importer_edge_changes": [
+    {
+      "after": {
+        "specifier": "16.3.8",
+        "version": "16.3.8(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)"
+      },
+      "before": {
+        "specifier": "16.3.6",
+        "version": "16.3.6(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)"
+      },
+      "change": "changed",
+      "key": [
+        "ui-app",
+        "dependencies",
+        "next"
+      ]
+    },
+    {
+      "after": {
+        "specifier": "16.3.8",
+        "version": "16.3.8(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)"
+      },
+      "before": {
+        "specifier": "16.3.6",
+        "version": "16.3.6(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)"
+      },
+      "change": "changed",
+      "key": [
+        "ui-app",
+        "devDependencies",
+        "eslint-config-next"
+      ]
+    }
+  ],
+  "importer_metadata_changes": [],
+  "limits": [
+    "Package identities alone do not detect resolution-edge rewrites.",
+    "Full snapshot identifiers, dependency groups and peer suffixes are preserved.",
+    "Added/removed snapshot contexts are not silently paired by package name.",
+    "Dependency references are observed strings, not verified installed targets.",
+    "No reachability, runtime, vulnerability or Next-only subtree claim is inferred.",
+    "YAML comments and formatting are outside this structural comparison."
+  ],
+  "other_top_level_changes": [],
+  "package_inventory": {
+    "added": [
+      "@next/env@16.3.8",
+      "@next/eslint-plugin-next@16.3.8",
+      "@next/swc-darwin-arm64@16.3.8",
+      "@next/swc-darwin-x64@16.3.8",
+      "@next/swc-linux-arm64-gnu@16.3.8",
+      "@next/swc-linux-arm64-musl@16.3.8",
+      "@next/swc-linux-x64-gnu@16.3.8",
+      "@next/swc-linux-x64-musl@16.3.8",
+      "@next/swc-win32-arm64-msvc@16.3.8",
+      "@next/swc-win32-x64-msvc@16.3.8",
+      "eslint-config-next@16.3.8",
+      "next@16.3.8"
+    ],
+    "changed_names": [
+      "@next/env",
+      "@next/eslint-plugin-next",
+      "@next/swc-darwin-arm64",
+      "@next/swc-darwin-x64",
+      "@next/swc-linux-arm64-gnu",
+      "@next/swc-linux-arm64-musl",
+      "@next/swc-linux-x64-gnu",
+      "@next/swc-linux-x64-musl",
+      "@next/swc-win32-arm64-msvc",
+      "@next/swc-win32-x64-msvc",
+      "eslint-config-next",
+      "next"
+    ],
+    "removed": [
+      "@next/env@16.3.6",
+      "@next/eslint-plugin-next@16.3.6",
+      "@next/swc-darwin-arm64@16.3.6",
+      "@next/swc-darwin-x64@16.3.6",
+      "@next/swc-linux-arm64-gnu@16.3.6",
+      "@next/swc-linux-arm64-musl@16.3.6",
+      "@next/swc-linux-x64-gnu@16.3.6",
+      "@next/swc-linux-x64-musl@16.3.6",
+      "@next/swc-win32-arm64-msvc@16.3.6",
+      "@next/swc-win32-x64-msvc@16.3.6",
+      "eslint-config-next@16.3.6",
+      "next@16.3.6"
+    ],
+    "same_identifier_metadata_changes": []
+  },
+  "snapshot_edge_changes": [
+    {
+      "after": null,
+      "before": "4.9.1(eslint@9.39.4(jiti@2.7.0))",
+      "change": "removed",
+      "key": [
+        "@next/eslint-plugin-next@16.3.6(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "@eslint-community/eslint-utils"
+      ]
+    },
+    {
+      "after": null,
+      "before": "3.3.1",
+      "change": "removed",
+      "key": [
+        "@next/eslint-plugin-next@16.3.6(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "fast-glob"
+      ]
+    },
+    {
+      "after": "4.9.1(eslint@9.39.4(jiti@2.7.0))",
+      "before": null,
+      "change": "added",
+      "key": [
+        "@next/eslint-plugin-next@16.3.8(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "@eslint-community/eslint-utils"
+      ]
+    },
+    {
+      "after": "3.3.1",
+      "before": null,
+      "change": "added",
+      "key": [
+        "@next/eslint-plugin-next@16.3.8(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "fast-glob"
+      ]
+    },
+    {
+      "after": null,
+      "before": "16.3.6(eslint@9.39.4(jiti@2.7.0))",
+      "change": "removed",
+      "key": [
+        "eslint-config-next@16.3.6(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)",
+        "dependencies",
+        "@next/eslint-plugin-next"
+      ]
+    },
+    {
+      "after": null,
+      "before": "9.39.4(jiti@2.7.0)",
+      "change": "removed",
+      "key": [
+        "eslint-config-next@16.3.6(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)",
+        "dependencies",
+        "eslint"
+      ]
+    },
+    {
+      "after": null,
+      "before": "0.3.10",
+      "change": "removed",
+      "key": [
+        "eslint-config-next@16.3.6(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)",
+        "dependencies",
+        "eslint-import-resolver-node"
+      ]
+    },
+    {
+      "after": null,
+      "before": "3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))",
+      "change": "removed",
+      "key": [
+        "eslint-config-next@16.3.6(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)",
+        "dependencies",
+        "eslint-import-resolver-typescript"
+      ]
+    },
+    {
+      "after": null,
+      "before": "2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))",
+      "change": "removed",
+      "key": [
+        "eslint-config-next@16.3.6(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)",
+        "dependencies",
+        "eslint-plugin-import"
+      ]
+    },
+    {
+      "after": null,
+      "before": "6.10.2(eslint@9.39.4(jiti@2.7.0))",
+      "change": "removed",
+      "key": [
+        "eslint-config-next@16.3.6(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)",
+        "dependencies",
+        "eslint-plugin-jsx-a11y"
+      ]
+    },
+    {
+      "after": null,
+      "before": "7.37.5(eslint@9.39.4(jiti@2.7.0))",
+      "change": "removed",
+      "key": [
+        "eslint-config-next@16.3.6(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)",
+        "dependencies",
+        "eslint-plugin-react"
+      ]
+    },
+    {
+      "after": null,
+      "before": "7.1.1(eslint@9.39.4(jiti@2.7.0))",
+      "change": "removed",
+      "key": [
+        "eslint-config-next@16.3.6(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)",
+        "dependencies",
+        "eslint-plugin-react-hooks"
+      ]
+    },
+    {
+      "after": null,
+      "before": "16.4.0",
+      "change": "removed",
+      "key": [
+        "eslint-config-next@16.3.6(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)",
+        "dependencies",
+        "globals"
+      ]
+    },
+    {
+      "after": null,
+      "before": "8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)",
+      "change": "removed",
+      "key": [
+        "eslint-config-next@16.3.6(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)",
+        "dependencies",
+        "typescript-eslint"
+      ]
+    },
+    {
+      "after": null,
+      "before": "6.0.3",
+      "change": "removed",
+      "key": [
+        "eslint-config-next@16.3.6(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)",
+        "optionalDependencies",
+        "typescript"
+      ]
+    },
+    {
+      "after": "16.3.8(eslint@9.39.4(jiti@2.7.0))",
+      "before": null,
+      "change": "added",
+      "key": [
+        "eslint-config-next@16.3.8(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)",
+        "dependencies",
+        "@next/eslint-plugin-next"
+      ]
+    },
+    {
+      "after": "9.39.4(jiti@2.7.0)",
+      "before": null,
+      "change": "added",
+      "key": [
+        "eslint-config-next@16.3.8(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)",
+        "dependencies",
+        "eslint"
+      ]
+    },
+    {
+      "after": "0.3.10",
+      "before": null,
+      "change": "added",
+      "key": [
+        "eslint-config-next@16.3.8(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)",
+        "dependencies",
+        "eslint-import-resolver-node"
+      ]
+    },
+    {
+      "after": "3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))",
+      "before": null,
+      "change": "added",
+      "key": [
+        "eslint-config-next@16.3.8(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)",
+        "dependencies",
+        "eslint-import-resolver-typescript"
+      ]
+    },
+    {
+      "after": "2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0))",
+      "before": null,
+      "change": "added",
+      "key": [
+        "eslint-config-next@16.3.8(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)",
+        "dependencies",
+        "eslint-plugin-import"
+      ]
+    },
+    {
+      "after": "6.10.2(eslint@9.39.4(jiti@2.7.0))",
+      "before": null,
+      "change": "added",
+      "key": [
+        "eslint-config-next@16.3.8(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)",
+        "dependencies",
+        "eslint-plugin-jsx-a11y"
+      ]
+    },
+    {
+      "after": "7.37.5(eslint@9.39.4(jiti@2.7.0))",
+      "before": null,
+      "change": "added",
+      "key": [
+        "eslint-config-next@16.3.8(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)",
+        "dependencies",
+        "eslint-plugin-react"
+      ]
+    },
+    {
+      "after": "7.1.1(eslint@9.39.4(jiti@2.7.0))",
+      "before": null,
+      "change": "added",
+      "key": [
+        "eslint-config-next@16.3.8(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)",
+        "dependencies",
+        "eslint-plugin-react-hooks"
+      ]
+    },
+    {
+      "after": "16.4.0",
+      "before": null,
+      "change": "added",
+      "key": [
+        "eslint-config-next@16.3.8(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)",
+        "dependencies",
+        "globals"
+      ]
+    },
+    {
+      "after": "8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)",
+      "before": null,
+      "change": "added",
+      "key": [
+        "eslint-config-next@16.3.8(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)",
+        "dependencies",
+        "typescript-eslint"
+      ]
+    },
+    {
+      "after": "6.0.3",
+      "before": null,
+      "change": "added",
+      "key": [
+        "eslint-config-next@16.3.8(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)",
+        "optionalDependencies",
+        "typescript"
+      ]
+    },
+    {
+      "after": "2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0))",
+      "before": "2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))",
+      "change": "changed",
+      "key": [
+        "eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))",
+        "optionalDependencies",
+        "eslint-plugin-import"
+      ]
+    },
+    {
+      "after": null,
+      "before": "1.1.0",
+      "change": "removed",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "@rtsao/scc"
+      ]
+    },
+    {
+      "after": null,
+      "before": "3.2.0",
+      "change": "removed",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "array-includes"
+      ]
+    },
+    {
+      "after": null,
+      "before": "1.2.6",
+      "change": "removed",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "array.prototype.findlastindex"
+      ]
+    },
+    {
+      "after": null,
+      "before": "1.3.3",
+      "change": "removed",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "array.prototype.flat"
+      ]
+    },
+    {
+      "after": null,
+      "before": "1.3.3",
+      "change": "removed",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "array.prototype.flatmap"
+      ]
+    },
+    {
+      "after": null,
+      "before": "3.2.7",
+      "change": "removed",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "debug"
+      ]
+    },
+    {
+      "after": null,
+      "before": "2.1.0",
+      "change": "removed",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "doctrine"
+      ]
+    },
+    {
+      "after": null,
+      "before": "9.39.4(jiti@2.7.0)",
+      "change": "removed",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "eslint"
+      ]
+    },
+    {
+      "after": null,
+      "before": "0.3.10",
+      "change": "removed",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "eslint-import-resolver-node"
+      ]
+    },
+    {
+      "after": null,
+      "before": "2.14.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-node@0.3.10)(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))",
+      "change": "removed",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "eslint-module-utils"
+      ]
+    },
+    {
+      "after": null,
+      "before": "2.0.4",
+      "change": "removed",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "hasown"
+      ]
+    },
+    {
+      "after": null,
+      "before": "2.17.0",
+      "change": "removed",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "is-core-module"
+      ]
+    },
+    {
+      "after": null,
+      "before": "4.0.3",
+      "change": "removed",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "is-glob"
+      ]
+    },
+    {
+      "after": null,
+      "before": "3.1.5",
+      "change": "removed",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "minimatch"
+      ]
+    },
+    {
+      "after": null,
+      "before": "2.0.8",
+      "change": "removed",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "object.fromentries"
+      ]
+    },
+    {
+      "after": null,
+      "before": "1.0.3",
+      "change": "removed",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "object.groupby"
+      ]
+    },
+    {
+      "after": null,
+      "before": "1.2.1",
+      "change": "removed",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "object.values"
+      ]
+    },
+    {
+      "after": null,
+      "before": "6.3.1",
+      "change": "removed",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "semver"
+      ]
+    },
+    {
+      "after": null,
+      "before": "1.0.10",
+      "change": "removed",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "string.prototype.trimend"
+      ]
+    },
+    {
+      "after": null,
+      "before": "3.15.0",
+      "change": "removed",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "tsconfig-paths"
+      ]
+    },
+    {
+      "after": null,
+      "before": "8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)",
+      "change": "removed",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))",
+        "optionalDependencies",
+        "@typescript-eslint/parser"
+      ]
+    },
+    {
+      "after": "1.1.0",
+      "before": null,
+      "change": "added",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "@rtsao/scc"
+      ]
+    },
+    {
+      "after": "3.2.0",
+      "before": null,
+      "change": "added",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "array-includes"
+      ]
+    },
+    {
+      "after": "1.2.6",
+      "before": null,
+      "change": "added",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "array.prototype.findlastindex"
+      ]
+    },
+    {
+      "after": "1.3.3",
+      "before": null,
+      "change": "added",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "array.prototype.flat"
+      ]
+    },
+    {
+      "after": "1.3.3",
+      "before": null,
+      "change": "added",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "array.prototype.flatmap"
+      ]
+    },
+    {
+      "after": "3.2.7",
+      "before": null,
+      "change": "added",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "debug"
+      ]
+    },
+    {
+      "after": "2.1.0",
+      "before": null,
+      "change": "added",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "doctrine"
+      ]
+    },
+    {
+      "after": "9.39.4(jiti@2.7.0)",
+      "before": null,
+      "change": "added",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "eslint"
+      ]
+    },
+    {
+      "after": "0.3.10",
+      "before": null,
+      "change": "added",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "eslint-import-resolver-node"
+      ]
+    },
+    {
+      "after": "2.14.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-node@0.3.10)(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))",
+      "before": null,
+      "change": "added",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "eslint-module-utils"
+      ]
+    },
+    {
+      "after": "2.0.4",
+      "before": null,
+      "change": "added",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "hasown"
+      ]
+    },
+    {
+      "after": "2.17.0",
+      "before": null,
+      "change": "added",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "is-core-module"
+      ]
+    },
+    {
+      "after": "4.0.3",
+      "before": null,
+      "change": "added",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "is-glob"
+      ]
+    },
+    {
+      "after": "3.1.5",
+      "before": null,
+      "change": "added",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "minimatch"
+      ]
+    },
+    {
+      "after": "2.0.8",
+      "before": null,
+      "change": "added",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "object.fromentries"
+      ]
+    },
+    {
+      "after": "1.0.3",
+      "before": null,
+      "change": "added",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "object.groupby"
+      ]
+    },
+    {
+      "after": "1.2.1",
+      "before": null,
+      "change": "added",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "object.values"
+      ]
+    },
+    {
+      "after": "6.3.1",
+      "before": null,
+      "change": "added",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "semver"
+      ]
+    },
+    {
+      "after": "1.0.10",
+      "before": null,
+      "change": "added",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "string.prototype.trimend"
+      ]
+    },
+    {
+      "after": "3.15.0",
+      "before": null,
+      "change": "added",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0))",
+        "dependencies",
+        "tsconfig-paths"
+      ]
+    },
+    {
+      "after": "8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)",
+      "before": null,
+      "change": "added",
+      "key": [
+        "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0))",
+        "optionalDependencies",
+        "@typescript-eslint/parser"
+      ]
+    },
+    {
+      "after": "4.0.7",
+      "before": "4.0.5",
+      "change": "changed",
+      "key": [
+        "jest-message-util@30.4.1",
+        "dependencies",
+        "picomatch"
+      ]
+    },
+    {
+      "after": null,
+      "before": "16.3.6",
+      "change": "removed",
+      "key": [
+        "next@16.3.6(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "dependencies",
+        "@next/env"
+      ]
+    },
+    {
+      "after": null,
+      "before": "0.5.23",
+      "change": "removed",
+      "key": [
+        "next@16.3.6(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "dependencies",
+        "@swc/helpers"
+      ]
+    },
+    {
+      "after": null,
+      "before": "2.11.0",
+      "change": "removed",
+      "key": [
+        "next@16.3.6(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "dependencies",
+        "baseline-browser-mapping"
+      ]
+    },
+    {
+      "after": null,
+      "before": "1.0.30001810",
+      "change": "removed",
+      "key": [
+        "next@16.3.6(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "dependencies",
+        "caniuse-lite"
+      ]
+    },
+    {
+      "after": null,
+      "before": "8.5.23",
+      "change": "removed",
+      "key": [
+        "next@16.3.6(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "dependencies",
+        "postcss"
+      ]
+    },
+    {
+      "after": null,
+      "before": "19.3.0",
+      "change": "removed",
+      "key": [
+        "next@16.3.6(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "dependencies",
+        "react"
+      ]
+    },
+    {
+      "after": null,
+      "before": "19.3.0(react@19.3.0)",
+      "change": "removed",
+      "key": [
+        "next@16.3.6(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "dependencies",
+        "react-dom"
+      ]
+    },
+    {
+      "after": null,
+      "before": "5.1.6(@babel/core@7.29.7)(react@19.3.0)",
+      "change": "removed",
+      "key": [
+        "next@16.3.6(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "dependencies",
+        "styled-jsx"
+      ]
+    },
+    {
+      "after": null,
+      "before": "16.3.6",
+      "change": "removed",
+      "key": [
+        "next@16.3.6(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "optionalDependencies",
+        "@next/swc-darwin-arm64"
+      ]
+    },
+    {
+      "after": null,
+      "before": "16.3.6",
+      "change": "removed",
+      "key": [
+        "next@16.3.6(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "optionalDependencies",
+        "@next/swc-darwin-x64"
+      ]
+    },
+    {
+      "after": null,
+      "before": "16.3.6",
+      "change": "removed",
+      "key": [
+        "next@16.3.6(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "optionalDependencies",
+        "@next/swc-linux-arm64-gnu"
+      ]
+    },
+    {
+      "after": null,
+      "before": "16.3.6",
+      "change": "removed",
+      "key": [
+        "next@16.3.6(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "optionalDependencies",
+        "@next/swc-linux-arm64-musl"
+      ]
+    },
+    {
+      "after": null,
+      "before": "16.3.6",
+      "change": "removed",
+      "key": [
+        "next@16.3.6(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "optionalDependencies",
+        "@next/swc-linux-x64-gnu"
+      ]
+    },
+    {
+      "after": null,
+      "before": "16.3.6",
+      "change": "removed",
+      "key": [
+        "next@16.3.6(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "optionalDependencies",
+        "@next/swc-linux-x64-musl"
+      ]
+    },
+    {
+      "after": null,
+      "before": "16.3.6",
+      "change": "removed",
+      "key": [
+        "next@16.3.6(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "optionalDependencies",
+        "@next/swc-win32-arm64-msvc"
+      ]
+    },
+    {
+      "after": null,
+      "before": "16.3.6",
+      "change": "removed",
+      "key": [
+        "next@16.3.6(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "optionalDependencies",
+        "@next/swc-win32-x64-msvc"
+      ]
+    },
+    {
+      "after": null,
+      "before": "0.35.5(@types/node@26.1.1)",
+      "change": "removed",
+      "key": [
+        "next@16.3.6(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "optionalDependencies",
+        "sharp"
+      ]
+    },
+    {
+      "after": "16.3.8",
+      "before": null,
+      "change": "added",
+      "key": [
+        "next@16.3.8(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "dependencies",
+        "@next/env"
+      ]
+    },
+    {
+      "after": "0.5.23",
+      "before": null,
+      "change": "added",
+      "key": [
+        "next@16.3.8(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "dependencies",
+        "@swc/helpers"
+      ]
+    },
+    {
+      "after": "2.11.0",
+      "before": null,
+      "change": "added",
+      "key": [
+        "next@16.3.8(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "dependencies",
+        "baseline-browser-mapping"
+      ]
+    },
+    {
+      "after": "1.0.30001810",
+      "before": null,
+      "change": "added",
+      "key": [
+        "next@16.3.8(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "dependencies",
+        "caniuse-lite"
+      ]
+    },
+    {
+      "after": "8.5.23",
+      "before": null,
+      "change": "added",
+      "key": [
+        "next@16.3.8(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "dependencies",
+        "postcss"
+      ]
+    },
+    {
+      "after": "19.3.0",
+      "before": null,
+      "change": "added",
+      "key": [
+        "next@16.3.8(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "dependencies",
+        "react"
+      ]
+    },
+    {
+      "after": "19.3.0(react@19.3.0)",
+      "before": null,
+      "change": "added",
+      "key": [
+        "next@16.3.8(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "dependencies",
+        "react-dom"
+      ]
+    },
+    {
+      "after": "5.1.6(@babel/core@7.29.7)(react@19.3.0)",
+      "before": null,
+      "change": "added",
+      "key": [
+        "next@16.3.8(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "dependencies",
+        "styled-jsx"
+      ]
+    },
+    {
+      "after": "16.3.8",
+      "before": null,
+      "change": "added",
+      "key": [
+        "next@16.3.8(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "optionalDependencies",
+        "@next/swc-darwin-arm64"
+      ]
+    },
+    {
+      "after": "16.3.8",
+      "before": null,
+      "change": "added",
+      "key": [
+        "next@16.3.8(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "optionalDependencies",
+        "@next/swc-darwin-x64"
+      ]
+    },
+    {
+      "after": "16.3.8",
+      "before": null,
+      "change": "added",
+      "key": [
+        "next@16.3.8(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "optionalDependencies",
+        "@next/swc-linux-arm64-gnu"
+      ]
+    },
+    {
+      "after": "16.3.8",
+      "before": null,
+      "change": "added",
+      "key": [
+        "next@16.3.8(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "optionalDependencies",
+        "@next/swc-linux-arm64-musl"
+      ]
+    },
+    {
+      "after": "16.3.8",
+      "before": null,
+      "change": "added",
+      "key": [
+        "next@16.3.8(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "optionalDependencies",
+        "@next/swc-linux-x64-gnu"
+      ]
+    },
+    {
+      "after": "16.3.8",
+      "before": null,
+      "change": "added",
+      "key": [
+        "next@16.3.8(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "optionalDependencies",
+        "@next/swc-linux-x64-musl"
+      ]
+    },
+    {
+      "after": "16.3.8",
+      "before": null,
+      "change": "added",
+      "key": [
+        "next@16.3.8(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "optionalDependencies",
+        "@next/swc-win32-arm64-msvc"
+      ]
+    },
+    {
+      "after": "16.3.8",
+      "before": null,
+      "change": "added",
+      "key": [
+        "next@16.3.8(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "optionalDependencies",
+        "@next/swc-win32-x64-msvc"
+      ]
+    },
+    {
+      "after": "0.35.5(@types/node@26.1.1)",
+      "before": null,
+      "change": "added",
+      "key": [
+        "next@16.3.8(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+        "optionalDependencies",
+        "sharp"
+      ]
+    }
+  ],
+  "snapshot_identifiers": {
+    "added": [
+      "@next/env@16.3.8",
+      "@next/eslint-plugin-next@16.3.8(eslint@9.39.4(jiti@2.7.0))",
+      "@next/swc-darwin-arm64@16.3.8",
+      "@next/swc-darwin-x64@16.3.8",
+      "@next/swc-linux-arm64-gnu@16.3.8",
+      "@next/swc-linux-arm64-musl@16.3.8",
+      "@next/swc-linux-x64-gnu@16.3.8",
+      "@next/swc-linux-x64-musl@16.3.8",
+      "@next/swc-win32-arm64-msvc@16.3.8",
+      "@next/swc-win32-x64-msvc@16.3.8",
+      "eslint-config-next@16.3.8(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)",
+      "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0))",
+      "next@16.3.8(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)"
+    ],
+    "removed": [
+      "@next/env@16.3.6",
+      "@next/eslint-plugin-next@16.3.6(eslint@9.39.4(jiti@2.7.0))",
+      "@next/swc-darwin-arm64@16.3.6",
+      "@next/swc-darwin-x64@16.3.6",
+      "@next/swc-linux-arm64-gnu@16.3.6",
+      "@next/swc-linux-arm64-musl@16.3.6",
+      "@next/swc-linux-x64-gnu@16.3.6",
+      "@next/swc-linux-x64-musl@16.3.6",
+      "@next/swc-win32-arm64-msvc@16.3.6",
+      "@next/swc-win32-x64-msvc@16.3.6",
+      "eslint-config-next@16.3.6(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)",
+      "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))",
+      "next@16.3.6(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)"
+    ]
+  },
+  "snapshot_metadata_changes": [
+    {
+      "after": null,
+      "before": {},
+      "change": "removed",
+      "key": "@next/env@16.3.6"
+    },
+    {
+      "after": {},
+      "before": null,
+      "change": "added",
+      "key": "@next/env@16.3.8"
+    },
+    {
+      "after": null,
+      "before": {
+        "transitivePeerDependencies": [
+          "eslint"
+        ]
+      },
+      "change": "removed",
+      "key": "@next/eslint-plugin-next@16.3.6(eslint@9.39.4(jiti@2.7.0))"
+    },
+    {
+      "after": {
+        "transitivePeerDependencies": [
+          "eslint"
+        ]
+      },
+      "before": null,
+      "change": "added",
+      "key": "@next/eslint-plugin-next@16.3.8(eslint@9.39.4(jiti@2.7.0))"
+    },
+    {
+      "after": null,
+      "before": {
+        "optional": true
+      },
+      "change": "removed",
+      "key": "@next/swc-darwin-arm64@16.3.6"
+    },
+    {
+      "after": {
+        "optional": true
+      },
+      "before": null,
+      "change": "added",
+      "key": "@next/swc-darwin-arm64@16.3.8"
+    },
+    {
+      "after": null,
+      "before": {
+        "optional": true
+      },
+      "change": "removed",
+      "key": "@next/swc-darwin-x64@16.3.6"
+    },
+    {
+      "after": {
+        "optional": true
+      },
+      "before": null,
+      "change": "added",
+      "key": "@next/swc-darwin-x64@16.3.8"
+    },
+    {
+      "after": null,
+      "before": {
+        "optional": true
+      },
+      "change": "removed",
+      "key": "@next/swc-linux-arm64-gnu@16.3.6"
+    },
+    {
+      "after": {
+        "optional": true
+      },
+      "before": null,
+      "change": "added",
+      "key": "@next/swc-linux-arm64-gnu@16.3.8"
+    },
+    {
+      "after": null,
+      "before": {
+        "optional": true
+      },
+      "change": "removed",
+      "key": "@next/swc-linux-arm64-musl@16.3.6"
+    },
+    {
+      "after": {
+        "optional": true
+      },
+      "before": null,
+      "change": "added",
+      "key": "@next/swc-linux-arm64-musl@16.3.8"
+    },
+    {
+      "after": null,
+      "before": {
+        "optional": true
+      },
+      "change": "removed",
+      "key": "@next/swc-linux-x64-gnu@16.3.6"
+    },
+    {
+      "after": {
+        "optional": true
+      },
+      "before": null,
+      "change": "added",
+      "key": "@next/swc-linux-x64-gnu@16.3.8"
+    },
+    {
+      "after": null,
+      "before": {
+        "optional": true
+      },
+      "change": "removed",
+      "key": "@next/swc-linux-x64-musl@16.3.6"
+    },
+    {
+      "after": {
+        "optional": true
+      },
+      "before": null,
+      "change": "added",
+      "key": "@next/swc-linux-x64-musl@16.3.8"
+    },
+    {
+      "after": null,
+      "before": {
+        "optional": true
+      },
+      "change": "removed",
+      "key": "@next/swc-win32-arm64-msvc@16.3.6"
+    },
+    {
+      "after": {
+        "optional": true
+      },
+      "before": null,
+      "change": "added",
+      "key": "@next/swc-win32-arm64-msvc@16.3.8"
+    },
+    {
+      "after": null,
+      "before": {
+        "optional": true
+      },
+      "change": "removed",
+      "key": "@next/swc-win32-x64-msvc@16.3.6"
+    },
+    {
+      "after": {
+        "optional": true
+      },
+      "before": null,
+      "change": "added",
+      "key": "@next/swc-win32-x64-msvc@16.3.8"
+    },
+    {
+      "after": null,
+      "before": {
+        "transitivePeerDependencies": [
+          "@typescript-eslint/parser",
+          "eslint-import-resolver-webpack",
+          "eslint-plugin-import-x",
+          "supports-color"
+        ]
+      },
+      "change": "removed",
+      "key": "eslint-config-next@16.3.6(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)"
+    },
+    {
+      "after": {
+        "transitivePeerDependencies": [
+          "@typescript-eslint/parser",
+          "eslint-import-resolver-webpack",
+          "eslint-plugin-import-x",
+          "supports-color"
+        ]
+      },
+      "before": null,
+      "change": "added",
+      "key": "eslint-config-next@16.3.8(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)"
+    },
+    {
+      "after": null,
+      "before": {
+        "transitivePeerDependencies": [
+          "eslint-import-resolver-typescript",
+          "eslint-import-resolver-webpack",
+          "supports-color"
+        ]
+      },
+      "change": "removed",
+      "key": "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))"
+    },
+    {
+      "after": {
+        "transitivePeerDependencies": [
+          "eslint-import-resolver-typescript",
+          "eslint-import-resolver-webpack",
+          "supports-color"
+        ]
+      },
+      "before": null,
+      "change": "added",
+      "key": "eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.70.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0))"
+    },
+    {
+      "after": null,
+      "before": {
+        "transitivePeerDependencies": [
+          "@babel/core",
+          "@types/node",
+          "babel-plugin-macros"
+        ]
+      },
+      "change": "removed",
+      "key": "next@16.3.6(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)"
+    },
+    {
+      "after": {
+        "transitivePeerDependencies": [
+          "@babel/core",
+          "@types/node",
+          "babel-plugin-macros"
+        ]
+      },
+      "before": null,
+      "change": "added",
+      "key": "next@16.3.8(@babel/core@7.29.7)(@types/node@26.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)"
+    }
+  ],
+  "sources": {
+    "base": "a7773db68d97dbd8271b0921d011934d2e921170",
+    "base_blob": "79a337ae10c231eb6eb5f00e16902b00692ba9d3",
+    "base_sha256": "73291ae37c49a8e0cb24a8afc0cbd52f2938cbfee5ea1f09b9b1d2af75c8e99c",
+    "head": "84ae92a175a5a9e56b2d547061dcb982f1009403",
+    "head_blob": "e4364f3e6f222b5e023aa752bcb45bcabe1e9c34",
+    "head_sha256": "06c131323bbe1c1bbd7c0f814befea5bbf0604bdfe2bbc1576b3e3f1aa115197",
+    "path": "pnpm-lock.yaml",
+    "raw_diff_sha256": "3d97882dc10b90f9bb101d7b86d9e7d27fdf100d61498d6162ad460eae079665"
+  }
+}

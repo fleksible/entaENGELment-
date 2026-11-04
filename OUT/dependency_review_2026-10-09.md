@@ -6,6 +6,17 @@
 **Authority:** DERIVED / REVIEW-PENDING
 **Basis:** main `a7773db68d97dbd8271b0921d011934d2e921170`.
 
+> **Erratum 2026-10-30 — Granularität des Lockfile-Scopes:** Die unten erhaltene
+> Aussage „der Diff enthält nur Next.js-bezogene Einträge“ benennt ihre Ebene nicht.
+> Für die Paketidentitäten in `packages` betreffen die Änderungen ausschließlich
+> die Next.js-Paketfamilie. Auf Kantenebene ändert sich zusätzlich die Auflösung
+> `jest-message-util@30.4.1 → picomatch` von `4.0.5` auf `4.0.7`, obwohl beide
+> Zielversionen im Paketbestand beider Stände enthalten sind. Peer-Kontexte werden
+> separat erhalten. Maßgeblich sind der [erzeugte Kantendiff](../docs/audit/2026-10-30_lockfile_scope_diff.json)
+> und die [Auswertung mit Rohdiff-Gegenprüfung](../docs/audit/2026-10-30_lockfile_scope_erratum.md).
+> Dies korrigiert die Scope-Lesart; die braces-Ausnahme wird dadurch weder neu
+> bewertet noch als repariert ausgewiesen. Der ursprüngliche Bericht folgt unverändert.
+
 ## Ziel
 Den heutigen Auditstand prüfen, gepatchte Next.js-Befunde beseitigen und Turbos
 automatische Änderungen an Agent-Anweisungen explizit deaktivieren.
