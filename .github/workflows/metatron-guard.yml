@@ -23,6 +23,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Set up Python
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
@@ -30,61 +32,28 @@ jobs:
           python-version: "3.11"
 
       - name: Check PR body for FOKUS / FOKUS-SWITCH
+        shell: bash
         env:
           PR_BODY: ${{ github.event.pull_request.body }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
         run: |
-          echo "Checking PR body for Metatron-Guard compliance..."
-          echo ""
-
-          # Handle empty PR body
-          if [ -z "$PR_BODY" ]; then
-            echo "::warning::PR body is empty - consider adding FOKUS: marker"
-            echo ""
-            echo "Recommended: Add a PR description with:"
-            echo "  FOKUS: <your task focus>"
-            echo ""
-            echo "If you switched focus during this PR, also add:"
-            echo "  FOKUS-SWITCH: <old focus> -> <new focus>"
-            echo "  <question ending with ?>"
-            exit 0
-          fi
-
-          # Run the metatron check
-          # Exit 1 = missing FOKUS (non-blocking warning)
-          # Other non-zero = script error (should fail CI)
-          set +e
-          echo "$PR_BODY" | python tools/metatron_check.py --verbose
-          EXIT_CODE=$?
-          set -e
-
-          if [ "$EXIT_CODE" -eq 0 ]; then
-            exit 0
-          elif [ "$EXIT_CODE" -eq 1 ]; then
-            echo "::warning::PR body lacks FOKUS: marker - see docs/guards/metatron_rule.md"
-            exit 0
+          # Preserve rule failures and execution errors as failing check results.
+          # Dependabot writes its own body; the configured prefix "FOKUS: deps"
+          # (.github/dependabot.yml) arrives in the title, so only its title is read.
+          if [ "${PR_AUTHOR:-}" = "dependabot[bot]" ]; then
+            python tools/metatron_check.py --verbose <<< "$PR_TITLE"
           else
-            echo "::error::metatron_check.py failed unexpectedly (exit code: $EXIT_CODE)"
-            exit 1
+            python tools/metatron_check.py --verbose <<< "$PR_BODY"
           fi
 
       - name: Post failure instructions
         if: failure()
         run: |
-          echo ""
-          echo "================================================"
-          echo "  Metatron-Guard Check Failed (Script Error)"
-          echo "================================================"
-          echo ""
-          echo "The metatron_check.py script encountered an unexpected error."
-          echo "This is NOT about a missing FOKUS marker - check the error above."
-          echo ""
-          echo "Possible causes:"
-          echo "  - Script file missing or not executable"
-          echo "  - Python syntax/import error"
-          echo "  - Runtime exception"
-          echo ""
-          echo "See: tools/metatron_check.py for the script source"
-          echo "================================================"
+          echo "::error::Metatron-Guard failed; inspect the checker output above."
+          echo "Provide FOKUS: and a question for every FOKUS-SWITCH:."
+          echo "Rule violations and checker execution errors both block this PR check."
+          echo "See docs/guards/metatron_rule.md and tools/metatron_check.py."
 
   metatron-commit-check:
     name: Check commits for FOKUS marker
@@ -95,6 +64,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
+          persist-credentials: false
           fetch-depth: 0
 
       - name: Check commit message for FOKUS marker

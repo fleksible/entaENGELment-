@@ -1,0 +1,51 @@
+{
+  "repository": "fleksible/entaENGELment-",
+  "commit": "05712d827b5558b595438f38a1e3c7fc739a297f",
+  "zizmor_version": "1.32.0",
+  "offline": true,
+  "strict_collection": true,
+  "snapshot_files_verified": 18,
+  "scan_input_count": 17,
+  "workflow_count": 16,
+  "action_count": 1,
+  "exit_code": 14,
+  "findings": 41,
+  "by_rule": {
+    "github-env": 1,
+    "artipacked": 25,
+    "self-repository": 15
+  },
+  "by_severity": {
+    "High": 1,
+    "Medium": 25,
+    "Low": 15
+  },
+  "controls": [
+    {
+      "name": "unsafe",
+      "exit_code": 14,
+      "rules": [
+        "dangerous-triggers",
+        "template-injection"
+      ]
+    },
+    {
+      "name": "malformed",
+      "exit_code": 1,
+      "rules": []
+    },
+    {
+      "name": "clean",
+      "exit_code": 0,
+      "rules": []
+    }
+  ],
+  "scope": "Offline scan of listed workflow/action files; no online audits or referenced external scripts.",
+  "skill_forward_checks": {
+    "cases": 3,
+    "satisfied": 3,
+    "scope": "One fresh agent, fixed read-only cases; no general compliance guarantee."
+  },
+  "raw_stdout_sha256": "bb979cfa6c79bd9926fa2aceaea0822c73349b306807ec7c2a11ed24355ede39",
+  "published_path_normalization": "Only Local.verbatim_path values made relative to the snapshot root."
+}

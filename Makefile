@@ -45,7 +45,7 @@ help:
 	@echo "  make claim-lint      Detect untagged claims in core artefacts"
 	@echo "  make status          Phase 2: Emit HMAC status (use status_emit.py for receipts)"
 	@echo "  make snapshot        Phase 3: Generate snapshot manifest"
-	@echo "  make all             Full DeepJump flow (verify + test + snapshot)"
+	@echo "  make all             Core verify + tests + snapshot (without status)"
 	@echo "  make deepjump        Alias for 'make all'"
 	@echo ""
 	@echo "Legacy DeepJump:"
@@ -157,7 +157,7 @@ gate-test:
 
 # === DeepJump Protocol v1.2 ===
 
-# Phase 1: VERIFY (vor jedem Arbeitsschritt)
+# Phase 1: VERIFY (core evidence for the relevant working state)
 # Keep `verify` as the stable core membrane. Governance and JS/TS checks are
 # explicit layered gates so dependency PRs cannot be treated as covered by a
 # Python-only run, while small local edits stay ergonomically verifiable.
@@ -297,10 +297,11 @@ snapshot:
 	@mkdir -p $(OUT)
 	@$(PY) tools/snapshot_guard.py $(OUT)/snapshot_manifest.json $(SNAPSHOT_INPUTS) --strict
 
-# Full DeepJump flow
+# Core verify, tests and snapshot; status and scope-specific layers are separate.
 all: verify test snapshot
 	@echo ""
-	@echo "✅ All DeepJump checks passed. Ready to commit."
+	@echo "✅ Core verify, tests and snapshot passed."
+	@echo "Status signing and scope-specific gates require their own evidence."
 
 deepjump: all
 

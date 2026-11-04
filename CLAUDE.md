@@ -140,8 +140,16 @@ Jeder Report in `OUT/` folgt diesem Schema:
 
 ## Build, Test & Development Commands
 
-> **Kanonischer Befehl:** `make verify` ist das eine Gate vor jedem Arbeitsschritt
-> (DeepJump Phase 1). Bei Unsicherheit über Befehle: `make help`.
+> **Kanonischer Kernprüflauf:** `make verify` (DeepJump Phase 1). Verwende einen
+> vorhandenen Nachweis weiter, solange Stand, Voraussetzungen und Aussageumfang
+> passen; prüfe nach relevanten Änderungen neu. Ergänze die Governance- und
+> JS/TS-Schichten entsprechend dem tatsächlichen Änderungsscope. Bei Unsicherheit:
+> `make help` und der in AGENTS.md verankerte Verifikationsablauf.
+
+Der Projekt-Skill `/verify-project-evidence` ist über
+[`.claude/skills/verify-project-evidence/SKILL.md`](.claude/skills/verify-project-evidence/SKILL.md)
+auffindbar und verweist auf denselben zentralen Ablauf unter `.agents/skills/`.
+Er bietet keine zusätzliche Freigabe und ersetzt keine tatsächlich ausgeführten Prüfungen.
 
 ### Python-Toolchain (Kern)
 
@@ -195,11 +203,12 @@ make all        # = make deepjump: verify + test + snapshot — OHNE status (s. 
 > `UNSIGNED`-Modus (Receipt trägt `"hmac": "UNSIGNED"`, untrusted). Das Script selbst
 > bricht zwar mit Fehler ab, wenn `CI` gesetzt **und** kein Secret vorhanden ist —
 > die DeepJump-Pipeline ([`deepjump-audit.reusable.yml`](.github/workflows/deepjump-audit.reusable.yml))
-> ruft den Signing-Schritt aber nur bei vorhandenem Secret auf: fehlt es, wird der
-> Status-Schritt **graceful übersprungen** (`out/status/deepjump_status_skipped.json`,
-> `signed:false`, Job bleibt grün), während alle übrigen Verify-Phasen (Pointer,
-> Receipts, Claims, Tests, Snapshot) weiterhin gaten. CI erzwingt also **keine**
-> signierte Evidence — für signierte Artefakte das Secret als Repo-Secret/lokal setzen.
+> unterscheidet zwei Aufrufer: PR-Läufe erhalten keine Secret-Zuordnung und dürfen
+> den Status-Schritt ausdrücklich überspringen (`out/status/deepjump_status_skipped.json`,
+> `signed:false`); Pointer, Receipts, Claims, Tests und Snapshot bleiben Prüfpflichten.
+> Bei Läufen außerhalb eines PRs ist diese Ausnahme ausgeschaltet: Fehlt dort das
+> Secret, stoppt der Lauf. Ein grüner PR-Lauf behauptet daher keine signierte
+> Evidence. Ein HMAC belegt außerdem keine fachliche Wahrheit der eingetragenen Werte.
 >
 > **Achtung `make all`:** führt `verify test snapshot` aus, aber **nicht** `make status`.
 > Für den vollen Verify → Status → Snapshot-Evidence-Flow `make status` (bzw.

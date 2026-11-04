@@ -1,0 +1,626 @@
+{
+  "repository": "fleksible/entaENGELment-",
+  "observed_date": "2026-11-04",
+  "zizmor_version": "1.32.0",
+  "origin": "self-executed offline scans after relayed Claude feedback",
+  "flags": [
+    "--offline",
+    "--strict-collection",
+    "--format=json-v1"
+  ],
+  "runs": [
+    {
+      "label": "baseline",
+      "source_commit": "05712d827b5558b595438f38a1e3c7fc739a297f",
+      "scope": "automatic discovery in materialized .github configurations",
+      "exit_code": 14,
+      "finding_count": 44,
+      "by_rule": {
+        "github-env": 1,
+        "dependabot-cooldown": 3,
+        "artipacked": 25,
+        "self-repository": 15
+      },
+      "inputs": [
+        {
+          "path": ".github/actions/python-locked/action.yml",
+          "git_blob_sha": "a08419d3ef9efc4e8aa3f03c3a511a2a0dfc4208"
+        },
+        {
+          "path": ".github/dependabot.yml",
+          "git_blob_sha": "9a5d87ea87b91ddd254709a13b94f746445a852f"
+        },
+        {
+          "path": ".github/workflows/ci-desktop.yml",
+          "git_blob_sha": "ca8c9236721f1c4ff220c09bc08bd3f874a028ce"
+        },
+        {
+          "path": ".github/workflows/ci-evidence-bundle.yml",
+          "git_blob_sha": "8e1716aa80fdbe695ce7832de92b69ec32317142"
+        },
+        {
+          "path": ".github/workflows/ci-js-workspace.yml",
+          "git_blob_sha": "b19fa02d23313616f25494f3ee48069556c74bed"
+        },
+        {
+          "path": ".github/workflows/ci-policy-lint.yml",
+          "git_blob_sha": "7901681e40aa6d7e78e71df273f8e1f9554d5b34"
+        },
+        {
+          "path": ".github/workflows/ci-python-quality.yml",
+          "git_blob_sha": "8d6770e5eae3fefcbb309403cacd2e41a856133d"
+        },
+        {
+          "path": ".github/workflows/ci-python-runtime.yml",
+          "git_blob_sha": "a3fa3179eacafacb329acec42a39b81785c8adf9"
+        },
+        {
+          "path": ".github/workflows/ci-smoke.yml",
+          "git_blob_sha": "e9be90e79a7ce40a2339965cb4776a0374a625ff"
+        },
+        {
+          "path": ".github/workflows/ci.yml",
+          "git_blob_sha": "045948a26aca5ed7d3021753007f65a518dde61d"
+        },
+        {
+          "path": ".github/workflows/deepjump-audit.reusable.yml",
+          "git_blob_sha": "254b3fa9f272159ba059cd567a3c1bee76a4169a"
+        },
+        {
+          "path": ".github/workflows/deepjump-ci.yml",
+          "git_blob_sha": "a1c828965724be6f47b03b690805ea5541cb7457"
+        },
+        {
+          "path": ".github/workflows/metatron-guard.yml",
+          "git_blob_sha": "dab5eb48b2ba371bef950c1d0cc270a45dd2501d"
+        },
+        {
+          "path": ".github/workflows/release.yml",
+          "git_blob_sha": "c878a30ad802b3aea0252fce8a24c2d93e44c5cd"
+        },
+        {
+          "path": ".github/workflows/sbom.yml",
+          "git_blob_sha": "8a026b766d6a5baa5e4cb3d5dff44239edcc1ae8"
+        },
+        {
+          "path": ".github/workflows/security-audit.yml",
+          "git_blob_sha": "c579ac56c8c9cb49194b612b5914f24fcd6880d9"
+        },
+        {
+          "path": ".github/workflows/test.yml",
+          "git_blob_sha": "b64befb9ba7d27094ed7d5171fdef1a6d8a1e913"
+        },
+        {
+          "path": ".github/workflows/void-sync.yml",
+          "git_blob_sha": "4371921e474a2f0bfce83737b4ead604fa0f8ea2"
+        }
+      ],
+      "raw_stdout_sha256": "efbc54dd188887124d278012df544db7b71a474ef71af3cc5301cd201bc90345",
+      "stderr": "",
+      "additional_dependabot_findings": [
+        {
+          "ident": "dependabot-cooldown",
+          "desc": "insufficient cooldown in Dependabot updates",
+          "url": "https://docs.zizmor.sh/audits/#dependabot-cooldown",
+          "determinations": {
+            "confidence": "High",
+            "severity": "Medium",
+            "persona": "Regular"
+          },
+          "locations": [
+            {
+              "symbolic": {
+                "key": {
+                  "Local": {
+                    "verbatim_path": ".github/dependabot.yml"
+                  }
+                },
+                "annotation": "insufficient implicit default-days (less than 7)",
+                "route": {
+                  "route": [
+                    {
+                      "Key": "updates"
+                    },
+                    {
+                      "Index": 0
+                    },
+                    {
+                      "Key": "package-ecosystem"
+                    }
+                  ]
+                },
+                "feature_kind": "Normal",
+                "kind": "Primary"
+              },
+              "concrete": {
+                "location": {
+                  "start_point": {
+                    "row": 15,
+                    "column": 4
+                  },
+                  "end_point": {
+                    "row": 15,
+                    "column": 27
+                  },
+                  "offset_span": {
+                    "start": 724,
+                    "end": 747
+                  }
+                },
+                "feature": "package-ecosystem: \"uv\"",
+                "comments": []
+              }
+            }
+          ],
+          "ignored": false,
+          "fixes": [
+            {
+              "title": "add cooldown configuration",
+              "key": {
+                "Local": {
+                  "verbatim_path": ".github/dependabot.yml"
+                }
+              },
+              "disposition": "safe"
+            }
+          ]
+        },
+        {
+          "ident": "dependabot-cooldown",
+          "desc": "insufficient cooldown in Dependabot updates",
+          "url": "https://docs.zizmor.sh/audits/#dependabot-cooldown",
+          "determinations": {
+            "confidence": "High",
+            "severity": "Medium",
+            "persona": "Regular"
+          },
+          "locations": [
+            {
+              "symbolic": {
+                "key": {
+                  "Local": {
+                    "verbatim_path": ".github/dependabot.yml"
+                  }
+                },
+                "annotation": "insufficient implicit default-days (less than 7)",
+                "route": {
+                  "route": [
+                    {
+                      "Key": "updates"
+                    },
+                    {
+                      "Index": 1
+                    },
+                    {
+                      "Key": "package-ecosystem"
+                    }
+                  ]
+                },
+                "feature_kind": "Normal",
+                "kind": "Primary"
+              },
+              "concrete": {
+                "location": {
+                  "start_point": {
+                    "row": 40,
+                    "column": 4
+                  },
+                  "end_point": {
+                    "row": 40,
+                    "column": 28
+                  },
+                  "offset_span": {
+                    "start": 1433,
+                    "end": 1457
+                  }
+                },
+                "feature": "package-ecosystem: \"npm\"",
+                "comments": []
+              }
+            }
+          ],
+          "ignored": false,
+          "fixes": [
+            {
+              "title": "add cooldown configuration",
+              "key": {
+                "Local": {
+                  "verbatim_path": ".github/dependabot.yml"
+                }
+              },
+              "disposition": "safe"
+            }
+          ]
+        },
+        {
+          "ident": "dependabot-cooldown",
+          "desc": "insufficient cooldown in Dependabot updates",
+          "url": "https://docs.zizmor.sh/audits/#dependabot-cooldown",
+          "determinations": {
+            "confidence": "High",
+            "severity": "Medium",
+            "persona": "Regular"
+          },
+          "locations": [
+            {
+              "symbolic": {
+                "key": {
+                  "Local": {
+                    "verbatim_path": ".github/dependabot.yml"
+                  }
+                },
+                "annotation": "insufficient implicit default-days (less than 7)",
+                "route": {
+                  "route": [
+                    {
+                      "Key": "updates"
+                    },
+                    {
+                      "Index": 2
+                    },
+                    {
+                      "Key": "package-ecosystem"
+                    }
+                  ]
+                },
+                "feature_kind": "Normal",
+                "kind": "Primary"
+              },
+              "concrete": {
+                "location": {
+                  "start_point": {
+                    "row": 59,
+                    "column": 4
+                  },
+                  "end_point": {
+                    "row": 59,
+                    "column": 39
+                  },
+                  "offset_span": {
+                    "start": 2071,
+                    "end": 2106
+                  }
+                },
+                "feature": "package-ecosystem: \"github-actions\"",
+                "comments": []
+              }
+            }
+          ],
+          "ignored": false,
+          "fixes": [
+            {
+              "title": "add cooldown configuration",
+              "key": {
+                "Local": {
+                  "verbatim_path": ".github/dependabot.yml"
+                }
+              },
+              "disposition": "safe"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "hardened",
+      "source_commit": "77cf219f43737894fdbf4eec741db58561068aa0",
+      "scope": "automatic discovery from full checkout; .github sources unchanged by review corrections",
+      "exit_code": 14,
+      "finding_count": 19,
+      "by_rule": {
+        "github-env": 1,
+        "dependabot-cooldown": 3,
+        "self-repository": 15
+      },
+      "inputs": [
+        {
+          "path": ".github/actions/python-locked/action.yml",
+          "git_blob_sha": "a08419d3ef9efc4e8aa3f03c3a511a2a0dfc4208"
+        },
+        {
+          "path": ".github/dependabot.yml",
+          "git_blob_sha": "9a5d87ea87b91ddd254709a13b94f746445a852f"
+        },
+        {
+          "path": ".github/workflows/ci-desktop.yml",
+          "git_blob_sha": "bfa407137adc3f546534cd0b94300c45386265f8"
+        },
+        {
+          "path": ".github/workflows/ci-evidence-bundle.yml",
+          "git_blob_sha": "6fb19258372d86521a4470c5e764242e873d82e1"
+        },
+        {
+          "path": ".github/workflows/ci-js-workspace.yml",
+          "git_blob_sha": "123253b42ca641e82948ee23bc1a78d1c6949451"
+        },
+        {
+          "path": ".github/workflows/ci-policy-lint.yml",
+          "git_blob_sha": "2d4af5f995e07c6c5e6f7107f8467e0ac1825a2b"
+        },
+        {
+          "path": ".github/workflows/ci-python-quality.yml",
+          "git_blob_sha": "1a1d827ae51402d532cd73968cfef2246b669c47"
+        },
+        {
+          "path": ".github/workflows/ci-python-runtime.yml",
+          "git_blob_sha": "ae6d68a1578e4ec13ebfbe972419568d8b91786e"
+        },
+        {
+          "path": ".github/workflows/ci-smoke.yml",
+          "git_blob_sha": "2a34681eeedc6031a1fdc8040f44c3e494502231"
+        },
+        {
+          "path": ".github/workflows/ci.yml",
+          "git_blob_sha": "dc18d35c113e35d4a84d22417dbe574545a77fff"
+        },
+        {
+          "path": ".github/workflows/deepjump-audit.reusable.yml",
+          "git_blob_sha": "547d8e562e0e2891612c9db8a103d7330eaa3f05"
+        },
+        {
+          "path": ".github/workflows/deepjump-ci.yml",
+          "git_blob_sha": "f622ae44e8a1ec4c3b237dbba1a55219e4ddd4b8"
+        },
+        {
+          "path": ".github/workflows/metatron-guard.yml",
+          "git_blob_sha": "56f83b1675c28bd3c1a93910927b18bb50d8d614"
+        },
+        {
+          "path": ".github/workflows/release.yml",
+          "git_blob_sha": "f39ec07f6335c1ad2fe7f6d5314d1f97ee189b44"
+        },
+        {
+          "path": ".github/workflows/sbom.yml",
+          "git_blob_sha": "298ce5da78008e74c5b52c01f0fd40a660d4eca5"
+        },
+        {
+          "path": ".github/workflows/security-audit.yml",
+          "git_blob_sha": "dfcfb72f490bc099c3f653c6ad39be5b82266549"
+        },
+        {
+          "path": ".github/workflows/test.yml",
+          "git_blob_sha": "5970a4f6b03ff264aca21e18b42ab3b69eec91cc"
+        },
+        {
+          "path": ".github/workflows/void-sync.yml",
+          "git_blob_sha": "1eb74b1f782dcc7a840f35e1ad6bb03d386ad77c"
+        }
+      ],
+      "raw_stdout_sha256": "8e3b03eb0461919cf34cf7f0bb261c7e2c6b36917423ee87fa6d2cc1426628a3",
+      "stderr": "",
+      "additional_dependabot_findings": [
+        {
+          "ident": "dependabot-cooldown",
+          "desc": "insufficient cooldown in Dependabot updates",
+          "url": "https://docs.zizmor.sh/audits/#dependabot-cooldown",
+          "determinations": {
+            "confidence": "High",
+            "severity": "Medium",
+            "persona": "Regular"
+          },
+          "locations": [
+            {
+              "symbolic": {
+                "key": {
+                  "Local": {
+                    "verbatim_path": ".github/dependabot.yml"
+                  }
+                },
+                "annotation": "insufficient implicit default-days (less than 7)",
+                "route": {
+                  "route": [
+                    {
+                      "Key": "updates"
+                    },
+                    {
+                      "Index": 0
+                    },
+                    {
+                      "Key": "package-ecosystem"
+                    }
+                  ]
+                },
+                "feature_kind": "Normal",
+                "kind": "Primary"
+              },
+              "concrete": {
+                "location": {
+                  "start_point": {
+                    "row": 15,
+                    "column": 4
+                  },
+                  "end_point": {
+                    "row": 15,
+                    "column": 27
+                  },
+                  "offset_span": {
+                    "start": 724,
+                    "end": 747
+                  }
+                },
+                "feature": "package-ecosystem: \"uv\"",
+                "comments": []
+              }
+            }
+          ],
+          "ignored": false,
+          "fixes": [
+            {
+              "title": "add cooldown configuration",
+              "key": {
+                "Local": {
+                  "verbatim_path": ".github/dependabot.yml"
+                }
+              },
+              "disposition": "safe"
+            }
+          ]
+        },
+        {
+          "ident": "dependabot-cooldown",
+          "desc": "insufficient cooldown in Dependabot updates",
+          "url": "https://docs.zizmor.sh/audits/#dependabot-cooldown",
+          "determinations": {
+            "confidence": "High",
+            "severity": "Medium",
+            "persona": "Regular"
+          },
+          "locations": [
+            {
+              "symbolic": {
+                "key": {
+                  "Local": {
+                    "verbatim_path": ".github/dependabot.yml"
+                  }
+                },
+                "annotation": "insufficient implicit default-days (less than 7)",
+                "route": {
+                  "route": [
+                    {
+                      "Key": "updates"
+                    },
+                    {
+                      "Index": 1
+                    },
+                    {
+                      "Key": "package-ecosystem"
+                    }
+                  ]
+                },
+                "feature_kind": "Normal",
+                "kind": "Primary"
+              },
+              "concrete": {
+                "location": {
+                  "start_point": {
+                    "row": 40,
+                    "column": 4
+                  },
+                  "end_point": {
+                    "row": 40,
+                    "column": 28
+                  },
+                  "offset_span": {
+                    "start": 1433,
+                    "end": 1457
+                  }
+                },
+                "feature": "package-ecosystem: \"npm\"",
+                "comments": []
+              }
+            }
+          ],
+          "ignored": false,
+          "fixes": [
+            {
+              "title": "add cooldown configuration",
+              "key": {
+                "Local": {
+                  "verbatim_path": ".github/dependabot.yml"
+                }
+              },
+              "disposition": "safe"
+            }
+          ]
+        },
+        {
+          "ident": "dependabot-cooldown",
+          "desc": "insufficient cooldown in Dependabot updates",
+          "url": "https://docs.zizmor.sh/audits/#dependabot-cooldown",
+          "determinations": {
+            "confidence": "High",
+            "severity": "Medium",
+            "persona": "Regular"
+          },
+          "locations": [
+            {
+              "symbolic": {
+                "key": {
+                  "Local": {
+                    "verbatim_path": ".github/dependabot.yml"
+                  }
+                },
+                "annotation": "insufficient implicit default-days (less than 7)",
+                "route": {
+                  "route": [
+                    {
+                      "Key": "updates"
+                    },
+                    {
+                      "Index": 2
+                    },
+                    {
+                      "Key": "package-ecosystem"
+                    }
+                  ]
+                },
+                "feature_kind": "Normal",
+                "kind": "Primary"
+              },
+              "concrete": {
+                "location": {
+                  "start_point": {
+                    "row": 59,
+                    "column": 4
+                  },
+                  "end_point": {
+                    "row": 59,
+                    "column": 39
+                  },
+                  "offset_span": {
+                    "start": 2071,
+                    "end": 2106
+                  }
+                },
+                "feature": "package-ecosystem: \"github-actions\"",
+                "comments": []
+              }
+            }
+          ],
+          "ignored": false,
+          "fixes": [
+            {
+              "title": "add cooldown configuration",
+              "key": {
+                "Local": {
+                  "verbatim_path": ".github/dependabot.yml"
+                }
+              },
+              "disposition": "safe"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "comparison": {
+    "same_scope": true,
+    "baseline": 44,
+    "hardened": 19,
+    "prior_explicit_input_baseline": 41,
+    "prior_explicit_input_hardened": 16,
+    "difference": "Three Dependabot cooldown findings appear in each broader scope; 25 artipacked findings removed by credential hardening."
+  },
+  "review_scope": {
+    "source": "User-relayed Claude review; second-environment raw log not provided",
+    "repo_head_read": "77cf219f43737894fdbf4eec741db58561068aa0",
+    "corrected": [
+      "portable icon asset",
+      "scanner scope includes Dependabot",
+      "stderr wording",
+      "Claude project entry to single central skill"
+    ],
+    "already_corrected": [
+      "PR focus gate failure propagation",
+      "PR versus trusted HMAC description"
+    ],
+    "validation": {
+      "personal_skill_structure": "quick_validate.py exit 0",
+      "canonical_and_portable_matching_files": 4,
+      "icon_asset_sha256": "e9301497fa98ef56aaca7ede0857b9a18dc06c34040f0679c609a6bf49b1d38b",
+      "local_links_and_yaml": "valid",
+      "native_claude_session": "not executed; CLI unavailable",
+      "runtime_change": "none; reuse existing runtime evidence, read new head CI after publication"
+    }
+  }
+}
