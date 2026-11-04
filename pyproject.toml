@@ -60,7 +60,6 @@ dev = [
     "mypy>=1.0",
     "types-PyYAML>=6.0.12.20260906",
     "bandit>=1.7.0",
-    "safety>=3.8.1",
 ]
 fractalsense = [
     "pytest>=8.0.0",
