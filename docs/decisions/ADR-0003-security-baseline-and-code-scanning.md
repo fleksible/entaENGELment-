@@ -1,6 +1,9 @@
 # ADR-0003: Security Baseline & Code Scanning
 
 - **Status:** Accepted (Baseline-Dokumentation) / Proposed (Code-Scanning-Aktivierung)
+- **Statusnotiz 2026-11-04:** Code Scanning ist per Default Setup seit 2026-07-21 aktiv
+  (live gelesen, siehe [ADR-0006](ADR-0006-rollenaufteilung-und-delegierte-technikentscheidungen.md)).
+  Die Advanced-Vorlage unten bleibt inaktiv.
 - **Datum:** 2026-06-16
 - **Kontext-Fokus:** Security-Posture-Baseline (PR #254)
 
