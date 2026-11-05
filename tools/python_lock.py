@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import importlib
 import importlib.metadata
 import json
 import os
@@ -14,6 +13,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import tomllib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -224,11 +224,6 @@ def audit_problems(report: dict, expected: set[tuple[str, str]]) -> list[str]:
 
 def audit() -> None:
     """Audit every package version in uv.lock, across all groups and markers."""
-    if sys.version_info < (3, 11):
-        raise ValueError("audit needs Python >= 3.11 (the audit group's floor)")
-    # Imported dynamically so the module still type-checks on Python 3.10 legs.
-    tomllib = importlib.import_module("tomllib")
-
     check()
     beside = Path(sys.executable).parent / ("pip-audit.exe" if os.name == "nt" else "pip-audit")
     pip_audit = str(beside) if beside.is_file() else shutil.which("pip-audit")
