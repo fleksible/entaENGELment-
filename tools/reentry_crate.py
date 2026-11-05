@@ -36,7 +36,7 @@ import shutil
 import subprocess
 import sys
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -708,7 +708,7 @@ def save_state(
 ) -> Path:
     """Erzeugt und versiegelt ein Re-Entry-Paket; gibt den Crate-Pfad zurück."""
     state = normalize_manifest(manifest)
-    created_at = now or datetime.now(timezone.utc).isoformat(timespec="seconds")
+    created_at = now or datetime.now(UTC).isoformat(timespec="seconds")
     state["id"] = state["id"] or f"{created_at[:10]}_{_slugify(state['title'])}"
     crate: Path = (out_root / state["id"]).resolve()
 

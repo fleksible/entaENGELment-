@@ -153,7 +153,7 @@ Er bietet keine zusätzliche Freigabe und ersetzt keine tatsächlich ausgeführt
 
 ### Python-Toolchain (Kern)
 
-Python ≥ 3.10. Quelle der Wahrheit für Config: [`pyproject.toml`](pyproject.toml).
+Python ≥ 3.11. Quelle der Wahrheit für Config: [`pyproject.toml`](pyproject.toml).
 
 ```bash
 make install-dev     # uv sync der dev-Gruppe aus uv.lock; verlangt exakt uv 0.12.18

@@ -19,7 +19,7 @@ import sqlite3
 import subprocess
 import unicodedata
 from collections.abc import Iterator
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 from urllib.parse import quote
 
@@ -249,7 +249,7 @@ def build(args: argparse.Namespace) -> None:
     repository_url = ("https://github.com/" + identity[1] + "/" + identity[2]) if identity else None
     aliases = json.loads(pathlib.Path(args.aliases).read_text()) if args.aliases else {"groups": []}
     manifest: dict[str, Any] = {
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "base_sha": base,
         "repository_url": repository_url,
         "repository_full_name": (identity[1] + "/" + identity[2]) if identity else None,
