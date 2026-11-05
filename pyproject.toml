@@ -79,7 +79,11 @@ fork-strategy = "requires-python"
 
 [tool.uv.dependency-groups]
 dev = {requires-python = ">=3.10"}
-fractalsense = {requires-python = ">=3.10"}
+# Fractalsense needs matplotlib -> Pillow. Pillow publishes security fixes only
+# for Python >= 3.11 (13.0.0 dropped 3.10; PEP 619 schedules 3.10's end of
+# life for October 2026), so a 3.10 Fractalsense environment cannot be made
+# audit-clean.
+fractalsense = {requires-python = ">=3.11"}
 audit = {requires-python = ">=3.11"}
 sbom = {requires-python = ">=3.11"}
 

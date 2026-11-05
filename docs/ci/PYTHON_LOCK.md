@@ -7,9 +7,11 @@ in `[project.dependencies]`; explicit dependency groups cover `test`, `dev`,
 `fractalsense`, `audit`, `sbom` and `build`.
 
 As of 2026-10-23, runtime/test compatibility is validated on Linux with Python
-3.10–3.14; the separate FractalSense suite covers Python 3.10–3.12. The project
-requires Python >=3.10. Quality and FractalSense groups require >=3.10;
-audit/SBOM tools require >=3.11. See the
+3.10–3.14. Since 2026-11-05 the separate FractalSense suite covers Python
+3.11–3.12: its matplotlib dependency needs Pillow, and Pillow publishes security
+fixes only for Python >=3.11 (13.0.0 dropped 3.10; PEP 619 schedules 3.10's
+end of life for October 2026). The project requires Python >=3.10. The quality
+group requires >=3.10; FractalSense and audit/SBOM groups require >=3.11. See the
 [runtime matrix](../../.github/workflows/ci-python-runtime.yml) and
 [FractalSense matrix](../../.github/workflows/test.yml). Other interpreter/OS
 combinations need their own tests before claiming support. The published legacy
