@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib
 import importlib.metadata
 import json
 import os
@@ -223,10 +224,10 @@ def audit_problems(report: dict, expected: set[tuple[str, str]]) -> list[str]:
 
 def audit() -> None:
     """Audit every package version in uv.lock, across all groups and markers."""
-    try:
-        import tomllib
-    except ModuleNotFoundError as exc:  # pragma: no cover - only below Python 3.11
-        raise ValueError("audit needs Python >= 3.11 (the audit group's floor)") from exc
+    if sys.version_info < (3, 11):
+        raise ValueError("audit needs Python >= 3.11 (the audit group's floor)")
+    # Imported dynamically so the module still type-checks on Python 3.10 legs.
+    tomllib = importlib.import_module("tomllib")
 
     check()
     beside = Path(sys.executable).parent / ("pip-audit.exe" if os.name == "nt" else "pip-audit")
