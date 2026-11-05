@@ -41,7 +41,7 @@ Quelle: [DataLad-Handbuch, Installation](https://handbook.datalad.org/en/latest/
 Prüfen: `datalad --version`, `git annex version`, `pdftotext -v` (optional; ohne `pdftotext`
 werden PDFs im Log als `skipped` geführt, nicht still ausgelassen).
 
-Das Werkzeug braucht nur das entaENGELment-Repo und Python ≥ 3.10; keine weiteren Pakete.
+Das Werkzeug braucht nur das entaENGELment-Repo und Python ≥ 3.11; keine weiteren Pakete.
 
 ## 2. Drive-Ordner exportieren
 

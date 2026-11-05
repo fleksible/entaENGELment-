@@ -14,7 +14,7 @@ import json
 import os
 import sys
 from collections.abc import Iterable
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 
 def hash_file(path: str) -> str:
@@ -73,7 +73,7 @@ def main() -> None:
 
     repo_root = get_repo_root()
     manifest = {
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "repo_root_anchor": "REL_TO_ROOT",
         "files": {},
     }

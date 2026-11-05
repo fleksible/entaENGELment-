@@ -11,14 +11,13 @@ authors = [
 ]
 readme = "README.md"
 license = {text = "Apache-2.0"}
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
@@ -77,15 +76,10 @@ build = ["setuptools>=61.0", "wheel"]
 required-version = "==0.12.18"
 fork-strategy = "requires-python"
 
-[tool.uv.dependency-groups]
-dev = {requires-python = ">=3.10"}
-# Fractalsense needs matplotlib -> Pillow. Pillow publishes security fixes only
-# for Python >= 3.11 (13.0.0 dropped 3.10; PEP 619 schedules 3.10's end of
-# life for October 2026), so a 3.10 Fractalsense environment cannot be made
-# audit-clean.
-fractalsense = {requires-python = ">=3.11"}
-audit = {requires-python = ">=3.11"}
-sbom = {requires-python = ">=3.11"}
+# Floor 3.11 since 2026-11-05: PEP 619 schedules Python 3.10's end of life for
+# October 2026, and key dependencies (Pillow, numpy, scipy) publish fixes only
+# for Python >= 3.11. Every dependency group now shares the project floor, so
+# no per-group requires-python override is needed.
 
 [project.urls]
 Homepage = "https://github.com/fleksible/entaENGELment-"
@@ -118,7 +112,7 @@ markers = [
 
 [tool.black]
 line-length = 100
-target-version = ["py310"]
+target-version = ["py311"]
 include = '\.pyi?$'
 extend-exclude = '''
 /(
@@ -132,7 +126,7 @@ extend-exclude = '''
 
 [tool.ruff]
 line-length = 100
-target-version = "py310"
+target-version = "py311"
 
 [tool.ruff.lint]
 select = [
@@ -146,16 +140,20 @@ select = [
 ]
 ignore = [
     "E501",  # line too long (handled by black)
+    # StrEnum would change str()/format() of members ("Reason.X" -> "X"). Keep the
+    # explicit (str, Enum) reason vocabularies; converting them is a separate,
+    # tested change, not part of a Python floor bump.
+    "UP042",
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]  # Unused imports in __init__.py
 
 [tool.mypy]
-# Kein python_version-Pin: jedes CI-Matrix-Leg (3.10/3.11/3.12) prüft gegen die
+# Kein python_version-Pin: jedes CI-Matrix-Leg (3.11/3.12) prüft gegen die
 # eigene Interpreter-Version. Ein Pin unterhalb des Hosts bricht das Parsen von
 # PEP-695-Stubs installierter Pakete (z.B. numpy >= 2.5 auf dem 3.12-Leg).
-# Der 3.10-Kompatibilitäts-Floor bleibt durch das 3.10-Matrix-Leg erzwungen.
+# Der 3.11-Kompatibilitäts-Floor bleibt durch das 3.11-Matrix-Leg erzwungen.
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = false

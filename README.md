@@ -21,7 +21,7 @@ Du musst nichts installieren, keinen Code verstehen und auch nichts beitragen, u
 
 ![DeepJump CI](https://github.com/fleksible/entaENGELment-/actions/workflows/deepjump-ci.yml/badge.svg)
 ![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)
-![Python](https://img.shields.io/badge/python-%E2%89%A53.10-blue.svg)
+![Python](https://img.shields.io/badge/python-%E2%89%A53.11-blue.svg)
 
 **Synopsis:**
 EntaENGELment ist ein experimentelles Framework für Multi-Agent-Systeme mit Consent-Management, HMAC-signierten Receipts und strenger Pointer-Validierung. Es kombiniert Governance-Guards (G0–G6) mit dem DeepJump-Protokoll (Verify → Status → Snapshot) für reproduzierbare, auditierbare Workflows. Primär für Forschung und Exploration, nicht für Production-Use.
@@ -78,7 +78,7 @@ make verify         # Alles prüfen
 - Port-Matrix konsistent ✅ (port-lint)
 
 **Troubleshooting (3 typische Stolpersteine):**
-1. **Python < 3.10** → `make verify` schlägt fehl; mindestens Python 3.10 erforderlich
+1. **Python < 3.11** → `make verify` schlägt fehl; mindestens Python 3.11 erforderlich
 2. **`make install-dev` meldet `uv 0.12.18 is required`** → `python -m pip install "uv==0.12.18"` (wie in CI). Ohne uv geht auch `pip install -r requirements-dev.txt` (hash-gepinnt, ohne Projekt-Install)
 3. **verify-pointers findet tote Links** → siehe [`docs/masterindex.md`](docs/masterindex.md) für Index-Struktur
 

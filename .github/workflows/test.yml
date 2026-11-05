@@ -55,9 +55,8 @@ jobs:
 
     strategy:
       matrix:
-        # The fractalsense group requires Python >= 3.11 (see pyproject.toml:
-        # no Pillow security fixes exist for 3.10). The core 3.10 floor stays
-        # covered by ci.yml, ci-python-runtime.yml and ci-python-quality.yml.
+        # Project floor is Python 3.11 (see pyproject.toml); 3.13/3.14 runtime
+        # coverage lives in ci-python-runtime.yml.
         python-version: ['3.11', '3.12']
 
     steps:
