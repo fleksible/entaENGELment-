@@ -115,8 +115,8 @@ jobs:
           group: audit
       - name: Run bandit security linter
         run: bandit -c .bandit.yaml -r src/ tools/ -f json -o bandit-report.json
-      - name: Check dependencies for vulnerabilities
-        run: pip-audit --no-deps --disable-pip -r requirements.txt
+      - name: Check dependencies for vulnerabilities (pip-audit, full uv.lock)
+        run: python tools/python_lock.py audit
 
   gate-policy:
     name: Gate Policy Validation
