@@ -29,7 +29,7 @@ import json
 import os
 import subprocess
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 VALID_TAGS = {"[FACT]", "[HYP]", "[MET]", "[TODO]", "[RISK]"}
 
@@ -125,7 +125,7 @@ def build_status_payload(args: argparse.Namespace) -> tuple[dict, str]:
     secret = get_secret() or args.secret
     payload = {
         "system": "EntaENGELment DeepJump",
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "status": args.status,
         "metrics": {
             "H": args.H,
@@ -155,7 +155,7 @@ def build_receipt(args: argparse.Namespace) -> tuple[dict, str]:
     # Build receipt payload (without signature fields first)
     receipt = {
         "receipt_version": "1.0",
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "claim": args.claim,
         "tag": args.tag,
         "module": args.module or "UNSPECIFIED",
