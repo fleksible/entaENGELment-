@@ -41,6 +41,27 @@ hashed compatibility exports. They are not independent dependency inputs.
 Editing them without re-exporting fails CI. Change the corresponding project
 dependency or group in `pyproject.toml` instead.
 
+## Vulnerability audit
+
+```sh
+python tools/python_lock.py sync --group audit
+.venv/bin/python tools/python_lock.py audit
+```
+
+`audit` exports `uv.lock` as `pylock.toml` (all groups, every interpreter and
+platform branch) and runs `pip-audit --locked` on it. It fails on any known
+vulnerability, on any skipped package and on any locked version missing from
+the report, so a partial audit cannot pass as clean. `security-audit.yml` (PRs,
+`main`, weekly) and the `Security Scan` job in `ci.yml` run this command. Before
+2026-11-05 both only audited `requirements.txt`, which missed versions used
+only by other groups or older interpreters.
+
+Not covered: native libraries compiled into wheels (for example the image codecs
+inside Pillow or the BLAS library inside numpy). `pip-audit` sees a flaw there
+only once the Python package itself publishes an advisory for an affected
+version. JavaScript dependencies are audited separately by `pnpm audit` in
+`security-audit.yml`.
+
 ## Deliberate refresh
 
 ```sh

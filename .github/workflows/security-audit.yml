@@ -2,7 +2,8 @@ name: Security Audit
 
 # Enforceable breakpoint for the dependency-security outer pole.
 # JS: pnpm audit (blocking on high+, moderate surfaced for visibility).
-# Python: pip-audit against requirements.txt.
+# Python: pip-audit over every package version in uv.lock (all dependency groups,
+# all interpreter/platform branches), failing closed on skipped packages.
 # Runs on dependency/lockfile changes, on a weekly schedule, and on demand.
 on:
   push:
@@ -95,5 +96,5 @@ jobs:
         with:
           group: audit
 
-      - name: Audit gate (requirements.txt)
-        run: pip-audit --no-deps --disable-pip -r requirements.txt
+      - name: Audit gate (every package in uv.lock)
+        run: python tools/python_lock.py audit

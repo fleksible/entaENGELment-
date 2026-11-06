@@ -9,8 +9,11 @@ import importlib.metadata
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
+import tempfile
+import tomllib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -23,6 +26,7 @@ EXPORTS = {
 }
 HEADER = f"# Generated from uv.lock by uv {UV_VERSION}; run python tools/python_lock.py export.\n"
 GROUPS = ("runtime", "test", "dev", "fractalsense", "audit", "sbom", "build")
+COMMANDS = ("check", "export", "sync", "inventory", "verify-sbom", "audit")
 
 
 def canonical_name(name: str) -> str:
@@ -188,9 +192,100 @@ def verify_sbom(bom: dict, receipt: dict, installed: dict, digest: str) -> None:
         )
 
 
+def audit_problems(report: dict, expected: set[tuple[str, str]]) -> list[str]:
+    """Return every reason the pip-audit report fails; an empty list means clean.
+
+    Fails closed: skipped packages, missing report entries and known
+    vulnerabilities all count, so a partial audit can never pass as clean.
+    """
+    deps = report.get("dependencies") if isinstance(report, dict) else None
+    if not isinstance(deps, list):
+        return ["pip-audit report has no dependency list"]
+    problems = []
+    audited = set()
+    for dep in deps:
+        if not isinstance(dep, dict):
+            problems.append("pip-audit report has a malformed dependency entry")
+            continue
+        name = canonical_name(str(dep.get("name", "")))
+        version = str(dep.get("version", ""))
+        if dep.get("skip_reason"):
+            problems.append(f"{name} not audited: {dep['skip_reason']}")
+            continue
+        audited.add((name, version))
+        for vuln in dep.get("vulns") or []:
+            fixes = ", ".join(vuln.get("fix_versions") or []) or "none published"
+            problems.append(f"{name}=={version}: {vuln.get('id')} (fixed in: {fixes})")
+    missing = sorted(expected - audited)
+    if missing:
+        problems.append("not audited: " + ", ".join(f"{n}=={v}" for n, v in missing))
+    return problems
+
+
+def audit() -> None:
+    """Audit every package version in uv.lock, across all groups and markers."""
+    check()
+    beside = Path(sys.executable).parent / ("pip-audit.exe" if os.name == "nt" else "pip-audit")
+    pip_audit = str(beside) if beside.is_file() else shutil.which("pip-audit")
+    if pip_audit is None:
+        raise ValueError("pip-audit not found; run: python tools/python_lock.py sync --group audit")
+    with tempfile.TemporaryDirectory() as tmp:
+        lock_dir = Path(tmp) / "lock"
+        lock_dir.mkdir()
+        pylock = lock_dir / "pylock.toml"
+        uv(
+            [
+                "export",
+                "--locked",
+                "--offline",
+                "--format",
+                "pylock.toml",
+                "--all-groups",
+                "--no-emit-project",
+                "--output-file",
+                str(pylock),
+            ],
+            capture=True,
+        )
+        packages = tomllib.loads(pylock.read_text(encoding="utf-8")).get("packages", [])
+        expected = {
+            (canonical_name(str(pkg.get("name", ""))), str(pkg.get("version", "")))
+            for pkg in packages
+        }
+        if not expected:
+            raise ValueError("uv.lock export contains no packages to audit")
+        report_path = Path(tmp) / "pip-audit.json"
+        result = subprocess.run(
+            [
+                pip_audit,
+                "--locked",
+                str(lock_dir),
+                "--format",
+                "json",
+                "--output",
+                str(report_path),
+                "--progress-spinner",
+                "off",
+            ],
+            cwd=ROOT,
+            check=False,
+        )
+        if not report_path.is_file():
+            raise ValueError(f"pip-audit wrote no report (exit {result.returncode})")
+        problems = audit_problems(json.loads(report_path.read_text(encoding="utf-8")), expected)
+    if problems:
+        raise ValueError(
+            f"{len(problems)} audit finding(s) in {len(expected)} locked packages:\n  "
+            + "\n  ".join(problems)
+        )
+    if result.returncode != 0:
+        raise ValueError(f"pip-audit exited {result.returncode} without a reported finding")
+    print(f"PASS: all {len(expected)} locked package versions audited, no known vulnerabilities")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("check", "export", "sync", "inventory", "verify-sbom"))
+    parser.add_argument("command", choices=COMMANDS)
     parser.add_argument("--group", choices=GROUPS, default="runtime")
     parser.add_argument("--sbom", type=Path)
     args = parser.parse_args()
@@ -203,6 +298,8 @@ def main() -> int:
             sync(args.group)
         elif args.command == "inventory":
             print(json.dumps(inventory(), sort_keys=True))
+        elif args.command == "audit":
+            audit()
         else:
             if args.sbom is None:
                 raise ValueError("--sbom is required")
