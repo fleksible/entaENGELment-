@@ -29,6 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Concept notes (no implementation): `docs/annex/ACTION_SCOPE_TRANSITIONS_v0_1.md`,
   `AGENT_INJECTION_PATTERNS_MAPPING_v0_1.md`, `SIGNED_BYTES_DECISION_NOTE_v0_1.md`,
   `CONSENT_RECORD_MAPPING_v0_1.md`, `TRANSPARENCY_AND_REVOCATION_NOTE_v0_1.md`.
+- Concept note (design only, no implementation, practice checks NOT_RUN):
+  `docs/annex/WITNESS_WAECHTER_v0_2.md`, with report
+  `docs/audit/2026-11-06_witness_waechter_v0_2_doku.md`.
 - Security checks now blocking (no more continue-on-error) (INF-1)
 - Coverage threshold raised from 20% to 50% (P0-B)
 - VOID-012/013 reset to IN_PROGRESS (honest DRAFT status) (P1-A)
