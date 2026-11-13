@@ -69,6 +69,40 @@ semantische Übersetzung. Ein passender Token-Zeilenanker wird mit derselben
 Tokenregel gesucht; ein dokumentweiter Mehrworttreffer ohne gemeinsame Zeile
 wird als Dokumentanker ausgewiesen.
 
+## Trefferausschnitt
+
+[ANNEX] Der Ausschnitt wird aus dem erhaltenen Originaltext geschnitten und ist
+höchstens 1.800 Zeichen lang. Passen Vorzeile, Trefferzeile und zwei Folgezeilen
+in diese Grenze, erscheinen sie vollständig und mit ihren ursprünglichen
+Zeilenenden. Andernfalls hat die Fundstelle Vorrang vor dem Kontext: Der freie
+Platz wird vor und hinter ihr verteilt, und excerpt_clipped zeigt den Beschnitt an.
+
+[ANNEX] Die Fundstelle wird im Original bestimmt, nicht in der Suchform.
+NFC und Casefold verschieben Positionen: ß wird zu ss, Grundbuchstabe plus
+kombinierendes Zeichen wird ein Zeichen. Die Suche ermittelt deshalb den
+kleinsten Originalabschnitt aus ganzen Zeichen, dessen Suchform den Treffer
+enthält, und vergleicht ihn vor der Ausgabe erneut. match_span_in_excerpt nennt
+Anfang und Ende dieser Stelle innerhalb von excerpt. Die Anfrage strasse zeigt
+so die Schreibung Straße, die Anfrage Grüneisen auch eine kombiniert kodierte
+Fassung. Schlägt der Vergleich bei seltenen Zeichenfolgen fehl, gilt die ganze
+Zeile als Fundstelle; ein Abschnitt, dessen Suchform den Treffer nicht enthält,
+wird nicht ausgegeben.
+
+[ANNEX] Im Tokenmodus reicht die Fundstelle vom ersten bis zum letzten
+benötigten Token der Trefferzeile, bestimmt mit derselben Tokenregel. Text
+zwischen diesen Token gehört zur Spanne, ist aber selbst kein Treffer.
+
+| excerpt_match | Bedeutung |
+| --- | --- |
+| complete | Die Fundstelle liegt vollständig im Ausschnitt. |
+| partial_match_exceeds_excerpt | Die Fundstelle ist länger als 1.800 Zeichen. Der Ausschnitt beginnt an ihrem Anfang und endet vor ihrem Ende. |
+| not_located_document_level | Dokumentanker ohne gemeinsame Trefferzeile. Der Ausschnitt zeigt den Dokumentanfang, match_span_in_excerpt ist leer. |
+
+[ANNEX] Vollständige Sichtbarkeit jeder Fundstelle wird damit nicht zugesagt.
+Zugesagt ist, dass ein Zeilentreffer mit seinem Anfang im Ausschnitt steht und
+dass eine unvollständige oder fehlende Anzeige ausdrücklich gekennzeichnet ist.
+Ein Dokumentanker wird nicht zu einem Zeilentreffer umetikettiert.
+
 ## Ergebnis und Zähleinheit
 
 [ANNEX] Jeder Bau erzeugt lokal search.sqlite3, manifest.json, statistics.json,
@@ -77,6 +111,14 @@ Dateipfad, Repräsentationshash, Suchrepräsentation und Ausschlüsse. Der Suchl
 öffnet SQLite im Lesemodus. Bei unbekannter Repo-Identität wird kein GitHub-Link
 erfunden. Deklarierte Statuszeilen behalten ihre Position; verschachtelte
 Statuswerte werden nicht zu einem Status der gesamten Datei verschmolzen.
+
+[ANNEX] Die Datensatzkennung entsteht aus Scope, Ref, Quellenkennung, Titel
+beziehungsweise Pfad, Inhaltshash, wirksamer Repräsentation und wirksamer
+Startzeile. Zwei Ausschnitte derselben Quellfassung mit gleichen Bytes, aber
+anderer Position oder Repräsentation bleiben zwei Datensätze mit demselben
+Inhaltshash. Datensatzidentität und Inhaltsgleichheit sind verschiedene Größen:
+Die nach Inhalt bereinigte Zählung zählt solche Bytes weiterhin einmal.
+Kennungen aus Indizes vor dieser Regel sind mit neuen nicht vergleichbar.
 
 [ANNEX] Einheiten sind lexikalische Wort-/Codeeinheiten, keine Modelltoken.
 Die offengelegte Regex zählt auch Bezeichner und Zahlen. Tokenvorkommen,
@@ -99,6 +141,18 @@ source_id, source_version, source_kind, source_family, representation,
 read_state, start_line, claim_status und provenance_url, soweit bekannt.
 Dies ist ein freiwilliger Zusatz zum öffentlichen Repo-Lauf. Unknown-Werte
 bleiben unknown; maschinelles Indexieren ist keine vollständige Lektüre.
+
+[ANNEX] Lokale Dateien werden als Bytes gelesen und ohne Umwandlung der
+Zeilenenden als UTF-8 dekodiert. Der gespeicherte Originaltext entspricht damit
+für LF, CRLF und CR den gelieferten Bytes, und sein SHA-256 gleicht dem Hash
+derselben Bytes als Git-Blob. Der Hash gilt für die gelieferte
+Textrepräsentation: Der Hash eines Extrakts bleibt der Hash des Extrakts und
+wird nicht zum Hash des ursprünglichen DOCX oder PDF.
+
+[ANNEX] Ein vollständig identischer zweiter Eintrag, also gleiche Quelle,
+Fassung, Titel, Bytes, Repräsentation und Startzeile, bricht den Bau mit einer
+benannten Dublettenmeldung ab. Er wird weder still verschmolzen noch doppelt
+geführt. Ein start_line-Wert, der keine ganze Zahl ist, wird ebenfalls benannt abgewiesen.
 
 [ANNEX] Gleichnamige Quellen behalten ihre Quellenkennungen. Die abgeleitete
 Zeilenreferenz gilt für die angegebene Textrepräsentation, nicht automatisch
@@ -123,7 +177,13 @@ Sollwert für künftige Heads.
 [ANNEX] [Die Funktionstests](../../tests/unit/test_corpus_search.py) verwenden
 isolierte synthetische Repositories. Sie prüfen Symbolschutz, Wortgrenzen,
 Tokenmehrfachheit, Aliasgrenzen, Original-/Quellenidentität, Ref-Pinning,
-Outputschutz sowie Overlay- und Ausschlussverhalten.
+Outputschutz sowie Overlay- und Ausschlussverhalten. Seit dem 13.11.2026 prüfen
+sie zusätzlich Zeilenenden und Hashbindung lokaler Importe, getrennte
+Datensätze bei anderer Position oder Repräsentation sowie Lage, Originalschreibung
+und Kennzeichnung der Fundstelle im Ausschnitt. Der zugehörige
+[Prüfbericht](../audit/2026-11-13_corpus_search_originalspan_repair.md) führt
+Basis, Vorher/Nachher und Auslassungen. Die Referenzmessung oben bleibt an ihre
+damalige CLI-Fassung gebunden und wurde nicht rückwirkend angepasst.
 
 [ANNEX] Der [Methodenfall](METHODENFALL_CORPUS_SEARCH_v0_1.md) trennt
 Suchtreffer, Herkunft und Geltung. Die [Review-Fragen zum Phasenkandidaten](PHASEN_REPLAY_REVIEWFRAGEN_v0_1.md)
