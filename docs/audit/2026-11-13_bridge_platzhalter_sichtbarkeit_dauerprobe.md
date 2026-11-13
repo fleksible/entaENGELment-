@@ -1,10 +1,15 @@
 # Prüfbericht: Platzhalter-Sperre, erklärte Sichtbarkeit und Dauerprobe am Kernel
 
-**Datum:** 2026-11-13 · **Status:** ANNEX / DERIVED · Review-Kandidat, Draft
+**Datum:** 2026-11-13 · **Status:** ANNEX / DERIVED · Technischer Prüfbericht zu PR #470
 
 **FOKUS:** Leere Angaben fail-closed halten
 
 **Promotion-Effect:** none
+
+[ANNEX] Der ursprüngliche Bericht dokumentiert den Stand `eda36d6` und den
+damaligen Draft-Auftrag. Die Nachprüfung und der anschließende ausdrückliche
+Anpassungs- und Mergeauftrag stehen unten im Nachtrag. Die dort beschriebene
+Ausgabesperre ersetzt die ursprüngliche Grenze der bloßen Kennzeichnung.
 
 ## Auftrag und Grenze
 
@@ -22,7 +27,7 @@ Kernel v0.1a:
 [FAKT] Keine neue Schemafamilie, keine neue Abstraktionsschicht, kein neuer
 Reason-Code. GOLD, Policies, Seeds, VOIDMAP, Receipts, Ledger-Dateien und
 JS-/UI-Dateien sind unverändert. `src/core/evidence_routing.py` ist
-unverändert (Blob `2be8e91f843c` vor und nach). Kein Merge, keine
+unverändert (Blob `2be8e91f843c` vor und nach). Am ursprünglichen Stand kein Merge, keine
 Statuspromotion, keine HumanDecision, kein Claim-Retagging. Alle Fixtures sind
 synthetisch; der Diff wurde gegen 224 Merkmale der privaten Übergabetexte
 geprüft, ohne Treffer.
@@ -237,8 +242,8 @@ Test; die Probe schlägt erst an, wenn auch die jeweils andere Sicherung fehlt.
   grün. Records außerhalb der Tests und außerhalb des Repos sind ungeprüft;
   die Intake-Ablagen und Save-State-Vorlagen mit `known_losses` haben ein
   anderes Format und laufen nicht durch den Adapter.
-- [RISK] Die Sichtbarkeit ist eine mitgeführte Erklärung, kein Schutz. Die
-  Suche zeigt Ausschnitte auch aus als privat markierten Quellen; der Index
+- [RISK] Am ursprünglichen Stand war Sichtbarkeit eine mitgeführte Erklärung,
+  kein Ausgabeschutz. Die Suche zeigte auch privat markierte Ausschnitte; der Index
   enthält deren Originaltext wie bisher. Wer einen Index weitergibt, gibt den
   Text weiter. Es gibt kein festes Vokabular; `privat` und `private` sind zwei
   verschiedene Werte.
@@ -278,3 +283,93 @@ verloren.
 [ANNEX] Nach einer Rücknahme von Commit 2 gelten Platzhalter wieder als
 benannte Angabe. Records, die zwischenzeitlich abgewiesen wurden, würden dann
 wieder übersetzt; das wäre vor einer Rücknahme zu bedenken.
+
+## Nachreview und ausdrücklicher Mergeauftrag
+
+[ANNEX] Am 13.11.2026 wurde der aktuelle PR-Head `02ed97c` unabhängig gelesen
+und mit synthetischen Gegenfällen geprüft. Der Owner beauftragte anschließend
+ausdrücklich, die offenen Stellen anzupassen und PR #470 zu mergen. Dieser
+Auftrag gilt der Codeübernahme nach bestandenen Prüfungen; er erzeugt keine
+Runtime-HumanDecision, Claim-Promotion oder Kanonisierung.
+
+### Ausgangsbefund und reproduzierende Gegenfälle
+
+[FAKT] Am Head `02ed97c` erzeugten `known_loss: ["- keiner"]`,
+`known_loss: ["— unbekannt —"]` und `falsifier: "— TBD —"` weiterhin eine
+Übersetzung. Die Randzeichenliste ließ Striche und Aufzählungspunkte aus.
+Die Standardsuche zeigte außerdem den Text, Titel und Herkunft einer als
+privat erklärten synthetischen Quelle; das Label allein verhinderte dies nicht.
+
+[FAKT] Die neue Testfassung lief vor dem Fix mit folgendem ausgewählten
+Gegenfalllauf: 15 fehlgeschlagen (einschließlich drei Teilfällen),
+5 bestanden, 209 abgewählt. Der Test-Commit vor dem Fix hält die Fälle
+getrennt nachvollziehbar; seine Gegenfälle werden nicht durch einen anderen
+Kernel oder Mocks geprüft.
+
+~~~bash
+python -m pytest -q -o addopts='' \
+  tests/unit/test_evidence_bridge_adapter.py \
+  tests/unit/test_bridge_view.py tests/unit/test_corpus_search.py \
+  -k 'edge_dashes or placeholder_known_loss or default_search_does_not_disclose or only_explicit_public_corpus'
+~~~
+
+### Konkrete Nachbesserung und Schutzumfang
+
+| Pfad | Nachbesserung |
+| --- | --- |
+| `src/core/evidence_bridge_adapter.py` | Die gemeinsame Randzeichenliste erfasst nun Bindestriche, Unicode-Striche, Minuszeichen und den Aufzählungspunkt. Beide Pflichtfelder und die Bridge-View nutzen weiter dieselbe Prüfung. |
+| `tools/corpus_search.py` | Vor Suche und Zählung werden lokale Korpuszeilen ohne ausdrückliches `public` oder `öffentlich` ausgeblendet. Eine unbekannte, private oder alte fehlende Kennzeichnung öffnet keine Ausgabe. |
+| Drei vorhandene Testdateien | Randzeichen-Gegenfälle über Übersetzung und direkte View, sinnvolle Prosa als Gegenrichtung, Ausgabeschutz in allen drei Suchmodi, private Metadaten und Zählwerte, öffentliche Kontrollen und alte Indizes. |
+| Zwei bestehende Annex-Verträge und dieser Bericht | Sichtbare Wirkung, bewusste lokale Nachlese, Grenzen und Rückweg. |
+
+[FAKT] `visibility` bleibt im Manifest und Index unverändert erhalten.
+Die Standardsuche gibt bei geschützten lokalen Korpusquellen weder
+Ausschnitte noch Titel, Quellenkennungen, Herkunftslinks oder
+queryabhängige Trefferzahlen aus. Die Filterung erfolgt vor der
+Limitberechnung. `--include-private` erlaubt die ausdrückliche lokale
+Nachlese und markiert die Ausgabe mit `private_corpus_included: true`.
+Die Option ist keine Publikationsfreigabe. Alle neuen Fixtures sind synthetisch.
+
+[RISK] Die Schutzanforderung ist für die **Standardsuchausgabe** umgesetzt.
+SQLite, Manifest, Statistiken und Wortfrequenzen bleiben private lokale
+Arbeitsdateien mit Originaltext beziehungsweise Ableitungen. Weder diese
+Dateien noch eine Ausgabe mit `--include-private` sind öffentliche Exporte.
+Eine falsche öffentliche Quellendeklaration, manuelle Dateifreigabe oder
+direkter SQLite-Zugriff werden hier nicht verhindert. Es wird keine
+Verschlüsselung oder neue Zugriffsverwaltung behauptet. Ausgewählte
+Repo-Snapshots werden nicht als lokale Korpusquellen umklassifiziert.
+
+### Nachprüfung und verbleibende Grenzen
+
+[FAKT] Die Nachprüfung lief unter Python 3.12.14, uv 0.12.18,
+pytest 9.1.1 und hypothesis 6.170.12. Die separate Prüfungsumgebung wurde
+mit `uv sync --frozen --group dev --no-install-project` aus `uv.lock`
+aufgebaut. Nach dem Fix:
+
+| Prüfung | Ergebnis |
+| --- | --- |
+| `make verify` | bestanden; 1 285 Tests und 200 Teiltests bestanden, 2 übersprungen |
+| `make verify-governance` | bestanden; 16 Workflows, VOID-Backlog aktuell, 22 VOIDs synchron |
+| ruff, Black `--check`, mypy, Bandit mit `.bandit.yaml` | bestanden; keine Befunde im jeweiligen Prüfumfang |
+| `git diff --check` | bestanden |
+
+[FAKT] Die zwei übersprungenen Tests betreffen die optionale
+DataLad-/git-annex-Integration. Vier optionale Status-/Snapshot-Pointer
+fehlten; alle CORE-Pointer waren gültig. Ein unabhängiges, lesendes
+Nachreview des Follow-up-Diffs fand keinen konkreten Fehler und führte die
+drei betroffenen Testsuiten mit 226 bestandenen Tests und 35 bestandenen
+Teiltests aus. Dieses Nachreview ist keine formale GitHub-Review-Submission.
+
+[ANNEX] CI-Ergebnisse sind dem endgültigen PR-Head zuzuordnen und vor dem
+Merge erneut direkt zu prüfen; obige Zahlen sind selbst ausgeführte lokale
+Prüfungen. Die ursprüngliche Mutationsreihe wurde im Nachreview nicht erneut
+ausgeführt. Kernel, Policies, GOLD und bestehende Governance-Invarianten
+bleiben unverändert. Die übrigen oben benannten Grenzen gelten weiter.
+
+[RISK] Eine Rücknahme des Fix-Commits würde sowohl die Randzeichenlücke
+als auch die standardmäßige Ausgabe geschützter Korpuszeilen wieder öffnen.
+Test- und Fix-Commit sind dann gemeinsam in umgekehrter Reihenfolge
+zurückzunehmen. Es gibt keine Datenmigration; bestehende lokale Indizes
+bleiben nutzbar. Der alte Suchcode hat jedoch keinen Ausgabeschutz, auch wenn
+ein Index seine Sichtbarkeitsangaben noch enthält. Dateien werden bei einer
+späteren Entfernung gemäß G3 archiviert statt gelöscht.

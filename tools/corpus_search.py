@@ -681,6 +681,19 @@ def search(args: argparse.Namespace) -> None:
     for row in db.execute("SELECT * FROM docs ORDER BY scope,role,path"):
         if args.scope and row["scope"] not in args.scope:
             continue
+        visibility = row["visibility"] if "visibility" in row.keys() else None
+        # Local corpus data is withheld unless explicitly public or deliberately
+        # requested for private local reading. Filter before matching/counting so
+        # titles, IDs, provenance and query-dependent counts stay private too.
+        if (
+            row["scope"] == "corpus"
+            and not args.include_private
+            and (
+                not isinstance(visibility, str)
+                or norm(visibility.strip()) not in {"public", "öffentlich"}
+            )
+        ):
+            continue
         if args.mode == "tokens":
             present = collections.Counter(tokens(row["original"]))
             found = (
@@ -732,7 +745,7 @@ def search(args: argparse.Namespace) -> None:
         record.update(
             {
                 # Indexes built before the visibility column carry no declaration.
-                "visibility": row["visibility"] if "visibility" in row.keys() else None,
+                "visibility": visibility,
                 "declared_status": json.loads(row["status"]),
                 "status_scope": "verbatim source declarations; nested records are not whole-document status",
                 "matched_variants": found if args.mode != "tokens" else [],
@@ -750,6 +763,7 @@ def search(args: argparse.Namespace) -> None:
         "mode": args.mode,
         "expanded_terms": variants,
         "related_expansion": args.related,
+        "private_corpus_included": args.include_private,
         "total_matching_documents_by_scope": totals,
         "returned_documents": min(len(matches), args.limit),
         "truncated": len(matches) > args.limit,
@@ -782,6 +796,11 @@ def main() -> None:
     p.add_argument("--related", action="store_true")
     p.add_argument("--scope", action="append")
     p.add_argument("--limit", type=int, default=20)
+    p.add_argument(
+        "--include-private",
+        action="store_true",
+        help="Include nonpublic and unmarked local corpus sources; output is private, not cleared for publication.",
+    )
     p.set_defaults(func=search)
     args = parser.parse_args()
     if getattr(args, "query", None) is not None and not args.query.strip():

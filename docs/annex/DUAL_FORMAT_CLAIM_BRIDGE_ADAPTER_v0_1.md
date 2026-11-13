@@ -68,6 +68,8 @@ gegen zwei geschlossene Listen:
 | Nichtwissen | `unbekannt`, `unknown`, `unklar`, `offen`, `k.A.` | abgewiesen; die Meldung verlangt ausdrücklich **keine** Ersatzangabe |
 
 [FACT] Ein Füllwert neben einem benannten Verlust wird ebenfalls abgewiesen.
+Randstriche und der Aufzählungspunkt `•` ändern daran nichts: `- keiner`,
+`— unbekannt —` und `• n/a` bleiben Leerformeln.
 Sätze, die solche Wörter enthalten, bleiben gültig: „Kalibrierung offen“ oder
 „Weitere Verluste sind unbekannt“ benennen etwas.
 

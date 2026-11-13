@@ -144,10 +144,27 @@ bleiben unknown; maschinelles Indexieren ist keine vollständige Lektüre.
 
 [ANNEX] visibility führt die erklärte Sichtbarkeit eines Eintrags wörtlich
 mit, etwa private. Der Wert steht unverändert im Index, im Manifest und an
-jedem Suchtreffer. Er wird weder auf ein festes Vokabular abgebildet noch
-gedeutet. Fehlt die Angabe, bleibt sie leer; leer heißt nicht erklärt und
-nicht öffentlich. Repo-Dateien erhalten keine Sichtbarkeitsangabe. Ältere
-Indizes ohne diese Spalte bleiben lesbar; ihre Treffer tragen eine leere Angabe.
+jedem ausgegebenen Suchtreffer. Fehlt die Angabe, bleibt sie leer; leer heißt
+nicht erklärt und nicht öffentlich. Repo-Dateien erhalten keine
+Sichtbarkeitsangabe. Ältere Indizes ohne diese Spalte bleiben lesbar.
+
+[ANNEX] Die Standardsuche gibt lokale Korpusquellen nur aus, wenn ihre
+Sichtbarkeit ausdrücklich public oder öffentlich lautet (NFC, Casefold und
+äußerer Leerraum werden nur für die Prüfung normalisiert; der Originalwert
+bleibt erhalten). Jede andere oder fehlende Angabe bleibt ausgeblendet,
+einschließlich privat, private und unbekannter Bezeichnungen. Das gilt auch
+für alte Indizes ohne Sichtbarkeitsspalte. Die Sperre greift vor der
+Treffersuche und Zählung in allen drei Modi: Ausschnitte, Titel,
+Quellenkennungen, Herkunftslinks, Trefferzahlen und Limitmeldungen geben
+diese Einträge nicht preis. Die ausgewählten Repo-Snapshots werden durch
+diese lokale Korpussperre nicht umklassifiziert.
+
+[ANNEX] Für die bewusste lokale Nachlese nimmt search mit --include-private
+auch nichtöffentliche und unmarkierte Korpusquellen hinzu. Das Ergebnis
+kennzeichnet diese Wahl mit private_corpus_included: true. Diese technische
+Option ist keine Freigabe zur Veröffentlichung und erzeugt keine
+HumanDecision. Eine öffentliche Sichtbarkeitsangabe muss von der Quelle
+kommen; sie darf nicht ergänzt werden, um die Ausgabesperre zu umgehen.
 
 [ANNEX] Ein Feld außerhalb dieser Liste bricht den Bau ab, bevor ein
 Ausgabeordner entsteht. Ein vertipptes visiblity ginge sonst still verloren
@@ -155,10 +172,12 @@ und der Eintrag erschiene unmarkiert. Die Meldung nennt nur die Position des
 Eintrags und den Feldnamen, keinen Wert, Titel oder Pfad. Dasselbe gilt für
 eine Sichtbarkeitsangabe, die kein nichtleerer Text ist.
 
-[RISK] Die Sichtbarkeitsangabe ist eine mitgeführte Erklärung, kein Schutz.
-Ein Treffer aus einem als privat erklärten Eintrag zeigt weiterhin seinen
-Ausschnitt; die Angabe steht daneben, damit sie beim Weiterverwenden nicht
-verloren geht.
+[RISK] Die Ausgabesperre schützt die Standardsuche, nicht die Indexdateien.
+Der Bau speichert lokale Originaltexte und Metadaten weiterhin in SQLite,
+Manifesten und weiteren Ableitungen. Diese Arbeitsdateien sowie Ergebnisse
+mit --include-private bleiben privat; sie sind weder verschlüsselt noch
+bereinigt und dürfen nicht als öffentliche Suchdaten weitergegeben werden.
+Eine falsch als public erklärte Quelle kann die Suche nicht erkennen.
 
 [ANNEX] Ausgangsbefund, Gegenfälle und Rückweg dieser Ergänzung führt der
 [Prüfbericht vom 13.11.2026](../audit/2026-11-13_bridge_platzhalter_sichtbarkeit_dauerprobe.md).

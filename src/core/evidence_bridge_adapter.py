@@ -376,7 +376,7 @@ _PLACEHOLDER_UNKNOWN = frozenset(
         "weiss nicht",
     }
 )
-_PLACEHOLDER_EDGE = " \t.,;:!?()[]{}<>\"'`´„“”‚‘’«»*_~#|"
+_PLACEHOLDER_EDGE = " \t.,;:!?()[]{}<>\"'`´„“”‚‘’«»*_~#|-‐‑‒–—―−•"
 
 
 def placeholder_kind(value: str) -> str | None:
