@@ -160,6 +160,9 @@ Ein Treffer aus einem als privat erklärten Eintrag zeigt weiterhin seinen
 Ausschnitt; die Angabe steht daneben, damit sie beim Weiterverwenden nicht
 verloren geht.
 
+[ANNEX] Ausgangsbefund, Gegenfälle und Rückweg dieser Ergänzung führt der
+[Prüfbericht vom 13.11.2026](../audit/2026-11-13_bridge_platzhalter_sichtbarkeit_dauerprobe.md).
+
 [ANNEX] Lokale Dateien werden als Bytes gelesen und ohne Umwandlung der
 Zeilenenden als UTF-8 dekodiert. Der gespeicherte Originaltext entspricht damit
 für LF, CRLF und CR den gelieferten Bytes, und sein SHA-256 gleicht dem Hash

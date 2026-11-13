@@ -81,6 +81,9 @@ ausformulierter Verlust oder Falsifikator sachlich trägt, prüft der Adapter
 nicht; das bleibt menschliche Review-Arbeit. `transferred_property`,
 `preserved_relation` und `rollback` sind von dieser Sperre nicht erfasst.
 
+[ANNEX] Ausgangsbefund, Gegenfälle und Grenzen führt der
+[Prüfbericht vom 13.11.2026](../audit/2026-11-13_bridge_platzhalter_sichtbarkeit_dauerprobe.md).
+
 ## 3. Registerreichweite (Kernregel)
 
 [MODEL] Wie weit ein Quellregister relational reichen darf, ist strukturell
