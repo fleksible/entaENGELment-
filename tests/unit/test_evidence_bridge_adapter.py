@@ -631,3 +631,114 @@ class TestSourceModuleMinimalTests:
                 )
             )
         assert BridgeReason.M5_REVIEW_REQUIRED in excinfo.value.reasons
+
+
+class TestPlaceholderIsNotAnAnswer:
+    """Füllwerte benennen weder einen Verlust noch eine Scheiterbedingung."""
+
+    @pytest.mark.parametrize("field", ["known_loss", "falsifier"])
+    @pytest.mark.parametrize("value", ["- keiner", "— unbekannt —", "– TBD –", "• n/a"])
+    def test_edge_dashes_and_bullets_do_not_make_a_placeholder_an_answer(self, field, value):
+        supplied = [value] if field == "known_loss" else value
+        with pytest.raises(BridgeAdapterError) as excinfo:
+            translate_bridge_record(make_record(**{field: supplied}))
+        expected = (
+            BridgeReason.KNOWN_LOSS_REQUIRED
+            if field == "known_loss"
+            else BridgeReason.FALSIFIER_REQUIRED
+        )
+        assert expected in excinfo.value.reasons
+        if "unbekannt" in value:
+            assert "do not invent" in str(excinfo.value)
+
+    @pytest.mark.parametrize(
+        "value",
+        [
+            "keiner",
+            "Keine",
+            "kein Verlust",
+            "verlustfrei",
+            "zero leakage",
+            "none",
+            "n/a",
+            "N/A",
+            " n/a. ",
+            "(keiner)",
+            "-",
+            "…",
+            "???",
+            "TBD",
+            "todo",
+        ],
+    )
+    def test_filler_or_denied_known_loss_is_rejected(self, value):
+        with pytest.raises(BridgeAdapterError) as excinfo:
+            validate_bridge_record(make_record(known_loss=[value]))
+        assert BridgeReason.KNOWN_LOSS_REQUIRED in excinfo.value.reasons
+
+    @pytest.mark.parametrize(
+        "value", ["unbekannt", "Unknown", "unklar", "offen", "nicht bekannt", "k.A."]
+    )
+    def test_unknown_loss_is_rejected_and_must_not_be_invented(self, value):
+        with pytest.raises(BridgeAdapterError) as excinfo:
+            validate_bridge_record(make_record(known_loss=[value]))
+        assert BridgeReason.KNOWN_LOSS_REQUIRED in excinfo.value.reasons
+        message = str(excinfo.value)
+        assert "unknown" in message
+        assert "do not invent" in message
+
+    def test_placeholder_next_to_a_named_loss_is_rejected(self):
+        with pytest.raises(BridgeAdapterError) as excinfo:
+            validate_bridge_record(make_record(known_loss=["Kantengewichte gehen verloren", "n/a"]))
+        assert BridgeReason.KNOWN_LOSS_REQUIRED in excinfo.value.reasons
+
+    @pytest.mark.parametrize(
+        "value",
+        [
+            "keiner",
+            "none",
+            "n/a",
+            "-",
+            "nicht falsifizierbar",
+            "unfalsifiable",
+            "unbekannt",
+            "TBD",
+        ],
+    )
+    def test_placeholder_falsifier_is_rejected(self, value):
+        with pytest.raises(BridgeAdapterError) as excinfo:
+            validate_bridge_record(make_record(falsifier=value))
+        assert BridgeReason.FALSIFIER_REQUIRED in excinfo.value.reasons
+
+    def test_translation_does_not_supply_a_loss_or_falsifier(self):
+        # Fail-closed heißt: keine Übersetzung. Der Adapter füllt nichts auf.
+        for overrides in ({"known_loss": ["unbekannt"]}, {"falsifier": "n/a"}):
+            with pytest.raises(BridgeAdapterError):
+                translate_bridge_record(make_record(**overrides))
+
+    def test_mapping_path_is_equally_strict(self):
+        payload = dataclasses.asdict(make_record(known_loss=["n/a"]))
+        with pytest.raises(BridgeAdapterError) as excinfo:
+            translate_bridge_record(bridge_record_from_mapping(payload))
+        assert BridgeReason.KNOWN_LOSS_REQUIRED in excinfo.value.reasons
+
+    @pytest.mark.parametrize(
+        "value",
+        [
+            "Keine Aussage über Ladungstransport oder Theologie",
+            "Kalibrierung offen",
+            "Weitere Verluste sind unbekannt",
+            "Unbekannt bleibt, ob die Reihenfolge erhalten ist",
+            "n/a-Felder der Quelle werden nicht übertragen",
+            "- Kalibrierung offen — Größenordnung unbekannt",
+        ],
+    )
+    def test_sentences_containing_placeholder_words_stay_valid(self, value):
+        record = make_record(known_loss=[value])
+        validate_bridge_record(record)
+        assert translate_bridge_record(record).known_loss == (value,)
+
+    def test_named_falsifier_containing_placeholder_words_stays_valid(self):
+        validate_bridge_record(
+            make_record(falsifier="Keiner der Testfälle reproduziert die Ordnung")
+        )

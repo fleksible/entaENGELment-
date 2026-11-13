@@ -455,6 +455,7 @@ class TestOriginalBytesIdentityAndExcerpt(unittest.TestCase):
                 query,
                 "--scope",
                 "corpus",
+                "--include-private",
                 *options,
             ],
             capture_output=True,
@@ -568,6 +569,158 @@ class TestOriginalBytesIdentityAndExcerpt(unittest.TestCase):
         self.assertIn("corpus-search:", result.stderr)
         self.assertNotIn("Traceback", result.stderr)
 
+    def search(self, output, query, *options):
+        found = subprocess.run(
+            [
+                sys.executable,
+                str(SCRIPT),
+                "search",
+                str(output / "search.sqlite3"),
+                query,
+                "--limit",
+                "1000",
+                *options,
+            ],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+        )
+        self.assertEqual(found.returncode, 0, found.stderr)
+        return json.loads(found.stdout)["results"]
+
+    def test_declared_visibility_survives_build_manifest_and_search(self):
+        label = "PRIVATE_HANDOFF / nicht \u00f6ffentlich"
+        entries = [
+            self.entry(self.source("needle eins\n"), title="a.txt", visibility="private"),
+            self.entry(self.source("needle zwei\n"), title="b.txt", visibility=label),
+            self.entry(self.source("needle drei\n"), title="c.txt"),
+        ]
+        result, output = self.build(entries)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        expected = {"a.txt": "private", "b.txt": label, "c.txt": None}
+        manifest = json.loads((output / "manifest.json").read_text(encoding="utf-8"))
+        listed = {
+            d["path"]: d["visibility"] for d in manifest["documents"] if d["scope"] == "corpus"
+        }
+        self.assertEqual(listed, expected)
+        hits = self.search(output, "needle", "--include-private")
+        shown = {h["path"]: h["visibility"] for h in hits if h["scope"] == "corpus"}
+        self.assertEqual(shown, expected)
+        tracked = [h for h in self.search(output, "alpha") if h["scope"] == "main"]
+        self.assertTrue(tracked)
+        self.assertEqual({h["visibility"] for h in tracked}, {None})
+
+    def test_unknown_corpus_field_fails_closed_and_names_only_the_field(self):
+        source = self.source("needle\n")
+        entry = self.entry(source, title="streng-vertraulicher-titel.txt", visiblity="geheimwert")
+        result, _ = self.build([self.entry(self.source("needle\n"), title="ok.txt"), entry])
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("visiblity", result.stderr)
+        self.assertIn("entry 2", result.stderr)
+        for protected in ("geheimwert", "streng-vertraulicher-titel", str(source)):
+            self.assertNotIn(protected, result.stderr + result.stdout)
+        self.assertNotIn("Traceback", result.stderr)
+
+    def test_default_search_does_not_disclose_nonpublic_corpus_or_its_match_counts(self):
+        entries = [
+            self.entry(
+                self.source("needle private-content-470\n"),
+                title=f"private-title-{number}.txt",
+                source_id=f"private-id-{number}",
+                provenance_url=f"https://example.invalid/private-{number}",
+                **({"visibility": label} if label is not None else {}),
+            )
+            for number, label in enumerate(
+                (
+                    "privat",
+                    "private",
+                    "PRIVATE_HANDOFF / nicht öffentlich",
+                    "reduced",
+                    "unknown",
+                    None,
+                )
+            )
+        ]
+        result, output = self.build(entries)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        for mode in ("literal", "tokens", "expanded"):
+            with self.subTest(mode=mode):
+                found = subprocess.run(
+                    [
+                        sys.executable,
+                        str(SCRIPT),
+                        "search",
+                        str(output / "search.sqlite3"),
+                        "needle",
+                        "--mode",
+                        mode,
+                        "--limit",
+                        "1",
+                        "--scope",
+                        "corpus",
+                    ],
+                    capture_output=True,
+                    text=True,
+                )
+                self.assertEqual(found.returncode, 0, found.stderr)
+                response = json.loads(found.stdout)
+                self.assertEqual(response["results"], [])
+                self.assertEqual(response["total_matching_documents_by_scope"], {})
+                self.assertEqual(response["returned_documents"], 0)
+                self.assertFalse(response["truncated"])
+                for secret in ("private-content-470", "private-title", "private-id", "/private-"):
+                    self.assertNotIn(secret, found.stdout + found.stderr)
+
+    def test_only_explicit_public_corpus_is_shown_without_private_opt_in(self):
+        entries = [
+            self.entry(
+                self.source("needle public\n"), title=f"public-{number}.txt", visibility=label
+            )
+            for number, label in enumerate(("public", "öffentlich", " PUBLIC "))
+        ]
+        entries.append(
+            self.entry(self.source("needle private\n"), title="hidden.txt", visibility="privat")
+        )
+        result, output = self.build(entries)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        hits = [h for h in self.search(output, "needle") if h["scope"] == "corpus"]
+        self.assertEqual(
+            {h["path"] for h in hits}, {"public-0.txt", "public-1.txt", "public-2.txt"}
+        )
+        self.assertEqual({h["visibility"] for h in hits}, {"public", "öffentlich", " PUBLIC "})
+
+    def test_visibility_that_is_not_text_is_rejected(self):
+        for value in (True, "", "   ", ["private"]):
+            with self.subTest(value=value):
+                result, _ = self.build([self.entry(self.source("needle\n"), visibility=value)])
+                self.assertEqual(result.returncode, 2)
+                self.assertIn("visibility", result.stderr)
+                self.assertNotIn("Traceback", result.stderr)
+
+    def test_same_record_with_contradicting_visibility_is_not_merged(self):
+        source = self.source("needle\n")
+        result, _ = self.build(
+            [self.entry(source, visibility="private"), self.entry(source, visibility="public")]
+        )
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("Duplicate", result.stderr)
+
+    def test_search_reads_an_index_built_before_the_visibility_column(self):
+        result, output = self.build([self.entry(self.source("needle alt\n"))])
+        self.assertEqual(result.returncode, 0, result.stderr)
+        db = sqlite3.connect(output / "search.sqlite3")
+        try:
+            db.execute("alter table docs drop column visibility")
+            db.commit()
+        finally:
+            db.close()
+        default_hits = [h for h in self.search(output, "needle") if h["scope"] == "corpus"]
+        self.assertEqual(default_hits, [])
+        hits = [
+            h for h in self.search(output, "needle", "--include-private") if h["scope"] == "corpus"
+        ]
+        self.assertEqual([h["visibility"] for h in hits], [None])
+
     def test_short_context_is_unchanged(self):
         hit = self.hit("before\nneedle: important context\nafter\nlater\nunseen\n", "needle")
         self.assertEqual(hit["line"], 2)
@@ -663,6 +816,7 @@ class TestOriginalBytesIdentityAndExcerpt(unittest.TestCase):
                     "tokens",
                     "--scope",
                     "corpus",
+                    "--include-private",
                 ]
             )
         )["results"][0]

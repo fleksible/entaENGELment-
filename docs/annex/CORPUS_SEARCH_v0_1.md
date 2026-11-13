@@ -138,9 +138,49 @@ werden nicht inhaltlich erschlossen.
 
 [ANNEX] --corpus akzeptiert eine lokale JSON-Liste mit local_path, title,
 source_id, source_version, source_kind, source_family, representation,
-read_state, start_line, claim_status und provenance_url, soweit bekannt.
-Dies ist ein freiwilliger Zusatz zum öffentlichen Repo-Lauf. Unknown-Werte
+read_state, start_line, claim_status, provenance_url und visibility, soweit
+bekannt. Dies ist ein freiwilliger Zusatz zum öffentlichen Repo-Lauf. Unknown-Werte
 bleiben unknown; maschinelles Indexieren ist keine vollständige Lektüre.
+
+[ANNEX] visibility führt die erklärte Sichtbarkeit eines Eintrags wörtlich
+mit, etwa private. Der Wert steht unverändert im Index, im Manifest und an
+jedem ausgegebenen Suchtreffer. Fehlt die Angabe, bleibt sie leer; leer heißt
+nicht erklärt und nicht öffentlich. Repo-Dateien erhalten keine
+Sichtbarkeitsangabe. Ältere Indizes ohne diese Spalte bleiben lesbar.
+
+[ANNEX] Die Standardsuche gibt lokale Korpusquellen nur aus, wenn ihre
+Sichtbarkeit ausdrücklich public oder öffentlich lautet (NFC, Casefold und
+äußerer Leerraum werden nur für die Prüfung normalisiert; der Originalwert
+bleibt erhalten). Jede andere oder fehlende Angabe bleibt ausgeblendet,
+einschließlich privat, private und unbekannter Bezeichnungen. Das gilt auch
+für alte Indizes ohne Sichtbarkeitsspalte. Die Sperre greift vor der
+Treffersuche und Zählung in allen drei Modi: Ausschnitte, Titel,
+Quellenkennungen, Herkunftslinks, Trefferzahlen und Limitmeldungen geben
+diese Einträge nicht preis. Die ausgewählten Repo-Snapshots werden durch
+diese lokale Korpussperre nicht umklassifiziert.
+
+[ANNEX] Für die bewusste lokale Nachlese nimmt search mit --include-private
+auch nichtöffentliche und unmarkierte Korpusquellen hinzu. Das Ergebnis
+kennzeichnet diese Wahl mit private_corpus_included: true. Diese technische
+Option ist keine Freigabe zur Veröffentlichung und erzeugt keine
+HumanDecision. Eine öffentliche Sichtbarkeitsangabe muss von der Quelle
+kommen; sie darf nicht ergänzt werden, um die Ausgabesperre zu umgehen.
+
+[ANNEX] Ein Feld außerhalb dieser Liste bricht den Bau ab, bevor ein
+Ausgabeordner entsteht. Ein vertipptes visiblity ginge sonst still verloren
+und der Eintrag erschiene unmarkiert. Die Meldung nennt nur die Position des
+Eintrags und den Feldnamen, keinen Wert, Titel oder Pfad. Dasselbe gilt für
+eine Sichtbarkeitsangabe, die kein nichtleerer Text ist.
+
+[RISK] Die Ausgabesperre schützt die Standardsuche, nicht die Indexdateien.
+Der Bau speichert lokale Originaltexte und Metadaten weiterhin in SQLite,
+Manifesten und weiteren Ableitungen. Diese Arbeitsdateien sowie Ergebnisse
+mit --include-private bleiben privat; sie sind weder verschlüsselt noch
+bereinigt und dürfen nicht als öffentliche Suchdaten weitergegeben werden.
+Eine falsch als public erklärte Quelle kann die Suche nicht erkennen.
+
+[ANNEX] Ausgangsbefund, Gegenfälle und Rückweg dieser Ergänzung führt der
+[Prüfbericht vom 13.11.2026](../audit/2026-11-13_bridge_platzhalter_sichtbarkeit_dauerprobe.md).
 
 [ANNEX] Lokale Dateien werden als Bytes gelesen und ohne Umwandlung der
 Zeilenenden als UTF-8 dekodiert. Der gespeicherte Originaltext entspricht damit

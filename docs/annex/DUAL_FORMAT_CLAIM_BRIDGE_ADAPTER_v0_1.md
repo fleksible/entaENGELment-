@@ -56,6 +56,36 @@ Die Pflichtfelder entsprechen den sechs Brückenfragen des Quellmoduls:
 Eine Brücke ohne benannten Verlust behauptet implizit Verlustfreiheit — und
 damit Identität zwischen den Registern.
 
+[FACT] Ein ausgefülltes Feld ist noch keine Antwort. Besteht ein Eintrag in
+`known_loss` oder der `falsifier` *nur* aus einem Füllwert, verweigert der
+Adapter die Übersetzung mit `KNOWN_LOSS_REQUIRED` beziehungsweise
+`FALSIFIER_REQUIRED`. Geprüft wird der ganze Eintrag nach NFKC und Casefold
+gegen zwei geschlossene Listen:
+
+| Art | Beispiele | Folge |
+|---|---|---|
+| Verneinung, Vertagung, Leerzeichen | `keiner`, `n/a`, `verlustfrei`, `zero leakage`, `nicht falsifizierbar`, `TBD`, `-`, `…` | abgewiesen |
+| Nichtwissen | `unbekannt`, `unknown`, `unklar`, `offen`, `k.A.` | abgewiesen; die Meldung verlangt ausdrücklich **keine** Ersatzangabe |
+
+[FACT] Ein Füllwert neben einem benannten Verlust wird ebenfalls abgewiesen.
+Randstriche und der Aufzählungspunkt `•` ändern daran nichts: `- keiner`,
+`— unbekannt —` und `• n/a` bleiben Leerformeln.
+Sätze, die solche Wörter enthalten, bleiben gültig: „Kalibrierung offen“ oder
+„Weitere Verluste sind unbekannt“ benennen etwas.
+
+[ANNEX] Unbekannter Verlust bleibt unbekannt. Wer ihn nicht benennen kann, hat
+noch keine Brücke: Der Record bleibt unübersetzt, bis der Verlust benannt
+werden kann. Der Adapter ergänzt nichts und stuft nichts ab; eine erfundene
+Angabe, die nur die Prüfung passiert, wäre schlechter als die offene Lücke.
+
+[RISK] Die Listen fangen bekannte Leerformeln ab, keine Leerprosa. Ob ein
+ausformulierter Verlust oder Falsifikator sachlich trägt, prüft der Adapter
+nicht; das bleibt menschliche Review-Arbeit. `transferred_property`,
+`preserved_relation` und `rollback` sind von dieser Sperre nicht erfasst.
+
+[ANNEX] Ausgangsbefund, Gegenfälle und Grenzen führt der
+[Prüfbericht vom 13.11.2026](../audit/2026-11-13_bridge_platzhalter_sichtbarkeit_dauerprobe.md).
+
 ## 3. Registerreichweite (Kernregel)
 
 [MODEL] Wie weit ein Quellregister relational reichen darf, ist strukturell

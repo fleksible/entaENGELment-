@@ -23,6 +23,7 @@ from .evidence_bridge_adapter import (
     NON_PROMOTING_REGISTERS,
     BridgeContext,
     BridgeTranslation,
+    placeholder_kind,
 )
 from .evidence_routing import (
     ERK_SCHEMA_VERSION,
@@ -265,9 +266,12 @@ def project_bridge_view(
         or not all(
             type(item) is str and item.strip() and item == item.strip() for item in known_loss
         )
+        # Dieselbe Platzhalter-Sperre wie im Adapter: eine direkt gebaute
+        # Übersetzung darf sie nicht umgehen.
+        or any(placeholder_kind(item) is not None for item in known_loss)
     ):
         _fail(
-            "known_loss must contain at least one canonical text item",
+            "known_loss must contain at least one canonical text item that names a loss",
             BridgeViewReason.KNOWN_LOSS_REQUIRED,
         )
 

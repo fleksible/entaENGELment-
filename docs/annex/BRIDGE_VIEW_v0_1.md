@@ -30,6 +30,9 @@ M5 pointer. It does not mean approved, authorized, promoted, canonical, or true.
 
 - No view is emitted when `known_loss` is absent or malformed. A failed
   projection is never represented as complete.
+- A `known_loss` item that is only a placeholder (`n/a`, `keiner`, `unbekannt`,
+  `-`) is treated as absent. The view applies the adapter's own placeholder
+  check, so a translation built without the adapter cannot bypass it.
 - Adapter-derived source IDs must be canonical kebab-case IDs. Existing target
   IDs retain the adapter's non-empty, whitespace-trimmed stable-ID vocabulary.
 - Translation and nested ERK schema versions must match the supported v0.1
