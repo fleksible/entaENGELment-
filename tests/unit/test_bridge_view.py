@@ -69,7 +69,9 @@ def test_missing_known_loss_fails_closed():
     assert_reason(excinfo, BridgeViewReason.KNOWN_LOSS_REQUIRED)
 
 
-@pytest.mark.parametrize("value", ["n/a", "keiner", "unbekannt", "-"])
+@pytest.mark.parametrize(
+    "value", ["n/a", "keiner", "unbekannt", "-", "- keiner", "— unbekannt —", "• n/a"]
+)
 def test_placeholder_known_loss_is_not_projected(value):
     # Auch eine direkt gebaute Übersetzung umgeht die Platzhalter-Sperre nicht.
     translation = make_translation()

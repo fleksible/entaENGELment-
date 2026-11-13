@@ -636,6 +636,21 @@ class TestSourceModuleMinimalTests:
 class TestPlaceholderIsNotAnAnswer:
     """Füllwerte benennen weder einen Verlust noch eine Scheiterbedingung."""
 
+    @pytest.mark.parametrize("field", ["known_loss", "falsifier"])
+    @pytest.mark.parametrize("value", ["- keiner", "— unbekannt —", "– TBD –", "• n/a"])
+    def test_edge_dashes_and_bullets_do_not_make_a_placeholder_an_answer(self, field, value):
+        supplied = [value] if field == "known_loss" else value
+        with pytest.raises(BridgeAdapterError) as excinfo:
+            translate_bridge_record(make_record(**{field: supplied}))
+        expected = (
+            BridgeReason.KNOWN_LOSS_REQUIRED
+            if field == "known_loss"
+            else BridgeReason.FALSIFIER_REQUIRED
+        )
+        assert expected in excinfo.value.reasons
+        if "unbekannt" in value:
+            assert "do not invent" in str(excinfo.value)
+
     @pytest.mark.parametrize(
         "value",
         [
@@ -715,6 +730,7 @@ class TestPlaceholderIsNotAnAnswer:
             "Weitere Verluste sind unbekannt",
             "Unbekannt bleibt, ob die Reihenfolge erhalten ist",
             "n/a-Felder der Quelle werden nicht übertragen",
+            "- Kalibrierung offen — Größenordnung unbekannt",
         ],
     )
     def test_sentences_containing_placeholder_words_stay_valid(self, value):
