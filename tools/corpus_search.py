@@ -11,14 +11,16 @@ from __future__ import annotations
 import argparse
 import collections
 import csv
+import functools
 import hashlib
+import itertools
 import json
 import pathlib
 import re
 import sqlite3
 import subprocess
 import unicodedata
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from datetime import UTC, datetime
 from typing import Any
 from urllib.parse import quote
@@ -91,6 +93,7 @@ SOURCE_SUFFIXES = {
     ".sql",
 }
 MAX_BYTES = 4 * 1024 * 1024
+EXCERPT_CHARS = 1800
 
 
 def norm(text: str) -> str:
@@ -99,6 +102,122 @@ def norm(text: str) -> str:
 
 def tokens(text: str) -> list[str]:
     return [norm(m.group()) for m in TOKEN_RE.finditer(unicodedata.normalize("NFC", text))]
+
+
+def original_span(
+    text: str, start: int, end: int, transform: Callable[[str], str]
+) -> tuple[int, int]:
+    """Smallest span of ``text`` whose transformed form covers ``transform(text)[start:end]``.
+
+    Offsets in NFC or casefolded text are not offsets in the original: "ß" folds to
+    "ss", and a base letter plus combining mark composes to one character. The span is
+    therefore searched on original positions, moved only between whole character
+    clusters, and compared with the transformed target before it is returned.
+    ``transform`` has to keep ASCII positions, as NFC and NFC plus casefold do.
+    """
+    size = len(text)
+    if text.isascii():
+        return start, end
+    target = transform(text)[start:end]
+
+    def down(k: int) -> int:
+        while 0 < k < size and unicodedata.combining(text[k]):
+            k -= 1
+        return k
+
+    def up(k: int) -> int:
+        while k < size and unicodedata.combining(text[k]):
+            k += 1
+        return k
+
+    low, high = 0, size
+    while low < high:
+        middle = (low + high + 1) // 2
+        if len(transform(text[: down(middle)])) <= start:
+            low = middle
+        else:
+            high = middle - 1
+    first = down(low)
+    low, high = first, size
+    while low < high:
+        middle = (low + high) // 2
+        if len(transform(text[: up(middle)])) >= end:
+            high = middle
+        else:
+            low = middle + 1
+    last = up(low)
+    # Rare compositions across two base characters shift prefix lengths; widen a
+    # little, otherwise fall back to the whole text instead of a wrong span.
+    for _ in range(32):
+        if target in transform(text[first:last]):
+            return first, last
+        if last >= size:
+            break
+        last = up(last + 1)
+    return 0, size
+
+
+def line_match(
+    line: str, mode: str, found: list[str], wanted: collections.Counter[str]
+) -> tuple[int, int]:
+    """Original span of the first match on a line already selected as a hit line."""
+    if mode == "tokens":
+        composed = unicodedata.normalize("NFC", line)
+        needed = collections.Counter(wanted)
+        spans = []
+        for match in TOKEN_RE.finditer(composed):
+            token = norm(match.group())
+            if needed[token] > 0:
+                needed[token] -= 1
+                spans.append(match.span())
+        return original_span(
+            line,
+            min(a for a, _ in spans),
+            max(b for _, b in spans),
+            functools.partial(unicodedata.normalize, "NFC"),
+        )
+    folded = norm(line)
+    position, negative_length = min(
+        (folded.find(norm(v)), -len(norm(v))) for v in found if norm(v) in folded
+    )
+    return original_span(line, position, position - negative_length, norm)
+
+
+def bounded_excerpt(
+    text: str, context: tuple[int, int], match: tuple[int, int] | None
+) -> dict[str, Any]:
+    """At most EXCERPT_CHARS original characters; the match outranks its context."""
+    context_start, context_end = context
+    if match is None:
+        end = min(context_end, context_start + EXCERPT_CHARS)
+        return {
+            "excerpt": text[context_start:end],
+            "excerpt_match": "not_located_document_level",
+            "match_span_in_excerpt": None,
+            "excerpt_clipped": end < context_end,
+        }
+    match_start, match_end = match
+    if match_end - match_start > EXCERPT_CHARS:
+        start, end = match_start, match_start + EXCERPT_CHARS
+    else:
+        spare = EXCERPT_CHARS - (match_end - match_start)
+        start = max(context_start, match_start - spare // 2)
+        end = min(context_end, start + EXCERPT_CHARS)
+        start = max(context_start, end - EXCERPT_CHARS)
+    # A clipped edge stays between whole characters (base letter plus combining marks).
+    if start > context_start:
+        while start < match_start and unicodedata.combining(text[start]):
+            start += 1
+    if end < context_end:
+        floor = match_end if match_end <= end else start + 1
+        while end > floor and unicodedata.combining(text[end]):
+            end -= 1
+    return {
+        "excerpt": text[start:end],
+        "excerpt_match": "complete" if match_end <= end else "partial_match_exceeds_excerpt",
+        "match_span_in_excerpt": [match_start - start, min(match_end, end) - start],
+        "excerpt_clipped": start > context_start or end < context_end,
+    }
 
 
 def sha(data: bytes) -> str:
@@ -278,9 +397,37 @@ def build(args: argparse.Namespace) -> None:
     scope_unique: collections.Counter[str] = collections.Counter()
     seen_scope: collections.defaultdict[str, set[str]] = collections.defaultdict(set)
 
+    seen_ids: set[str] = set()
+
     def add(scope, ref, path, text, metadata=None):
         m = metadata or {}
         digest = sha(text.encode())
+        representation = m.get("representation") or "tracked_raw_utf8"
+        try:
+            start_line = int(str(m.get("start_line") or 1))
+        except ValueError:
+            raise ValueError(f"start_line is not a whole number: {path}") from None
+        # Representation and start line are part of the record identity: two excerpts
+        # of one source version may carry identical bytes and stay separate records.
+        record_id = sha(
+            "\0".join(
+                [
+                    scope,
+                    str(ref),
+                    str(m.get("source_id") or path),
+                    path,
+                    digest,
+                    str(representation),
+                    str(start_line),
+                ]
+            ).encode()
+        )[:24]
+        if record_id in seen_ids:
+            raise ValueError(
+                "Duplicate record: same source, version, title, content, representation "
+                f"and start_line: {path} ({representation}, start_line {start_line})."
+            )
+        seen_ids.add(record_id)
         role = m.get("source_kind") or role_for(path)
         family = m.get("source_family") or "UNKNOWN"
         all_tokens = tokens(text)
@@ -296,19 +443,7 @@ def build(args: argparse.Namespace) -> None:
             scope_unique[scope] += len(all_tokens)
             seen_scope[scope].add(digest)
         record = {
-            "id": sha(
-                (
-                    scope
-                    + "\0"
-                    + str(ref)
-                    + "\0"
-                    + str(m.get("source_id") or path)
-                    + "\0"
-                    + path
-                    + "\0"
-                    + digest
-                ).encode()
-            )[:24],
+            "id": record_id,
             "scope": scope,
             "ref": ref,
             "path": path,
@@ -316,8 +451,8 @@ def build(args: argparse.Namespace) -> None:
             "source_id": m.get("source_id") or path,
             "family": family,
             "role": role,
-            "representation": m.get("representation") or "tracked_raw_utf8",
-            "start_line": m.get("start_line") or 1,
+            "representation": representation,
+            "start_line": start_line,
             "read_state": m.get("read_state") or "MACHINE_INDEXED_NOT_SEMANTICALLY_READ",
             "status": m.get("claim_status") or declared_status(text) or ["UNKNOWN"],
             "provenance_url": m.get("provenance_url")
@@ -423,7 +558,9 @@ def build(args: argparse.Namespace) -> None:
                 )
                 continue
             p = pathlib.Path(item["local_path"])
-            text = p.read_text(encoding="utf-8")
+            # Bytes are decoded without newline translation, so the stored original
+            # and its SHA-256 match the supplied UTF-8 bytes, as for Git blobs.
+            text = p.read_bytes().decode("utf-8")
             add("corpus", item.get("source_version"), item["title"], text, item)
         manifest["scope"].append(
             {
@@ -504,7 +641,8 @@ def search(args: argparse.Namespace) -> None:
             found = [v for v, _ in variants if norm(v) in row["normalized"]]
         if not found:
             continue
-        lines = row["original"].splitlines()
+        text = row["original"]
+        lines = text.splitlines()
         if args.mode == "tokens":
             hit_lines = [
                 i
@@ -520,6 +658,13 @@ def search(args: argparse.Namespace) -> None:
             i = 0
         else:
             i = hit_lines[0]
+        starts = list(itertools.accumulate(map(len, text.splitlines(keepends=True)), initial=0))
+        last = min(len(lines), i + 3) - 1
+        context = (starts[max(0, i - 1)], starts[last] + len(lines[last])) if lines else (0, 0)
+        located = None
+        if hit_lines:
+            a, b = line_match(lines[i], args.mode, found, wanted)
+            located = (starts[i] + a, starts[i] + b)
         totals[row["scope"]] += 1
         record = {
             k: row[k]
@@ -542,7 +687,7 @@ def search(args: argparse.Namespace) -> None:
                 "matched_variants": found if args.mode != "tokens" else [],
                 "matched_tokens": list(wanted.elements()) if args.mode == "tokens" else [],
                 "line": row["start_line"] + i,
-                "excerpt": "\n".join(lines[max(0, i - 1) : i + 3])[:1800],
+                **bounded_excerpt(text, context, located),
                 "anchor_kind": (
                     "matching_line" if hit_lines else "document_level_tokens_or_multiline"
                 ),

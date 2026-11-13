@@ -1,5 +1,7 @@
 """Behavioral checks on isolated, entirely synthetic repositories and sources."""
 
+import collections
+import hashlib
 import importlib.util
 import json
 import pathlib
@@ -7,6 +9,7 @@ import sqlite3
 import subprocess
 import sys
 import tempfile
+import unicodedata
 import unittest
 
 SCRIPT = pathlib.Path(__file__).resolve().parents[2] / "tools" / "corpus_search.py"
@@ -352,6 +355,346 @@ class TestCorpusSearch(unittest.TestCase):
                 {"scope": "proposal", "ref": head, "path": "large.txt", "reason": "size_limit"},
                 manifest["exclusions"],
             )
+
+
+class TestOriginalBytesIdentityAndExcerpt(unittest.TestCase):
+    """Regressions for supplied bytes, record identity and match-bound excerpts."""
+
+    NEWLINES = {
+        "lf": b"alpha\nneedle\nomega\n",
+        "crlf": b"alpha\r\nneedle\r\nomega\r\n",
+        "cr": b"alpha\rneedle\romega\r",
+    }
+
+    @classmethod
+    def setUpClass(cls):
+        cls.temp = tempfile.TemporaryDirectory()
+        cls.root = pathlib.Path(cls.temp.name)
+        cls.repo = cls.root / "repo"
+        cls.repo.mkdir()
+
+        def git(*args):
+            return (
+                subprocess.check_output(
+                    ["git", "-C", str(cls.repo), *args], stderr=subprocess.DEVNULL
+                )
+                .decode()
+                .strip()
+            )
+
+        git("init", "-q")
+        git("config", "user.email", "test@example.invalid")
+        git("config", "user.name", "Synthetic Test")
+        git("config", "core.autocrlf", "false")
+        (cls.repo / ".gitattributes").write_text("* -text\n")
+        for name, raw in cls.NEWLINES.items():
+            (cls.repo / (name + ".txt")).write_bytes(raw)
+        git("add", ".")
+        git("commit", "-qm", "synthetic newline fixtures")
+        cls.ref = git("rev-parse", "HEAD")
+        spec = importlib.util.spec_from_file_location("search_module_spans", SCRIPT)
+        cls.module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(cls.module)
+        cls.limit = cls.module.EXCERPT_CHARS
+        cls.counter = 0
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.temp.cleanup()
+
+    @staticmethod
+    def entry(path, **metadata):
+        return {
+            "local_path": str(path),
+            "source_id": "synthetic-source",
+            "source_version": "v1",
+            "title": "same-title.txt",
+            "source_kind": "original",
+            **metadata,
+        }
+
+    def build(self, entries):
+        type(self).counter += 1
+        manifest = self.root / f"sources-{self.counter}.json"
+        manifest.write_text(json.dumps(entries), encoding="utf-8")
+        output = self.root / f"index-{self.counter}"
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(SCRIPT),
+                "build",
+                "--repo",
+                str(self.repo),
+                "--ref",
+                self.ref,
+                "--corpus",
+                str(manifest),
+                "--out",
+                str(output),
+            ],
+            capture_output=True,
+            text=True,
+        )
+        return result, output
+
+    def source(self, text):
+        type(self).counter += 1
+        path = self.root / f"source-{self.counter}.txt"
+        path.write_bytes(text.encode("utf-8"))
+        return path
+
+    def hit(self, text, query, *options):
+        result, output = self.build([self.entry(self.source(text))])
+        self.assertEqual(result.returncode, 0, result.stderr)
+        found = subprocess.run(
+            [
+                sys.executable,
+                str(SCRIPT),
+                "search",
+                str(output / "search.sqlite3"),
+                query,
+                "--scope",
+                "corpus",
+                *options,
+            ],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+        )
+        self.assertEqual(found.returncode, 0, found.stderr)
+        results = json.loads(found.stdout)["results"]
+        self.assertEqual(len(results), 1)
+        self.assertLessEqual(len(results[0]["excerpt"]), self.limit)
+        return results[0]
+
+    @staticmethod
+    def shown(hit):
+        start, end = hit["match_span_in_excerpt"]
+        return hit["excerpt"][start:end]
+
+    def rows(self, output):
+        db = sqlite3.connect((output / "search.sqlite3").resolve().as_uri() + "?mode=ro", uri=True)
+        try:
+            return db.execute(
+                "select id, sha256, representation, start_line, read_state, original, scope, path"
+                " from docs order by start_line, representation"
+            ).fetchall()
+        finally:
+            db.close()
+
+    def test_local_import_keeps_supplied_bytes_and_hash(self):
+        for name, raw in self.NEWLINES.items():
+            with self.subTest(newline=name):
+                result, output = self.build([self.entry(self.repo / (name + ".txt"))])
+                self.assertEqual(result.returncode, 0, result.stderr)
+                rows = self.rows(output)
+                corpus = next(r for r in rows if r[6] == "corpus")
+                tracked = next(r for r in rows if r[6] == "main" and r[7] == name + ".txt")
+                expected = hashlib.sha256(raw).hexdigest()
+                self.assertEqual(corpus[5].encode("utf-8"), raw)
+                self.assertEqual(corpus[1], expected)
+                self.assertEqual(tracked[1], expected)
+                manifest = json.loads((output / "manifest.json").read_text(encoding="utf-8"))
+                listed = [d["sha256"] for d in manifest["documents"] if d["scope"] == "corpus"]
+                self.assertEqual(listed, [expected])
+
+    def test_other_newlines_keep_line_anchor_and_original_characters(self):
+        for name, raw in self.NEWLINES.items():
+            with self.subTest(newline=name):
+                text = raw.decode("utf-8")
+                hit = self.hit(text, "needle")
+                self.assertEqual(hit["line"], 2)
+                self.assertEqual(hit["anchor_kind"], "matching_line")
+                self.assertEqual(hit["excerpt"], text.rstrip("\r\n"))
+                self.assertEqual(self.shown(hit), "needle")
+                self.assertFalse(hit["excerpt_clipped"])
+
+    def test_same_bytes_at_two_positions_are_two_records(self):
+        source = self.source("needle repeated\n")
+        result, output = self.build(
+            [
+                self.entry(source, start_line=line, representation="extracted_utf8")
+                for line in (10, 100)
+            ]
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        rows = [r for r in self.rows(output) if r[6] == "corpus"]
+        self.assertEqual(len({r[0] for r in rows}), 2)
+        self.assertEqual([r[3] for r in rows], [10, 100])
+        self.assertEqual(len({r[1] for r in rows}), 1)
+        self.assertEqual({r[4] for r in rows}, {"MACHINE_INDEXED_NOT_SEMANTICALLY_READ"})
+        scope = json.loads(result.stdout)["scopes"]["corpus"]
+        self.assertEqual(scope["indexed_documents"], 2)
+        self.assertEqual(scope["tokens"], 4)
+        self.assertEqual(scope["unique_content_tokens"], 2)
+
+    def test_same_bytes_in_two_representations_are_two_records(self):
+        source = self.source("needle repeated\n")
+        result, output = self.build(
+            [
+                self.entry(source, start_line=10, representation=name)
+                for name in ("raw_utf8", "extracted_utf8")
+            ]
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        rows = [r for r in self.rows(output) if r[6] == "corpus"]
+        self.assertEqual(len({r[0] for r in rows}), 2)
+        self.assertEqual(sorted(r[2] for r in rows), ["extracted_utf8", "raw_utf8"])
+        self.assertEqual({r[3] for r in rows}, {10})
+        self.assertEqual(len({r[1] for r in rows}), 1)
+        scope = json.loads(result.stdout)["scopes"]["corpus"]
+        self.assertEqual(scope["tokens"], 4)
+        self.assertEqual(scope["unique_content_tokens"], 2)
+
+    def test_identical_record_and_unusable_start_line_are_rejected_with_reason(self):
+        source = self.source("needle repeated\n")
+        for entries, reason in [
+            ([self.entry(source, start_line=10), self.entry(source, start_line="10")], "Duplicate"),
+            ([self.entry(source, start_line="tenth")], "start_line is not a whole number"),
+            ([self.entry(source, start_line=10.5)], "start_line is not a whole number"),
+        ]:
+            with self.subTest(reason=reason):
+                result, _ = self.build(entries)
+                self.assertEqual(result.returncode, 2)
+                self.assertIn(reason, result.stderr)
+                self.assertNotIn("UNIQUE constraint", result.stderr)
+                self.assertNotIn("Traceback", result.stderr)
+
+    def test_short_context_is_unchanged(self):
+        hit = self.hit("before\nneedle: important context\nafter\nlater\nunseen\n", "needle")
+        self.assertEqual(hit["line"], 2)
+        self.assertEqual(hit["excerpt"], "before\nneedle: important context\nafter\nlater")
+        self.assertEqual(hit["excerpt_match"], "complete")
+        self.assertEqual(hit["match_span_in_excerpt"], [7, 13])
+        self.assertFalse(hit["excerpt_clipped"])
+
+    def test_long_preceding_line_does_not_displace_match(self):
+        hit = self.hit("x" * 1900 + "\nneedle: important context\nafter\n", "needle")
+        self.assertEqual(hit["line"], 2)
+        self.assertEqual(hit["anchor_kind"], "matching_line")
+        self.assertEqual(self.shown(hit), "needle")
+        self.assertIn("needle: important context\nafter", hit["excerpt"])
+        self.assertEqual(hit["excerpt_match"], "complete")
+        self.assertTrue(hit["excerpt_clipped"])
+
+    def test_late_match_on_long_line_stays_visible_in_every_mode(self):
+        late = "x" * 1900 + " needle: important context\n"
+        combined = "x" * 1900 + " Gru\u0308neisen Stra\u00dfe\n"
+        for text, query, mode, original in [
+            (late, "needle", "literal", "needle"),
+            (late, "needle", "tokens", "needle"),
+            (late, "needle", "expanded", "needle"),
+            (combined, "Gr\u00fcneisen", "expanded", "Gru\u0308neisen"),
+            (combined, "gr\u00fcneisen", "tokens", "Gru\u0308neisen"),
+        ]:
+            with self.subTest(query=query, mode=mode):
+                hit = self.hit(text, query, "--mode", mode)
+                self.assertEqual(hit["line"], 1)
+                self.assertEqual(hit["anchor_kind"], "matching_line")
+                self.assertEqual(self.shown(hit), original)
+                self.assertEqual(hit["excerpt_match"], "complete")
+                self.assertTrue(hit["excerpt_clipped"])
+
+    def test_folded_queries_show_original_spelling_and_position(self):
+        pad = "\u00e4\u00df " * 700
+        for text, query, original in [
+            (pad + "Stra\u00dfe am Ende\n", "strasse", "Stra\u00dfe"),
+            (pad + "STRASSE am Ende\n", "stra\u00dfe", "STRASSE"),
+            (pad + "Stra\u00dfe am Ende\n", "sse a", "\u00dfe a"),
+            (pad + "Gru\u0308neisen am Ende\n", "GR\u00dcNEISEN", "Gru\u0308neisen"),
+            (pad + "Gr\u00fcneisen am Ende\n", "gru\u0308neisen", "Gr\u00fcneisen"),
+        ]:
+            with self.subTest(query=query):
+                hit = self.hit(text, query)
+                self.assertEqual(hit["line"], 1)
+                self.assertEqual(self.shown(hit), original)
+                end = hit["match_span_in_excerpt"][1]
+                self.assertTrue(hit["excerpt"].endswith("m Ende"))
+                self.assertIn(hit["excerpt"][end:], (" am Ende", "m Ende"))
+                self.assertEqual(hit["excerpt_match"], "complete")
+
+    def test_token_span_follows_token_rule_not_substring(self):
+        hit = self.hit("master " * 400 + "Mast 2 und 2 position\n", "Mast", "--mode", "tokens")
+        start, end = hit["match_span_in_excerpt"]
+        self.assertEqual(hit["excerpt"][start:end], "Mast")
+        self.assertEqual(hit["excerpt"][start - 1 : end + 2], " Mast 2")
+        doubled = self.hit("master " * 400 + "Mast 2 und 2 position\n", "2 2", "--mode", "tokens")
+        self.assertEqual(self.shown(doubled), "2 und 2")
+        self.assertEqual(doubled["matched_tokens"], ["2", "2"])
+
+    def test_match_longer_than_excerpt_is_marked_partial(self):
+        spread = "lead " * 50 + "alpha " + "x" * 3000 + " omega tail\n"
+        phrase = "y" * 2000
+        for text, query, mode, opening in [
+            (spread, "omega alpha", "tokens", "alpha "),
+            ("lead " * 50 + phrase + " tail\n", phrase, "literal", "y"),
+        ]:
+            with self.subTest(mode=mode):
+                hit = self.hit(text, query, "--mode", mode)
+                self.assertEqual(hit["anchor_kind"], "matching_line")
+                self.assertEqual(hit["excerpt_match"], "partial_match_exceeds_excerpt")
+                self.assertEqual(hit["match_span_in_excerpt"], [0, self.limit])
+                self.assertEqual(len(hit["excerpt"]), self.limit)
+                self.assertTrue(hit["excerpt"].startswith(opening))
+                self.assertTrue(hit["excerpt_clipped"])
+
+    def test_scattered_tokens_keep_document_anchor(self):
+        result, output = self.build(
+            [self.entry(self.source("alpha\nfiller\nfiller\nfiller\nomega\n"), start_line=40)]
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        found = json.loads(
+            subprocess.check_output(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "search",
+                    str(output / "search.sqlite3"),
+                    "alpha omega",
+                    "--mode",
+                    "tokens",
+                    "--scope",
+                    "corpus",
+                ]
+            )
+        )["results"][0]
+        self.assertEqual(found["anchor_kind"], "document_level_tokens_or_multiline")
+        self.assertEqual(found["line"], 40)
+        self.assertEqual(found["excerpt_match"], "not_located_document_level")
+        self.assertIsNone(found["match_span_in_excerpt"])
+        self.assertEqual(found["excerpt"], "alpha\nfiller\nfiller")
+
+    def test_clipped_edges_keep_base_letter_and_combining_mark_together(self):
+        pair = "u\u0308"
+        hit = self.hit(pair * 1500 + " needle " + pair * 1500 + "\n", "needle")
+        self.assertEqual(self.shown(hit), "needle")
+        self.assertTrue(hit["excerpt_clipped"])
+        self.assertFalse(unicodedata.combining(hit["excerpt"][0]))
+        self.assertTrue(unicodedata.combining(hit["excerpt"][-1]))
+
+    def test_span_mapping_checks_itself_against_the_original(self):
+        span = self.module.original_span
+        norm = self.module.norm
+        for text, needle, original in [
+            ("x\u1100\u1161\u11a8y", "\uac01", "\u1100\u1161\u11a8"),
+            ("l\u0304\u0323 Stra\u00dfe", "sse", "\u00dfe"),
+            ("\u0130stanbul \u00dcber", "\u00fcber", "\u00dcber"),
+        ]:
+            with self.subTest(text=text):
+                folded = norm(text)
+                position = folded.find(norm(needle))
+                self.assertGreaterEqual(position, 0)
+                first, last = span(text, position, position + len(norm(needle)), norm)
+                self.assertEqual(text[first:last], original)
+                self.assertIn(norm(needle), norm(text[first:last]))
+
+    def test_token_excerpt_contains_every_wanted_token(self):
+        text = "x" * 1900 + " zweites Gru\u0308neisen-Ma\u00df dann erstes Wort\n"
+        hit = self.hit(text, "erstes zweites", "--mode", "tokens")
+        present = collections.Counter(self.module.tokens(self.shown(hit)))
+        self.assertGreaterEqual(present["erstes"], 1)
+        self.assertGreaterEqual(present["zweites"], 1)
+        self.assertEqual(self.shown(hit), "zweites Gru\u0308neisen-Ma\u00df dann erstes")
 
 
 if __name__ == "__main__":
