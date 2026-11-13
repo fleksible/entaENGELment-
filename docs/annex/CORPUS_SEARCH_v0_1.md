@@ -180,8 +180,10 @@ Tokenmehrfachheit, Aliasgrenzen, Original-/Quellenidentität, Ref-Pinning,
 Outputschutz sowie Overlay- und Ausschlussverhalten. Seit dem 13.11.2026 prüfen
 sie zusätzlich Zeilenenden und Hashbindung lokaler Importe, getrennte
 Datensätze bei anderer Position oder Repräsentation sowie Lage, Originalschreibung
-und Kennzeichnung der Fundstelle im Ausschnitt. Die Referenzmessung oben bleibt
-an ihre damalige CLI-Fassung gebunden und wurde nicht rückwirkend angepasst.
+und Kennzeichnung der Fundstelle im Ausschnitt. Der zugehörige
+[Prüfbericht](../audit/2026-11-13_corpus_search_originalspan_repair.md) führt
+Basis, Vorher/Nachher und Auslassungen. Die Referenzmessung oben bleibt an ihre
+damalige CLI-Fassung gebunden und wurde nicht rückwirkend angepasst.
 
 [ANNEX] Der [Methodenfall](METHODENFALL_CORPUS_SEARCH_v0_1.md) trennt
 Suchtreffer, Herkunft und Geltung. Die [Review-Fragen zum Phasenkandidaten](PHASEN_REPLAY_REVIEWFRAGEN_v0_1.md)
