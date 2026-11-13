@@ -110,3 +110,12 @@ Es wird hier noch kein Producer, Adapter oder Replay implementiert.
 [ANNEX] Kη-03 bleibt UNBOUND. Die Prüfung ändert weder HUD-Laufzeit noch
 Kenogrammstatus oder VOIDMAP. Ihre konkrete neue Information ist die eingegrenzte
 Quellenlage samt Gegenfällen und der vor einem Anbindungspatch fehlenden Setzung.
+
+
+## 7. Konkreter nächster Kandidat
+
+[ANNEX] Der [ausgefüllte Replay-Kandidat](PHASEN_REPLAY_KANDIDAT_v0_1.md)
+schlägt eine begrenzte relative Toy-Phase samt expliziter Sample-Zuordnung vor.
+Die Vorhersageregel wurde an drei Seeds und drei falschen Seed-Gegenproben
+gerechnet. Das ist kein implementierter HUD-Adapter; Größe und Zuordnung
+stehen zur konkreten Modellentscheidung. Die Anbindung bleibt HOLD.
