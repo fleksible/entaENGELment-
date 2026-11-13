@@ -560,6 +560,14 @@ class TestOriginalBytesIdentityAndExcerpt(unittest.TestCase):
                 self.assertNotIn("UNIQUE constraint", result.stderr)
                 self.assertNotIn("Traceback", result.stderr)
 
+    def test_undecodable_local_source_is_still_rejected_without_traceback(self):
+        source = self.root / "not-utf8.txt"
+        source.write_bytes(b"needle \xff\xfe\r\n")
+        result, _ = self.build([self.entry(source)])
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("corpus-search:", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
+
     def test_short_context_is_unchanged(self):
         hit = self.hit("before\nneedle: important context\nafter\nlater\nunseen\n", "needle")
         self.assertEqual(hit["line"], 2)
