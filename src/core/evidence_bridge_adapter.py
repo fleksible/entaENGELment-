@@ -28,6 +28,7 @@ Der Kernel bleibt unverändert; dieses Modul importiert ihn nur.
 from __future__ import annotations
 
 import hashlib
+import unicodedata
 from collections.abc import Mapping, Sequence
 from dataclasses import MISSING, asdict, dataclass, field, fields
 from enum import Enum
@@ -297,6 +298,121 @@ class BridgeTranslation:
 # ---------------------------------------------------------------------------
 
 
+# Geschlossene Listen von Füllwerten. Ein Eintrag, der *nur* aus einem solchen
+# Wert besteht, benennt nichts; Sätze, die diese Wörter enthalten, bleiben gültig.
+# Die Listen fangen bekannte Leerformeln ab. Ob ein ausformulierter Eintrag
+# sachlich trägt, bleibt menschliche Review-Arbeit.
+_PLACEHOLDER_FILLER = frozenset(
+    {
+        "kein",
+        "keine",
+        "keinen",
+        "keiner",
+        "keines",
+        "nichts",
+        "nein",
+        "no",
+        "none",
+        "nil",
+        "null",
+        "n/a",
+        "na",
+        "n.a",
+        "nicht zutreffend",
+        "not applicable",
+        "entfällt",
+        "kein verlust",
+        "keine verluste",
+        "ohne verlust",
+        "ohne verluste",
+        "verlustfrei",
+        "verlustlos",
+        "no loss",
+        "no losses",
+        "zero loss",
+        "zero leakage",
+        "lossless",
+        "nicht falsifizierbar",
+        "unfalsifizierbar",
+        "nicht widerlegbar",
+        "unwiderlegbar",
+        "unfalsifiable",
+        "not falsifiable",
+        "kein falsifikator",
+        "no falsifier",
+        "tbd",
+        "tba",
+        "todo",
+        "to do",
+        "fixme",
+        "xxx",
+        "placeholder",
+        "platzhalter",
+        "folgt",
+        "wird nachgereicht",
+    }
+)
+_PLACEHOLDER_UNKNOWN = frozenset(
+    {
+        "unbekannt",
+        "unknown",
+        "nicht bekannt",
+        "not known",
+        "unklar",
+        "unclear",
+        "ungeklärt",
+        "unbestimmt",
+        "undetermined",
+        "unresolved",
+        "offen",
+        "open",
+        "k.a",
+        "k. a",
+        "ka",
+        "keine angabe",
+        "keine angaben",
+        "keine ahnung",
+        "weiß nicht",
+        "weiss nicht",
+    }
+)
+_PLACEHOLDER_EDGE = " \t.,;:!?()[]{}<>\"'`´„“”‚‘’«»*_~#|"
+
+
+def placeholder_kind(value: str) -> str | None:
+    """``"filler"``, ``"unknown"`` oder ``None`` für einen einzelnen Freitextwert.
+
+    Verglichen wird der ganze Eintrag nach NFKC, Casefold und ohne Randzeichen.
+    Ein Eintrag ohne Buchstaben oder Ziffern (``-``, ``…``, ``???``) ist Füllwert.
+    """
+    text = " ".join(unicodedata.normalize("NFKC", value).casefold().split())
+    text = text.strip(_PLACEHOLDER_EDGE)
+    if not any(char.isalnum() for char in text):
+        return "filler"
+    if text in _PLACEHOLDER_UNKNOWN:
+        return "unknown"
+    if text in _PLACEHOLDER_FILLER:
+        return "filler"
+    return None
+
+
+def _reject_placeholder(value: str, reason: BridgeReason, label: str, noun: str) -> None:
+    kind = placeholder_kind(value)
+    if kind == "unknown":
+        # Fail-closed ohne Ersatzangabe: Wer den Verlust nicht kennt, soll keinen erfinden.
+        raise BridgeAdapterError(
+            f"{label} says the {noun} is unknown. An unknown {noun} is not a named one: "
+            f"the bridge stays untranslated until it can be named; do not invent an entry "
+            "to pass this check.",
+            [reason],
+        )
+    if kind == "filler":
+        raise BridgeAdapterError(
+            f"{label} is a placeholder and names no {noun}: {value!r}",
+            [reason],
+        )
+
+
 def _require_text(value: object, reason: BridgeReason, label: str) -> str:
     if type(value) is not str or not value.strip():
         raise BridgeAdapterError(f"{label} is required and must be non-empty", [reason])
@@ -385,7 +501,10 @@ def validate_bridge_record(record: BridgeRecord, *, policy: ClaimPolicy | None =
         BridgeReason.PRESERVED_RELATION_REQUIRED,
         "preserved_relation",
     )
-    _require_text(record.falsifier, BridgeReason.FALSIFIER_REQUIRED, "falsifier")
+    falsifier = _require_text(record.falsifier, BridgeReason.FALSIFIER_REQUIRED, "falsifier")
+    _reject_placeholder(
+        falsifier, BridgeReason.FALSIFIER_REQUIRED, "falsifier", "failure condition"
+    )
     _require_text(record.rollback, BridgeReason.ROLLBACK_REQUIRED, "rollback")
 
     # Ein blanker String ist iterierbar: ohne diese Prüfung würde
@@ -405,6 +524,9 @@ def validate_bridge_record(record: BridgeRecord, *, policy: ClaimPolicy | None =
             "known_loss must list at least one concrete loss",
             [BridgeReason.KNOWN_LOSS_REQUIRED],
         )
+    # Ein Füllwert ist kein benannter Verlust — auch nicht neben einem benannten.
+    for item in record.known_loss:
+        _reject_placeholder(item, BridgeReason.KNOWN_LOSS_REQUIRED, "known_loss", "loss")
 
     _validate_register_reach(record)
     _validate_proposed_tag(record, policy)

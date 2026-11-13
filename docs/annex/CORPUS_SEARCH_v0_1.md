@@ -138,9 +138,27 @@ werden nicht inhaltlich erschlossen.
 
 [ANNEX] --corpus akzeptiert eine lokale JSON-Liste mit local_path, title,
 source_id, source_version, source_kind, source_family, representation,
-read_state, start_line, claim_status und provenance_url, soweit bekannt.
-Dies ist ein freiwilliger Zusatz zum öffentlichen Repo-Lauf. Unknown-Werte
+read_state, start_line, claim_status, provenance_url und visibility, soweit
+bekannt. Dies ist ein freiwilliger Zusatz zum öffentlichen Repo-Lauf. Unknown-Werte
 bleiben unknown; maschinelles Indexieren ist keine vollständige Lektüre.
+
+[ANNEX] visibility führt die erklärte Sichtbarkeit eines Eintrags wörtlich
+mit, etwa private. Der Wert steht unverändert im Index, im Manifest und an
+jedem Suchtreffer. Er wird weder auf ein festes Vokabular abgebildet noch
+gedeutet. Fehlt die Angabe, bleibt sie leer; leer heißt nicht erklärt und
+nicht öffentlich. Repo-Dateien erhalten keine Sichtbarkeitsangabe. Ältere
+Indizes ohne diese Spalte bleiben lesbar; ihre Treffer tragen eine leere Angabe.
+
+[ANNEX] Ein Feld außerhalb dieser Liste bricht den Bau ab, bevor ein
+Ausgabeordner entsteht. Ein vertipptes visiblity ginge sonst still verloren
+und der Eintrag erschiene unmarkiert. Die Meldung nennt nur die Position des
+Eintrags und den Feldnamen, keinen Wert, Titel oder Pfad. Dasselbe gilt für
+eine Sichtbarkeitsangabe, die kein nichtleerer Text ist.
+
+[RISK] Die Sichtbarkeitsangabe ist eine mitgeführte Erklärung, kein Schutz.
+Ein Treffer aus einem als privat erklärten Eintrag zeigt weiterhin seinen
+Ausschnitt; die Angabe steht daneben, damit sie beim Weiterverwenden nicht
+verloren geht.
 
 [ANNEX] Lokale Dateien werden als Bytes gelesen und ohne Umwandlung der
 Zeilenenden als UTF-8 dekodiert. Der gespeicherte Originaltext entspricht damit

@@ -94,6 +94,22 @@ SOURCE_SUFFIXES = {
 }
 MAX_BYTES = 4 * 1024 * 1024
 EXCERPT_CHARS = 1800
+CORPUS_ENTRY_FIELDS = frozenset(
+    {
+        "local_path",
+        "title",
+        "source_id",
+        "source_version",
+        "source_kind",
+        "source_family",
+        "representation",
+        "read_state",
+        "start_line",
+        "claim_status",
+        "provenance_url",
+        "visibility",
+    }
+)
 
 
 def norm(text: str) -> str:
@@ -337,7 +353,7 @@ def create_db(path: pathlib.Path) -> sqlite3.Connection:
     CREATE TABLE docs(id TEXT PRIMARY KEY, scope TEXT, ref TEXT, path TEXT,
       sha256 TEXT, source_id TEXT, family TEXT, role TEXT, representation TEXT,
       start_line INTEGER, read_state TEXT, status TEXT, provenance_url TEXT,
-      original TEXT, normalized TEXT, token_count INTEGER);
+      original TEXT, normalized TEXT, token_count INTEGER, visibility TEXT);
     CREATE TABLE terms(scope TEXT, role TEXT, term TEXT, occurrences INTEGER,
       documents INTEGER, unique_content_occurrences INTEGER);
     CREATE TABLE meta(key TEXT PRIMARY KEY, value TEXT);
@@ -347,7 +363,37 @@ def create_db(path: pathlib.Path) -> sqlite3.Connection:
     return db
 
 
+def load_corpus_entries(path: str) -> list[dict[str, Any]]:
+    """Read the local corpus list and refuse what the index would not keep.
+
+    A field outside CORPUS_ENTRY_FIELDS is never dropped silently: a misspelled
+    visibility marking would otherwise vanish. Messages name the entry position and
+    the field name only, never a value, title or path.
+    """
+    entries = json.loads(pathlib.Path(path).read_text())
+    if not isinstance(entries, list):
+        raise ValueError("Corpus manifest is not a JSON list.")
+    for number, entry in enumerate(entries, 1):
+        if not isinstance(entry, dict):
+            raise ValueError(f"Corpus entry {number} is not a JSON object.")
+        unknown = sorted(set(entry) - CORPUS_ENTRY_FIELDS)
+        if unknown:
+            raise ValueError(
+                f"Corpus entry {number} has unknown field(s): {', '.join(unknown)}. "
+                "Nothing was indexed; fields are not dropped silently."
+            )
+        visibility = entry.get("visibility")
+        if visibility is not None and not (isinstance(visibility, str) and visibility.strip()):
+            raise ValueError(
+                f"Corpus entry {number}: visibility is not non-empty text. "
+                "Leave the field out when no visibility is declared."
+            )
+    return entries
+
+
 def build(args: argparse.Namespace) -> None:
+    # Checked before any output exists, so a refused corpus list leaves nothing behind.
+    corpus_entries = load_corpus_entries(args.corpus) if args.corpus else []
     out = pathlib.Path(args.out).resolve()
     repo = pathlib.Path(args.repo).resolve()
     if out == repo or repo in out.parents:
@@ -462,10 +508,12 @@ def build(args: argparse.Namespace) -> None:
                 else None
             ),
             "token_count": len(all_tokens),
+            # Declared visibility is kept verbatim. None means "not declared", not "public".
+            "visibility": m.get("visibility"),
         }
         # Never infer canonical status, tested behavior, or independence from role/path.
         db.execute(
-            "INSERT INTO docs VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            "INSERT INTO docs VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             (
                 record["id"],
                 scope,
@@ -483,6 +531,7 @@ def build(args: argparse.Namespace) -> None:
                 text,
                 norm(text),
                 len(all_tokens),
+                record["visibility"],
             ),
         )
         manifest["documents"].append(record)
@@ -547,7 +596,7 @@ def build(args: argparse.Namespace) -> None:
                 add(scope, ref, path, text)
 
     if args.corpus:
-        for item in json.loads(pathlib.Path(args.corpus).read_text()):
+        for item in corpus_entries:
             if item.get("source_kind") == "generated_index":
                 manifest["exclusions"].append(
                     {
@@ -682,6 +731,8 @@ def search(args: argparse.Namespace) -> None:
         }
         record.update(
             {
+                # Indexes built before the visibility column carry no declaration.
+                "visibility": row["visibility"] if "visibility" in row.keys() else None,
                 "declared_status": json.loads(row["status"]),
                 "status_scope": "verbatim source declarations; nested records are not whole-document status",
                 "matched_variants": found if args.mode != "tokens" else [],
