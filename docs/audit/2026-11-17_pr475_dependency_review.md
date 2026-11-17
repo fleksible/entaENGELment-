@@ -6,7 +6,7 @@ Nachweisen durch den Auftraggeber ausdrücklich delegiert.
 
 ## Gegenstand und Entscheidung
 
-**Übernahmefähig, vorbehaltlich erfolgreicher CI am endgültigen PR-Head.**
+**HOLD: Aktueller High-Audit blockiert den Merge.**
 Der geprüfte Dependency-Diff ändert die Lint-Konfiguration und mehrere gemeinsam
 verwendete transitive Werkzeuge. Er ist kein zusätzliches Next.js-Runtime-Patch.
 Die bereits vorhandenen CI-Läufe decken Lint, Typprüfung, statischen UI-Build,
@@ -113,10 +113,35 @@ Legacy-Build-/Security-Jobs und der signierte DeepJump-Pfad sind übersprungen;
 ihnen wird keine Prüfleistung zugeschrieben. Die dedizierten Jobs liefern die
 oben benannten konkreten Belege.
 
+## Erneuter Audit: früheres Grün ist überholt
+
+Nach Aufnahme dieses Berichts wurde die CI am Head
+`9292851344b41ac9f6f2073a267d90f5df2c2293` erneut gestartet.
+Der [aktuelle JS-Audit-Job](https://github.com/fleksible/entaENGELment-/actions/runs/44144870580/job/134257148477)
+scheitert jetzt auch im verbindlichen `pnpm audit --audit-level=high` mit Exit 1:
+sechs Befunde, davon vier moderat und zwei hoch. Die früheren fünf Befunde sind
+ein zeitlich gebundener Nachweisstand; ihre Zahl darf nicht fortgeschrieben werden.
+
+Die beiden hohen Befunde betreffen `picomatch` über
+`electron-builder > app-builder-lib > @electron/rebuild > node-gyp > tinyglobby`
+und `jest > @jest/core > jest-haste-map > anymatch`.
+[GHSA-fc5q-39xc-vjpf / CVE-2026-112366](https://github.com/advisories/GHSA-fc5q-39xc-vjpf)
+wurde am 17. November 2026 überprüft/aktualisiert, betrifft laut Advisory
+Versionen bis einschließlich 4.0.7 und nennt keine gepatchte Version.
+Diese Dependency war bereits in der Basis enthalten und wird durch #475 nicht
+angehoben. Das ist ein konkreter aktueller Gate-Befund, kein Nachweis eines
+erreichbaren Angriffs auf die statisch exportierte UI.
+
+Das Python-Audit desselben Laufs ist erfolgreich. Weitere erfolgreiche
+Funktionsprüfungen ersetzen das fehlgeschlagene High-Gate nicht. Eine
+Ausnahmeregel oder Herabstufung des Gates ist nicht Teil dieses Dependency-PRs.
+
 ## Kleinste belastbare Handlung
 
-Den Versionsabgleich übernehmen, sobald der endgültige Head weiterhin die
-erforderlichen CI-Prüfungen besteht. Ein separater Cache-/Edge-Integrationstest
+Den Versionsabgleich vorbereitet offen halten. Vor einer Übernahme müssen die
+hohen `picomatch`-Befunde durch eine verfügbare Reparatur beseitigt werden oder
+eine eigenständig begründete, ausdrücklich autorisierte Risikoausnahme vorliegen.
+Ein separater Cache-/Edge-Integrationstest
 ist für die hier fehlenden Nutzungspfade nicht erforderlich. Bei zukünftigem
 Serverbetrieb, Cache Components oder aktivierter Bildoptimierung muss die
 Erreichbarkeit neu bewertet werden. Governance-Regeln und menschliche
