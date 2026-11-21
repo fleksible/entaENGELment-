@@ -1,0 +1,17 @@
+case_id,run_ok,evidence_integrity,parse_known,full_axiom_list,expected_gate
+P01,False,False,False,False,RUN_FAILED
+P02,False,False,False,True,RUN_FAILED
+P03,False,False,True,False,RUN_FAILED
+P04,False,False,True,True,RUN_FAILED
+P05,False,True,False,False,RUN_FAILED
+P06,False,True,False,True,RUN_FAILED
+P07,False,True,True,False,RUN_FAILED
+P08,False,True,True,True,RUN_FAILED
+P09,True,False,False,False,HOLD_INVALID_EVIDENCE
+P10,True,False,False,True,HOLD_INVALID_EVIDENCE
+P11,True,False,True,False,HOLD_INVALID_EVIDENCE
+P12,True,False,True,True,HOLD_INVALID_EVIDENCE
+P13,True,True,False,False,HOLD_INVALID_EVIDENCE
+P14,True,True,False,True,HOLD_INVALID_EVIDENCE
+P15,True,True,True,False,HOLD_INVALID_EVIDENCE
+P16,True,True,True,True,PASS
