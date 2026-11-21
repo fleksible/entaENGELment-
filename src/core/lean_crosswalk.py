@@ -290,18 +290,26 @@ def parse_print_axioms(output: str) -> ParsedOutput:
 def audit_raw(exit_code: int, output: str, expected_decls: Sequence[str]) -> dict[str, Verdict]:
     """Rohausgabe → ein Urteil je erwarteter Deklaration, fail-closed.
 
+    * Nur ein echtes ``int`` ist ein Exit-Code (kein ``bool``, kein ``float``,
+      kein Text); sonst alle ``HOLD_INVALID_EVIDENCE``.
     * Exit-Code ungleich 0: alle ``RUN_FAILED``, die Ausgabe wird nicht gelesen.
+    * Ausgabe, die kein Text ist: alle ``HOLD_INVALID_EVIDENCE``.
     * Unbekannte Zeile oder unerwartete Deklaration: alle ``HOLD_INVALID_EVIDENCE``.
     * Fehlende oder doppelte Deklaration: nur diese erhält ein HOLD.
     """
     if len(set(expected_decls)) != len(expected_decls):
         raise ValueError("erwartete Deklarationen müssen eindeutig sein")
+    unusable = {decl: assess(True, 0, [], parse_known=False) for decl in expected_decls}
+    if type(exit_code) is not int:
+        return unusable
     if exit_code != 0:
         return {decl: assess(False, 0, []) for decl in expected_decls}
+    if not isinstance(output, str):
+        return unusable
     parsed = parse_print_axioms(output)
     seen = Counter(decl for decl, _ in parsed.records)
     if parsed.unknown_lines or set(seen) - set(expected_decls):
-        return {decl: assess(True, 0, [], parse_known=False) for decl in expected_decls}
+        return unusable
     axioms_of = dict(parsed.records)
     return {
         decl: assess(True, seen[decl], list(axioms_of.get(decl, ())) if seen[decl] == 1 else [])

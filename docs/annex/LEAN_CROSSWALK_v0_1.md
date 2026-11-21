@@ -58,7 +58,9 @@ bleibt als `semantic_reentry: SEPARATE_UNREVIEWED` eine eigene, offene Prüfung.
 
 ## 4. Zwei getrennt prüfbare Grenzen
 
-1. **Rohausgabe → Urteil** (`audit_raw`, `parse_print_axioms`): Exit-Code zuerst.
+1. **Rohausgabe → Urteil** (`audit_raw`, `parse_print_axioms`): Exit-Code zuerst;
+   nur ein echtes `int` zählt (0 = Erfolg, jede andere ganze Zahl `RUN_FAILED`),
+   jeder andere Wert und jede Ausgabe, die kein Text ist, ergibt `HOLD_INVALID_EVIDENCE`.
    Gelesen werden nur die dokumentierten Zeilenformen
    (`'X' depends on axioms: [a, b]`, `'X' does not depend on any axioms`,
    wahlweise mit Positionspräfix). Unbekannte Zeilen, umgebrochene Listen und
@@ -111,5 +113,5 @@ Befund mit `lean --version`, genauem Aufruf und Hashes von Quelle und Ausgabe fe
 
 - [ANNEX] HOLD: Erster echter Lean-Lauf; bis dahin ist der Leser für die Rohausgabe unbelegt.
 - [ANNEX] HOLD: Ob die Kommandozeile ein Positionspräfix ausgibt und ob lange Axiomlisten umbrechen.
-- [ANNEX] HOLD: Offener Befund `audit_raw()` (registriert 2026-11-21, nicht behoben): `exit_code=False` oder `0.0` gilt als erfolgreicher Lauf und kann so zu `FORMAL_CLOSED` führen; eine Ausgabe, die kein Text ist, löst eine Exception aus. Vor der ersten echten Lean-Integration und vor einem Merge als eigener Folgeschritt zu beheben.
+- [ANNEX] Behoben (2026-11-21, registriert in Commit 6, behoben in Commit 8): Befund `audit_raw()` – `exit_code=False` oder `0.0` galt als erfolgreicher Lauf und konnte so zu `FORMAL_CLOSED` führen; eine Ausgabe, die kein Text ist, löste eine Exception aus. Prüfbericht: `docs/audit/2026-11-21_lean_crosswalk_audit_raw.md`.
 - [ANNEX] HOLD: Verständlichkeitstest: ob Menschen mathematische Aussagen durch die Karten besser verstehen, ist ein eigener Forschungsstrang.
