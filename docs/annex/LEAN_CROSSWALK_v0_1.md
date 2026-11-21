@@ -87,7 +87,7 @@ gesetzt und werden nie aus dem Code erzeugt:
 | `derivation_truth_table.csv` | 24 Kombinationen aus Lauf × Deklarationsanzahl × sorryAx × Fremdaxiom (aus v0.3 unverändert) |
 | `evidence_preflight_table.csv` | 16 Kombinationen der Vorprüfung |
 | `audit_matrix.csv` | 7 × 7 erwarteter × sichtbarer Status |
-| `audit_negative_cases.csv` | 7 Status × 8 Verfälschungen = 56 Fälle |
+| `audit_negative_cases.csv` | 7 Status × (1 unveränderte Baseline + 7 Verfälschungen) = 56 Fälle, davon 49 tatsächliche Verfälschungen |
 
 ## 7. Lean-Testfälle
 
@@ -111,4 +111,5 @@ Befund mit `lean --version`, genauem Aufruf und Hashes von Quelle und Ausgabe fe
 
 - [ANNEX] HOLD: Erster echter Lean-Lauf; bis dahin ist der Leser für die Rohausgabe unbelegt.
 - [ANNEX] HOLD: Ob die Kommandozeile ein Positionspräfix ausgibt und ob lange Axiomlisten umbrechen.
+- [ANNEX] HOLD: Offener Befund `audit_raw()` (registriert 2026-11-21, nicht behoben): `exit_code=False` oder `0.0` gilt als erfolgreicher Lauf und kann so zu `FORMAL_CLOSED` führen; eine Ausgabe, die kein Text ist, löst eine Exception aus. Vor der ersten echten Lean-Integration und vor einem Merge als eigener Folgeschritt zu beheben.
 - [ANNEX] HOLD: Verständlichkeitstest: ob Menschen mathematische Aussagen durch die Karten besser verstehen, ist ein eigener Forschungsstrang.

@@ -76,6 +76,10 @@ SUMMARY_TEMPLATES: Mapping[str, str] = {
 ALLOWED: frozenset[str] = frozenset({"propext", "Classical.choice", "Quot.sound"})
 SORRY = "sorryAx"
 
+# Zulässige Behälter für eine Axiomliste. Text, Bytes und Mappings sind keine Listen.
+AXIOM_CONTAINERS = (list, tuple, set, frozenset)
+AxiomInput = list[str] | tuple[str, ...] | set[str] | frozenset[str]
+
 SEMANTIC_REENTRY = "SEPARATE_UNREVIEWED"
 PROSE_REVIEW_STATE = "UNVERIFIED_PROSE"
 CARD_FIELDS: frozenset[str] = frozenset(
@@ -126,33 +130,56 @@ def evidence_gate(
     parse_known: bool = True,
     full_axiom_list: bool = True,
 ) -> str:
-    """Vorprüfung: ``RUN_FAILED``, ``HOLD_INVALID_EVIDENCE`` oder ``PASS``."""
-    if not run_ok:
+    """Vorprüfung: ``RUN_FAILED``, ``HOLD_INVALID_EVIDENCE`` oder ``PASS``.
+
+    Nur ein echtes ``run_ok is False`` ergibt ``RUN_FAILED`` und hat Vorrang vor
+    allem anderen. Jeder Schalter, der kein echtes ``bool`` ist (etwa ``"false"``,
+    ``1`` oder ``None``), ergibt ``HOLD_INVALID_EVIDENCE``.
+    """
+    if run_ok is False:
         return "RUN_FAILED"
+    flags = (run_ok, evidence_integrity, parse_known, full_axiom_list)
+    if any(type(flag) is not bool for flag in flags):
+        return "HOLD_INVALID_EVIDENCE"
     if not (evidence_integrity and parse_known and full_axiom_list):
         return "HOLD_INVALID_EVIDENCE"
     return "PASS"
 
 
+def _valid_axiom_list(axioms: object) -> bool:
+    """Nur ausdrückliche Sammlungen nichtleerer Axiomnamen; kein Text, kein Mapping."""
+    if not isinstance(axioms, AXIOM_CONTAINERS):
+        return False
+    return all(isinstance(a, str) and _AXIOM_NAME.fullmatch(a) is not None for a in axioms)
+
+
 def assess(
     run_ok: bool,
     decl_count: int,
-    axioms: Sequence[str],
+    axioms: AxiomInput,
     *,
     evidence_integrity: bool = True,
     parse_known: bool = True,
     full_axiom_list: bool = True,
 ) -> Verdict:
-    """Urteil nach Vorrang: Lauf > Beweislage > Deklaration > sorryAx > Fremdaxiom."""
+    """Urteil nach Vorrang: Lauf > Beweislage > Deklaration > sorryAx > Fremdaxiom.
+
+    Eingabekontrolle nach dem Gate und vor dem Deklarationsstatus:
+    ``decl_count`` muss ein echtes ``int`` (kein ``bool``) und mindestens 0 sein,
+    ``axioms`` eine ``list``, ``tuple``, ``set`` oder ``frozenset`` aus
+    nichtleeren Axiomnamen. Sonst ``HOLD_INVALID_EVIDENCE``.
+    """
     gate = evidence_gate(run_ok, evidence_integrity, parse_known, full_axiom_list)
     if gate != "PASS":
         return _verdict(gate)
+    if type(decl_count) is not int or decl_count < 0:
+        return _verdict("HOLD_INVALID_EVIDENCE")
+    if not _valid_axiom_list(axioms):
+        return _verdict("HOLD_INVALID_EVIDENCE")
     if decl_count == 0:
         return _verdict("HOLD_DECL_MISSING")
     if decl_count != 1:
         return _verdict("HOLD_DECL_DUPLICATE")
-    if any(not isinstance(a, str) or not a for a in axioms):
-        return _verdict("HOLD_INVALID_EVIDENCE")
     foreign = [a for a in axioms if a != SORRY and a not in ALLOWED]
     if SORRY in axioms:
         # Mischfall: sorryAx gewinnt, Fremdaxiome bleiben als Zusatzbefund erhalten.
@@ -162,7 +189,7 @@ def assess(
     return _verdict("FORMAL_CLOSED", axioms)
 
 
-def classify(run_ok: bool, decl_count: int, axioms: Sequence[str], **gate: bool) -> str:
+def classify(run_ok: bool, decl_count: int, axioms: AxiomInput, **gate: bool) -> str:
     """Nur der Status von :func:`assess` (Kompatibilität zu v0.3)."""
     return assess(run_ok, decl_count, axioms, **gate).status
 
@@ -198,8 +225,11 @@ def validate_card(card: object, verdict: Verdict, origin_sha256: str) -> tuple[s
     inhaltlich geprüft; geprüft wird nur, dass er als ungeprüft markiert ist
     und nicht im Zusammenfassungsfeld steht.
     """
+    # Der übergebene Hash wird auf Typ und Format geprüft. Das belegt nur seine
+    # Form, nicht dass er aus einer echten Lean-Ausgabe berechnet wurde.
+    origin_ok = isinstance(origin_sha256, str) and _SHA256.fullmatch(origin_sha256) is not None
     if not isinstance(card, dict) or set(card) != CARD_FIELDS:
-        return ("MALFORMED_CARD",)
+        return ("MALFORMED_CARD",) if origin_ok else ("MALFORMED_CARD", "PROVENANCE_DRIFT")
     reasons: list[str] = []
     if card["status"] != verdict.status:
         reasons.append("STATUS_DRIFT")
@@ -209,7 +239,7 @@ def validate_card(card: object, verdict: Verdict, origin_sha256: str) -> tuple[s
         reasons.append("CLAIM_ESCALATION")
     if card["semantic_reentry"] != SEMANTIC_REENTRY:
         reasons.append("SEMANTIC_PROMOTION")
-    if card["origin_sha256"] != origin_sha256:
+    if not origin_ok or card["origin_sha256"] != origin_sha256:
         reasons.append("PROVENANCE_DRIFT")
     if card["axioms"] != list(verdict.axioms):
         reasons.append("AXIOM_DISPLAY_DRIFT")
