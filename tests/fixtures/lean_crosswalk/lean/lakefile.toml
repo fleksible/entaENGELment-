@@ -1,0 +1,12 @@
+# Lean-Testfälle A–E für den Lean-Crosswalk (ANNEX / SPEC-WIP).
+# NOT_RUN: diese Konfiguration wurde noch mit keiner Lean-Toolchain gebaut.
+#
+# Ablauf für den ersten echten Lauf:
+#   lake build                               # baut nur CrosswalkProbe.Basic
+#   lake env lean CrosswalkProbe/Audit.lean  # getrennte Prüfdatei, Ausgabe → audit_raw
+name = "CrosswalkProbe"
+defaultTargets = ["CrosswalkProbe"]
+
+[[lean_lib]]
+name = "CrosswalkProbe"
+roots = ["CrosswalkProbe.Basic"]

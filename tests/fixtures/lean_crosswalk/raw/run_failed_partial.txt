@@ -1,0 +1,3 @@
+'CrosswalkProbe.Basic.thm_direct_gap' depends on axioms: [sorryAx]
+'CrosswalkProbe.Basic.thm_transitive_gap' depends on axioms: [sorryAx]
+CrosswalkProbe/Audit.lean:4:15: error: unknown constant 'CrosswalkProbe.Basic.thm_closed_formal'

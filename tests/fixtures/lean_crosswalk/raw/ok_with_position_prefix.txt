@@ -1,0 +1,5 @@
+CrosswalkProbe/Audit.lean:3:0: 'CrosswalkProbe.Basic.thm_direct_gap' depends on axioms: [sorryAx]
+CrosswalkProbe/Audit.lean:3:0: 'CrosswalkProbe.Basic.thm_transitive_gap' depends on axioms: [sorryAx]
+CrosswalkProbe/Audit.lean:3:0: 'CrosswalkProbe.Basic.thm_closed_formal' does not depend on any axioms
+CrosswalkProbe/Audit.lean:3:0: 'CrosswalkProbe.Basic.thm_custom_axiom' depends on axioms: [CrosswalkProbe.Basic.externalAssumption]
+CrosswalkProbe/Audit.lean:3:0: 'CrosswalkProbe.Basic.thm_mixed' depends on axioms: [CrosswalkProbe.Basic.externalAssumption, sorryAx]
